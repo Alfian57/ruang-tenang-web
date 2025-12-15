@@ -1,0 +1,206 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Loader2, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useAuthStore } from "@/stores/authStore";
+
+const loginSchema = z.object({
+  email: z.string().email("Email tidak valid"),
+  password: z.string().min(1, "Password wajib diisi"),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
+
+export default function LoginPage() {
+  const router = useRouter();
+  const { login, isLoading } = useAuthStore();
+  const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = async (data: LoginFormData) => {
+    setError(null);
+    try {
+      await login(data.email, data.password);
+      router.push("/dashboard");
+    } catch (error) {
+      const err = error as Error;
+      setError(err.message || "Login gagal. Silakan coba lagi.");
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex">
+      {/* Left Side - Login Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
+        <div className="w-full max-w-md">
+          {/* Logo */}
+          <div className="text-center mb-10">
+            <Link href="/" className="inline-block mb-6">
+              <Image
+                src="/logo-full.png"
+                alt="Ruang Tenang"
+                width={180}
+                height={60}
+                className="object-contain"
+              />
+            </Link>
+            <p className="text-gray-500">Masukan detail Anda untuk Login</p>
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {error && (
+              <div className="p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm">
+                {error}
+              </div>
+            )}
+
+            {/* Email Field */}
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Richard@email.com"
+                  className="pl-12 h-12 rounded-xl border-gray-200 focus:border-primary focus:ring-primary"
+                  {...register("email")}
+                />
+              </div>
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email.message}</p>
+              )}
+            </div>
+
+            {/* Password Field */}
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••••••"
+                  className="pl-12 pr-12 h-12 rounded-xl border-gray-200 focus:border-primary focus:ring-primary"
+                  {...register("password")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-sm text-red-500">{errors.password.message}</p>
+              )}
+            </div>
+
+            {/* Remember & Forgot */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <span className="text-sm text-gray-600">Ingat Aku</span>
+              </label>
+              <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+                Lupa Password?
+              </Link>
+            </div>
+
+            {/* Submit Button */}
+            <Button 
+              type="submit" 
+              className="w-full h-12 bg-primary hover:bg-primary/90 text-white rounded-xl text-base font-semibold"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                  Memproses...
+                </>
+              ) : (
+                "Login"
+              )}
+            </Button>
+
+            {/* Register Link */}
+            <p className="text-center text-gray-600">
+              Tidak punya Akun?{" "}
+              <Link href="/register" className="text-primary font-medium hover:underline">
+                Registrasi disini
+              </Link>
+            </p>
+          </form>
+        </div>
+      </div>
+
+      {/* Right Side - Illustration */}
+      <div className="hidden lg:flex w-1/2 relative overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-linear-to-br from-red-400 via-red-500 to-red-600">
+          {/* Decorative circles */}
+          <div className="absolute top-20 right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-32 left-20 w-48 h-48 bg-white/10 rounded-full blur-2xl" />
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-center justify-center w-full p-12 text-white">
+          <h2 className="text-4xl font-bold mb-6">RuangTenang</h2>
+          <p className="text-center text-white/90 max-w-lg leading-relaxed mb-10">
+            RuangTenang adalah platform konsultasi berbasis AI yang dirancang untuk membantu 
+            mahasiswa menghadapi tantangan kesehatan mental dalam dunia akademik. Melalui 
+            interaksi percakapan yang empatik, RuangTenang hadir sebagai teman virtual yang 
+            siap mendengarkan, memberi dukungan, dan menawarkan solusi ringan terhadap masalah 
+            seperti stres, overthinking, burnout, dan kehilangan motivasi belajar.
+          </p>
+
+          {/* Illustration */}
+          <div className="relative">
+            <Image
+              src="/images/landing/about-doctor.png"
+              alt="RuangTenang App"
+              width={350}
+              height={450}
+              className="object-contain drop-shadow-2xl"
+            />
+            
+            {/* Floating icons */}
+            <div className="absolute top-0 right-0 bg-white rounded-full p-3 shadow-lg">
+              <span className="text-2xl">❤️</span>
+            </div>
+            <div className="absolute bottom-20 -left-4 bg-white rounded-full p-3 shadow-lg">
+              <span className="text-2xl">🩺</span>
+            </div>
+            <div className="absolute top-1/2 -right-4 bg-white rounded-full p-3 shadow-lg">
+              <span className="text-2xl">💊</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
