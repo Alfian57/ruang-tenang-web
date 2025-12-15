@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Trash2, Plus, Music, Upload, Loader2, Edit, Search } from "lucide-react";
+import { Trash2, Plus, Music, Upload, Loader2, Edit, Search, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,8 +30,11 @@ export default function AdminSongsPage() {
   const [deleteCategoryId, setDeleteCategoryId] = useState<number | null>(null);
   const [deleteSongId, setDeleteSongId] = useState<number | null>(null);
   const [editingCategory, setEditingCategory] = useState<SongCategory | null>(null);
+  const [editingSong, setEditingSong] = useState<SongWithCategory | null>(null);
   const [searchSong, setSearchSong] = useState("");
   const [searchCategory, setSearchCategory] = useState("");
+  const [cannotDeleteDialog, setCannotDeleteDialog] = useState(false);
+  const [errorDialog, setErrorDialog] = useState({ open: false, title: "", message: "" });
   const audioInputRef = useRef<HTMLInputElement>(null);
 
   const loadCategories = useCallback(async () => {
@@ -114,9 +117,13 @@ export default function AdminSongsPage() {
     try {
       const response = await api.uploadAudio(token, file);
       setSongForm({ ...songForm, file_path: response.data.url });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to upload audio:", error);
-      alert("Gagal mengunggah audio");
+      setErrorDialog({
+        open: true,
+        title: "Gagal Mengunggah Audio",
+        message: error.message || "Terjadi kesalahan saat mengunggah file audio."
+      });
     } finally {
       setIsUploadingAudio(false);
       if (audioInputRef.current) {
@@ -125,16 +132,37 @@ export default function AdminSongsPage() {
     }
   };
 
-  const createSong = async () => {
+  const saveSong = async () => {
     if (!token || !songForm.title || !songForm.file_path || !songForm.category_id) return;
     try {
-      await api.adminCreateSong(token, { ...songForm, category_id: songForm.category_id });
+      if (editingSong) {
+        await api.adminUpdateSong(token, editingSong.id, { ...songForm, category_id: songForm.category_id });
+      } else {
+        await api.adminCreateSong(token, { ...songForm, category_id: songForm.category_id });
+      }
       setSongDialog(false);
       setSongForm({ title: "", file_path: "", thumbnail: "", category_id: 0 });
+      setEditingSong(null);
       loadSongs();
     } catch (error) {
-      console.error("Failed to create song:", error);
+      console.error("Failed to save song:", error);
     }
+  };
+
+  const openSongDialog = (song?: SongWithCategory) => {
+    if (song) {
+      setEditingSong(song);
+      setSongForm({
+        title: song.title,
+        file_path: song.file_path,
+        thumbnail: song.thumbnail || "",
+        category_id: song.category_id || (song.category?.id || 0),
+      });
+    } else {
+      setEditingSong(null);
+      setSongForm({ title: "", file_path: "", thumbnail: "", category_id: 0 });
+    }
+    setSongDialog(true);
   };
 
   const handleDeleteSong = async () => {
@@ -242,9 +270,14 @@ export default function AdminSongsPage() {
                               variant="ghost"
                               size="icon"
                               className="text-red-500 hover:text-red-600"
-                              onClick={() => setDeleteCategoryId(cat.id)}
+                              onClick={() => {
+                                if ((cat.song_count || 0) > 0) {
+                                  setCannotDeleteDialog(true);
+                                } else {
+                                  setDeleteCategoryId(cat.id);
+                                }
+                              }}
                               title="Hapus"
-                              disabled={(cat.song_count || 0) > 0}
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
@@ -286,7 +319,7 @@ export default function AdminSongsPage() {
                 ))}
               </select>
             </div>
-            <Button onClick={() => setSongDialog(true)} className="gradient-primary">
+            <Button onClick={() => openSongDialog()} className="gradient-primary">
               <Plus className="w-4 h-4 mr-2" /> Tambah Lagu
             </Button>
           </div>
@@ -332,6 +365,14 @@ export default function AdminSongsPage() {
                         </td>
                         <td className="p-4">
                           <div className="flex gap-1 justify-end">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => openSongDialog(song)}
+                              title="Edit"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
                             <Button
                               variant="ghost"
                               size="icon"
@@ -391,7 +432,7 @@ export default function AdminSongsPage() {
       <Dialog open={songDialog} onOpenChange={setSongDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Tambah Lagu</DialogTitle>
+            <DialogTitle>{editingSong ? "Edit Lagu" : "Tambah Lagu"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
@@ -417,11 +458,11 @@ export default function AdminSongsPage() {
             </div>
             <div className="space-y-2">
               <Label>File Audio</Label>
-              <div className="flex gap-2">
+                <div className="flex gap-2">
                 <Input 
-                  value={songForm.file_path} 
-                  onChange={(e) => setSongForm({ ...songForm, file_path: e.target.value })} 
-                  placeholder="URL atau upload file"
+                  value={songForm.file_path ? "File audio terupload" : ""} 
+                  readOnly
+                  placeholder="Upload file audio"
                   className="flex-1"
                 />
                 <Button 
@@ -440,7 +481,7 @@ export default function AdminSongsPage() {
                 onChange={handleAudioUpload}
                 className="hidden"
               />
-              <p className="text-xs text-gray-500">Upload file audio atau masukkan URL</p>
+              <p className="text-xs text-gray-500">Upload file audio (mp3, wav, ogg max 10MB)</p>
             </div>
             <div className="space-y-2">
               <Label>Thumbnail</Label>
@@ -456,7 +497,7 @@ export default function AdminSongsPage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setSongDialog(false)}>Batal</Button>
-            <Button onClick={createSong} className="gradient-primary" disabled={!songForm.category_id}>Simpan</Button>
+            <Button onClick={saveSong} className="gradient-primary" disabled={!songForm.category_id}>Simpan</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -479,6 +520,28 @@ export default function AdminSongsPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Cannot Delete Category Modal */}
+      <Dialog open={cannotDeleteDialog} onOpenChange={setCannotDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Tidak Bisa Menghapus Kategori</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Music className="w-8 h-8 text-red-600" />
+            </div>
+            <p className="text-center text-gray-600">
+              Kategori ini masih memiliki lagu di dalamnya. Silakan hapus atau pindahkan lagu-lagu tersebut terlebih dahulu sebelum menghapus kategori ini.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setCannotDeleteDialog(false)} className="gradient-primary w-full">
+              Mengerti
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Delete Song Modal */}
       <Dialog open={deleteSongId !== null} onOpenChange={() => setDeleteSongId(null)}>
         <DialogContent>
@@ -492,6 +555,26 @@ export default function AdminSongsPage() {
             <Button variant="outline" onClick={() => setDeleteSongId(null)}>Batal</Button>
             <Button className="bg-red-500 hover:bg-red-600 text-white" onClick={handleDeleteSong}>
               Hapus
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Error Dialog */}
+      <Dialog open={errorDialog.open} onOpenChange={(open) => setErrorDialog(prev => ({ ...prev, open }))}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-red-600 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5" />
+              {errorDialog.title}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4 text-gray-600">
+            {errorDialog.message}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setErrorDialog(prev => ({ ...prev, open: false }))} className="gradient-primary w-full sm:w-auto">
+              Tutup
             </Button>
           </DialogFooter>
         </DialogContent>

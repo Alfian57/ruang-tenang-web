@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
 
 interface Article {
   id: number;
@@ -99,7 +99,20 @@ export function ArticleSection() {
       <section id="articles" className="py-20 px-4 bg-white">
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-3xl font-bold mb-8">Artikel</h2>
-          <p className="text-gray-500 text-center py-12">Belum ada artikel tersedia.</p>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-gray-200 rounded-3xl bg-gray-50"
+          >
+            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-6 text-primary shadow-sm">
+               <BookOpen size={40} />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">Belum ada artikel</h3>
+            <p className="text-gray-500 max-w-md mx-auto mb-8">
+              Kami sedang menyiapkan artikel-artikel menarik untuk Anda. Kembali lagi nanti ya!
+            </p>
+          </motion.div>
         </div>
       </section>
     );
@@ -207,4 +220,3 @@ export function ArticleSection() {
     </section>
   );
 }
-

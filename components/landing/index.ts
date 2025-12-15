@@ -5,3 +5,4 @@ export { ArticleSection } from "./ArticleSection";
 export { AboutSection } from "./AboutSection";
 export { CTASection } from "./CTASection";
 export { Footer } from "./Footer";
+export { default as LeaderboardSection } from "./LeaderboardSection";

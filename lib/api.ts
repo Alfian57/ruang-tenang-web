@@ -1,6 +1,8 @@
 // Placeholder __NEXT_PUBLIC_API_URL__ akan diganti saat runtime oleh entrypoint.sh
 // Jika menggunakan build-arg, gunakan process.env.NEXT_PUBLIC_API_URL langsung
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "__NEXT_PUBLIC_API_URL__";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL !== "__NEXT_PUBLIC_API_URL__"
+  ? process.env.NEXT_PUBLIC_API_URL
+  : "http://localhost:8080/api/v1";
 
 interface FetchOptions extends RequestInit {
   token?: string;
@@ -336,6 +338,14 @@ class ApiClient {
     });
   }
 
+  async adminUpdateSong(token: string, id: number, data: { title: string; file_path: string; thumbnail?: string; category_id: number }) {
+    return this.request(`/admin/songs/${id}`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
   async adminDeleteSong(token: string, id: number) {
     return this.request(`/admin/songs/${id}`, {
       method: "DELETE",
@@ -413,6 +423,11 @@ class ApiClient {
       token,
     });
   }
+
+  // Leaderboard endpoints
+  async getLeaderboard(limit: number = 10) {
+    return this.request(`/leaderboard?limit=${limit}`);
+  }
 }
 
 export const api = new ApiClient(API_BASE_URL);
@@ -421,9 +436,32 @@ export const api = new ApiClient(API_BASE_URL);
 export const getUploadUrl = (path: string) => {
   if (!path) return "";
   if (path.startsWith("http")) return path;
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+  
+  let baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!baseUrl || baseUrl === "__NEXT_PUBLIC_API_URL__") {
+    baseUrl = "http://localhost:8080/api/v1";
+  }
+  
   // Remove /api/v1 from the base URL for uploads
-  const uploadBaseUrl = baseUrl.replace("/api/v1", "");
-  return `${uploadBaseUrl}${path}`;
+  // Handle cases where /api/v1 might not be present or logic is fragile
+  let uploadBaseUrl = baseUrl.includes("/api/v1") 
+    ? baseUrl.replace("/api/v1", "") 
+    : baseUrl;
+
+  // Remove trailing slash if present
+  if (uploadBaseUrl.endsWith("/")) {
+    uploadBaseUrl = uploadBaseUrl.slice(0, -1);
+  }
+
+  // Ensure absolute URL
+  if (!uploadBaseUrl.startsWith("http")) {
+    // If somehow we got a relative path, force localhost default
+    uploadBaseUrl = "http://localhost:8080";
+  }
+
+  // Ensure path starts with /
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+
+  return `${uploadBaseUrl}${cleanPath}`;
 };
 

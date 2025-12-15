@@ -110,6 +110,7 @@ export function RichTextEditor({
         ),
       },
     },
+    immediatelyRender: false,
   });
 
   // Update content when it changes externally

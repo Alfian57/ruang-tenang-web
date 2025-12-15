@@ -3,6 +3,7 @@ import {
   HeroSection,
   MarqueeSection,
   ArticleSection,
+  LeaderboardSection,
   AboutSection,
   CTASection,
   Footer,
@@ -16,6 +17,7 @@ export default function Home() {
         <HeroSection />
         <MarqueeSection />
         <ArticleSection />
+        <LeaderboardSection />
         <AboutSection />
         <CTASection />
       </main>
