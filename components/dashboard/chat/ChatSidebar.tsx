@@ -35,6 +35,7 @@ interface ChatSidebarProps {
   onCreateSession: () => void;
   onToggleFavorite: (e: React.MouseEvent, sessionId: number) => void;
   onToggleTrash: (e: React.MouseEvent, sessionId: number) => void;
+  onDeletePermanent?: (e: React.MouseEvent, sessionId: number) => void;
 }
 
 /**
@@ -49,6 +50,7 @@ export function ChatSidebar({
   onCreateSession,
   onToggleFavorite,
   onToggleTrash,
+  onDeletePermanent,
 }: ChatSidebarProps) {
   return (
     <div className="w-80 border-l bg-white hidden lg:flex flex-col h-full shadow-[-1px_0_10px_rgba(0,0,0,0.02)] z-10">
@@ -100,9 +102,11 @@ export function ChatSidebar({
                 key={session.id}
                 session={session}
                 isActive={activeSessionId === session.id}
+                isTrashView={filter === "trash"}
                 onSelect={() => onSessionSelect(session.id)}
                 onToggleFavorite={onToggleFavorite}
                 onToggleTrash={onToggleTrash}
+                onDeletePermanent={onDeletePermanent}
               />
             ))
           ) : (
@@ -119,17 +123,21 @@ export function ChatSidebar({
 interface SessionItemProps {
   session: ChatSession;
   isActive: boolean;
+  isTrashView: boolean;
   onSelect: () => void;
   onToggleFavorite: (e: React.MouseEvent, sessionId: number) => void;
   onToggleTrash: (e: React.MouseEvent, sessionId: number) => void;
+  onDeletePermanent?: (e: React.MouseEvent, sessionId: number) => void;
 }
 
 function SessionItem({
   session,
   isActive,
+  isTrashView,
   onSelect,
   onToggleFavorite,
   onToggleTrash,
+  onDeletePermanent,
 }: SessionItemProps) {
   return (
     <div
@@ -168,22 +176,40 @@ function SessionItem({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem onClick={(e) => onToggleFavorite(e, session.id)}>
-              <Heart
-                className={cn(
-                  "w-4 h-4 mr-2",
-                  session.is_favorite && "fill-red-500 text-red-500"
-                )}
-              />
-              {session.is_favorite ? "Hapus Favorit" : "Favorit"}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="text-red-600 focus:text-red-600 focus:bg-red-50"
-              onClick={(e) => onToggleTrash(e, session.id)}
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Pindahkan ke Sampah
-            </DropdownMenuItem>
+            {isTrashView ? (
+              <>
+                <DropdownMenuItem onClick={(e) => onToggleTrash(e, session.id)}>
+                  <Heart className="w-4 h-4 mr-2" />
+                  Pulihkan
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                  onClick={(e) => onDeletePermanent?.(e, session.id)}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Hapus Permanen
+                </DropdownMenuItem>
+              </>
+            ) : (
+              <>
+                <DropdownMenuItem onClick={(e) => onToggleFavorite(e, session.id)}>
+                  <Heart
+                    className={cn(
+                      "w-4 h-4 mr-2",
+                      session.is_favorite && "fill-red-500 text-red-500"
+                    )}
+                  />
+                  {session.is_favorite ? "Hapus Favorit" : "Favorit"}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                  onClick={(e) => onToggleTrash(e, session.id)}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Pindahkan ke Sampah
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

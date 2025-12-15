@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { api } from "@/lib/api";
 import { ChatSession, ChatMessage } from "@/types";
+import { useAuthStore } from "./authStore";
 
 /**
  * Filter type for chat sessions.
@@ -174,6 +175,8 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
         ),
         isSending: false,
       }));
+      // Refresh user to update EXP
+      await useAuthStore.getState().refreshUser();
     } catch (error) {
       console.error("ChatStore.sendTextMessage: failed", error);
       set((state) => ({

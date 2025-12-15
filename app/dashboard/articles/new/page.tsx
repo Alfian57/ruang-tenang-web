@@ -61,6 +61,8 @@ export default function NewArticlePage() {
         category_id: formData.category_id,
         thumbnail: formData.thumbnail || undefined,
       });
+      // Refresh user to update EXP
+      await useAuthStore.getState().refreshUser();
       router.push("/dashboard/articles");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal membuat artikel");

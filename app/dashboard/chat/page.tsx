@@ -95,6 +95,12 @@ export default function ChatPage() {
     if (token) toggleTrash(token, sessionId);
   };
 
+  const handleDeletePermanent = (e: React.MouseEvent, sessionId: number) => {
+    e.stopPropagation();
+    setDeleteSessionId(sessionId);
+    setShowDeleteModal(true);
+  };
+
   const handleConfirmDelete = async () => {
     if (!deleteSessionId || !token) return;
     setIsDeleting(true);
@@ -135,6 +141,7 @@ export default function ChatPage() {
         onCreateSession={() => setNewSessionDialog(true)}
         onToggleFavorite={handleToggleFavorite}
         onToggleTrash={handleToggleTrash}
+        onDeletePermanent={handleDeletePermanent}
       />
 
       {/* New Session Dialog */}

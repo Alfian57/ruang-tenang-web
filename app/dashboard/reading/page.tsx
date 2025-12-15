@@ -12,13 +12,6 @@ import { Article, ArticleCategory } from "@/types";
 import { formatDate } from "@/lib/utils";
 
 export default function DashboardReadingPage() {
-  const stripHtml = (html: string) => {
-     if (typeof window === 'undefined') return "";
-     const tmp = document.createElement("DIV");
-     tmp.innerHTML = html;
-     return tmp.textContent || tmp.innerText || "";
-  };
-
   const [articles, setArticles] = useState<Article[]>([]);
   const [categories, setCategories] = useState<ArticleCategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -135,12 +128,9 @@ export default function DashboardReadingPage() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 line-clamp-2 mb-1 group-hover:text-primary transition-colors">
+                    <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-primary transition-colors">
                       {article.title}
                     </h3>
-                    <p className="text-sm text-gray-500 line-clamp-2 mb-2">
-                       {article.excerpt || stripHtml(article.content).substring(0, 100)}...
-                    </p>
                     <div className="flex items-center gap-3 text-xs text-gray-400">
                       <span className="text-primary font-medium">{article.category?.name}</span>
                       <span>•</span>

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
-import { UserMood, MoodType, ChatSession, Article, SongCategory } from "@/types";
+import { UserMood, MoodType, ChatSession, Article, SongCategory, Song } from "@/types";
 import { cn, formatDate } from "@/lib/utils";
 import { 
   ArrowRight, 
@@ -27,8 +27,7 @@ import {
   FolderOpen,
   ChevronRight,
   AlertTriangle,
-  MoreVertical,
-  Shuffle
+  MoreVertical
 } from "lucide-react";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 import {
@@ -45,6 +44,9 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  CartesianGrid,
+  Area,
+  AreaChart,
 } from "recharts";
 
 const moodEmojis: { type: MoodType; emoji: string; label: string; active: string; inactive: string; color: string }[] = [
@@ -480,16 +482,37 @@ function MemberDashboard() {
   const [categories, setCategories] = useState<SongCategory[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [showMoodPicker, setShowMoodPicker] = useState(false);
-  const [selectedDuration] = useState(5);
   const [deleteChatId, setDeleteChatId] = useState<number | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  
+  // Breathing exercise states
+  const [breathingDuration, setBreathingDuration] = useState(5);
+  const [breathingPhase, setBreathingPhase] = useState<"idle" | "inhale" | "hold" | "exhale">("idle");
+  const [breathingProgress, setBreathingProgress] = useState({ inhale: 0, hold: 0, exhale: 0 });
+  const [isBreathing, setIsBreathing] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [showDurationDropdown, setShowDurationDropdown] = useState(false);
+  
+  // Chart filter states
+  const [chartPeriod, setChartPeriod] = useState<"7days" | "1month">("7days");
+  const [showChartDropdown, setShowChartDropdown] = useState(false);
+  
+  // Music player states
+  const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
+  const [categorySongs, setCategorySongs] = useState<Record<number, Song[]>>({});
+  const [currentSong, setCurrentSong] = useState<Song | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioProgress, setAudioProgress] = useState(0);
+  const [audioDuration, setAudioDuration] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const loadDashboardData = useCallback(async () => {
     if (!token) return;
     try {
+      const moodLimit = chartPeriod === "1month" ? 30 : 7;
       const [moodRes, sessionsRes, articlesRes, categoriesRes] = await Promise.all([
-        api.getMoodHistory(token, { limit: 7 }).catch(() => null) as Promise<{ data: { moods: UserMood[] } } | null>,
+        api.getMoodHistory(token, { limit: moodLimit }).catch(() => null) as Promise<{ data: { moods: UserMood[] } } | null>,
         api.getChatSessions(token).catch(() => null) as Promise<{ data: ChatSession[] } | null>,
         api.getArticles({ limit: 5 }).catch(() => null) as Promise<{ data: Article[] } | null>,
         api.getSongCategories().catch(() => null) as Promise<{ data: SongCategory[] } | null>,
@@ -511,7 +534,7 @@ function MemberDashboard() {
     } catch (error) {
       console.error("Failed to load dashboard data:", error);
     }
-  }, [token]);
+  }, [token, chartPeriod]);
 
   useEffect(() => {
     loadDashboardData();
@@ -560,8 +583,152 @@ function MemberDashboard() {
     }
   };
 
-  // Prepare chart data for bar chart
-  const chartData = days.map((day, i) => {
+  // Breathing exercise functions
+  const startBreathing = useCallback(() => {
+    if (isPaused) {
+      setIsPaused(false);
+      return;
+    }
+    setIsBreathing(true);
+    setIsPaused(false);
+    setBreathingPhase("inhale");
+    setBreathingProgress({ inhale: 0, hold: 0, exhale: 0 });
+  }, [isPaused]);
+
+  const pauseBreathing = useCallback(() => {
+    setIsPaused(true);
+  }, []);
+
+  const resetBreathing = useCallback(() => {
+    setIsBreathing(false);
+    setIsPaused(false);
+    setBreathingPhase("idle");
+    setBreathingProgress({ inhale: 0, hold: 0, exhale: 0 });
+  }, []);
+
+  // Breathing animation effect
+  useEffect(() => {
+    if (!isBreathing || isPaused) return;
+
+    const intervalMs = 50; // Update every 50ms for smooth animation
+    const totalSteps = (breathingDuration * 1000) / intervalMs;
+    const progressIncrement = 100 / totalSteps;
+
+    const interval = setInterval(() => {
+      setBreathingProgress(prev => {
+        if (breathingPhase === "inhale") {
+          const newProgress = Math.min(100, prev.inhale + progressIncrement);
+          if (newProgress >= 100) {
+            setBreathingPhase("hold");
+            return { ...prev, inhale: 100 };
+          }
+          return { ...prev, inhale: newProgress };
+        } else if (breathingPhase === "hold") {
+          const newProgress = Math.min(100, prev.hold + progressIncrement);
+          if (newProgress >= 100) {
+            setBreathingPhase("exhale");
+            return { ...prev, hold: 100 };
+          }
+          return { ...prev, hold: newProgress };
+        } else if (breathingPhase === "exhale") {
+          const newProgress = Math.min(100, prev.exhale + progressIncrement);
+          if (newProgress >= 100) {
+            // Exercise complete
+            setIsBreathing(false);
+            setBreathingPhase("idle");
+            return { inhale: 0, hold: 0, exhale: 0 };
+          }
+          return { ...prev, exhale: newProgress };
+        }
+        return prev;
+      });
+    }, intervalMs);
+
+    return () => clearInterval(interval);
+  }, [isBreathing, isPaused, breathingPhase, breathingDuration]);
+
+  // Music player functions
+  const handleCategoryClick = async (categoryId: number) => {
+    if (expandedCategory === categoryId) {
+      setExpandedCategory(null);
+      return;
+    }
+    
+    setExpandedCategory(categoryId);
+    
+    // Fetch songs if not already loaded
+    if (!categorySongs[categoryId]) {
+      try {
+        const response = await api.getSongsByCategory(categoryId) as { data: Song[] };
+        if (response.data) {
+          setCategorySongs(prev => ({ ...prev, [categoryId]: response.data }));
+        }
+      } catch (error) {
+        console.error("Failed to load songs:", error);
+      }
+    }
+  };
+
+  const playSong = (song: Song) => {
+    if (currentSong?.id === song.id) {
+      // Toggle play/pause for same song
+      if (isPlaying) {
+        audioRef.current?.pause();
+        setIsPlaying(false);
+      } else {
+        audioRef.current?.play();
+        setIsPlaying(true);
+      }
+    } else {
+      // Play new song
+      setCurrentSong(song);
+      setIsPlaying(true);
+      setAudioProgress(0);
+    }
+  };
+
+  // Audio event handlers
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !currentSong) return;
+
+    const handleTimeUpdate = () => {
+      setAudioProgress(audio.currentTime);
+    };
+
+    const handleLoadedMetadata = () => {
+      setAudioDuration(audio.duration);
+    };
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setAudioProgress(0);
+    };
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('ended', handleEnded);
+
+    // Auto-play when song changes
+    if (isPlaying) {
+      audio.play().catch(console.error);
+    }
+
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [currentSong, isPlaying]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Prepare chart data for bar chart (7 days)
+  const weeklyChartData = days.map((day, i) => {
     const mood = moodHistory[moodHistory.length - 1 - i]?.mood;
     const moodInfo = moodEmojis.find(m => m.type === mood);
     return {
@@ -574,6 +741,24 @@ function MemberDashboard() {
       menangis: mood === "crying" ? moodLevels.crying : 0,
       mood: mood,
       color: moodInfo?.color || "#94a3b8",
+      value: mood ? moodLevels[mood] : 0,
+    };
+  });
+
+  // Prepare chart data for line chart (30 days)
+  const monthlyChartData = moodHistory.slice().reverse().map((item, index) => {
+    const date = new Date(item.created_at);
+    const dayLabel = date.getDate().toString();
+    const moodInfo = moodEmojis.find(m => m.type === item.mood);
+    return {
+      name: dayLabel,
+      fullDate: date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }),
+      value: moodLevels[item.mood] || 0,
+      mood: item.mood,
+      emoji: moodInfo?.emoji || '',
+      label: moodInfo?.label || '',
+      color: moodInfo?.color || "#94a3b8",
+      index,
     };
   });
 
@@ -697,25 +882,56 @@ function MemberDashboard() {
           <CardContent className="p-5">
             <div className="flex justify-between items-start mb-4">
               <h4 className="font-bold text-gray-800">Atur Napasmu,<br/>Atur Tenangmu</h4>
-              <div className="flex items-center gap-1 text-xs bg-gray-100 rounded-full px-3 py-1.5">
-                <Image src="/images/timer.png" alt="" width={14} height={14} />
-                <span className="text-gray-600 font-medium">{selectedDuration} detik</span>
-                <ChevronDown className="w-3 h-3 text-gray-400" />
+              <div className="relative">
+                <button 
+                  onClick={() => setShowDurationDropdown(!showDurationDropdown)}
+                  disabled={isBreathing}
+                  className="flex items-center gap-1 text-xs bg-gray-100 rounded-full px-3 py-1.5 hover:bg-gray-200 transition-colors disabled:opacity-50"
+                >
+                  <Image src="/images/timer.png" alt="" width={14} height={14} />
+                  <span className="text-gray-600 font-medium">{breathingDuration} detik</span>
+                  <ChevronDown className="w-3 h-3 text-gray-400" />
+                </button>
+                {showDurationDropdown && (
+                  <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border py-1 z-10 min-w-[100px]">
+                    {[5, 10, 15].map((duration) => (
+                      <button
+                        key={duration}
+                        onClick={() => {
+                          setBreathingDuration(duration);
+                          setShowDurationDropdown(false);
+                        }}
+                        className={cn(
+                          "w-full px-3 py-2 text-left text-sm hover:bg-gray-50 transition-colors",
+                          breathingDuration === duration && "bg-primary/10 text-primary font-medium"
+                        )}
+                      >
+                        {duration} detik
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
             
             <div className="space-y-3 mb-5">
               {[
-                { label: "Tarik Nafas", width: "60%", color: "bg-red-300" },
-                { label: "Tahan Nafas", width: "100%", color: "bg-red-400" },
-                { label: "Buang Nafas", width: "75%", color: "bg-red-500" },
+                { label: "Tarik Nafas", key: "inhale" as const, color: "bg-red-300", activeColor: "bg-gradient-to-r from-red-300 to-red-400" },
+                { label: "Tahan Nafas", key: "hold" as const, color: "bg-red-400", activeColor: "bg-gradient-to-r from-red-400 to-red-500" },
+                { label: "Buang Nafas", key: "exhale" as const, color: "bg-red-500", activeColor: "bg-gradient-to-r from-red-500 to-red-600" },
               ].map((step) => (
                 <div key={step.label} className="flex items-center gap-3">
-                  <span className="w-24 text-sm text-gray-600 font-medium">{step.label}</span>
+                  <span className={cn(
+                    "w-24 text-sm font-medium transition-colors",
+                    breathingPhase === step.key ? "text-primary font-semibold" : "text-gray-600"
+                  )}>{step.label}</span>
                   <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
                     <div 
-                      className={cn("h-full rounded-full", step.color)} 
-                      style={{ width: step.width }} 
+                      className={cn(
+                        "h-full rounded-full transition-all duration-100",
+                        breathingPhase === step.key ? step.activeColor : step.color
+                      )}
+                      style={{ width: `${breathingProgress[step.key]}%` }} 
                     />
                   </div>
                 </div>
@@ -723,13 +939,30 @@ function MemberDashboard() {
             </div>
 
             <div className="flex gap-2">
-              <Button size="sm" className="text-xs rounded-full gap-1.5 bg-primary hover:bg-primary/90 text-white px-4">
-                <Play className="w-3 h-3" /> Mulai
+              <Button 
+                size="sm" 
+                onClick={startBreathing}
+                disabled={isBreathing && !isPaused}
+                className="text-xs rounded-full gap-1.5 bg-primary hover:bg-primary/90 text-white px-4 disabled:opacity-50"
+              >
+                <Play className="w-3 h-3" /> {isPaused ? "Lanjut" : "Mulai"}
               </Button>
-              <Button size="sm" variant="outline" className="text-xs rounded-full gap-1.5 px-4">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={pauseBreathing}
+                disabled={!isBreathing || isPaused}
+                className="text-xs rounded-full gap-1.5 px-4 disabled:opacity-50"
+              >
                 <Pause className="w-3 h-3" /> Jeda
               </Button>
-              <Button size="sm" variant="outline" className="text-xs rounded-full gap-1.5 px-4">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={resetBreathing}
+                disabled={!isBreathing && breathingPhase === "idle"}
+                className="text-xs rounded-full gap-1.5 px-4 disabled:opacity-50"
+              >
                 <RotateCcw className="w-3 h-3" /> Ulangi
               </Button>
             </div>
@@ -744,70 +977,171 @@ function MemberDashboard() {
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-lg font-bold">Perjalanan Emosimu Sepanjang Minggu</CardTitle>
+                <CardTitle className="text-lg font-bold">
+                  {chartPeriod === "7days" ? "Perjalanan Emosimu Sepanjang Minggu" : "Tren Emosimu Sebulan Terakhir"}
+                </CardTitle>
                 <p className="text-sm text-gray-500 mt-1">
                   Pantau fluktuasi emosi harian dan temukan pola yang bisa kamu sadari lebih awal.
                 </p>
               </div>
-              <Button variant="outline" size="sm" className="rounded-full text-xs gap-1 border-gray-200">
-                7 Hari terakhir <ChevronDown className="w-3 h-3" />
-              </Button>
+              <div className="relative">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShowChartDropdown(!showChartDropdown)}
+                  className="rounded-full text-xs gap-1 border-gray-200"
+                >
+                  {chartPeriod === "7days" ? "7 Hari terakhir" : "1 Bulan terakhir"} <ChevronDown className="w-3 h-3" />
+                </Button>
+                {showChartDropdown && (
+                  <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border py-1 z-10 min-w-[140px]">
+                    <button
+                      onClick={() => {
+                        setChartPeriod("7days");
+                        setShowChartDropdown(false);
+                      }}
+                      className={cn(
+                        "w-full px-3 py-2 text-left text-sm hover:bg-gray-50 transition-colors",
+                        chartPeriod === "7days" && "bg-primary/10 text-primary font-medium"
+                      )}
+                    >
+                      7 Hari terakhir
+                    </button>
+                    <button
+                      onClick={() => {
+                        setChartPeriod("1month");
+                        setShowChartDropdown(false);
+                      }}
+                      className={cn(
+                        "w-full px-3 py-2 text-left text-sm hover:bg-gray-50 transition-colors",
+                        chartPeriod === "1month" && "bg-primary/10 text-primary font-medium"
+                      )}
+                    >
+                      1 Bulan terakhir
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </CardHeader>
           <CardContent>
-            {/* Bar Chart */}
+            {/* Chart */}
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 20, right: 10, left: -10, bottom: 0 }}>
-                  <XAxis 
-                    dataKey="name" 
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12, fill: '#9ca3af' }}
-                  />
-                  <YAxis 
-                    domain={[0, 7]}
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 11, fill: '#9ca3af' }}
-                    tickFormatter={(value) => {
-                      const labels: Record<number, string> = {
-                        6: 'Bahagia',
-                        5: 'Netral',
-                        4: 'Marah',
-                        3: 'Kecewa',
-                        2: 'Sedih',
-                        1: 'Menangis'
-                      };
-                      return labels[value] || '';
-                    }}
-                  />
-                  <Tooltip 
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        const moodInfo = moodEmojis.find(m => m.type === data.mood);
-                        return (
-                          <div className="bg-white p-3 rounded-xl shadow-lg border">
-                            <p className="text-sm font-medium text-gray-800">
-                              {moodInfo?.emoji} {moodInfo?.label || 'Belum ada'}
-                            </p>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  {moodEmojis.map((mood) => (
-                    <Bar 
-                      key={mood.type}
-                      dataKey={mood.label.toLowerCase()} 
-                      fill={mood.color}
-                      radius={[4, 4, 0, 0]}
-                      barSize={30}
+                {chartPeriod === "7days" ? (
+                  <BarChart data={weeklyChartData} margin={{ top: 20, right: 20, left: 10, bottom: 0 }}>
+                    <XAxis 
+                      dataKey="name" 
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 12, fill: '#9ca3af' }}
+                      padding={{ left: 20, right: 20 }}
                     />
-                  ))}
-                </BarChart>
+                    <YAxis 
+                      domain={[0, 7]}
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 11, fill: '#9ca3af' }}
+                      width={70}
+                      tickFormatter={(value) => {
+                        const labels: Record<number, string> = {
+                          6: 'Bahagia',
+                          5: 'Netral',
+                          4: 'Marah',
+                          3: 'Kecewa',
+                          2: 'Sedih',
+                          1: 'Menangis'
+                        };
+                        return labels[value] || '';
+                      }}
+                    />
+                    <Tooltip 
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0].payload;
+                          const moodInfo = moodEmojis.find(m => m.type === data.mood);
+                          return (
+                            <div className="bg-white p-3 rounded-xl shadow-lg border">
+                              <p className="text-sm font-medium text-gray-800">
+                                {moodInfo?.emoji} {moodInfo?.label || 'Belum ada'}
+                              </p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    {moodEmojis.map((mood) => (
+                      <Bar 
+                        key={mood.type}
+                        dataKey={mood.label.toLowerCase()} 
+                        fill={mood.color}
+                        radius={[4, 4, 0, 0]}
+                        barSize={30}
+                      />
+                    ))}
+                  </BarChart>
+                ) : (
+                  <AreaChart data={monthlyChartData} margin={{ top: 20, right: 20, left: 10, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="colorMood" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis 
+                      dataKey="name" 
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 10, fill: '#9ca3af' }}
+                      interval={Math.ceil(monthlyChartData.length / 10)}
+                    />
+                    <YAxis 
+                      domain={[0, 7]}
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 11, fill: '#9ca3af' }}
+                      width={70}
+                      tickFormatter={(value) => {
+                        const labels: Record<number, string> = {
+                          6: 'Bahagia',
+                          5: 'Netral',
+                          4: 'Marah',
+                          3: 'Kecewa',
+                          2: 'Sedih',
+                          1: 'Menangis'
+                        };
+                        return labels[value] || '';
+                      }}
+                    />
+                    <Tooltip 
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0].payload;
+                          return (
+                            <div className="bg-white p-3 rounded-xl shadow-lg border">
+                              <p className="text-xs text-gray-500 mb-1">{data.fullDate}</p>
+                              <p className="text-sm font-medium text-gray-800">
+                                {data.emoji} {data.label || 'Belum ada'}
+                              </p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="value" 
+                      stroke="#ef4444" 
+                      strokeWidth={2}
+                      fill="url(#colorMood)"
+                      dot={{ fill: '#ef4444', strokeWidth: 0, r: 3 }}
+                      activeDot={{ r: 6, fill: '#ef4444' }}
+                    />
+                  </AreaChart>
+                )}
               </ResponsiveContainer>
             </div>
 
@@ -832,47 +1166,115 @@ function MemberDashboard() {
             </p>
           </CardHeader>
           <CardContent className="space-y-2">
-            {categories.slice(0, 3).map((cat, idx) => (
-              <Link
-                key={cat.id}
-                href="/dashboard/music"
-                className={cn(
-                  "rounded-xl p-3 flex items-center gap-3 transition-all cursor-pointer group",
-                  idx === 1 ? "bg-white text-gray-800" : "bg-white/10 hover:bg-white/20"
-                )}
-              >
-                <div className={cn(
-                  "w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden",
-                  idx === 1 ? "bg-gray-100" : "bg-white/20"
-                )}>
-                  {cat.thumbnail ? (
-                    <Image src={cat.thumbnail} alt="" width={48} height={48} className="object-cover" />
-                  ) : (
-                    <Music className="w-6 h-6" />
+            {/* Hidden audio element */}
+            {currentSong && (
+              <audio
+                ref={audioRef}
+                src={currentSong.file_path.startsWith('http') ? currentSong.file_path : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || 'http://localhost:8080'}${currentSong.file_path}`}
+                preload="metadata"
+              />
+            )}
+            
+            {categories.slice(0, 3).map((cat) => (
+              <div key={cat.id}>
+                <button
+                  onClick={() => handleCategoryClick(cat.id)}
+                  className={cn(
+                    "w-full rounded-xl p-3 flex items-center gap-3 transition-all cursor-pointer",
+                    expandedCategory === cat.id ? "bg-white text-gray-800" : "bg-white/10 hover:bg-white/20"
                   )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className={cn("font-semibold truncate", idx === 1 ? "text-gray-800" : "text-white")}>{cat.name}</p>
-                  <p className={cn("text-xs", idx === 1 ? "text-gray-500" : "text-white/60")}>{cat.song_count || 0} Lagu</p>
-                </div>
-                {idx === 1 && (
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs text-gray-400">0:00 - 01:25</span>
-                    <div className="flex items-center gap-1">
-                      <button className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                        <Play className="w-4 h-4 text-white" fill="white" />
-                      </button>
-                      <button className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                        <Shuffle className="w-4 h-4 text-gray-600" />
-                      </button>
-                    </div>
+                >
+                  <div className={cn(
+                    "w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden shrink-0",
+                    expandedCategory === cat.id ? "bg-gray-100" : "bg-white/20"
+                  )}>
+                    {cat.thumbnail ? (
+                      <Image src={cat.thumbnail} alt="" width={48} height={48} className="object-cover" />
+                    ) : (
+                      <Music className={cn("w-6 h-6", expandedCategory === cat.id ? "text-gray-600" : "")} />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className={cn("font-semibold truncate", expandedCategory === cat.id ? "text-gray-800" : "text-white")}>{cat.name}</p>
+                    <p className={cn("text-xs", expandedCategory === cat.id ? "text-gray-500" : "text-white/60")}>{cat.song_count || 0} Lagu</p>
+                  </div>
+                  <ChevronDown className={cn(
+                    "w-5 h-5 transition-transform",
+                    expandedCategory === cat.id ? "text-gray-400 rotate-180" : "text-white/60"
+                  )} />
+                </button>
+                
+                {/* Expanded song list */}
+                {expandedCategory === cat.id && (
+                  <div className="mt-2 space-y-1 bg-white/10 rounded-xl p-2 max-h-48 overflow-y-auto">
+                    {categorySongs[cat.id]?.length > 0 ? (
+                      categorySongs[cat.id].map((song) => (
+                        <button
+                          key={song.id}
+                          onClick={() => playSong(song)}
+                          className={cn(
+                            "w-full flex items-center gap-3 p-2 rounded-lg transition-all text-left",
+                            currentSong?.id === song.id ? "bg-white text-gray-800" : "hover:bg-white/10"
+                          )}
+                        >
+                          <div className={cn(
+                            "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
+                            currentSong?.id === song.id ? "bg-primary" : "bg-white/20"
+                          )}>
+                            {currentSong?.id === song.id && isPlaying ? (
+                              <Pause className="w-4 h-4 text-white" />
+                            ) : (
+                              <Play className="w-4 h-4 text-white" fill={currentSong?.id === song.id ? "white" : "none"} />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className={cn(
+                              "text-sm font-medium truncate",
+                              currentSong?.id === song.id ? "text-gray-800" : "text-white"
+                            )}>{song.title}</p>
+                          </div>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="text-center py-3 text-white/60">
+                        <p className="text-xs">Memuat lagu...</p>
+                      </div>
+                    )}
                   </div>
                 )}
-                {idx !== 1 && (
-                  <ChevronDown className="w-5 h-5 text-white/60" />
-                )}
-              </Link>
+              </div>
             ))}
+            
+            {/* Now Playing Bar */}
+            {currentSong && (
+              <div className="mt-3 bg-white rounded-xl p-3">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => playSong(currentSong)}
+                    className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0"
+                  >
+                    {isPlaying ? (
+                      <Pause className="w-5 h-5 text-white" />
+                    ) : (
+                      <Play className="w-5 h-5 text-white" fill="white" />
+                    )}
+                  </button>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-800 truncate">{currentSong.title}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs text-gray-400">{formatTime(audioProgress)}</span>
+                      <div className="flex-1 h-1 bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-primary rounded-full transition-all duration-100"
+                          style={{ width: audioDuration ? `${(audioProgress / audioDuration) * 100}%` : '0%' }}
+                        />
+                      </div>
+                      <span className="text-xs text-gray-400">{formatTime(audioDuration)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
             
             {categories.length === 0 && (
               <div className="text-center py-4 text-white/60">

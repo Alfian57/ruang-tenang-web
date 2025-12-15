@@ -115,9 +115,45 @@ function DashboardContent({
           <Image src="/logo.png" alt="Ruang Tenang" width={32} height={32} className="object-contain" />
           <span className="text-lg font-bold text-gray-800">Ruang Tenang</span>
         </Link>
-        <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
-          {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* Mobile Avatar Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden relative border border-gray-200 cursor-pointer">
+                {user?.avatar ? (
+                  <Image 
+                    src={user.avatar.startsWith("http") ? user.avatar : getUploadUrl(user.avatar)} 
+                    alt={user.name} 
+                    fill 
+                    className="object-cover" 
+                  />
+                ) : (
+                  <span className="text-primary font-bold text-sm">{user?.name?.charAt(0).toUpperCase()}</span>
+                )}
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setShowEditProfileModal(true)} className="cursor-pointer">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Edit Profil</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setShowChangePasswordModal(true)} className="cursor-pointer">
+                <KeyRound className="mr-2 h-4 w-4" />
+                <span>Ganti Password</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setShowLogoutModal(true)} className="text-red-500 hover:text-red-600 hover:bg-red-50 focus:text-red-600 focus:bg-red-50 cursor-pointer">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Keluar</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
+            {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </Button>
+        </div>
       </header>
 
       {/* Mobile Sidebar Overlay */}
