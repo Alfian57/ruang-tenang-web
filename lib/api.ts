@@ -208,11 +208,11 @@ class ApiClient {
     });
   }
 
-  async sendMessage(token: string, sessionId: number, content: string) {
+  async sendMessage(token: string, sessionId: number, content: string, type: "text" | "audio" = "text") {
     return this.request(`/chat-sessions/${sessionId}/messages`, {
       method: "POST",
       token,
-      body: JSON.stringify({ content }),
+      body: JSON.stringify({ content, type }),
     });
   }
 
