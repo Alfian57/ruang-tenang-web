@@ -94,6 +94,11 @@ export default function NewArticlePage() {
                 {error}
               </div>
             )}
+            
+            <div className="p-3 bg-yellow-50 text-yellow-700 rounded-lg text-sm flex items-center gap-2 border border-yellow-200">
+              <span className="text-lg">💡</span>
+              <span>Dapatkan <strong>20 EXP</strong> setelah artikelmu diterbitkan!</span>
+            </div>
 
             <div className="space-y-2">
               <Label htmlFor="title">Judul Artikel</Label>

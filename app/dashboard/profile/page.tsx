@@ -74,7 +74,10 @@ export default function ProfilePage() {
     setPasswordError("");
     setPasswordSuccess(false);
     try {
-      await api.updatePassword(token, data.currentPassword, data.newPassword);
+      await api.updatePassword(token, { 
+          current_password: data.currentPassword, 
+          new_password: data.newPassword 
+        });
       setPasswordSuccess(true);
       passwordForm.reset();
       setTimeout(() => setPasswordSuccess(false), 3000);

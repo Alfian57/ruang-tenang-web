@@ -5,6 +5,7 @@ export interface User {
   email: string;
   avatar?: string;
   role: "admin" | "member";
+  exp: number;
   created_at: string;
 }
 
@@ -52,6 +53,7 @@ export interface ChatMessage {
   id: number;
   role: "user" | "ai";
   content: string;
+  type?: "text" | "audio";
   is_liked: boolean;
   is_disliked: boolean;
   created_at: string;

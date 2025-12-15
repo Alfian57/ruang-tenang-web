@@ -888,7 +888,7 @@ function MemberDashboard() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-gray-800">Artikel Terbaru</h2>
-          <Link href="/dashboard/articles" className="text-primary text-sm flex items-center gap-1 hover:gap-2 transition-all font-medium">
+          <Link href="/dashboard/reading" className="text-primary text-sm flex items-center gap-1 hover:gap-2 transition-all font-medium">
             Lihat Semua <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -896,7 +896,7 @@ function MemberDashboard() {
           {articles.map((article) => (
             <Link 
               key={article.id}
-              href={`/dashboard/articles/${article.id}`}
+              href={`/dashboard/reading/${article.id}`}
               className="flex-shrink-0 w-56 snap-start group"
             >
               <Card className="overflow-hidden card-hover h-full border-0 shadow-sm group-hover:shadow-lg transition-all bg-white">

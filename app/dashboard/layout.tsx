@@ -10,13 +10,13 @@ import {
   Menu,
   X,
   Users,
-  Bell,
   ChevronRight,
-  Music,
-  LayoutDashboard,
-  ChevronDown,
   Settings,
-  KeyRound
+  KeyRound,
+  MessageSquare,
+  ChevronDown,
+  LayoutDashboard,
+  Music
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LogoutModal } from "@/components/ui/logout-modal";
@@ -37,9 +37,10 @@ import { cn } from "@/lib/utils";
 
 // Member menu items (for regular users)
 const memberLinks = [
-  { href: "/dashboard", icon: "/images/home.png", activeIcon: "/images/home-active.png", label: "Beranda" },
-  { href: "/dashboard/articles", icon: "/images/article.png", activeIcon: "/images/article-active.png", label: "Artikel" },
-  { href: "/dashboard/chat", icon: "/images/ai-chat.png", activeIcon: "/images/ai-chat-active.png", label: "AI Chat" },
+  { href: "/dashboard", icon: LayoutDashboard, label: "Beranda" },
+  { href: "/dashboard/articles", icon: FileText, label: "Artikel" },
+  { href: "/dashboard/chat", icon: MessageSquare, label: "AI Chat" },
+  { href: "/dashboard/forum", icon: Users, label: "Forum" },
 ];
 
 // Admin menu items (for admin only)
@@ -48,6 +49,7 @@ const adminLinks = [
   { href: "/dashboard/admin/users", icon: Users, label: "Pengguna" },
   { href: "/dashboard/admin/articles", icon: FileText, label: "Kelola Artikel" },
   { href: "/dashboard/admin/songs", icon: Music, label: "Kelola Musik" },
+  { href: "/dashboard/admin/forums", icon: MessageSquare, label: "Kelola Forum" },
 ];
 
 export default function DashboardLayout({
@@ -207,13 +209,7 @@ function DashboardContent({
                   )}
                   title={sidebarCollapsed ? link.label : undefined}
                 >
-                  <Image 
-                    src={isActive ? link.activeIcon : link.icon} 
-                    alt="" 
-                    width={22} 
-                    height={22}
-                    className={cn("shrink-0", isActive && "brightness-0 invert")}
-                  />
+                  <link.icon className={cn("w-5 h-5 shrink-0", isActive ? "text-white" : "text-gray-500")} />
                   {!sidebarCollapsed && (
                     <>
                       <span className="font-medium flex-1">{link.label}</span>
@@ -246,11 +242,20 @@ function DashboardContent({
           <div className="flex items-center gap-4">
             {/* Search */}
             <GlobalSearch />
+            
+            {/* Gamification Info */}
+            <div className="hidden md:flex items-center mr-4 bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-full px-4 py-1.5 shadow-sm" title="Dapatkan 10 EXP per chat (maks 1/hari) dan 20 EXP per upload artikel!">
+              <div className="flex items-center gap-2">
+                <div className="bg-yellow-100 p-1 rounded-full">
+                  <span className="text-yellow-600">🏆</span>
+                </div>
+                <span className="text-xs flex items-center gap-4">
+                  <span className="text-yellow-600 font-semibold whitespace-nowrap">Level {Math.floor((user?.exp || 0) / 100) + 1}</span>
+                  <span className="text-yellow-700 font-bold whitespace-nowrap">{user?.exp || 0} EXP</span>
+                </span>
+              </div>
+            </div>
 
-            {/* Notifications */}
-            <Button variant="ghost" size="icon" className="relative rounded-full bg-gray-100 hover:bg-gray-200">
-              <Bell className="w-5 h-5 text-gray-600" />
-            </Button>
             {/* Profile dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

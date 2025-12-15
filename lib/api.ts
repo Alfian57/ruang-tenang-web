@@ -1,4 +1,5 @@
 import { Article, Song, ApiResponse } from "@/types";
+import { CreateForumRequest, CreateForumPostRequest, Forum } from "@/types/forum";
 
 // Placeholder __NEXT_PUBLIC_API_URL__ akan diganti saat runtime oleh entrypoint.sh
 // Jika menggunakan build-arg, gunakan process.env.NEXT_PUBLIC_API_URL langsung
@@ -51,10 +52,10 @@ class ApiClient {
     });
   }
 
-  async login(email: string, password: string) {
+  async login(email: string, password: string, rememberMe?: boolean) {
     return this.request("/auth/login", {
       method: "POST",
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, remember_me: rememberMe }),
     });
   }
 
@@ -70,11 +71,25 @@ class ApiClient {
     });
   }
 
-  async updatePassword(token: string, currentPassword: string, newPassword: string) {
+  async updatePassword(token: string, data: { current_password?: string; new_password?: string }) {
     return this.request("/auth/password", {
       method: "PUT",
       token,
-      body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+      body: JSON.stringify(data),
+    });
+  }
+
+  async forgotPassword(email: string) {
+    return this.request("/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    return this.request("/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify({ token, new_password: newPassword }),
     });
   }
 
@@ -429,6 +444,107 @@ class ApiClient {
   // Leaderboard endpoints
   async getLeaderboard(limit: number = 10) {
     return this.request(`/leaderboard?limit=${limit}`);
+  }
+
+  // Forum endpoints
+
+  // Forum endpoints
+
+  async createForum(token: string, data: CreateForumRequest) {
+    return this.request("/forums", {
+      method: "POST",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getForums(token: string, limit = 10, offset = 0, search = "", category_id?: number) {
+    const params = new URLSearchParams({
+      limit: limit.toString(),
+      offset: offset.toString(),
+    });
+    if (search) params.set("search", search);
+    if (category_id) params.set("category_id", category_id.toString());
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return this.request<any>(`/forums?${params}`, {
+      token,
+    });
+  }
+
+  async getForumByID(token: string, id: number) {
+    return this.request<Forum>(`/forums/${id}`, { token });
+  }
+
+  async deleteForum(token: string, id: number) {
+    return this.request(`/forums/${id}`, {
+      method: "DELETE",
+      token,
+    });
+  }
+
+  async toggleForumLike(token: string, id: number) {
+    return this.request(`/forums/${id}/like`, {
+      method: "PUT",
+      token,
+    });
+  }
+
+  async createForumPost(token: string, forumID: number, data: CreateForumPostRequest) {
+    return this.request(`/forums/${forumID}/posts`, {
+      method: "POST",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getForumPosts(token: string, forumID: number, limit = 20, offset = 0) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return this.request<any>(`/forums/${forumID}/posts?limit=${limit}&offset=${offset}`, {
+      token,
+    });
+  }
+
+  async deleteForumPost(token: string, id: number) {
+    return this.request(`/posts/${id}`, {
+      method: "DELETE",
+      token,
+    });
+  }
+
+  // Forum Category endpoints (Public)
+  async getForumCategories() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return this.request<any>("/forum-categories");
+  }
+
+  // Admin Forum Category endpoints
+  async adminGetForumCategories(token: string) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return this.request<any>("/admin/forum-categories", { token });
+  }
+
+  async createForumCategory(token: string, name: string) {
+    return this.request("/admin/forum-categories", {
+      method: "POST",
+      token,
+      body: JSON.stringify({ name }),
+    });
+  }
+
+  async updateForumCategory(token: string, id: number, name: string) {
+    return this.request(`/admin/forum-categories/${id}`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify({ name }),
+    });
+  }
+
+  async deleteForumCategory(token: string, id: number) {
+    return this.request(`/admin/forum-categories/${id}`, {
+      method: "DELETE",
+      token,
+    });
   }
 
   // Search endpoints

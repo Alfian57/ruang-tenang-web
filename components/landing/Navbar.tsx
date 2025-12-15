@@ -1,20 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import { useAuthStore } from "@/stores/authStore";
 
 export function Navbar() {
+  const { isAuthenticated } = useAuthStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
-  }, []);
 
   return (
     <motion.nav
@@ -65,7 +61,7 @@ export function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center gap-2 ml-4">
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <Link href="/dashboard">
                 <Button 
                   className="bg-primary hover:bg-primary/90 text-white rounded-full px-6"
@@ -135,7 +131,7 @@ export function Navbar() {
             Tentang Kami
           </Link>
           <div className="pt-2 border-t">
-            {isLoggedIn ? (
+            {isAuthenticated ? (
               <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
                 <Button className="w-full bg-primary hover:bg-primary/90 text-white rounded-full">
                   Dashboard

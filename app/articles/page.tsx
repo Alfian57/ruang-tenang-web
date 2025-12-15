@@ -12,6 +12,12 @@ import { Article, ArticleCategory } from "@/types";
 import { formatDate } from "@/lib/utils";
 
 export default function ArticlesPage() {
+  const stripHtml = (html: string) => {
+     const tmp = document.createElement("DIV");
+     tmp.innerHTML = html;
+     return tmp.textContent || tmp.innerText || "";
+  };
+
   const [articles, setArticles] = useState<Article[]>([]);
   const [categories, setCategories] = useState<ArticleCategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -146,7 +152,7 @@ export default function ArticlesPage() {
                             {article.title}
                           </h3>
                           <p className="text-sm text-gray-500 line-clamp-2 mb-2">
-                            {article.excerpt || article.content.substring(0, 100)}
+                            {article.excerpt || stripHtml(article.content).substring(0, 100)}...
                           </p>
                           <div className="flex items-center gap-3 text-xs text-gray-400">
                             <span className="text-primary">{article.category?.name}</span>

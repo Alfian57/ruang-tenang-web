@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 
 // Cookie configuration
 const COOKIE_OPTIONS = {
-  expires: 7, // 7 days
+  expires: 30, // 30 days (token validity controls actual session)
   secure: process.env.NODE_ENV === "production",
   sameSite: "lax" as const,
 };
@@ -36,7 +36,7 @@ interface AuthState {
   isHydrated: boolean;
   
   // Actions
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
@@ -53,10 +53,11 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       isHydrated: false,
 
-      login: async (email: string, password: string) => {
+      login: async (email: string, password: string, rememberMe?: boolean) => {
         set({ isLoading: true });
         try {
-          const response: any = await api.login(email, password);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const response: any = await api.login(email, password, rememberMe);
           const { token, user } = response.data;
           
           set({

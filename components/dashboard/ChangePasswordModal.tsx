@@ -59,7 +59,10 @@ export function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProp
     setSuccess(false);
 
     try {
-      await api.updatePassword(token, data.currentPassword, data.newPassword);
+      await api.updatePassword(token, { 
+          current_password: data.currentPassword, 
+          new_password: data.newPassword 
+        });
       setSuccess(true);
       reset();
       setTimeout(() => {
