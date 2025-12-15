@@ -3,6 +3,15 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+# ============================================
+# BUILD ARGUMENTS untuk NEXT_PUBLIC_* env vars
+# Gunakan placeholder untuk runtime injection
+# ============================================
+ARG NEXT_PUBLIC_API_URL=__NEXT_PUBLIC_API_URL__
+
+# Convert ARG ke ENV agar terbaca oleh next build
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
 # Install dependencies based on the preferred package manager
 COPY package.json bun.lock* package-lock.json* yarn.lock* pnpm-lock.yaml* ./
 
@@ -17,8 +26,9 @@ RUN \
 # Copy source code
 COPY . .
 
-# Build the application
+# Build the application dengan env yang sudah di-set
 ENV NEXT_TELEMETRY_DISABLED=1
+
 RUN npm run build
 
 # Production stage
@@ -44,6 +54,10 @@ RUN chown nextjs:nodejs .next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Copy entrypoint script for runtime env injection
+COPY --chown=nextjs:nodejs entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
+
 USER nextjs
 
 EXPOSE 3000
@@ -55,4 +69,6 @@ ENV HOSTNAME="0.0.0.0"
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1
 
+# Gunakan entrypoint untuk inject env saat runtime
+ENTRYPOINT ["./entrypoint.sh"]
 CMD ["node", "server.js"]
