@@ -1,20 +1,34 @@
 import type { NextConfig } from "next";
 
+// Parse API URL for dynamic configuration
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+const apiBaseUrl = apiUrl.replace(/\/api\/v1$/, ""); // Remove /api/v1 suffix
+
+// Parse the URL to get components
+const parseUrl = (url: string) => {
+  try {
+    const parsed = new URL(url);
+    return {
+      protocol: parsed.protocol.replace(":", "") as "http" | "https",
+      hostname: parsed.hostname,
+      port: parsed.port || "",
+    };
+  } catch {
+    return { protocol: "http" as const, hostname: "localhost", port: "8080" };
+  }
+};
+
+const apiParsed = parseUrl(apiBaseUrl);
+
 const nextConfig: NextConfig = {
   output: "standalone",
   images: {
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: "localhost",
-        port: "8080",
+        protocol: apiParsed.protocol,
+        hostname: apiParsed.hostname,
+        port: apiParsed.port,
         pathname: "/**",
-      },
-      {
-        protocol: "http",
-        hostname: "localhost",
-        port: "",
-        pathname: "/uploads/**",
       },
       {
         protocol: "https",
@@ -26,7 +40,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/uploads/:path*",
-        destination: "http://localhost:8080/uploads/:path*",
+        destination: `${apiBaseUrl}/uploads/:path*`,
       },
     ];
   },
