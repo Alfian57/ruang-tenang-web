@@ -3,6 +3,7 @@ export interface User {
   id: number;
   name: string;
   email: string;
+  avatar?: string;
   role: "admin" | "member";
   created_at: string;
 }
@@ -36,13 +37,15 @@ export interface Article {
 // Chat types
 export interface ChatSession {
   id: number;
+  user_id: number;
   title: string;
-  is_bookmarked: boolean;
   is_favorite: boolean;
-  last_message?: string;
-  messages?: ChatMessage[];
+  is_trash: boolean;
   created_at: string;
   updated_at: string;
+  messages?: ChatMessage[];
+  last_message?: string;
+  user?: User;
 }
 
 export interface ChatMessage {

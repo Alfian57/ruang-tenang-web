@@ -30,6 +30,14 @@ import {
   MoreVertical,
   Shuffle
 } from "lucide-react";
+import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 import {
   BarChart,
   Bar,
@@ -473,6 +481,9 @@ function MemberDashboard() {
   const [isRecording, setIsRecording] = useState(false);
   const [showMoodPicker, setShowMoodPicker] = useState(false);
   const [selectedDuration] = useState(5);
+  const [deleteChatId, setDeleteChatId] = useState<number | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const loadDashboardData = useCallback(async () => {
     if (!token) return;
@@ -520,6 +531,35 @@ function MemberDashboard() {
     }
   };
 
+  const handleDeleteChatClick = (e: React.MouseEvent, id: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDeleteChatId(id);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteChat = async () => {
+    if (!token || !deleteChatId) return;
+    
+    setIsDeleting(true);
+    try {
+      await api.deleteChatSession(token, deleteChatId);
+      
+      // Update UI immediately (Optimistic/Local update)
+      setRecentSessions(prev => prev.filter(session => session.id !== deleteChatId));
+      
+      // Reload data to ensure consistency
+      await loadDashboardData();
+      
+      setShowDeleteModal(false);
+      setDeleteChatId(null);
+    } catch (error) {
+      console.error("Failed to delete chat session:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   // Prepare chart data for bar chart
   const chartData = days.map((day, i) => {
     const mood = moodHistory[moodHistory.length - 1 - i]?.mood;
@@ -556,6 +596,15 @@ function MemberDashboard() {
           </Link>
         </div>
       </div>
+
+      <DeleteConfirmationModal 
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDeleteChat}
+        title="Hapus Sesi Chat"
+        description="Apakah Anda yakin ingin menghapus sesi chat ini? Riwayat percakapan tidak dapat dipulihkan."
+        isLoading={isDeleting}
+      />
 
       {/* Top Row: Mood + Chat + Breathing */}
       <div className="grid lg:grid-cols-12 gap-4">
@@ -611,9 +660,22 @@ function MemberDashboard() {
                     <p className="font-semibold text-gray-800">{session.title}</p>
                     <p className="text-sm text-gray-500 truncate">{session.last_message || "Tidak ada pesan"}</p>
                   </div>
-                  <button className="p-2 hover:bg-gray-100 rounded-full">
-                    <MoreVertical className="w-5 h-5 text-gray-400" />
-                  </button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
+                      <button className="p-2 hover:bg-gray-100 rounded-full outline-none transition-colors">
+                        <MoreVertical className="w-5 h-5 text-gray-400" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem 
+                        className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+                        onClick={(e) => handleDeleteChatClick(e, session.id)}
+                      >
+                        <AlertTriangle className="mr-2 h-4 w-4" />
+                        <span>Hapus Chat</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </Link>
               ))
             ) : (

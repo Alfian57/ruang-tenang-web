@@ -117,12 +117,12 @@ export default function AdminSongsPage() {
     try {
       const response = await api.uploadAudio(token, file);
       setSongForm({ ...songForm, file_path: response.data.url });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Failed to upload audio:", error);
       setErrorDialog({
         open: true,
         title: "Gagal Mengunggah Audio",
-        message: error.message || "Terjadi kesalahan saat mengunggah file audio."
+        message: (error as Error).message || "Terjadi kesalahan saat mengunggah file audio."
       });
     } finally {
       setIsUploadingAudio(false);

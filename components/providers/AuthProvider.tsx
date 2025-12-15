@@ -88,7 +88,7 @@ export function AuthProvider({
 
 // Hook for getting authenticated user safely
 export function useAuth() {
-  const { user, token, isAuthenticated, logout, isHydrated } = useAuthStore();
+  const { user, token, isAuthenticated, logout, isHydrated, refreshUser } = useAuthStore();
 
   return {
     user,
@@ -98,5 +98,6 @@ export function useAuth() {
     isAdmin: user?.role === "admin",
     isMember: user?.role === "member",
     logout,
+    refreshUser,
   };
 }

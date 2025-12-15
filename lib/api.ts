@@ -1,3 +1,5 @@
+import { Article, Song, ApiResponse } from "@/types";
+
 // Placeholder __NEXT_PUBLIC_API_URL__ akan diganti saat runtime oleh entrypoint.sh
 // Jika menggunakan build-arg, gunakan process.env.NEXT_PUBLIC_API_URL langsung
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL !== "__NEXT_PUBLIC_API_URL__"
@@ -60,11 +62,11 @@ class ApiClient {
     return this.request("/auth/me", { token });
   }
 
-  async updateProfile(token: string, name: string, email: string) {
+  async updateProfile(token: string, name: string, email: string, avatar?: string) {
     return this.request("/auth/profile", {
       method: "PUT",
       token,
-      body: JSON.stringify({ name, email }),
+      body: JSON.stringify({ name, email, avatar }),
     });
   }
 
@@ -168,11 +170,12 @@ class ApiClient {
   }
 
   // Chat endpoints
-  async getChatSessions(token: string, params?: { filter?: string; search?: string; page?: number }) {
+  async getChatSessions(token: string, params?: { filter?: string; search?: string; page?: number; limit?: number }) {
     const searchParams = new URLSearchParams();
     if (params?.filter) searchParams.set("filter", params.filter);
     if (params?.search) searchParams.set("search", params.search);
     if (params?.page) searchParams.set("page", params.page.toString());
+    if (params?.limit) searchParams.set("limit", params.limit.toString());
     
     const query = searchParams.toString();
     return this.request(`/chat-sessions${query ? `?${query}` : ""}`, { token });
@@ -198,8 +201,8 @@ class ApiClient {
     });
   }
 
-  async toggleBookmark(token: string, sessionId: number) {
-    return this.request(`/chat-sessions/${sessionId}/bookmark`, {
+  async toggleTrash(token: string, sessionId: number) {
+    return this.request(`/chat-sessions/${sessionId}/trash`, {
       method: "PUT",
       token,
     });
@@ -423,10 +426,14 @@ class ApiClient {
       token,
     });
   }
-
   // Leaderboard endpoints
   async getLeaderboard(limit: number = 10) {
     return this.request(`/leaderboard?limit=${limit}`);
+  }
+
+  // Search endpoints
+  async search(query: string) {
+    return this.request<ApiResponse<{ articles: Article[]; songs: Song[] }>>(`/search?q=${encodeURIComponent(query)}`);
   }
 }
 

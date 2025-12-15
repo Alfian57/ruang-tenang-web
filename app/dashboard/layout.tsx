@@ -10,24 +10,36 @@ import {
   Menu,
   X,
   Users,
-  Search,
   Bell,
   ChevronRight,
   Music,
   LayoutDashboard,
-  ChevronDown
+  ChevronDown,
+  Settings,
+  KeyRound
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { LogoutModal } from "@/components/ui/logout-modal";
+import { EditProfileModal } from "@/components/dashboard/EditProfileModal";
+import { ChangePasswordModal } from "@/components/dashboard/ChangePasswordModal";
+import { GlobalSearch } from "@/components/dashboard/GlobalSearch";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { AuthProvider, useAuth } from "@/components/providers/AuthProvider";
+import { getUploadUrl } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 // Member menu items (for regular users)
 const memberLinks = [
-  { href: "/dashboard", icon: "/images/home.png", activeIcon: "/images/home-active.png", label: "Beranda", badge: "12" },
+  { href: "/dashboard", icon: "/images/home.png", activeIcon: "/images/home-active.png", label: "Beranda" },
   { href: "/dashboard/articles", icon: "/images/article.png", activeIcon: "/images/article-active.png", label: "Artikel" },
-  { href: "/dashboard/chat", icon: "/images/ai-chat.png", activeIcon: "/images/ai-chat-active.png", label: "AI Chat", badge: "8" },
+  { href: "/dashboard/chat", icon: "/images/ai-chat.png", activeIcon: "/images/ai-chat-active.png", label: "AI Chat" },
 ];
 
 // Admin menu items (for admin only)
@@ -61,6 +73,8 @@ function DashboardContent({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
   const handleLogout = useCallback(() => {
     logout();
@@ -83,6 +97,14 @@ function DashboardContent({
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
         onConfirm={handleLogout}
+      />
+      <EditProfileModal 
+        isOpen={showEditProfileModal} 
+        onClose={() => setShowEditProfileModal(false)} 
+      />
+      <ChangePasswordModal 
+        isOpen={showChangePasswordModal} 
+        onClose={() => setShowChangePasswordModal(false)} 
       />
 
       {/* Mobile Header */}
@@ -195,14 +217,6 @@ function DashboardContent({
                   {!sidebarCollapsed && (
                     <>
                       <span className="font-medium flex-1">{link.label}</span>
-                      {link.badge && (
-                        <span className={cn(
-                          "px-2 py-0.5 text-xs rounded-full font-medium",
-                          isActive ? "bg-white/20 text-white" : "bg-primary/10 text-primary"
-                        )}>
-                          {link.badge}
-                        </span>
-                      )}
                     </>
                   )}
                 </Link>
@@ -212,18 +226,12 @@ function DashboardContent({
         </nav>
 
         {/* Bottom section */}
+        {/* Bottom section (Updated to remove logout, maybe add something else or leave empty) */}
+        {/* Logout moved to top bar dropdown */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t bg-white">
-          <button
-            onClick={() => setShowLogoutModal(true)}
-            className={cn(
-              "flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 transition-colors w-full rounded-xl",
-              sidebarCollapsed && "lg:justify-center lg:px-3"
-            )}
-            title={sidebarCollapsed ? "Keluar" : undefined}
-          >
-            <LogOut className="w-5 h-5 shrink-0" />
-            {!sidebarCollapsed && <span className="font-medium">Keluar</span>}
-          </button>
+           <div className="flex items-center justify-center p-2">
+              <span className="text-xs text-gray-400">v1.0.0</span>
+           </div>
         </div>
       </aside>
 
@@ -236,23 +244,50 @@ function DashboardContent({
         <header className="hidden lg:flex h-16 bg-white border-b items-center justify-end px-6 sticky top-0 z-40">
           {/* Search & Actions */}
           <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <Input 
-                placeholder="Cari sesuatu" 
-                className="pl-11 pr-4 w-64 bg-gray-100 border-0 rounded-full h-10"
-              />
-            </div>
+            {/* Search */}
+            <GlobalSearch />
+
+            {/* Notifications */}
             <Button variant="ghost" size="icon" className="relative rounded-full bg-gray-100 hover:bg-gray-200">
               <Bell className="w-5 h-5 text-gray-600" />
             </Button>
             {/* Profile dropdown */}
-            <div className="flex items-center gap-2 cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                <span className="text-primary font-bold">{user?.name?.charAt(0).toUpperCase()}</span>
-              </div>
-              <ChevronDown className="w-4 h-4 text-gray-400" />
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="flex items-center gap-2 cursor-pointer">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden relative border border-gray-200">
+                    {user?.avatar ? (
+                      <Image 
+                        src={user.avatar.startsWith("http") ? user.avatar : getUploadUrl(user.avatar)} 
+                        alt={user.name} 
+                        fill 
+                        className="object-cover" 
+                      />
+                    ) : (
+                      <span className="text-primary font-bold">{user?.name?.charAt(0).toUpperCase()}</span>
+                    )}
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-gray-400" />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setShowEditProfileModal(true)} className="cursor-pointer">
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Edit Profil</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowChangePasswordModal(true)} className="cursor-pointer">
+                  <KeyRound className="mr-2 h-4 w-4" />
+                  <span>Ganti Password</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setShowLogoutModal(true)} className="text-red-500 hover:text-red-600 hover:bg-red-50 focus:text-red-600 focus:bg-red-50 cursor-pointer">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Keluar</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 
