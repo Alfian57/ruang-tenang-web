@@ -537,7 +537,7 @@ class ApiClient {
       method: "PUT",
       token,
       body: JSON.stringify({ name }),
-    });
+  });
   }
 
   async deleteForumCategory(token: string, id: number) {
@@ -550,6 +550,62 @@ class ApiClient {
   // Search endpoints
   async search(query: string) {
     return this.request<ApiResponse<{ articles: Article[]; songs: Song[] }>>(`/search?q=${encodeURIComponent(query)}`);
+  }
+
+  // Level Config endpoints (public)
+  async getLevelConfigs() {
+    return this.request("/level-configs");
+  }
+
+  // EXP History endpoints (protected)
+  async getExpHistory(token: string, params?: { 
+    activity_type?: string; 
+    start_date?: string; 
+    end_date?: string; 
+    page?: number; 
+    limit?: number 
+  }) {
+    const searchParams = new URLSearchParams();
+    if (params?.activity_type) searchParams.set("activity_type", params.activity_type);
+    if (params?.start_date) searchParams.set("start_date", params.start_date);
+    if (params?.end_date) searchParams.set("end_date", params.end_date);
+    if (params?.page) searchParams.set("page", params.page.toString());
+    if (params?.limit) searchParams.set("limit", params.limit.toString());
+    
+    const query = searchParams.toString();
+    return this.request(`/exp-history${query ? `?${query}` : ""}`, { token });
+  }
+
+  async getExpHistoryActivityTypes(token: string) {
+    return this.request("/exp-history/activity-types", { token });
+  }
+
+  // Admin Level Config endpoints
+  async adminGetLevelConfigs(token: string) {
+    return this.request("/admin/level-configs", { token });
+  }
+
+  async adminCreateLevelConfig(token: string, data: { level: number; min_exp: number; badge_name: string; badge_icon: string }) {
+    return this.request("/admin/level-configs", {
+      method: "POST",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async adminUpdateLevelConfig(token: string, id: number, data: { level: number; min_exp: number; badge_name: string; badge_icon: string }) {
+    return this.request(`/admin/level-configs/${id}`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async adminDeleteLevelConfig(token: string, id: number) {
+    return this.request(`/admin/level-configs/${id}`, {
+      method: "DELETE",
+      token,
+    });
   }
 }
 

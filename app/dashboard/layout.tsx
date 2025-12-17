@@ -16,12 +16,14 @@ import {
   MessageSquare,
   ChevronDown,
   LayoutDashboard,
-  Music
+  Music,
+  Trophy
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LogoutModal } from "@/components/ui/logout-modal";
 import { EditProfileModal } from "@/components/dashboard/EditProfileModal";
 import { ChangePasswordModal } from "@/components/dashboard/ChangePasswordModal";
+import { ExpHistoryModal } from "@/components/dashboard/ExpHistoryModal";
 import { GlobalSearch } from "@/components/dashboard/GlobalSearch";
 import {
   DropdownMenu,
@@ -50,6 +52,7 @@ const adminLinks = [
   { href: "/dashboard/admin/articles", icon: FileText, label: "Kelola Artikel" },
   { href: "/dashboard/admin/songs", icon: Music, label: "Kelola Musik" },
   { href: "/dashboard/admin/forums", icon: MessageSquare, label: "Kelola Forum" },
+  { href: "/dashboard/admin/levels", icon: Trophy, label: "Kelola Level" },
 ];
 
 export default function DashboardLayout({
@@ -77,6 +80,7 @@ function DashboardContent({
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [showExpHistoryModal, setShowExpHistoryModal] = useState(false);
 
   const handleLogout = useCallback(() => {
     logout();
@@ -108,6 +112,17 @@ function DashboardContent({
         isOpen={showChangePasswordModal} 
         onClose={() => setShowChangePasswordModal(false)} 
       />
+      {!isAdmin && (
+        <ExpHistoryModal
+          isOpen={showExpHistoryModal}
+          onClose={() => setShowExpHistoryModal(false)}
+          token={localStorage.getItem("token") || ""}
+          currentExp={user?.exp || 0}
+          currentLevel={user?.level || 1}
+          badgeName={user?.badge_name || "Pemula"}
+          badgeIcon={user?.badge_icon || "🌱"}
+        />
+      )}
 
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b z-50 flex items-center justify-between px-4">
@@ -280,17 +295,29 @@ function DashboardContent({
             <GlobalSearch />
             
             {/* Gamification Info */}
-            <div className="hidden md:flex items-center mr-4 bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-full px-4 py-1.5 shadow-sm" title="Dapatkan 10 EXP per chat (maks 1/hari) dan 20 EXP per upload artikel!">
-              <div className="flex items-center gap-2">
-                <div className="bg-yellow-100 p-1 rounded-full">
-                  <span className="text-yellow-600">🏆</span>
+            {isAdmin ? (
+              <div className="hidden md:flex items-center mr-4 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-full px-4 py-1.5 shadow-sm">
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">👑</span>
+                  <span className="text-purple-600 font-semibold">Admin</span>
                 </div>
-                <span className="text-xs flex items-center gap-4">
-                  <span className="text-yellow-600 font-semibold whitespace-nowrap">Level {Math.floor((user?.exp || 0) / 100) + 1}</span>
-                  <span className="text-yellow-700 font-bold whitespace-nowrap">{user?.exp || 0} EXP</span>
-                </span>
               </div>
-            </div>
+            ) : (
+              <button
+                onClick={() => setShowExpHistoryModal(true)}
+                className="hidden md:flex items-center mr-4 bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-full px-4 py-1.5 shadow-sm hover:shadow-md hover:border-yellow-300 transition-all cursor-pointer"
+                title="Klik untuk melihat riwayat EXP"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">{user?.badge_icon || "🌱"}</span>
+                  <span className="text-xs flex items-center gap-3">
+                    <span className="text-yellow-600 font-semibold whitespace-nowrap">Level {user?.level || 1}</span>
+                    <span className="text-yellow-300">•</span>
+                    <span className="text-yellow-700 font-bold whitespace-nowrap">{user?.exp || 0} EXP</span>
+                  </span>
+                </div>
+              </button>
+            )}
 
             {/* Profile dropdown */}
             <DropdownMenu>
