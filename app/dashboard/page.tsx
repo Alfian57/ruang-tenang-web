@@ -728,8 +728,39 @@ function MemberDashboard() {
   };
 
   // Prepare chart data for bar chart (7 days)
-  const weeklyChartData = days.map((day, i) => {
-    const mood = moodHistory[moodHistory.length - 1 - i]?.mood;
+  // Create a map of day index (0=Sunday, 1=Monday, etc.) to mood
+  const moodByDayOfWeek = new Map<number, UserMood>();
+  
+  // Get today's date in Indonesian timezone
+  const today = new Date();
+  const todayIndonesia = new Date(today.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
+  
+  // Map each mood entry to its day of week
+  moodHistory.forEach(mood => {
+    const moodDate = new Date(mood.created_at);
+    // Convert to Indonesian timezone for comparison
+    const moodDateIndonesia = new Date(moodDate.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
+    
+    // Only include moods from the last 7 days
+    const daysDiff = Math.floor((todayIndonesia.getTime() - moodDateIndonesia.getTime()) / (1000 * 60 * 60 * 24));
+    if (daysDiff >= 0 && daysDiff < 7) {
+      const dayOfWeek = moodDateIndonesia.getDay(); // 0=Sunday, 1=Monday, etc.
+      // Keep the most recent mood for each day
+      if (!moodByDayOfWeek.has(dayOfWeek)) {
+        moodByDayOfWeek.set(dayOfWeek, mood);
+      }
+    }
+  });
+  
+  // Map Indonesian day names to day index (Senin=1, Selasa=2, etc.)
+  const dayIndexMap: Record<string, number> = {
+    "Senin": 1, "Selasa": 2, "Rabu": 3, "Kamis": 4, "Jumat": 5, "Sabtu": 6, "Minggu": 0
+  };
+  
+  const weeklyChartData = days.map((day) => {
+    const dayIndex = dayIndexMap[day];
+    const moodEntry = moodByDayOfWeek.get(dayIndex);
+    const mood = moodEntry?.mood;
     const moodInfo = moodEmojis.find(m => m.type === mood);
     return {
       name: day,
@@ -748,11 +779,13 @@ function MemberDashboard() {
   // Prepare chart data for line chart (30 days)
   const monthlyChartData = moodHistory.slice().reverse().map((item, index) => {
     const date = new Date(item.created_at);
-    const dayLabel = date.getDate().toString();
+    // Use Indonesian timezone for display
+    const dateIndonesia = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
+    const dayLabel = dateIndonesia.getDate().toString();
     const moodInfo = moodEmojis.find(m => m.type === item.mood);
     return {
       name: dayLabel,
-      fullDate: date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }),
+      fullDate: dateIndonesia.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', timeZone: 'Asia/Jakarta' }),
       value: moodLevels[item.mood] || 0,
       mood: item.mood,
       emoji: moodInfo?.emoji || '',
@@ -1160,10 +1193,19 @@ function MemberDashboard() {
         {/* Music Widget */}
         <Card className="lg:col-span-4 bg-gradient-to-br from-primary to-red-600 text-white border-0 shadow-lg overflow-hidden relative">
           <CardHeader className="pb-2">
-            <CardTitle className="text-white text-lg font-bold">Biarkan Musik Menenangkan Harimu</CardTitle>
-            <p className="text-white/80 text-sm">
-              Putar musik pilihan untuk bantu kamu melepas stres, mengatur napas, dan kembali fokus.
-            </p>
+            <div className="flex justify-between items-start">
+              <div>
+                <CardTitle className="text-white text-lg font-bold">Biarkan Musik Menenangkan Harimu</CardTitle>
+                <p className="text-white/80 text-sm">
+                  Putar musik pilihan untuk bantu kamu melepas stres, mengatur napas, dan kembali fokus.
+                </p>
+              </div>
+              <Link href="/dashboard/music">
+                <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 gap-1">
+                  Lihat Semua <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+            </div>
           </CardHeader>
           <CardContent className="space-y-2">
             {/* Hidden audio element */}
@@ -1290,9 +1332,6 @@ function MemberDashboard() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-gray-800">Artikel Terbaru</h2>
-          <Link href="/dashboard/reading" className="text-primary text-sm flex items-center gap-1 hover:gap-2 transition-all font-medium">
-            Lihat Semua <ArrowRight className="w-4 h-4" />
-          </Link>
         </div>
         <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x scrollbar-hide">
           {articles.map((article) => (
@@ -1337,6 +1376,14 @@ function MemberDashboard() {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="flex justify-end mt-2">
+        <Link href="/dashboard/reading">
+          <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/10 gap-1">
+            Lihat Semua Artikel <ArrowRight className="w-4 h-4" />
+          </Button>
+        </Link>
       </div>
     </div>
   );

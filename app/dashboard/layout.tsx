@@ -36,6 +36,7 @@ import {
 import { AuthProvider, useAuth } from "@/components/providers/AuthProvider";
 import { getUploadUrl } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/stores/authStore";
 
 // Member menu items (for regular users)
 const memberLinks = [
@@ -43,6 +44,7 @@ const memberLinks = [
   { href: "/dashboard/articles", icon: FileText, label: "Artikel" },
   { href: "/dashboard/chat", icon: MessageSquare, label: "AI Chat" },
   { href: "/dashboard/forum", icon: Users, label: "Forum" },
+  { href: "/dashboard/music", icon: Music, label: "Musik" },
 ];
 
 // Admin menu items (for admin only)
@@ -81,6 +83,7 @@ function DashboardContent({
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [showExpHistoryModal, setShowExpHistoryModal] = useState(false);
+  const { token } = useAuthStore();
 
   const handleLogout = useCallback(() => {
     logout();
@@ -116,7 +119,7 @@ function DashboardContent({
         <ExpHistoryModal
           isOpen={showExpHistoryModal}
           onClose={() => setShowExpHistoryModal(false)}
-          token={localStorage.getItem("token") || ""}
+          token={token || ""}
           currentExp={user?.exp || 0}
           currentLevel={user?.level || 1}
           badgeName={user?.badge_name || "Pemula"}
@@ -181,7 +184,7 @@ function DashboardContent({
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-0 left-0 h-full bg-white border-r z-50 transform transition-all duration-200",
+        "fixed top-0 left-0 h-full bg-white border-r z-40 transform transition-all duration-200",
         "lg:translate-x-0",
         sidebarOpen ? "translate-x-0" : "-translate-x-full",
         sidebarCollapsed ? "lg:w-20" : "lg:w-60",

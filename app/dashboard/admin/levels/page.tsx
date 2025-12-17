@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 import { api } from "@/lib/api";
 import { LevelConfig } from "@/types";
+import { useAuthStore } from "@/stores/authStore";
 
 interface LevelFormData {
   level: number;
@@ -16,6 +17,7 @@ interface LevelFormData {
 }
 
 export default function LevelsManagementPage() {
+  const { token } = useAuthStore();
   const [levels, setLevels] = useState<LevelConfig[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -51,8 +53,10 @@ export default function LevelsManagementPage() {
   }, [fetchLevels]);
 
   const handleAdd = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token) {
+      setError("Sesi login telah berakhir. Silakan login ulang.");
+      return;
+    }
 
     if (!formData.badge_name || !formData.badge_icon) {
       setError("Semua field harus diisi");
@@ -67,6 +71,7 @@ export default function LevelsManagementPage() {
       setFormData({ level: 1, min_exp: 0, badge_name: "", badge_icon: "" });
       fetchLevels();
     } catch (error) {
+      console.error("Failed to create level:", error);
       setError(error instanceof Error ? error.message : "Gagal menambahkan level");
     } finally {
       setSaving(false);
@@ -84,8 +89,14 @@ export default function LevelsManagementPage() {
   };
 
   const handleUpdate = async () => {
-    const token = localStorage.getItem("token");
-    if (!token || !editingId) return;
+    if (!token) {
+      setError("Sesi login telah berakhir. Silakan login ulang.");
+      return;
+    }
+    if (!editingId) {
+      setError("ID level tidak valid");
+      return;
+    }
 
     if (!formData.badge_name || !formData.badge_icon) {
       setError("Semua field harus diisi");
@@ -100,6 +111,7 @@ export default function LevelsManagementPage() {
       setFormData({ level: 1, min_exp: 0, badge_name: "", badge_icon: "" });
       fetchLevels();
     } catch (error) {
+      console.error("Failed to update level:", error);
       setError(error instanceof Error ? error.message : "Gagal memperbarui level");
     } finally {
       setSaving(false);
@@ -107,8 +119,15 @@ export default function LevelsManagementPage() {
   };
 
   const handleDelete = async () => {
-    const token = localStorage.getItem("token");
-    if (!token || !levelToDelete) return;
+    if (!token) {
+      setError("Sesi login telah berakhir. Silakan login ulang.");
+      setDeleteModalOpen(false);
+      return;
+    }
+    if (!levelToDelete) {
+      setDeleteModalOpen(false);
+      return;
+    }
 
     try {
       await api.adminDeleteLevelConfig(token, levelToDelete.id);
@@ -117,6 +136,8 @@ export default function LevelsManagementPage() {
       fetchLevels();
     } catch (error) {
       console.error("Failed to delete level:", error);
+      setError(error instanceof Error ? error.message : "Gagal menghapus level");
+      setDeleteModalOpen(false);
     }
   };
 
@@ -231,10 +252,10 @@ export default function LevelsManagementPage() {
             </div>
           </div>
           <div className="flex justify-end gap-2 mt-4">
-            <Button variant="outline" onClick={cancelEdit}>
+            <Button type="button" variant="outline" onClick={cancelEdit}>
               <X className="w-4 h-4 mr-1" /> Batal
             </Button>
-            <Button onClick={handleAdd} disabled={saving}>
+            <Button type="button" onClick={handleAdd} disabled={saving}>
               {saving ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Save className="w-4 h-4 mr-1" />}
               Simpan
             </Button>
@@ -312,10 +333,10 @@ export default function LevelsManagementPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-2">
-                          <Button size="sm" variant="outline" onClick={cancelEdit}>
+                          <Button type="button" size="sm" variant="outline" onClick={cancelEdit}>
                             <X className="w-4 h-4" />
                           </Button>
-                          <Button size="sm" onClick={handleUpdate} disabled={saving}>
+                          <Button type="button" size="sm" onClick={handleUpdate} disabled={saving}>
                             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                           </Button>
                         </div>

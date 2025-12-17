@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
-import { Music, Play, Pause, SkipBack, SkipForward, Volume2, ChevronDown } from "lucide-react";
+import { Music, Play, Pause, SkipBack, SkipForward, Volume2, ChevronDown, Search } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
 import { SongCategory, Song } from "@/types";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,15 @@ export default function MusicPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 500);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   const loadCategories = useCallback(async () => {
     try {
@@ -44,6 +53,31 @@ export default function MusicPage() {
       console.error("Failed to load songs:", error);
     }
   };
+
+  useEffect(() => {
+    // If searching, fetch songs from search API
+    if (debouncedSearch) {
+      const doSearch = async () => {
+        setIsLoading(true);
+        try {
+          // Assuming api.search returns generic search results, we might need to filter or if backend supports song search
+          // The search endpoint returns { articles: [], songs: [] }
+          const response = await api.search(debouncedSearch);
+          setSongs(response.data?.songs || []);
+          setSelectedCategory(null); // Clear selected category when searching
+        } catch (error) {
+          console.error("Search failed:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      doSearch();
+    } else {
+      // If search cleared, reset (optional: reload categories or clear songs)
+      setSongs([]);
+      loadCategories();
+    }
+  }, [debouncedSearch, loadCategories]);
 
   const playSong = (song: Song) => {
     if (currentSong?.id === song.id) {
@@ -100,7 +134,63 @@ export default function MusicPage() {
         </p>
       </div>
 
-      {/* Music Categories Accordion */}
+      {/* Search Input */}
+      <div className="relative mb-6">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Input
+          placeholder="Cari musik..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-10 bg-white"
+        />
+      </div>
+
+      {/* Search Results or Categories */}
+      {debouncedSearch ? (
+        <div className="space-y-3">
+          <h2 className="text-sm font-medium text-gray-500 mb-2">Hasil Pencarian</h2>
+          {isLoading ? (
+            <div className="text-center py-8 text-gray-400">Loading...</div>
+          ) : songs.length > 0 ? (
+            <div className="grid gap-2">
+              {songs.map((song) => (
+                <Card key={song.id} className="overflow-hidden bg-white hover:shadow-md transition-shadow">
+                  <CardContent className="p-3 flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden relative">
+                       {song.thumbnail ? (
+                        <Image src={song.thumbnail} alt={song.title} fill className="object-cover" />
+                       ) : (
+                         <Music className="w-6 h-6 text-gray-400" />
+                       )}
+                       <button
+                         onClick={() => playSong(song)}
+                         className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity"
+                       >
+                         {currentSong?.id === song.id && isPlaying ? (
+                            <Pause className="w-6 h-6 text-white" />
+                         ) : (
+                            <Play className="w-6 h-6 text-white" />
+                         )}
+                       </button>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-900 line-clamp-1">{song.title}</h4>
+                      <p className="text-xs text-gray-500">
+                        {categories.find(c => c.id === song.category_id)?.name || "Musik"}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+             <div className="text-center py-12 bg-white rounded-xl border border-dashed text-gray-500">
+               Tidak ada lagu yang ditemukan
+             </div>
+          )}
+        </div>
+      ) : (
+      /* Music Categories Accordion */
       <div className="space-y-3">
         {isLoading ? (
           Array(4).fill(0).map((_, i) => (
@@ -193,6 +283,7 @@ export default function MusicPage() {
           ))
         )}
       </div>
+      )}
 
       {/* Player Bar */}
       {currentSong && (
