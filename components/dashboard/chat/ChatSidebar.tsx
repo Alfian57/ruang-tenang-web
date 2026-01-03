@@ -36,6 +36,8 @@ interface ChatSidebarProps {
   onToggleFavorite: (e: React.MouseEvent, sessionId: number) => void;
   onToggleTrash: (e: React.MouseEvent, sessionId: number) => void;
   onDeletePermanent?: (e: React.MouseEvent, sessionId: number) => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 /**
