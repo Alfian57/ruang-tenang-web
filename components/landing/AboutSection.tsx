@@ -1,112 +1,136 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check } from "lucide-react";
+import { Heart, MessageCircle, Music, BookOpen } from "lucide-react";
 import Image from "next/image";
+
+const FEATURES = [
+  {
+    icon: Heart,
+    title: "Mood Tracker",
+    description: "Pantau emosimu setiap hari untuk mengenali pola dan pemicu stres.",
+    color: "bg-red-100 text-red-600",
+  },
+  {
+    icon: MessageCircle,
+    title: "Konsultasi AI",
+    description: "Teman curhat pintar yang siap mendengarkan dan memberi saran 24/7.",
+    color: "bg-blue-100 text-blue-600",
+  },
+  {
+    icon: Music,
+    title: "Terapi Musik",
+    description: "Koleksi musik relaksasi untuk membantumu fokus atau tidur lebih nyenyak.",
+    color: "bg-purple-100 text-purple-600",
+  },
+  {
+    icon: BookOpen,
+    title: "Edukasi Mental",
+    description: "Ribuan artikel dan tips praktis untuk menjaga kesehatan mentalmu.",
+    color: "bg-green-100 text-green-600",
+  },
+];
 
 export function AboutSection() {
   return (
-    <section
-      id="about"
-      className="py-20 lg:py-28 px-4 relative overflow-hidden bg-linear-to-br from-primary via-red-500 to-red-600"
-    >
-      {/* Decorative white blobs */}
-      <div className="absolute top-20 left-10 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 left-1/4 w-48 h-48 bg-white/5 rounded-full blur-2xl" />
-      <div className="absolute top-1/3 right-1/4 w-32 h-32 bg-white/10 rounded-full blur-xl" />
-      <div className="absolute bottom-1/4 right-10 w-56 h-56 bg-white/5 rounded-full blur-2xl" />
+    <section id="about" className="py-20 lg:py-28 px-4 relative overflow-hidden bg-white">
+      {/* Background decorations */}
+      <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-primary/5 rounded-full blur-3xl -z-10" />
+      <div className="absolute bottom-0 left-0 w-1/3 h-1/3 bg-blue-100/30 rounded-full blur-3xl -z-10" />
 
-      <div className="container mx-auto max-w-6xl relative z-10">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
-        >
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <span className="text-white/80 text-3xl">✦</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white">
-              Tentang Kami
-            </h2>
-            <span className="text-white/80 text-3xl">✦</span>
-          </div>
-        </motion.div>
-
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left Side - Text Content */}
+      <div className="container mx-auto max-w-6xl">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center mb-20">
+          {/* Left Side: Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="space-y-8"
+            transition={{ duration: 0.6 }}
           >
-            {/* Description Card */}
-            <div className="bg-primary rounded-3xl p-8 text-white">
-              <h3 className="font-bold text-xl mb-4 flex items-center gap-3">
-                Solusi Kesehatan Mental dalam Genggaman
-              </h3>
-              <p className="text-white/95 leading-relaxed mb-4">
-                Ruang Tenang adalah platform kesehatan mental terintegrasi yang dirancang 
-                khusus untuk mahasiswa. Kami menggabungkan kecanggihan dengan pendekatan 
-                psikologis yang hangat untuk membantumu mengelola stres, overthinking, 
-                hingga burnout.
-              </p>
-              <p className="text-white/95 leading-relaxed">
-                Dengan fitur pelacak suasana hati harian, artikel pernapasan, terapi musik, 
-                dan konsultasi AI yang responsif, kami membantumu mengenali pola emosi dan 
-                mengambil langkah kecil menuju ketenangan, kapan pun Anda membutuhkannya.
-              </p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-primary font-medium text-sm mb-6">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              </span>
+              Tentang Ruang Tenang
             </div>
+            
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+              Sahabat Setia untuk <br />
+              <span className="text-primary relative">
+                Kesehatan Mentalmu
+                <svg className="absolute w-full h-3 -bottom-1 left-0 text-primary/20" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
+                </svg>
+              </span>
+            </h2>
+            
+            <p className="text-gray-600 text-lg leading-relaxed mb-8">
+              Kami percaya bahwa kesehatan mental sama pentingnya dengan kesehatan fisik. 
+              Ruang Tenang hadir sebagai sanctuary digital yang aman, inklusif, dan mudah diakses 
+              bagi mahasiswa yang ingin merawat pikiran dan hati mereka di tengah hiruk-pikuk kehidupan kampus.
+            </p>
 
-            {/* Doctor/Team Illustration */}
-            <div className="flex justify-center lg:justify-start">
-              <Image
-                src="/images/landing/about-2.png"
-                alt="Mental Health Professional"
-                width={300}
-                height={380}
-                className="object-contain"
-              />
-            </div>
+            <blockquote className="border-l-4 border-primary pl-6 italic text-gray-700 bg-gray-50 py-4 pr-4 rounded-r-lg">
+              "Menciptakan generasi yang tidak hanya cerdas secara intelektual, 
+              tapi juga tangguh secara emosional."
+            </blockquote>
           </motion.div>
 
-          {/* Right Side - Mission Card and Illustration */}
+          {/* Right Side: Image */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, scale: 0.9, rotate: 2 }}
+            whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="space-y-8"
+            transition={{ duration: 0.8 }}
+            className="relative"
           >
-            {/* Team Illustration */}
-            <div className="flex justify-center lg:justify-end">
+            <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-primary/10 border-8 border-white">
               <Image
-                src="/images/landing/about-1.png"
-                alt="Our Team"
-                width={400}
-                height={300}
-                className="object-contain"
+                src="/images/landing/about-illustration.png?v=realistic"
+                alt="Tentang Ruang Tenang"
+                width={600}
+                height={500}
+                className="w-full h-auto object-cover"
               />
             </div>
-
-            {/* Vision Box */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl px-8 pb-8 shadow-xl">
-              <h3 className="font-bold text-gray-800 mb-4 text-xl">
-                <Check className="w-5 h-5 rounded-full p-2" />
-                Visi Kami
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Menciptakan ekosistem kampus yang lebih sehat secara mental. 
-                Kami percaya bahwa setiap mahasiswa berhak mendapatkan dukungan 
-                psikologis yang cepat, terjangkau, dan tanpa stigma. Ruang Tenang 
-                hadir untuk memastikan tidak ada lagi mahasiswa yang harus berjuang 
-                sendirian dalam kesenyapan.
-              </p>
-            </div>
+            
+            {/* Floating Stats Card */}
+            <motion.div 
+              initial={{ y: 20, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="absolute -bottom-8 -left-8 bg-white p-6 rounded-2xl shadow-xl flex items-center gap-4 max-w-xs"
+            >
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xl">
+                98%
+              </div>
+              <div>
+                <p className="font-bold text-gray-900">Pengguna Merasa Lebih Baik</p>
+                <p className="text-xs text-gray-500">Berdasarkan survei internal</p>
+              </div>
+            </motion.div>
           </motion.div>
+        </div>
+
+        {/* Features Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {FEATURES.map((feature, index) => (
+            <motion.div
+              key={feature.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+            >
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${feature.color}`}>
+                <feature.icon className="w-6 h-6" />
+              </div>
+              <h3 className="font-bold text-lg text-gray-900 mb-2">{feature.title}</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">{feature.description}</p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

@@ -42,6 +42,7 @@ export default function ChatPage() {
   const [deleteSessionId, setDeleteSessionId] = useState<number | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // Ref for auto-scrolling to bottom
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -128,6 +129,7 @@ export default function ChatPage() {
           onSendAudio={handleSendAudio}
           onToggleMessageLike={handleToggleMessageLike}
           onCreateSession={() => setNewSessionDialog(true)}
+          onOpenMobileSidebar={() => setMobileSidebarOpen(true)}
         />
       </div>
 
@@ -142,6 +144,8 @@ export default function ChatPage() {
         onToggleFavorite={handleToggleFavorite}
         onToggleTrash={handleToggleTrash}
         onDeletePermanent={handleDeletePermanent}
+        isOpen={mobileSidebarOpen}
+        onClose={() => setMobileSidebarOpen(false)}
       />
 
       {/* New Session Dialog */}

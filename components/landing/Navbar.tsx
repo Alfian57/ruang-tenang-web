@@ -7,8 +7,13 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
+import { ArrowLeft } from "lucide-react";
 
-export function Navbar() {
+interface NavbarProps {
+  variant?: "default" | "back";
+}
+
+export function Navbar({ variant = "default" }: NavbarProps) {
   const { isAuthenticated } = useAuthStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -33,66 +38,84 @@ export function Navbar() {
 
         {/* Desktop Menu */}
         <div className="flex">
-          <div className="hidden md:flex items-center gap-1">
-            <Link
-              href="/"
-              className="px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 rounded-full transition-colors"
-            >
-              Beranda
-            </Link>
-            <Link
-              href="/#articles"
-              className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
-            >
-              Artikel
-            </Link>
-            <Link
-              href="/#leaderboard"
-              className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
-            >
-              Peringkat
-            </Link>
-            <Link
-              href="/#about"
-              className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
-            >
-              Tentang Kami
-            </Link>
-          </div>
+          {variant === "default" ? (
+            <>
+              <div className="hidden md:flex items-center gap-1">
+                <Link
+                  href="/"
+                  className="px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 rounded-full transition-colors"
+                >
+                  Beranda
+                </Link>
+                <Link
+                  href="/#articles"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
+                >
+                  Artikel
+                </Link>
+                <Link
+                  href="/#leaderboard"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
+                >
+                  Peringkat
+                </Link>
+                <Link
+                  href="/#about"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
+                >
+                  Tentang Kami
+                </Link>
+              </div>
 
-          <div className="hidden md:flex items-center gap-2 ml-4">
-            {isAuthenticated ? (
-              <Link href="/dashboard">
-                <Button 
-                  className="bg-primary hover:bg-primary/90 text-white rounded-full px-6"
-                >
-                  Dashboard
-                </Button>
-              </Link>
-            ) : (
-              <Link href="/login">
-                <Button 
-                  variant="outline" 
-                  className="text-gray-700 hover:text-primary border-gray-200 hover:border-primary rounded-full px-6"
-                >
-                  Masuk
-                </Button>
-              </Link>
-            )}
-          </div>
+              <div className="hidden md:flex items-center gap-2 ml-4">
+                {isAuthenticated ? (
+                  <Link href="/dashboard">
+                    <Button 
+                      className="bg-primary hover:bg-primary/90 text-white rounded-full px-6"
+                    >
+                      Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href="/login">
+                    <Button 
+                      variant="outline" 
+                      className="text-gray-700 hover:text-primary border-gray-200 hover:border-primary rounded-full px-6"
+                    >
+                      Masuk
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            </>
+          ) : (
+            <Link href="/">
+              <Button 
+                variant="ghost" 
+                className="text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Kembali ke Beranda
+              </Button>
+            </Link>
+          )}
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden p-2 hover:bg-gray-100 rounded-full transition-colors"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        >
-          {mobileMenuOpen ? (
-            <X className="w-5 h-5 text-gray-600" />
-          ) : (
-            <Menu className="w-5 h-5 text-gray-600" />
-          )}
-        </button>
+        {/* Mobile Menu Button - Hide if variant is 'back' on mobile since we show nothing or maybe just valid menu? 
+            Actually if variant is 'back', we might want to hide the hamburger menu entirely as there are no links 
+        */}
+        {variant === "default" && (
+          <button
+            className="md:hidden p-2 hover:bg-gray-100 rounded-full transition-colors"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? (
+              <X className="w-5 h-5 text-gray-600" />
+            ) : (
+              <Menu className="w-5 h-5 text-gray-600" />
+            )}
+          </button>
+        )}
       </div>
 
       {/* Mobile Menu */}

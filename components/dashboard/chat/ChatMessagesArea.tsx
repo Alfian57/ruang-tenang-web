@@ -7,6 +7,8 @@ import {
   EmptyState,
   TypingIndicator,
 } from "@/components/dashboard/chat";
+import { Button } from "@/components/ui/button";
+import { History } from "lucide-react";
 
 /**
  * Props for the ChatMessagesArea component.
@@ -32,6 +34,8 @@ export interface ChatMessagesAreaProps {
   onToggleMessageLike: (messageId: number, isLike: boolean) => void;
   /** Callback to create a new session (for empty state) */
   onCreateSession: () => void;
+  /** Callback to open mobile sidebar */
+  onOpenMobileSidebar?: () => void;
 }
 
 /**
@@ -49,13 +53,32 @@ export function ChatMessagesArea({
   onSendAudio,
   onToggleMessageLike,
   onCreateSession,
+  onOpenMobileSidebar,
 }: ChatMessagesAreaProps) {
   if (!activeSession) {
-    return <EmptyState onCreateSession={onCreateSession} />;
+    return (
+      <>
+        {/* Mobile Header for Empty State */}
+        <div className="lg:hidden flex items-center justify-between p-4 border-b bg-white shrink-0">
+          <h3 className="font-semibold text-gray-800">Chat Baru</h3>
+          <Button variant="ghost" size="icon" onClick={onOpenMobileSidebar}>
+             <History className="w-5 h-5 text-gray-600" />
+          </Button>
+        </div>
+        <EmptyState onCreateSession={onCreateSession} />
+      </>
+    );
   }
 
   return (
     <>
+      {/* Mobile Header */}
+      <div className="lg:hidden flex items-center justify-between p-4 border-b bg-white shrink-0">
+        <h3 className="font-semibold text-gray-800 line-clamp-1">{activeSession.title}</h3>
+        <Button variant="ghost" size="icon" onClick={onOpenMobileSidebar}>
+           <History className="w-5 h-5 text-gray-600" />
+        </Button>
+      </div>
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 lg:p-6 space-y-4">
         {messages.map((message) => (

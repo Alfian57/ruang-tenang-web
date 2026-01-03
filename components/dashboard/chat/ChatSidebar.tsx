@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Plus, Heart, MoreVertical, Trash2 } from "lucide-react";
+import { Plus, Heart, MoreVertical, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -51,26 +51,53 @@ export function ChatSidebar({
   onToggleFavorite,
   onToggleTrash,
   onDeletePermanent,
+  isOpen,
+  onClose,
 }: ChatSidebarProps) {
   return (
-    <div className="w-80 border-l bg-white hidden lg:flex flex-col h-full shadow-[-1px_0_10px_rgba(0,0,0,0.02)] z-10">
-      {/* Header */}
-      <div className="p-4 border-b sticky top-0 bg-white z-10">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-bold text-gray-800">Riwayat Chat</h2>
-          <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-100 rounded-full text-gray-600">
-            {sessions.length}
-          </span>
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      <div className={cn(
+        "w-80 border-l bg-white flex-col h-full shadow-[-1px_0_10px_rgba(0,0,0,0.02)] z-50",
+        "lg:flex lg:static lg:z-10", // Desktop styles
+        "fixed inset-y-0 right-0 transform transition-transform duration-300 ease-in-out", // Mobile styles
+        isOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
+      )}>
+        {/* Header */}
+        <div className="p-4 border-b sticky top-0 bg-white z-10">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-base font-bold text-gray-800">Riwayat Chat</h2>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-100 rounded-full text-gray-600">
+                {sessions.length}
+              </span>
+              <button 
+                onClick={onClose}
+                className="lg:hidden p-1 hover:bg-gray-100 rounded-full text-gray-500"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          <Button
+            size="sm"
+            className="w-full bg-primary hover:bg-primary/90 text-white rounded-lg shadow-sm hover:shadow-md transition-all h-9 text-xs"
+            onClick={() => {
+              onCreateSession();
+              if (onClose) onClose();
+            }}
+          >
+            <Plus className="w-3.5 h-3.5 mr-2" />
+            Chat Baru
+          </Button>
         </div>
-        <Button
-          size="sm"
-          className="w-full bg-primary hover:bg-primary/90 text-white rounded-lg shadow-sm hover:shadow-md transition-all h-9 text-xs"
-          onClick={onCreateSession}
-        >
-          <Plus className="w-3.5 h-3.5 mr-2" />
-          Chat Baru
-        </Button>
-      </div>
 
       {/* Filter tabs */}
       <div className="p-4 space-y-1 border-b">
@@ -103,7 +130,10 @@ export function ChatSidebar({
                 session={session}
                 isActive={activeSessionId === session.id}
                 isTrashView={filter === "trash"}
-                onSelect={() => onSessionSelect(session.id)}
+                onSelect={() => {
+                  onSessionSelect(session.id);
+                  if (onClose) onClose();
+                }}
                 onToggleFavorite={onToggleFavorite}
                 onToggleTrash={onToggleTrash}
                 onDeletePermanent={onDeletePermanent}
@@ -117,6 +147,7 @@ export function ChatSidebar({
         </div>
       </div>
     </div>
+    </>
   );
 }
 
