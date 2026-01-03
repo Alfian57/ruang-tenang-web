@@ -72,8 +72,8 @@ export function AboutSection() {
             </p>
 
             <blockquote className="border-l-4 border-primary pl-6 italic text-gray-700 bg-gray-50 py-4 pr-4 rounded-r-lg">
-              "Menciptakan generasi yang tidak hanya cerdas secara intelektual, 
-              tapi juga tangguh secara emosional."
+              &quot;Menciptakan generasi yang tidak hanya cerdas secara intelektual, 
+              tapi juga tangguh secara emosional.&quot;
             </blockquote>
           </motion.div>
 
