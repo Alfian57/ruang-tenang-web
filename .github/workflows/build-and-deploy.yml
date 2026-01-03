@@ -9,7 +9,7 @@ on:
 
 env:
     REGISTRY: ghcr.io
-    IMAGE_NAME: ${{ github.repository_owner }}/ruang-tenang-web
+    IMAGE_NAME: alfian57/ruang-tenang-web
 
 jobs:
     build:
