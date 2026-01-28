@@ -64,7 +64,14 @@ export function ChatMessageBubble({
               <AudioPlayer src={message.content} inverted={isUser} />
             </div>
           ) : (
-            <p className="whitespace-pre-wrap">{message.content}</p>
+            <div className="whitespace-pre-wrap">
+              {message.content.split(/(\*\*[^*]+\*\*)/).map((part, index) => {
+                if (part.startsWith('**') && part.endsWith('**')) {
+                  return <strong key={index}>{part.slice(2, -2)}</strong>;
+                }
+                return <span key={index}>{part}</span>;
+              })}
+            </div>
           )}
         </div>
 

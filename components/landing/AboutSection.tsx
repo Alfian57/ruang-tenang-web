@@ -100,7 +100,7 @@ export function AboutSection() {
               initial={{ y: 20, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="absolute -bottom-8 -left-8 bg-white p-6 rounded-2xl shadow-xl flex items-center gap-4 max-w-xs"
+              className="absolute -bottom-8 left-0 lg:-left-8 bg-white p-6 rounded-2xl shadow-xl flex items-center gap-4 max-w-xs hidden lg:flex"
             >
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-xl">
                 98%

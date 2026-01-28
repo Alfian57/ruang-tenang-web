@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useRef, FormEvent } from "react";
+import { useState, useRef, FormEvent, useEffect, useCallback } from "react";
 import { Send, Mic, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 interface ChatInputProps {
@@ -24,6 +23,20 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // Auto-resize textarea on input change
+  const adjustTextareaHeight = useCallback(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${Math.min(textarea.scrollHeight, 150)}px`;
+    }
+  }, []);
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [input, adjustTextareaHeight]);
 
   const formatRecordingTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -135,12 +148,20 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
           // Text input UI
           <form onSubmit={handleSubmit} className="flex-1 flex items-end gap-2">
             <div className="flex-1 bg-gray-50 rounded-2xl border border-gray-200 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all p-1.5 flex items-center">
-              <Input
+              <textarea
+                ref={textareaRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSubmit(e);
+                  }
+                }}
                 placeholder="Ketik pesanmu disini..."
                 disabled={isInputDisabled}
-                className="flex-1 border-0 bg-transparent focus-visible:ring-0 shadow-none px-3 py-2 h-auto text-sm"
+                rows={1}
+                className="flex-1 border-0 bg-transparent focus:outline-none focus:ring-0 resize-none px-3 py-2 text-sm min-h-[36px] max-h-[150px] overflow-y-auto"
                 autoComplete="off"
               />
 

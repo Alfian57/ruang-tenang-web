@@ -133,7 +133,26 @@ function DashboardContent({
           <Image src="/logo.png" alt="Ruang Tenang" width={32} height={32} className="object-contain" />
           <span className="text-lg font-bold text-gray-800">Ruang Tenang</span>
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
+          {/* Mobile Level/EXP Badge */}
+          {!isAdmin && (
+            <button
+              onClick={() => setShowExpHistoryModal(true)}
+              className="flex items-center gap-1 bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-full px-2 py-1 shadow-sm hover:shadow-md hover:border-yellow-300 transition-all cursor-pointer"
+              title="Lihat riwayat EXP"
+            >
+              <span className="text-sm">{user?.badge_icon || "🌱"}</span>
+              <span className="text-[10px] font-semibold text-yellow-600">Lv {user?.level || 1}</span>
+              <span className="text-[10px] text-yellow-300">•</span>
+              <span className="text-[10px] font-bold text-yellow-700">{user?.exp || 0}</span>
+            </button>
+          )}
+          {isAdmin && (
+            <div className="flex items-center gap-1 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-full px-2 py-1 shadow-sm">
+              <span className="text-sm">👑</span>
+              <span className="text-[10px] font-semibold text-purple-600">Admin</span>
+            </div>
+          )}
           {/* Mobile Avatar Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

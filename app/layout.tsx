@@ -8,6 +8,11 @@ export const metadata: Metadata = {
   title: "Ruang Tenang - Platform Kesehatan Mental",
   description: "Temukan ketenangan pikiran dengan AI chat therapy, artikel kesehatan mental, dan musik relaksasi.",
   keywords: ["kesehatan mental", "terapi", "meditasi", "relaksasi", "AI chat"],
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({

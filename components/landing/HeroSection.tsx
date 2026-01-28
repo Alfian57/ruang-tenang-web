@@ -96,7 +96,7 @@ export function HeroSection() {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute -top-4 -right-4 lg:right-4"
+                className="absolute -top-4 right-0 lg:right-4"
               >
                 <div className="bg-white rounded-2xl p-3 shadow-xl">
                   <div className="flex items-center gap-3">
@@ -120,7 +120,7 @@ export function HeroSection() {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute bottom-24 -left-4 lg:left-0"
+                className="absolute bottom-24 left-0"
               >
                 <div className="bg-white rounded-2xl p-3 shadow-xl">
                   <div className="flex items-center gap-3">
@@ -144,7 +144,7 @@ export function HeroSection() {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute top-1/3 -right-8 lg:-right-4"
+                className="absolute top-1/3 right-0 lg:-right-4"
               >
                 <div className="bg-white rounded-2xl p-3 shadow-xl">
                   <div className="flex items-center gap-3">
