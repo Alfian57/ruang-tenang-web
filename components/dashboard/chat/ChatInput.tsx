@@ -56,6 +56,10 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
       await onSendText(content);
     } finally {
       setIsSending(false);
+      // Refocus the textarea after sending with delay to ensure state updates complete
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 50);
     }
   };
 

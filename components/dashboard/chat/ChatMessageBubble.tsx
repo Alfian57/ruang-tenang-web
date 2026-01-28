@@ -33,6 +33,45 @@ export function ChatMessageBubble({
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  /**
+   * Renders message content with support for:
+   * - Markdown links: [text](url)
+   * - Bold text: **text**
+   */
+  const renderMessageContent = (content: string) => {
+    // Regex to match markdown links and bold text
+    const regex = /(\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*)/g;
+    const parts = content.split(regex);
+    
+    return parts.map((part, index) => {
+      if (!part) return null;
+      
+      // Check for markdown link pattern [text](url)
+      const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+      if (linkMatch) {
+        const [, linkText, url] = linkMatch;
+        return (
+          <a
+            key={index}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:text-primary/80 underline underline-offset-2 font-medium"
+          >
+            {linkText}
+          </a>
+        );
+      }
+      
+      // Check for bold pattern **text**
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={index}>{part.slice(2, -2)}</strong>;
+      }
+      
+      return <span key={index}>{part}</span>;
+    });
+  };
+
   return (
     <div
       className={cn(
@@ -65,12 +104,7 @@ export function ChatMessageBubble({
             </div>
           ) : (
             <div className="whitespace-pre-wrap">
-              {message.content.split(/(\*\*[^*]+\*\*)/).map((part, index) => {
-                if (part.startsWith('**') && part.endsWith('**')) {
-                  return <strong key={index}>{part.slice(2, -2)}</strong>;
-                }
-                return <span key={index}>{part}</span>;
-              })}
+              {renderMessageContent(message.content)}
             </div>
           )}
         </div>
