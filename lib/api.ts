@@ -282,6 +282,84 @@ class ApiClient {
     return this.request(`/songs/${id}`);
   }
 
+  // Playlist endpoints
+  async getMyPlaylists(token: string) {
+    return this.request("/playlists", { token });
+  }
+
+  async getPlaylist(token: string, id: number) {
+    return this.request(`/playlists/${id}`, { token });
+  }
+
+  async getPublicPlaylists(params?: { page?: number; limit?: number }) {
+    const searchParams = new URLSearchParams();
+    if (params?.page) searchParams.set("page", params.page.toString());
+    if (params?.limit) searchParams.set("limit", params.limit.toString());
+    const query = searchParams.toString();
+    return this.request(`/playlists/public${query ? `?${query}` : ""}`);
+  }
+
+  async createPlaylist(token: string, data: { name: string; description?: string; thumbnail?: string; is_public?: boolean }) {
+    return this.request("/playlists", {
+      method: "POST",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updatePlaylist(token: string, id: number, data: { name: string; description?: string; thumbnail?: string; is_public?: boolean }) {
+    return this.request(`/playlists/${id}`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deletePlaylist(token: string, id: number) {
+    return this.request(`/playlists/${id}`, {
+      method: "DELETE",
+      token,
+    });
+  }
+
+  async addSongToPlaylist(token: string, playlistId: number, songId: number) {
+    return this.request(`/playlists/${playlistId}/songs`, {
+      method: "POST",
+      token,
+      body: JSON.stringify({ song_id: songId }),
+    });
+  }
+
+  async addSongsToPlaylist(token: string, playlistId: number, songIds: number[]) {
+    return this.request(`/playlists/${playlistId}/songs/batch`, {
+      method: "POST",
+      token,
+      body: JSON.stringify({ song_ids: songIds }),
+    });
+  }
+
+  async removeSongFromPlaylist(token: string, playlistId: number, songId: number) {
+    return this.request(`/playlists/${playlistId}/songs/${songId}`, {
+      method: "DELETE",
+      token,
+    });
+  }
+
+  async removeItemFromPlaylist(token: string, playlistId: number, itemId: number) {
+    return this.request(`/playlists/${playlistId}/items/${itemId}`, {
+      method: "DELETE",
+      token,
+    });
+  }
+
+  async reorderPlaylistItems(token: string, playlistId: number, itemIds: number[]) {
+    return this.request(`/playlists/${playlistId}/reorder`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify({ item_ids: itemIds }),
+    });
+  }
+
   // Mood endpoints
   async getMoodHistory(token: string, params?: { start_date?: string; end_date?: string; page?: number; limit?: number }) {
     const searchParams = new URLSearchParams();

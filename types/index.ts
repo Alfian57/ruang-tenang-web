@@ -120,6 +120,60 @@ export interface Song {
   created_at: string;
 }
 
+// Playlist types
+export interface Playlist {
+  id: number;
+  user_id: number;
+  name: string;
+  description: string;
+  thumbnail: string;
+  is_public: boolean;
+  item_count: number;
+  total_songs: number;
+  created_at: string;
+  updated_at: string;
+  user?: {
+    id: number;
+    name: string;
+    avatar: string;
+  };
+  items?: PlaylistItem[];
+}
+
+export interface PlaylistItem {
+  id: number;
+  playlist_id: number;
+  song_id: number;
+  position: number;
+  added_at: string;
+  song?: Song;
+}
+
+export interface PlaylistListItem {
+  id: number;
+  name: string;
+  description: string;
+  thumbnail: string;
+  is_public: boolean;
+  item_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreatePlaylistRequest {
+  name: string;
+  description?: string;
+  thumbnail?: string;
+  is_public?: boolean;
+}
+
+export interface UpdatePlaylistRequest {
+  name: string;
+  description?: string;
+  thumbnail?: string;
+  is_public?: boolean;
+}
+
 // Mood types
 export type MoodType = "happy" | "neutral" | "angry" | "disappointed" | "sad" | "crying";
 

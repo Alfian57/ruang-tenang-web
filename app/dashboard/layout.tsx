@@ -35,6 +35,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AuthProvider, useAuth } from "@/components/providers/AuthProvider";
+import { GlobalMusicPlayer } from "@/components/music";
 import { getUploadUrl } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
@@ -426,6 +427,9 @@ function DashboardContent({
         <main className="flex-1 pt-16 lg:pt-0">
           {children}
         </main>
+
+        {/* Global Music Player */}
+        <GlobalMusicPlayer />
       </div>
     </div>
   );
