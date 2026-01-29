@@ -269,6 +269,98 @@ class ApiClient {
     });
   }
 
+  async toggleMessagePin(token: string, messageId: number) {
+    return this.request(`/chat-messages/${messageId}/pin`, {
+      method: "PUT",
+      token,
+    });
+  }
+
+  // Chat folder endpoints
+  async getChatFolders(token: string) {
+    return this.request("/chat-folders", { token });
+  }
+
+  async createChatFolder(token: string, name: string, color?: string, icon?: string) {
+    return this.request("/chat-folders", {
+      method: "POST",
+      token,
+      body: JSON.stringify({ name, color, icon }),
+    });
+  }
+
+  async updateChatFolder(token: string, folderId: number, data: { name?: string; color?: string; icon?: string; position?: number }) {
+    return this.request(`/chat-folders/${folderId}`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteChatFolder(token: string, folderId: number) {
+    return this.request(`/chat-folders/${folderId}`, {
+      method: "DELETE",
+      token,
+    });
+  }
+
+  async reorderChatFolders(token: string, folderIds: number[]) {
+    return this.request("/chat-folders/reorder", {
+      method: "PUT",
+      token,
+      body: JSON.stringify({ folder_ids: folderIds }),
+    });
+  }
+
+  async moveSessionToFolder(token: string, sessionId: number, folderId: number | null) {
+    return this.request(`/chat-sessions/${sessionId}/folder`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify({ folder_id: folderId }),
+    });
+  }
+
+  // Chat export endpoints
+  async exportChat(token: string, sessionId: number, format: "pdf" | "txt", includePinned?: boolean, includeMetadata?: boolean) {
+    return this.request(`/chat-sessions/${sessionId}/export`, {
+      method: "POST",
+      token,
+      body: JSON.stringify({ 
+        format, 
+        include_pinned: includePinned || false,
+        include_metadata: includeMetadata !== false 
+      }),
+    });
+  }
+
+  // Chat summary endpoints
+  async getChatSummary(token: string, sessionId: number) {
+    return this.request(`/chat-sessions/${sessionId}/summary`, { token });
+  }
+
+  async generateChatSummary(token: string, sessionId: number) {
+    return this.request(`/chat-sessions/${sessionId}/summary`, {
+      method: "POST",
+      token,
+    });
+  }
+
+  // Pinned messages
+  async getPinnedMessages(token: string, sessionId: number) {
+    return this.request(`/chat-sessions/${sessionId}/pinned`, { token });
+  }
+
+  // Suggested prompts
+  async getSuggestedPrompts(token: string, params?: { mood?: string; time_of_day?: string; has_messages?: boolean }) {
+    const searchParams = new URLSearchParams();
+    if (params?.mood) searchParams.set("mood", params.mood);
+    if (params?.time_of_day) searchParams.set("time_of_day", params.time_of_day);
+    if (params?.has_messages !== undefined) searchParams.set("has_messages", params.has_messages.toString());
+    
+    const query = searchParams.toString();
+    return this.request(`/chat-prompts${query ? `?${query}` : ""}`, { token });
+  }
+
   // Song endpoints
   async getSongCategories() {
     return this.request("/song-categories");

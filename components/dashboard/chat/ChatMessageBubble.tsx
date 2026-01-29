@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { ThumbsUp, ThumbsDown, Copy, Check } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Copy, Check, Pin } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AudioPlayer } from "./AudioPlayer";
 import { ChatMessage } from "@/types";
@@ -12,16 +12,18 @@ interface ChatMessageBubbleProps {
   message: ChatMessage;
   userName?: string;
   onToggleLike: (messageId: number, isLike: boolean) => void;
+  onTogglePin?: (messageId: number) => void;
 }
 
 /**
  * Renders a single chat message bubble with appropriate styling for user/AI messages.
  * Supports text and audio message types with like/dislike/copy actions for AI messages.
  */
-export function ChatMessageBubble({ 
-  message, 
+export function ChatMessageBubble({
+  message,
   userName,
-  onToggleLike 
+  onToggleLike,
+  onTogglePin
 }: ChatMessageBubbleProps) {
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const isUser = message.role === "user";
@@ -42,10 +44,10 @@ export function ChatMessageBubble({
     // Regex to match markdown links and bold text
     const regex = /(\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*)/g;
     const parts = content.split(regex);
-    
+
     return parts.map((part, index) => {
       if (!part) return null;
-      
+
       // Check for markdown link pattern [text](url)
       const linkMatch = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
       if (linkMatch) {
@@ -62,12 +64,12 @@ export function ChatMessageBubble({
           </a>
         );
       }
-      
+
       // Check for bold pattern **text**
       if (part.startsWith('**') && part.endsWith('**')) {
         return <strong key={index}>{part.slice(2, -2)}</strong>;
       }
-      
+
       return <span key={index}>{part}</span>;
     });
   };
@@ -78,6 +80,7 @@ export function ChatMessageBubble({
         "flex gap-3 group",
         isUser ? "justify-end" : "justify-start"
       )}
+      data-pinned={message.is_pinned}
     >
       {/* AI Avatar */}
       {!isUser && (
@@ -89,13 +92,25 @@ export function ChatMessageBubble({
       )}
 
       <div className="max-w-[85%] lg:max-w-[75%] space-y-2">
+        {/* Pin indicator */}
+        {message.is_pinned && (
+          <div className={cn(
+            "flex items-center gap-1 text-xs text-amber-600",
+            isUser ? "justify-end" : "justify-start"
+          )}>
+            <Pin className="w-3 h-3" />
+            <span>Disematkan</span>
+          </div>
+        )}
+
         {/* Message bubble */}
         <div
           className={cn(
             "px-5 py-3.5 rounded-2xl text-sm leading-relaxed shadow-sm",
             isUser
               ? "bg-primary text-white rounded-tr-sm"
-              : "bg-gray-100 text-gray-800 rounded-tl-sm"
+              : "bg-gray-100 text-gray-800 rounded-tl-sm",
+            message.is_pinned && !isUser && "ring-2 ring-amber-400/50"
           )}
         >
           {isAudio ? (
@@ -121,6 +136,18 @@ export function ChatMessageBubble({
           {/* Action buttons for AI messages */}
           {!isUser && (
             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              {/* Pin button */}
+              <button
+                className={cn(
+                  "p-1 hover:bg-gray-100 rounded transition",
+                  message.is_pinned ? "text-amber-500" : "text-gray-400 hover:text-gray-600"
+                )}
+                onClick={() => onTogglePin?.(message.id)}
+                title={message.is_pinned ? "Hapus Sematkan" : "Sematkan"}
+              >
+                <Pin className={cn("w-3 h-3", message.is_pinned && "fill-current")} />
+              </button>
+
               {/* Copy button (only for text messages) */}
               {!isAudio && (
                 <button

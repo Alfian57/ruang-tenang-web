@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { api } from "@/lib/api";
-import { ChatSession, ChatMessage } from "@/types";
+import { ChatSession, ChatMessage, ChatFolder, ChatSessionSummary, SuggestedPrompt, ChatExportResponse } from "@/types";
 import { useAuthStore } from "./authStore";
 
 /**
@@ -18,6 +18,17 @@ interface ChatState {
   messages: ChatMessage[];
   filter: FilterType;
 
+  // Folder state
+  folders: ChatFolder[];
+  activeFolderId: number | null;
+
+  // Summary state
+  currentSummary: ChatSessionSummary | null;
+  isGeneratingSummary: boolean;
+
+  // Suggested prompts state
+  suggestedPrompts: SuggestedPrompt[];
+
   // UI state
   isSending: boolean;
   isRecording: boolean;
@@ -31,17 +42,37 @@ interface ChatActions {
   // Session actions
   loadSessions: (token: string) => Promise<void>;
   loadSession: (token: string, sessionId: number) => Promise<void>;
-  createSession: (token: string, title: string) => Promise<void>;
+  createSession: (token: string, title: string, folderId?: number) => Promise<void>;
   deleteSession: (token: string, sessionId: number) => Promise<void>;
 
   // Message actions
   sendTextMessage: (token: string, content: string) => Promise<void>;
   sendAudioMessage: (token: string, audioBlob: Blob) => Promise<void>;
   toggleMessageLike: (token: string, messageId: number, isLike: boolean) => Promise<void>;
+  toggleMessagePin: (token: string, messageId: number) => Promise<void>;
 
   // Session toggle actions
   toggleFavorite: (token: string, sessionId: number) => Promise<void>;
   toggleTrash: (token: string, sessionId: number) => Promise<void>;
+
+  // Folder actions
+  loadFolders: (token: string) => Promise<void>;
+  createFolder: (token: string, name: string, color?: string, icon?: string) => Promise<void>;
+  updateFolder: (token: string, folderId: number, data: { name?: string; color?: string; icon?: string }) => Promise<void>;
+  deleteFolder: (token: string, folderId: number) => Promise<void>;
+  reorderFolders: (token: string, folderIds: number[]) => Promise<void>;
+  moveSessionToFolder: (token: string, sessionId: number, folderId: number | null) => Promise<void>;
+  setActiveFolderId: (folderId: number | null) => void;
+
+  // Export actions
+  exportChat: (token: string, sessionId: number, format: "pdf" | "txt", includePinned?: boolean) => Promise<ChatExportResponse | null>;
+
+  // Summary actions
+  loadSummary: (token: string, sessionId: number) => Promise<void>;
+  generateSummary: (token: string, sessionId: number) => Promise<void>;
+
+  // Suggested prompts actions
+  loadSuggestedPrompts: (token: string, mood?: string, hasMessages?: boolean) => Promise<void>;
 
   // Filter actions
   setFilter: (filter: FilterType) => void;
@@ -63,6 +94,11 @@ const initialState: ChatState = {
   activeSession: null,
   messages: [],
   filter: "all",
+  folders: [],
+  activeFolderId: null,
+  currentSummary: null,
+  isGeneratingSummary: false,
+  suggestedPrompts: [],
   isSending: false,
   isRecording: false,
   isLoading: false,
@@ -109,13 +145,19 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
     }
   },
 
-  createSession: async (token: string, title: string) => {
+  createSession: async (token: string, title: string, folderId?: number) => {
     if (!token || !title.trim()) return;
 
     try {
       const response = (await api.createChatSession(token, title)) as {
         data: ChatSession;
       };
+      
+      // Move to folder if specified
+      if (folderId) {
+        await api.moveSessionToFolder(token, response.data.id, folderId);
+      }
+      
       // Reload sessions and select the new one
       await get().loadSessions(token);
       await get().loadSession(token, response.data.id);
@@ -249,6 +291,33 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
     }
   },
 
+  toggleMessagePin: async (token: string, messageId: number) => {
+    if (!token) return;
+
+    // Optimistic update
+    set((state) => ({
+      messages: state.messages.map((msg) =>
+        msg.id === messageId
+          ? { ...msg, is_pinned: !msg.is_pinned }
+          : msg
+      ),
+    }));
+
+    try {
+      await api.toggleMessagePin(token, messageId);
+    } catch (error) {
+      console.error("ChatStore.toggleMessagePin: failed", error);
+      // Revert on error
+      set((state) => ({
+        messages: state.messages.map((msg) =>
+          msg.id === messageId
+            ? { ...msg, is_pinned: !msg.is_pinned }
+            : msg
+        ),
+      }));
+    }
+  },
+
   toggleFavorite: async (token: string, sessionId: number) => {
     if (!token) return;
 
@@ -294,7 +363,157 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
   },
 
   setFilter: (filter: FilterType) => {
-    set({ filter, activeSession: null, messages: [] });
+    set({ filter, activeSession: null, messages: [], currentSummary: null });
+  },
+
+  // Folder actions
+  loadFolders: async (token: string) => {
+    if (!token) return;
+
+    try {
+      const response = (await api.getChatFolders(token)) as {
+        data: ChatFolder[];
+      };
+      set({ folders: response.data || [] });
+    } catch (error) {
+      console.error("ChatStore.loadFolders: failed", error);
+    }
+  },
+
+  createFolder: async (token: string, name: string, color?: string, icon?: string) => {
+    if (!token || !name.trim()) return;
+
+    try {
+      await api.createChatFolder(token, name, color, icon);
+      await get().loadFolders(token);
+    } catch (error) {
+      console.error("ChatStore.createFolder: failed", error);
+    }
+  },
+
+  updateFolder: async (token: string, folderId: number, data: { name?: string; color?: string; icon?: string }) => {
+    if (!token) return;
+
+    try {
+      await api.updateChatFolder(token, folderId, data);
+      await get().loadFolders(token);
+    } catch (error) {
+      console.error("ChatStore.updateFolder: failed", error);
+    }
+  },
+
+  deleteFolder: async (token: string, folderId: number) => {
+    if (!token) return;
+
+    try {
+      await api.deleteChatFolder(token, folderId);
+      
+      const { activeFolderId } = get();
+      if (activeFolderId === folderId) {
+        set({ activeFolderId: null });
+      }
+      
+      await get().loadFolders(token);
+      await get().loadSessions(token);
+    } catch (error) {
+      console.error("ChatStore.deleteFolder: failed", error);
+    }
+  },
+
+  reorderFolders: async (token: string, folderIds: number[]) => {
+    if (!token) return;
+
+    try {
+      await api.reorderChatFolders(token, folderIds);
+      await get().loadFolders(token);
+    } catch (error) {
+      console.error("ChatStore.reorderFolders: failed", error);
+    }
+  },
+
+  moveSessionToFolder: async (token: string, sessionId: number, folderId: number | null) => {
+    if (!token) return;
+
+    try {
+      await api.moveSessionToFolder(token, sessionId, folderId);
+      await get().loadSessions(token);
+      await get().loadFolders(token);
+      
+      const { activeSession } = get();
+      if (activeSession?.id === sessionId) {
+        set((state) => ({
+          activeSession: state.activeSession
+            ? { ...state.activeSession, folder_id: folderId ?? undefined }
+            : null,
+        }));
+      }
+    } catch (error) {
+      console.error("ChatStore.moveSessionToFolder: failed", error);
+    }
+  },
+
+  setActiveFolderId: (folderId: number | null) => {
+    set({ activeFolderId: folderId, activeSession: null, messages: [], currentSummary: null });
+  },
+
+  // Export actions
+  exportChat: async (token: string, sessionId: number, format: "pdf" | "txt", includePinned?: boolean) => {
+    if (!token) return null;
+
+    try {
+      const response = (await api.exportChat(token, sessionId, format, includePinned, true)) as {
+        data: ChatExportResponse;
+      };
+      return response.data;
+    } catch (error) {
+      console.error("ChatStore.exportChat: failed", error);
+      return null;
+    }
+  },
+
+  // Summary actions
+  loadSummary: async (token: string, sessionId: number) => {
+    if (!token) return;
+
+    try {
+      const response = (await api.getChatSummary(token, sessionId)) as {
+        data: ChatSessionSummary;
+      };
+      set({ currentSummary: response.data });
+    } catch (error) {
+      console.error("ChatStore.loadSummary: failed", error);
+      set({ currentSummary: null });
+    }
+  },
+
+  generateSummary: async (token: string, sessionId: number) => {
+    if (!token) return;
+
+    set({ isGeneratingSummary: true });
+    try {
+      const response = (await api.generateChatSummary(token, sessionId)) as {
+        data: ChatSessionSummary;
+      };
+      set({ currentSummary: response.data, isGeneratingSummary: false });
+    } catch (error) {
+      console.error("ChatStore.generateSummary: failed", error);
+      set({ isGeneratingSummary: false });
+      throw error;
+    }
+  },
+
+  // Suggested prompts actions
+  loadSuggestedPrompts: async (token: string, mood?: string, hasMessages?: boolean) => {
+    if (!token) return;
+
+    try {
+      const response = (await api.getSuggestedPrompts(token, { mood, has_messages: hasMessages })) as {
+        data: SuggestedPrompt[];
+      };
+      set({ suggestedPrompts: response.data || [] });
+    } catch (error) {
+      console.error("ChatStore.loadSuggestedPrompts: failed", error);
+    }
   },
 
   reset: () => {
@@ -312,3 +531,8 @@ export const useChatFilter = () => useChatStore((state) => state.filter);
 export const useIsSending = () => useChatStore((state) => state.isSending);
 export const useIsRecording = () => useChatStore((state) => state.isRecording);
 export const useIsChatLoading = () => useChatStore((state) => state.isLoading);
+export const useChatFolders = () => useChatStore((state) => state.folders);
+export const useActiveFolderId = () => useChatStore((state) => state.activeFolderId);
+export const useChatSummary = () => useChatStore((state) => state.currentSummary);
+export const useIsGeneratingSummary = () => useChatStore((state) => state.isGeneratingSummary);
+export const useSuggestedPrompts = () => useChatStore((state) => state.suggestedPrompts);

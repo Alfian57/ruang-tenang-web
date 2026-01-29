@@ -25,6 +25,27 @@ export default function ChatPage() {
     filter,
     isSending,
     isRecording,
+    // Folders
+    folders,
+    activeFolderId,
+    loadFolders,
+    createFolder,
+    updateFolder,
+    deleteFolder,
+    moveSessionToFolder,
+    setActiveFolderId,
+    // Pin messages
+    toggleMessagePin,
+    // Export & Summary
+    exportChat,
+    currentSummary,
+    isGeneratingSummary,
+    loadSummary,
+    generateSummary,
+    // Suggested prompts
+    suggestedPrompts,
+    loadSuggestedPrompts,
+    // Core actions
     loadSessions,
     loadSession,
     createSession,
@@ -56,12 +77,34 @@ export default function ChatPage() {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  // Load sessions when token or filter changes
+  // Load sessions and folders when token changes
+  useEffect(() => {
+    if (token) {
+      loadSessions(token);
+      loadFolders(token);
+    }
+  }, [token, loadSessions, loadFolders]);
+
+  // Reload sessions when filter or activeFolderId changes
   useEffect(() => {
     if (token) {
       loadSessions(token);
     }
-  }, [token, filter, loadSessions]);
+  }, [token, filter, activeFolderId, loadSessions]);
+
+  // Load suggested prompts when token changes
+  useEffect(() => {
+    if (token) {
+      loadSuggestedPrompts(token);
+    }
+  }, [token, loadSuggestedPrompts]);
+
+  // Load summary when active session changes
+  useEffect(() => {
+    if (token && activeSession?.id) {
+      loadSummary(token, activeSession.id);
+    }
+  }, [token, activeSession?.id, loadSummary]);
 
   // Session actions with token binding
   const handleLoadSession = (sessionId: number) => {
@@ -114,6 +157,47 @@ export default function ChatPage() {
     }
   };
 
+  // Folder handlers
+  const handleCreateFolder = async (name: string, color?: string) => {
+    if (token) await createFolder(token, name, color);
+  };
+
+  const handleUpdateFolder = async (folderId: number, data: { name?: string; color?: string }) => {
+    if (token) await updateFolder(token, folderId, data);
+  };
+
+  const handleDeleteFolder = async (folderId: number) => {
+    if (token) await deleteFolder(token, folderId);
+  };
+
+  const handleMoveToFolder = async (sessionId: number, folderId: number | null) => {
+    if (token) await moveSessionToFolder(token, sessionId, folderId);
+  };
+
+  // Pin handler
+  const handleTogglePin = async (messageId: number) => {
+    if (token) await toggleMessagePin(token, messageId);
+  };
+
+  // Export handler
+  const handleExport = async (format: "pdf" | "txt") => {
+    if (token && activeSession) {
+      await exportChat(token, activeSession.id, format);
+    }
+  };
+
+  // Summary handler
+  const handleGenerateSummary = async () => {
+    if (token && activeSession) {
+      await generateSummary(token, activeSession.id);
+    }
+  };
+
+  // Suggested prompt handler
+  const handleSuggestedPrompt = (prompt: string) => {
+    if (token) sendTextMessage(token, prompt);
+  };
+
   return (
     <div className="flex h-[calc(100vh-theme(spacing.16))] overflow-hidden bg-white">
       {/* Main Chat Area */}
@@ -128,8 +212,15 @@ export default function ChatPage() {
           onSendText={handleSendText}
           onSendAudio={handleSendAudio}
           onToggleMessageLike={handleToggleMessageLike}
+          onToggleMessagePin={handleTogglePin}
           onCreateSession={() => setNewSessionDialog(true)}
           onOpenMobileSidebar={() => setMobileSidebarOpen(true)}
+          onExport={handleExport}
+          summary={currentSummary}
+          isGeneratingSummary={isGeneratingSummary}
+          onGenerateSummary={handleGenerateSummary}
+          suggestedPrompts={suggestedPrompts}
+          onSuggestedPromptClick={handleSuggestedPrompt}
         />
       </div>
 
@@ -138,12 +229,19 @@ export default function ChatPage() {
         sessions={sessions}
         activeSessionId={activeSession?.id ?? null}
         filter={filter}
+        folders={folders}
+        activeFolderId={activeFolderId}
         onFilterChange={setFilter}
         onSessionSelect={handleLoadSession}
         onCreateSession={() => setNewSessionDialog(true)}
         onToggleFavorite={handleToggleFavorite}
         onToggleTrash={handleToggleTrash}
         onDeletePermanent={handleDeletePermanent}
+        onCreateFolder={handleCreateFolder}
+        onUpdateFolder={handleUpdateFolder}
+        onDeleteFolder={handleDeleteFolder}
+        onMoveToFolder={handleMoveToFolder}
+        onFolderSelect={setActiveFolderId}
         isOpen={mobileSidebarOpen}
         onClose={() => setMobileSidebarOpen(false)}
       />

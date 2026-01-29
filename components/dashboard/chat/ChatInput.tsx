@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef, FormEvent, useEffect, useCallback } from "react";
-import { Send, Mic, Square } from "lucide-react";
+import { Send, Mic, Square, Keyboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { VoiceInput } from "./VoiceInput";
 
 interface ChatInputProps {
   onSendText: (content: string) => Promise<void>;
@@ -19,6 +20,7 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
   const [isRecording, setIsRecording] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [isSending, setIsSending] = useState(false);
+  const [showVoiceInput, setShowVoiceInput] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -117,6 +119,19 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
     }
   };
 
+  // Handle voice input transcript completion
+  const handleVoiceTranscript = async (transcript: string) => {
+    setShowVoiceInput(false);
+    if (transcript.trim()) {
+      setIsSending(true);
+      try {
+        await onSendText(transcript);
+      } finally {
+        setIsSending(false);
+      }
+    }
+  };
+
   const isInputDisabled = isSending || disabled;
 
   return (
@@ -169,7 +184,20 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
                 autoComplete="off"
               />
 
-              {/* Mic button - disabled when typing */}
+              {/* Mic button - shows speech-to-text panel */}
+              <Button
+                type="button"
+                onClick={() => setShowVoiceInput(true)}
+                disabled={isInputDisabled || !!input.trim()}
+                size="icon"
+                variant="ghost"
+                className="rounded-xl w-8 h-8 shrink-0 text-gray-400 hover:text-primary hover:bg-primary/10 transition-colors mr-1"
+                title="Input Suara (Speech-to-Text)"
+              >
+                <Keyboard className="w-4 h-4" />
+              </Button>
+
+              {/* Direct audio record button */}
               <Button
                 type="button"
                 onClick={startRecording}
@@ -177,7 +205,7 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
                 size="icon"
                 variant="ghost"
                 className="rounded-xl w-8 h-8 shrink-0 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors mr-1"
-                title="Rekam Suara"
+                title="Rekam Audio (Kirim langsung)"
               >
                 <Mic className="w-4 h-4" />
               </Button>
@@ -200,6 +228,15 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
           </form>
         )}
       </div>
+
+      {/* Voice Input Panel */}
+      {showVoiceInput && (
+        <VoiceInput
+          onTranscriptComplete={handleVoiceTranscript}
+          onClose={() => setShowVoiceInput(false)}
+          disabled={disabled}
+        />
+      )}
     </div>
   );
 }
