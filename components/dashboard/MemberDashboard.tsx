@@ -8,18 +8,19 @@ import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
 import { UserMood, MoodType, ChatSession, Article, SongCategory, Song } from "@/types";
+import { BreathingWidgetData } from "@/types/breathing";
 import { cn } from "@/lib/utils";
-import { 
-  ArrowRight, 
-  ChevronDown, 
-  Music, 
-  MessageCircle, 
-  Play, 
-  Pause, 
-  RotateCcw,
+import {
+  ArrowRight,
+  ChevronDown,
+  Music,
+  MessageCircle,
+  Play,
+  Pause,
   AlertTriangle,
   MoreVertical
 } from "lucide-react";
+import { BreathingWidget } from "@/components/breathing";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 import {
   DropdownMenu,
@@ -72,19 +73,14 @@ export function MemberDashboard() {
   const [deleteChatId, setDeleteChatId] = useState<number | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  
-  // Breathing exercise states
-  const [breathingDuration, setBreathingDuration] = useState(5);
-  const [breathingPhase, setBreathingPhase] = useState<"idle" | "inhale" | "hold" | "exhale">("idle");
-  const [breathingProgress, setBreathingProgress] = useState({ inhale: 0, hold: 0, exhale: 0 });
-  const [isBreathing, setIsBreathing] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [showDurationDropdown, setShowDurationDropdown] = useState(false);
-  
+
+  // Breathing widget state
+  const [breathingWidgetData, setBreathingWidgetData] = useState<BreathingWidgetData | null>(null);
+
   // Chart filter states
   const [chartPeriod, setChartPeriod] = useState<"7days" | "1month">("7days");
   const [showChartDropdown, setShowChartDropdown] = useState(false);
-  
+
   // Music player states
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
   const [categorySongs, setCategorySongs] = useState<Record<number, Song[]>>({});
@@ -98,13 +94,14 @@ export function MemberDashboard() {
     if (!token) return;
     try {
       const moodLimit = chartPeriod === "1month" ? 30 : 7;
-      const [moodRes, sessionsRes, articlesRes, categoriesRes] = await Promise.all([
+      const [moodRes, sessionsRes, articlesRes, categoriesRes, breathingWidgetRes] = await Promise.all([
         api.getMoodHistory(token, { limit: moodLimit }).catch(() => null) as Promise<{ data: { moods: UserMood[] } } | null>,
         api.getChatSessions(token).catch(() => null) as Promise<{ data: ChatSession[] } | null>,
         api.getArticles({ limit: 5 }).catch(() => null) as Promise<{ data: Article[] } | null>,
         api.getSongCategories().catch(() => null) as Promise<{ data: SongCategory[] } | null>,
+        api.getBreathingWidgetData(token).catch(() => null) as Promise<{ data: BreathingWidgetData } | null>,
       ]);
-      
+
       if (moodRes?.data?.moods) {
         setMoodHistory(moodRes.data.moods);
         setLatestMood(moodRes.data.moods[0] || null);
@@ -117,6 +114,9 @@ export function MemberDashboard() {
       }
       if (categoriesRes?.data) {
         setCategories(categoriesRes.data);
+      }
+      if (breathingWidgetRes?.data) {
+        setBreathingWidgetData(breathingWidgetRes.data);
       }
     } catch (error) {
       console.error("Failed to load dashboard data:", error);
@@ -150,17 +150,17 @@ export function MemberDashboard() {
 
   const confirmDeleteChat = async () => {
     if (!token || !deleteChatId) return;
-    
+
     setIsDeleting(true);
     try {
       await api.deleteChatSession(token, deleteChatId);
-      
+
       // Update UI immediately (Optimistic/Local update)
       setRecentSessions(prev => prev.filter(session => session.id !== deleteChatId));
-      
+
       // Reload data to ensure consistency
       await loadDashboardData();
-      
+
       setShowDeleteModal(false);
       setDeleteChatId(null);
     } catch (error) {
@@ -170,79 +170,15 @@ export function MemberDashboard() {
     }
   };
 
-  // Breathing exercise functions
-  const startBreathing = useCallback(() => {
-    if (isPaused) {
-      setIsPaused(false);
-      return;
-    }
-    setIsBreathing(true);
-    setIsPaused(false);
-    setBreathingPhase("inhale");
-    setBreathingProgress({ inhale: 0, hold: 0, exhale: 0 });
-  }, [isPaused]);
-
-  const pauseBreathing = useCallback(() => {
-    setIsPaused(true);
-  }, []);
-
-  const resetBreathing = useCallback(() => {
-    setIsBreathing(false);
-    setIsPaused(false);
-    setBreathingPhase("idle");
-    setBreathingProgress({ inhale: 0, hold: 0, exhale: 0 });
-  }, []);
-
-  // Breathing animation effect
-  useEffect(() => {
-    if (!isBreathing || isPaused) return;
-
-    const intervalMs = 50; // Update every 50ms for smooth animation
-    const totalSteps = (breathingDuration * 1000) / intervalMs;
-    const progressIncrement = 100 / totalSteps;
-
-    const interval = setInterval(() => {
-      setBreathingProgress(prev => {
-        if (breathingPhase === "inhale") {
-          const newProgress = Math.min(100, prev.inhale + progressIncrement);
-          if (newProgress >= 100) {
-            setBreathingPhase("hold");
-            return { ...prev, inhale: 100 };
-          }
-          return { ...prev, inhale: newProgress };
-        } else if (breathingPhase === "hold") {
-          const newProgress = Math.min(100, prev.hold + progressIncrement);
-          if (newProgress >= 100) {
-            setBreathingPhase("exhale");
-            return { ...prev, hold: 100 };
-          }
-          return { ...prev, hold: newProgress };
-        } else if (breathingPhase === "exhale") {
-          const newProgress = Math.min(100, prev.exhale + progressIncrement);
-          if (newProgress >= 100) {
-            // Exercise complete
-            setIsBreathing(false);
-            setBreathingPhase("idle");
-            return { inhale: 0, hold: 0, exhale: 0 };
-          }
-          return { ...prev, exhale: newProgress };
-        }
-        return prev;
-      });
-    }, intervalMs);
-
-    return () => clearInterval(interval);
-  }, [isBreathing, isPaused, breathingPhase, breathingDuration]);
-
   // Music player functions
   const handleCategoryClick = async (categoryId: number) => {
     if (expandedCategory === categoryId) {
       setExpandedCategory(null);
       return;
     }
-    
+
     setExpandedCategory(categoryId);
-    
+
     // Fetch songs if not already loaded
     if (!categorySongs[categoryId]) {
       try {
@@ -317,17 +253,17 @@ export function MemberDashboard() {
   // Prepare chart data for bar chart (7 days)
   // Create a map of day index (0=Sunday, 1=Monday, etc.) to mood
   const moodByDayOfWeek = new Map<number, UserMood>();
-  
+
   // Get today"s date in Indonesian timezone
   const today = new Date();
   const todayIndonesia = new Date(today.toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
-  
+
   // Map each mood entry to its day of week
   moodHistory.forEach(mood => {
     const moodDate = new Date(mood.created_at);
     // Convert to Indonesian timezone for comparison
     const moodDateIndonesia = new Date(moodDate.toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
-    
+
     // Only include moods from the last 7 days
     const daysDiff = Math.floor((todayIndonesia.getTime() - moodDateIndonesia.getTime()) / (1000 * 60 * 60 * 24));
     if (daysDiff >= 0 && daysDiff < 7) {
@@ -338,12 +274,12 @@ export function MemberDashboard() {
       }
     }
   });
-  
+
   // Map Indonesian day names to day index (Senin=1, Selasa=2, etc.)
   const dayIndexMap: Record<string, number> = {
     "Senin": 1, "Selasa": 2, "Rabu": 3, "Kamis": 4, "Jumat": 5, "Sabtu": 6, "Minggu": 0
   };
-  
+
   const weeklyChartData = days.map((day) => {
     const dayIndex = dayIndexMap[day];
     const moodEntry = moodByDayOfWeek.get(dayIndex);
@@ -385,7 +321,7 @@ export function MemberDashboard() {
   return (
     <div className="p-4 lg:p-6 space-y-5 bg-gray-50 min-h-screen">
       {/* Alert Banner */}
-      <div className="bg-gradient-to-r from-primary to-red-600 rounded-2xl p-5 flex items-center justify-between shadow-lg">
+      <div className="bg-linear-to-r from-primary to-red-600 rounded-2xl p-5 flex items-center justify-between shadow-lg">
         <div className="flex items-center gap-4">
           <p className="text-white">
             Hari ini kamu terlihat <strong>sedikit lelah</strong>,
@@ -402,7 +338,7 @@ export function MemberDashboard() {
         </div>
       </div>
 
-      <DeleteConfirmationModal 
+      <DeleteConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={confirmDeleteChat}
@@ -414,15 +350,15 @@ export function MemberDashboard() {
       {/* Top Row: Mood + Chat + Breathing */}
       <div className="grid lg:grid-cols-12 gap-4">
         {/* Mood Picker Card */}
-        <Card className="lg:col-span-3 bg-gradient-to-br from-sky-400 to-blue-500 text-white border-0 shadow-lg overflow-hidden relative">
+        <Card className="lg:col-span-3 bg-linear-to-br from-sky-400 to-blue-500 text-white border-0 shadow-lg overflow-hidden relative">
           <CardContent className="p-6 text-center relative z-10">
             <h3 className="text-xl font-bold mb-1">Gimana Kondisimu</h3>
             <h3 className="text-xl font-bold mb-6">Hari ini?</h3>
-            
+
             {showMoodPicker ? (
               <div className="grid grid-cols-3 gap-3">
                 {moodEmojis.map((m) => (
-                  <button 
+                  <button
                     key={m.type}
                     onClick={() => recordMood(m.type)}
                     disabled={isRecording}
@@ -433,7 +369,7 @@ export function MemberDashboard() {
                 ))}
               </div>
             ) : (
-              <button 
+              <button
                 className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto hover:bg-white/30 hover:scale-105 transition-all"
                 onClick={() => setShowMoodPicker(true)}
               >
@@ -456,8 +392,8 @@ export function MemberDashboard() {
           <CardContent className="space-y-3">
             {recentSessions.length > 0 ? (
               recentSessions.map((session) => (
-                <Link 
-                  key={session.id} 
+                <Link
+                  key={session.id}
                   href={`/dashboard/chat`}
                   className="flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 transition-colors border border-gray-100 group bg-white"
                 >
@@ -472,7 +408,7 @@ export function MemberDashboard() {
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
                         onClick={(e) => handleDeleteChatClick(e, session.id)}
                       >
@@ -497,97 +433,10 @@ export function MemberDashboard() {
           </CardContent>
         </Card>
 
-        {/* Breathing Exercise */}
-        <Card className="lg:col-span-4 overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white">
-          <CardContent className="p-5">
-            <div className="flex justify-between items-start mb-4">
-              <h4 className="font-bold text-gray-800">Atur Napasmu,<br/>Atur Tenangmu</h4>
-              <div className="relative">
-                <button 
-                  onClick={() => setShowDurationDropdown(!showDurationDropdown)}
-                  disabled={isBreathing}
-                  className="flex items-center gap-1 text-xs bg-gray-100 rounded-full px-3 py-1.5 hover:bg-gray-200 transition-colors disabled:opacity-50"
-                >
-                  <Image src="/images/timer.png" alt="" width={14} height={14} />
-                  <span className="text-gray-600 font-medium">{breathingDuration} detik</span>
-                  <ChevronDown className="w-3 h-3 text-gray-400" />
-                </button>
-                {showDurationDropdown && (
-                  <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border py-1 z-10 min-w-[100px]">
-                    {[5, 10, 15].map((duration) => (
-                      <button
-                        key={duration}
-                        onClick={() => {
-                          setBreathingDuration(duration);
-                          setShowDurationDropdown(false);
-                        }}
-                        className={cn(
-                          "w-full px-3 py-2 text-left text-sm hover:bg-gray-50 transition-colors",
-                          breathingDuration === duration && "bg-primary/10 text-primary font-medium"
-                        )}
-                      >
-                        {duration} detik
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            <div className="space-y-3 mb-5">
-              {[
-                { label: "Tarik Nafas", key: "inhale" as const, color: "bg-red-300", activeColor: "bg-gradient-to-r from-red-300 to-red-400" },
-                { label: "Tahan Nafas", key: "hold" as const, color: "bg-red-400", activeColor: "bg-gradient-to-r from-red-400 to-red-500" },
-                { label: "Buang Nafas", key: "exhale" as const, color: "bg-red-500", activeColor: "bg-gradient-to-r from-red-500 to-red-600" },
-              ].map((step) => (
-                <div key={step.label} className="flex items-center gap-3">
-                  <span className={cn(
-                    "w-24 text-sm font-medium transition-colors",
-                    breathingPhase === step.key ? "text-primary font-semibold" : "text-gray-600"
-                  )}>{step.label}</span>
-                  <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
-                    <div 
-                      className={cn(
-                        "h-full rounded-full transition-all duration-100",
-                        breathingPhase === step.key ? step.activeColor : step.color
-                      )}
-                      style={{ width: `${breathingProgress[step.key]}%` }} 
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex gap-2">
-              <Button 
-                size="sm" 
-                onClick={startBreathing}
-                disabled={isBreathing && !isPaused}
-                className="text-xs rounded-full gap-1.5 bg-primary hover:bg-primary/90 text-white px-4 disabled:opacity-50"
-              >
-                <Play className="w-3 h-3" /> {isPaused ? "Lanjut" : "Mulai"}
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                onClick={pauseBreathing}
-                disabled={!isBreathing || isPaused}
-                className="text-xs rounded-full gap-1.5 px-4 disabled:opacity-50"
-              >
-                <Pause className="w-3 h-3" /> Jeda
-              </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                onClick={resetBreathing}
-                disabled={!isBreathing && breathingPhase === "idle"}
-                className="text-xs rounded-full gap-1.5 px-4 disabled:opacity-50"
-              >
-                <RotateCcw className="w-3 h-3" /> Ulangi
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Breathing Exercise Widget */}
+        <div className="lg:col-span-4">
+          <BreathingWidget data={breathingWidgetData} />
+        </div>
       </div>
 
       {/* Second Row: Mood Chart + Music */}
@@ -605,9 +454,9 @@ export function MemberDashboard() {
                 </p>
               </div>
               <div className="relative">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setShowChartDropdown(!showChartDropdown)}
                   className="rounded-full text-xs gap-1 border-gray-200"
                 >
@@ -650,14 +499,14 @@ export function MemberDashboard() {
               <ResponsiveContainer width="100%" height="100%">
                 {chartPeriod === "7days" ? (
                   <BarChart data={weeklyChartData} margin={{ top: 20, right: 20, left: 10, bottom: 0 }}>
-                    <XAxis 
-                      dataKey="name" 
+                    <XAxis
+                      dataKey="name"
                       axisLine={false}
                       tickLine={false}
                       tick={{ fontSize: 12, fill: "#9ca3af" }}
                       padding={{ left: 20, right: 20 }}
                     />
-                    <YAxis 
+                    <YAxis
                       domain={[0, 7]}
                       axisLine={false}
                       tickLine={false}
@@ -675,7 +524,7 @@ export function MemberDashboard() {
                         return labels[value] || "";
                       }}
                     />
-                    <Tooltip 
+                    <Tooltip
                       content={({ active, payload }) => {
                         if (active && payload && payload.length) {
                           const data = payload[0].payload;
@@ -692,9 +541,9 @@ export function MemberDashboard() {
                       }}
                     />
                     {moodEmojis.map((mood) => (
-                      <Bar 
+                      <Bar
                         key={mood.type}
-                        dataKey={mood.label.toLowerCase()} 
+                        dataKey={mood.label.toLowerCase()}
                         fill={mood.color}
                         radius={[4, 4, 0, 0]}
                         barSize={30}
@@ -705,19 +554,19 @@ export function MemberDashboard() {
                   <AreaChart data={monthlyChartData} margin={{ top: 20, right: 20, left: 10, bottom: 0 }}>
                     <defs>
                       <linearGradient id="colorMood" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis 
-                      dataKey="name" 
+                    <XAxis
+                      dataKey="name"
                       axisLine={false}
                       tickLine={false}
                       tick={{ fontSize: 10, fill: "#9ca3af" }}
                       interval={Math.ceil(monthlyChartData.length / 10)}
                     />
-                    <YAxis 
+                    <YAxis
                       domain={[0, 7]}
                       axisLine={false}
                       tickLine={false}
@@ -735,7 +584,7 @@ export function MemberDashboard() {
                         return labels[value] || "";
                       }}
                     />
-                    <Tooltip 
+                    <Tooltip
                       content={({ active, payload }) => {
                         if (active && payload && payload.length) {
                           const data = payload[0].payload;
@@ -751,10 +600,10 @@ export function MemberDashboard() {
                         return null;
                       }}
                     />
-                    <Area 
-                      type="monotone" 
-                      dataKey="value" 
-                      stroke="#ef4444" 
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#ef4444"
                       strokeWidth={2}
                       fill="url(#colorMood)"
                       dot={{ fill: "#ef4444", strokeWidth: 0, r: 3 }}
@@ -778,7 +627,7 @@ export function MemberDashboard() {
         </Card>
 
         {/* Music Widget */}
-        <Card className="lg:col-span-4 bg-gradient-to-br from-primary to-red-600 text-white border-0 shadow-lg overflow-hidden relative">
+        <Card className="lg:col-span-4 bg-linear-to-br from-primary to-red-600 text-white border-0 shadow-lg overflow-hidden relative">
           <CardHeader className="pb-2">
             <div className="flex justify-between items-start">
               <div>
@@ -803,7 +652,7 @@ export function MemberDashboard() {
                 preload="metadata"
               />
             )}
-            
+
             {categories.slice(0, 3).map((cat) => (
               <div key={cat.id}>
                 <button
@@ -832,7 +681,7 @@ export function MemberDashboard() {
                     expandedCategory === cat.id ? "text-gray-400 rotate-180" : "text-white/60"
                   )} />
                 </button>
-                
+
                 {/* Expanded song list */}
                 {expandedCategory === cat.id && (
                   <div className="mt-2 space-y-1 bg-white/10 rounded-xl p-2 max-h-48 overflow-y-auto">
@@ -873,7 +722,7 @@ export function MemberDashboard() {
                 )}
               </div>
             ))}
-            
+
             {/* Now Playing Bar */}
             {currentSong && (
               <div className="mt-3 bg-white rounded-xl p-3">
@@ -893,7 +742,7 @@ export function MemberDashboard() {
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-xs text-gray-400">{formatTime(audioProgress)}</span>
                       <div className="flex-1 h-1 bg-gray-200 rounded-full overflow-hidden">
-                        <div 
+                        <div
                           className="h-full bg-primary rounded-full transition-all duration-100"
                           style={{ width: audioDuration ? `${(audioProgress / audioDuration) * 100}%` : "0%" }}
                         />
@@ -904,7 +753,7 @@ export function MemberDashboard() {
                 </div>
               </div>
             )}
-            
+
             {categories.length === 0 && (
               <div className="text-center py-4 text-white/60">
                 <Music className="w-8 h-8 mx-auto mb-2 opacity-50" />
@@ -922,22 +771,22 @@ export function MemberDashboard() {
         </div>
         <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x scrollbar-hide">
           {articles.map((article) => (
-            <Link 
+            <Link
               key={article.id}
               href={`/dashboard/reading/${article.id}`}
-              className="flex-shrink-0 w-56 snap-start group"
+              className="shrink-0 w-56 snap-start group"
             >
               <Card className="overflow-hidden card-hover h-full border-0 shadow-sm group-hover:shadow-lg transition-all bg-white">
                 <div className="h-32 relative overflow-hidden">
                   {article.thumbnail ? (
-                    <Image 
-                      src={article.thumbnail} 
+                    <Image
+                      src={article.thumbnail}
                       alt={article.title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center">
+                    <div className="w-full h-full bg-linear-to-br from-red-100 to-red-200 flex items-center justify-center">
                       <span className="text-4xl">📄</span>
                     </div>
                   )}

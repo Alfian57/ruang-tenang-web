@@ -38,7 +38,7 @@ export default function LeaderboardSection() {
   const topThree = users.slice(0, 3);
 
   return (
-    <section id="leaderboard" className="relative bg-gradient-to-b from-red-50 to-white overflow-hidden pb-24 pt-32 -mt-10">
+    <section id="leaderboard" className="relative bg-linear-to-b from-red-50 to-white overflow-hidden pb-24 pt-32 -mt-10">
       {/* Decorative Wave Separator */}
       <div className="absolute top-0 left-0 right-0 z-0">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full h-auto text-white fill-current">
@@ -87,7 +87,7 @@ export default function LeaderboardSection() {
                 </div>
               </div>
               
-              <div className="w-20 h-20 mt-6 bg-gradient-to-br from-gray-200 to-gray-400 rounded-2xl mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition-transform duration-300">
+              <div className="w-20 h-20 mt-6 bg-linear-to-br from-gray-200 to-gray-400 rounded-2xl mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition-transform duration-300">
                 {topThree[1].name.charAt(0).toUpperCase()}
               </div>
               
@@ -117,7 +117,7 @@ export default function LeaderboardSection() {
                  </div>
               </div>
               
-              <div className="w-28 h-28 mt-8 bg-gradient-to-br from-primary to-red-600 rounded-2xl mb-5 flex items-center justify-center text-4xl font-bold text-white shadow-xl shadow-primary/20 overflow-hidden transform -rotate-3 hover:rotate-0 transition-transform duration-300">
+              <div className="w-28 h-28 mt-8 bg-linear-to-br from-primary to-red-600 rounded-2xl mb-5 flex items-center justify-center text-4xl font-bold text-white shadow-xl shadow-primary/20 overflow-hidden transform -rotate-3 hover:rotate-0 transition-transform duration-300">
                 {topThree[0].name.charAt(0).toUpperCase()}
               </div>
               
@@ -126,7 +126,7 @@ export default function LeaderboardSection() {
               </h3>
               <p className="text-primary font-medium mb-3">{topThree[0].role}</p>
               
-              <div className="bg-gradient-to-r from-primary to-red-600 text-white px-6 py-2 rounded-full font-bold text-lg shadow-lg shadow-primary/20">
+              <div className="bg-linear-to-r from-primary to-red-600 text-white px-6 py-2 rounded-full font-bold text-lg shadow-lg shadow-primary/20">
                 {topThree[0].exp.toLocaleString()} EXP
               </div>
               
@@ -154,7 +154,7 @@ export default function LeaderboardSection() {
                 </div>
               </div>
               
-              <div className="w-20 h-20 mt-6 bg-gradient-to-br from-amber-600 to-amber-800 rounded-2xl mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition-transform duration-300">
+              <div className="w-20 h-20 mt-6 bg-linear-to-br from-amber-600 to-amber-800 rounded-2xl mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition-transform duration-300">
                 {topThree[2].name.charAt(0).toUpperCase()}
               </div>
               

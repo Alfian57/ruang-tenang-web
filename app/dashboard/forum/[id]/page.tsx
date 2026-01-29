@@ -239,7 +239,7 @@ export default function ForumTopicPage() {
             <div className="space-y-4 pb-4">
               {posts.map((post) => (
                 <div key={post.id} className="flex gap-3 group">
-                   <div className="flex-shrink-0">
+                   <div className="shrink-0">
                        <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden relative">
                             <div className="w-full h-full flex items-center justify-center text-gray-500 text-xs font-bold">
                                 {post.user?.name?.charAt(0).toUpperCase() || "U"}

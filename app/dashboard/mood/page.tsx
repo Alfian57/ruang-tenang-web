@@ -164,7 +164,7 @@ export default function MoodPage() {
                 ))}
               </div>
             ) : history.length > 0 ? (
-              <div className="space-y-3 max-h-[400px] overflow-y-auto">
+              <div className="space-y-3 max-h-100 overflow-y-auto">
                 {history.map((mood) => (
                   <div
                     key={mood.id}

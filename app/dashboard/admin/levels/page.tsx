@@ -345,7 +345,7 @@ export default function LevelsManagementPage() {
                   ) : (
                     <>
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 text-white font-bold">
+                        <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-linear-to-r from-yellow-400 to-amber-500 text-white font-bold">
                           {level.level}
                         </span>
                       </td>

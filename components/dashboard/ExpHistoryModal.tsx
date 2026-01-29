@@ -129,7 +129,7 @@ export function ExpHistoryModal({
       {/* Modal */}
       <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden mx-4">
         {/* Header */}
-        <div className="bg-gradient-to-r from-yellow-400 to-amber-500 p-6 text-white">
+        <div className="bg-linear-to-r from-yellow-400 to-amber-500 p-6 text-white">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/20 transition-colors"
@@ -270,7 +270,7 @@ export function ExpHistoryModal({
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-bold bg-gradient-to-r from-yellow-400 to-amber-500 text-white">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-bold bg-linear-to-r from-yellow-400 to-amber-500 text-white">
                       +{item.points} EXP
                     </span>
                   </div>

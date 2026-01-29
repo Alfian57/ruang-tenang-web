@@ -30,7 +30,7 @@ export function AuthProvider({
     const checkAuth = async () => {
       // After hydration, check the actual auth state
       const currentState = useAuthStore.getState();
-      
+
       // Refresh user data if authenticated
       if (currentState.isAuthenticated && currentState.token) {
         try {
@@ -96,6 +96,8 @@ export function useAuth() {
     isAuthenticated: isHydrated && isAuthenticated,
     isLoading: !isHydrated,
     isAdmin: user?.role === "admin",
+    isModerator: user?.role === "moderator",
+    canModerate: user?.role === "admin" || user?.role === "moderator",
     isMember: user?.role === "member",
     logout,
     refreshUser,

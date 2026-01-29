@@ -1,5 +1,23 @@
-import { Article, Song, ApiResponse } from "@/types";
+import { Article, Song, ApiResponse, CommunityStats, PersonalJourney, LevelHallOfFameResponse, WeeklyProgress, MonthlyProgress, AllTimeStats, LevelUpCelebration, UserFeatures, FeatureAccess, FeaturesByLevel, UserBadges, BadgeProgress, InspiringStory, StoriesListResponse, StoryCategory, StoryComment, StoryCommentsListResponse, StoryStats, CreateStoryRequest, UpdateStoryRequest, StoryFilterParams, CreateStoryCommentRequest } from "@/types";
 import { CreateForumRequest, CreateForumPostRequest, Forum } from "@/types/forum";
+import {
+  BreathingTechnique,
+  BreathingSession,
+  BreathingPreferences,
+  BreathingStats,
+  BreathingCalendar,
+  TechniqueUsageStats,
+  BreathingWidgetData,
+  RecommendationsResponse,
+  SessionHistoryResponse,
+  SessionCompletionResult,
+  CreateTechniqueRequest,
+  UpdateTechniqueRequest,
+  StartSessionRequest,
+  CompleteSessionRequest,
+  UpdatePreferencesRequest,
+  SessionHistoryParams,
+} from "@/types/breathing";
 
 // Placeholder __NEXT_PUBLIC_API_URL__ akan diganti saat runtime oleh entrypoint.sh
 // Jika menggunakan build-arg, gunakan process.env.NEXT_PUBLIC_API_URL langsung
@@ -606,6 +624,520 @@ class ApiClient {
       method: "DELETE",
       token,
     });
+  }
+
+  // ========================
+  // Moderation Endpoints
+  // ========================
+
+  // Moderation Dashboard (Moderator/Admin)
+  async getModerationStats(token: string) {
+    return this.request("/moderation/stats", { token });
+  }
+
+  async getModerationQueue(token: string, params?: { status?: string; page?: number; limit?: number }) {
+    const searchParams = new URLSearchParams();
+    if (params?.status) searchParams.set("status", params.status);
+    if (params?.page) searchParams.set("page", params.page.toString());
+    if (params?.limit) searchParams.set("limit", params.limit.toString());
+    const query = searchParams.toString();
+    return this.request(`/moderation/queue${query ? `?${query}` : ""}`, { token });
+  }
+
+  async moderateArticle(token: string, articleId: number, data: { action: string; notes?: string; trigger_warnings?: string[] }) {
+    return this.request(`/moderation/articles/${articleId}`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Reports (Moderator/Admin)
+  async getModerationReports(token: string, params?: { status?: string; report_type?: string; reason?: string; page?: number; limit?: number }) {
+    const searchParams = new URLSearchParams();
+    if (params?.status) searchParams.set("status", params.status);
+    if (params?.report_type) searchParams.set("report_type", params.report_type);
+    if (params?.reason) searchParams.set("reason", params.reason);
+    if (params?.page) searchParams.set("page", params.page.toString());
+    if (params?.limit) searchParams.set("limit", params.limit.toString());
+    const query = searchParams.toString();
+    return this.request(`/moderation/reports${query ? `?${query}` : ""}`, { token });
+  }
+
+  async handleReport(token: string, reportId: number, data: { action: string; notes?: string; duration?: number }) {
+    return this.request(`/moderation/reports/${reportId}`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  // User Strikes (Moderator/Admin)
+  async getUserStrikes(token: string, userId: number, activeOnly?: boolean) {
+    const query = activeOnly ? "?active_only=true" : "";
+    return this.request(`/moderation/users/${userId}/strikes${query}`, { token });
+  }
+
+  // Trigger Warnings (Moderator/Admin)
+  async addTriggerWarnings(token: string, data: { content_type: string; content_id: number; trigger_warnings: string[] }) {
+    return this.request("/moderation/trigger-warnings", {
+      method: "POST",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Moderator Actions Log (Moderator/Admin)
+  async getModeratorActions(token: string, params?: { moderator_id?: number; action_type?: string; target_type?: string; page?: number; limit?: number }) {
+    const searchParams = new URLSearchParams();
+    if (params?.moderator_id) searchParams.set("moderator_id", params.moderator_id.toString());
+    if (params?.action_type) searchParams.set("action_type", params.action_type);
+    if (params?.target_type) searchParams.set("target_type", params.target_type);
+    if (params?.page) searchParams.set("page", params.page.toString());
+    if (params?.limit) searchParams.set("limit", params.limit.toString());
+    const query = searchParams.toString();
+    return this.request(`/moderation/actions${query ? `?${query}` : ""}`, { token });
+  }
+
+  // Crisis Keywords (Moderator/Admin)
+  async getCrisisKeywords(token: string) {
+    return this.request("/moderation/crisis-keywords", { token });
+  }
+
+  async createCrisisKeyword(token: string, data: { keyword: string; category: string; severity: string; language?: string; notes?: string }) {
+    return this.request("/moderation/crisis-keywords", {
+      method: "POST",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteCrisisKeyword(token: string, keywordId: number) {
+    return this.request(`/moderation/crisis-keywords/${keywordId}`, {
+      method: "DELETE",
+      token,
+    });
+  }
+
+  // ========================
+  // User Report Endpoints (Any authenticated user)
+  // ========================
+
+  async createReport(token: string, data: { report_type: string; content_id?: number; user_id?: number; reason: string; description?: string }) {
+    return this.request("/reports", {
+      method: "POST",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  // ========================
+  // User Blocking Endpoints (Any authenticated user)
+  // ========================
+
+  async getBlockedUsers(token: string) {
+    return this.request("/blocks", { token });
+  }
+
+  async blockUser(token: string, userId: number, reason?: string) {
+    return this.request("/blocks", {
+      method: "POST",
+      token,
+      body: JSON.stringify({ user_id: userId, reason }),
+    });
+  }
+
+  async unblockUser(token: string, userId: number) {
+    return this.request(`/blocks/${userId}`, {
+      method: "DELETE",
+      token,
+    });
+  }
+
+  // ========================
+  // User Settings Endpoints (Any authenticated user)
+  // ========================
+
+  async acceptAIDisclaimer(token: string) {
+    return this.request("/user/accept-ai-disclaimer", {
+      method: "POST",
+      token,
+    });
+  }
+
+  async updateContentWarningPreference(token: string, preference: string) {
+    return this.request("/user/content-warning-preference", {
+      method: "PUT",
+      token,
+      body: JSON.stringify({ preference }),
+    });
+  }
+
+  // ========================
+  // Community Progress Endpoints
+  // ========================
+
+  async getCommunityStats() {
+    return this.request<{ data: CommunityStats }>("/community/stats");
+  }
+
+  async getLevelHallOfFame(level: number) {
+    return this.request<{ data: LevelHallOfFameResponse }>(`/community/hall-of-fame/level/${level}`);
+  }
+
+  async getMonthlyHallOfFame() {
+    return this.request<{ data: LevelHallOfFameResponse[] }>("/community/hall-of-fame/monthly");
+  }
+
+  async getPersonalJourney(token: string) {
+    return this.request<{ data: PersonalJourney }>("/community/my-journey", { token });
+  }
+
+  async getWeeklyProgress(token: string) {
+    return this.request<{ data: WeeklyProgress }>("/community/progress/weekly", { token });
+  }
+
+  async getMonthlyProgress(token: string) {
+    return this.request<{ data: MonthlyProgress }>("/community/progress/monthly", { token });
+  }
+
+  async getAllTimeStats(token: string) {
+    return this.request<{ data: AllTimeStats }>("/community/progress/all-time", { token });
+  }
+
+  async getLevelUpCelebration(token: string, level: number) {
+    return this.request<{ data: LevelUpCelebration }>(`/community/celebration/${level}`, { token });
+  }
+
+  // ========================
+  // Feature Unlock Endpoints
+  // ========================
+
+  async getAllFeatures() {
+    return this.request<{ data: FeaturesByLevel[] }>("/features");
+  }
+
+  async getFeaturesByCategory(category: string) {
+    return this.request<{ data: FeaturesByLevel[] }>(`/features/category/${category}`);
+  }
+
+  async getUserFeatures(token: string) {
+    return this.request<{ data: UserFeatures }>("/features/my-features", { token });
+  }
+
+  async checkFeatureAccess(token: string, featureKey: string) {
+    return this.request<{ data: FeatureAccess }>(`/features/check/${featureKey}`, { token });
+  }
+
+  async getUpcomingFeatures(token: string) {
+    return this.request<{ data: UserFeatures }>("/features/upcoming", { token });
+  }
+
+  // ========================
+  // Badge Endpoints
+  // ========================
+
+  async getAllBadges() {
+    return this.request<{ data: BadgeProgress[] }>("/badges");
+  }
+
+  async getBadgesByCategory(category: string) {
+    return this.request<{ data: BadgeProgress[] }>(`/badges/category/${category}`);
+  }
+
+  async getUserBadges(token: string) {
+    return this.request<{ data: UserBadges }>("/badges/my-badges", { token });
+  }
+
+  async getBadgeProgress(token: string) {
+    return this.request<{ data: BadgeProgress[] }>("/badges/progress", { token });
+  }
+
+  async checkNewBadges(token: string) {
+    return this.request<{ data: BadgeProgress[] }>("/badges/check-new", { token });
+  }
+
+  // ========================
+  // Inspiring Stories Endpoints
+  // ========================
+
+  async getStoryCategories() {
+    return this.request<{ data: StoryCategory[] }>("/stories/categories");
+  }
+
+  async getStories(params?: StoryFilterParams) {
+    const searchParams = new URLSearchParams();
+    if (params?.category_id) searchParams.set("category_id", params.category_id);
+    if (params?.search) searchParams.set("search", params.search);
+    if (params?.sort_by) searchParams.set("sort_by", params.sort_by);
+    if (params?.page) searchParams.set("page", params.page.toString());
+    if (params?.limit) searchParams.set("limit", params.limit.toString());
+    if (params?.author_id) searchParams.set("author_id", params.author_id.toString());
+    if (params?.is_featured !== undefined) searchParams.set("is_featured", params.is_featured.toString());
+    const query = searchParams.toString();
+    return this.request<StoriesListResponse>(`/stories${query ? `?${query}` : ""}`);
+  }
+
+  async getFeaturedStories() {
+    return this.request<{ data: InspiringStory[] }>("/stories/featured");
+  }
+
+  async getMostAppreciatedStories() {
+    return this.request<{ data: InspiringStory[] }>("/stories/most-appreciated");
+  }
+
+  async getStory(id: string, token?: string) {
+    return this.request<{ data: InspiringStory }>(`/stories/${id}`, token ? { token } : undefined);
+  }
+
+  async createStory(token: string, data: CreateStoryRequest) {
+    return this.request<{ data: InspiringStory }>("/stories", {
+      method: "POST",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateStory(token: string, id: string, data: UpdateStoryRequest) {
+    return this.request<{ data: InspiringStory }>(`/stories/${id}`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteStory(token: string, id: string) {
+    return this.request(`/stories/${id}`, {
+      method: "DELETE",
+      token,
+    });
+  }
+
+  async heartStory(token: string, id: string) {
+    return this.request(`/stories/${id}/heart`, {
+      method: "POST",
+      token,
+    });
+  }
+
+  async unheartStory(token: string, id: string) {
+    return this.request(`/stories/${id}/heart`, {
+      method: "DELETE",
+      token,
+    });
+  }
+
+  async getStoryComments(id: string, params?: { page?: number; limit?: number }, token?: string) {
+    const searchParams = new URLSearchParams();
+    if (params?.page) searchParams.set("page", params.page.toString());
+    if (params?.limit) searchParams.set("limit", params.limit.toString());
+    const query = searchParams.toString();
+    return this.request<StoryCommentsListResponse>(`/stories/${id}/comments${query ? `?${query}` : ""}`, token ? { token } : undefined);
+  }
+
+  async createStoryComment(token: string, storyId: string, data: CreateStoryCommentRequest) {
+    return this.request<{ data: StoryComment }>(`/stories/${storyId}/comments`, {
+      method: "POST",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async heartStoryComment(token: string, storyId: string, commentId: string) {
+    return this.request(`/stories/${storyId}/comments/${commentId}/heart`, {
+      method: "POST",
+      token,
+    });
+  }
+
+  async unheartStoryComment(token: string, storyId: string, commentId: string) {
+    return this.request(`/stories/${storyId}/comments/${commentId}/heart`, {
+      method: "DELETE",
+      token,
+    });
+  }
+
+  async getMyStories(token: string, params?: { page?: number; limit?: number }) {
+    const searchParams = new URLSearchParams();
+    if (params?.page) searchParams.set("page", params.page.toString());
+    if (params?.limit) searchParams.set("limit", params.limit.toString());
+    const query = searchParams.toString();
+    return this.request<StoriesListResponse>(`/stories/my-stories${query ? `?${query}` : ""}`, { token });
+  }
+
+  async getMyStoryStats(token: string) {
+    return this.request<{ data: StoryStats }>("/stories/my-stats", { token });
+  }
+
+  // Admin Story Moderation Endpoints
+  async adminGetPendingStories(token: string, params?: { page?: number; limit?: number }) {
+    const searchParams = new URLSearchParams();
+    if (params?.page) searchParams.set("page", params.page.toString());
+    if (params?.limit) searchParams.set("limit", params.limit.toString());
+    const query = searchParams.toString();
+    return this.request<StoriesListResponse>(`/admin/stories/pending${query ? `?${query}` : ""}`, { token });
+  }
+
+  async adminModerateStory(token: string, id: string, data: { status: string; feedback?: string }) {
+    return this.request(`/admin/stories/${id}/moderate`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async adminSetFeaturedStory(token: string, id: string, featured: boolean) {
+    return this.request(`/admin/stories/${id}/featured`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify({ is_featured: featured }),
+    });
+  }
+
+  async adminHideStoryComment(token: string, storyId: string, commentId: string, reason: string) {
+    return this.request(`/admin/stories/${storyId}/comments/${commentId}/hide`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify({ reason }),
+    });
+  }
+
+  // ========================
+  // Breathing Exercise Endpoints
+  // ========================
+
+  // Techniques
+  async getBreathingTechniques(token: string) {
+    return this.request<{ data: BreathingTechnique[] }>("/breathing/techniques", { token });
+  }
+
+  async getBreathingTechniqueById(token: string, id: string) {
+    return this.request<{ data: BreathingTechnique }>(`/breathing/techniques/${id}`, { token });
+  }
+
+  async getBreathingTechniqueBySlug(token: string, slug: string) {
+    return this.request<{ data: BreathingTechnique }>(`/breathing/techniques/slug/${slug}`, { token });
+  }
+
+  async createBreathingTechnique(token: string, data: CreateTechniqueRequest) {
+    return this.request<{ data: BreathingTechnique }>("/breathing/techniques", {
+      method: "POST",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateBreathingTechnique(token: string, id: string, data: UpdateTechniqueRequest) {
+    return this.request<{ data: BreathingTechnique }>(`/breathing/techniques/${id}`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteBreathingTechnique(token: string, id: string) {
+    return this.request(`/breathing/techniques/${id}`, {
+      method: "DELETE",
+      token,
+    });
+  }
+
+  // Sessions
+  async getBreathingSessions(token: string, params?: SessionHistoryParams) {
+    const searchParams = new URLSearchParams();
+    if (params?.start_date) searchParams.set("start_date", params.start_date);
+    if (params?.end_date) searchParams.set("end_date", params.end_date);
+    if (params?.technique_id) searchParams.set("technique_id", params.technique_id);
+    if (params?.page) searchParams.set("page", params.page.toString());
+    if (params?.limit) searchParams.set("limit", params.limit.toString());
+    const query = searchParams.toString();
+    return this.request<{ data: SessionHistoryResponse }>(`/breathing/sessions${query ? `?${query}` : ""}`, { token });
+  }
+
+  async getBreathingSession(token: string, id: string) {
+    return this.request<{ data: BreathingSession }>(`/breathing/sessions/${id}`, { token });
+  }
+
+  async startBreathingSession(token: string, data: StartSessionRequest) {
+    return this.request<{ data: BreathingSession }>("/breathing/sessions", {
+      method: "POST",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async completeBreathingSession(token: string, id: string, data: CompleteSessionRequest) {
+    return this.request<{ data: SessionCompletionResult }>(`/breathing/sessions/${id}/complete`, {
+      method: "POST",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Preferences
+  async getBreathingPreferences(token: string) {
+    return this.request<{ data: BreathingPreferences }>("/breathing/preferences", { token });
+  }
+
+  async updateBreathingPreferences(token: string, data: UpdatePreferencesRequest) {
+    return this.request<{ data: BreathingPreferences }>("/breathing/preferences", {
+      method: "PUT",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Favorites
+  async getBreathingFavorites(token: string) {
+    return this.request<{ data: BreathingTechnique[] }>("/breathing/favorites", { token });
+  }
+
+  async addBreathingFavorite(token: string, techniqueId: string) {
+    return this.request(`/breathing/favorites/${techniqueId}`, {
+      method: "POST",
+      token,
+    });
+  }
+
+  async removeBreathingFavorite(token: string, techniqueId: string) {
+    return this.request(`/breathing/favorites/${techniqueId}`, {
+      method: "DELETE",
+      token,
+    });
+  }
+
+  async reorderBreathingFavorites(token: string, techniqueIds: string[]) {
+    return this.request("/breathing/favorites/reorder", {
+      method: "PUT",
+      token,
+      body: JSON.stringify(techniqueIds),
+    });
+  }
+
+  // Stats
+  async getBreathingStats(token: string) {
+    return this.request<{ data: BreathingStats }>("/breathing/stats", { token });
+  }
+
+  async getBreathingTechniqueUsage(token: string) {
+    return this.request<{ data: TechniqueUsageStats[] }>("/breathing/stats/usage", { token });
+  }
+
+  async getBreathingCalendar(token: string, year: number, month: number) {
+    return this.request<{ data: BreathingCalendar }>(`/breathing/calendar?year=${year}&month=${month}`, { token });
+  }
+
+  // Widget & Recommendations
+  async getBreathingWidgetData(token: string) {
+    return this.request<{ data: BreathingWidgetData }>("/breathing/widget", { token });
+  }
+
+  async getBreathingRecommendations(token: string, mood?: string, timeOfDay?: string) {
+    const searchParams = new URLSearchParams();
+    if (mood) searchParams.set("mood", mood);
+    if (timeOfDay) searchParams.set("time_of_day", timeOfDay);
+    const query = searchParams.toString();
+    return this.request<{ data: RecommendationsResponse }>(`/breathing/recommendations${query ? `?${query}` : ""}`, { token });
   }
 }
 

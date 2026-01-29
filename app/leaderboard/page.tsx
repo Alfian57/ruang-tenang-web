@@ -45,8 +45,8 @@ export default function LeaderboardPage() {
       <Navbar variant="back" />
       
       {/* Background Decorations */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-100/50 rounded-full blur-[120px] -z-10 pointer-events-none" />
-      <div className="absolute top-20 left-0 w-[400px] h-[400px] bg-orange-100/50 rounded-full blur-[100px] -z-10 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-125 h-125 bg-red-100/50 rounded-full blur-[120px] -z-10 pointer-events-none" />
+      <div className="absolute top-20 left-0 w-100 h-100 bg-orange-100/50 rounded-full blur-[100px] -z-10 pointer-events-none" />
       
       <main className="pt-32 pb-20 container mx-auto px-4 z-10 relative">
         <div className="text-center mb-16">
@@ -89,7 +89,7 @@ export default function LeaderboardPage() {
                     </div>
                   </div>
 
-                  <div className="w-20 h-20 mt-4 bg-gradient-to-br from-gray-200 to-gray-400 rounded-2xl mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                  <div className="w-20 h-20 mt-4 bg-linear-to-br from-gray-200 to-gray-400 rounded-2xl mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition-transform duration-300">
                     {topThree[1].name.charAt(0).toUpperCase()}
                   </div>
                   
@@ -118,7 +118,7 @@ export default function LeaderboardPage() {
                      </div>
                   </div>
                   
-                  <div className="w-28 h-28 mt-6 bg-gradient-to-br from-primary to-red-600 rounded-2xl mb-5 flex items-center justify-center text-4xl font-bold text-white shadow-xl shadow-primary/20 overflow-hidden transform -rotate-3 hover:rotate-0 transition-transform duration-300">
+                  <div className="w-28 h-28 mt-6 bg-linear-to-br from-primary to-red-600 rounded-2xl mb-5 flex items-center justify-center text-4xl font-bold text-white shadow-xl shadow-primary/20 overflow-hidden transform -rotate-3 hover:rotate-0 transition-transform duration-300">
                     {topThree[0].name.charAt(0).toUpperCase()}
                   </div>
                   
@@ -127,7 +127,7 @@ export default function LeaderboardPage() {
                   </h3>
                   <p className="text-primary font-medium mb-4">{topThree[0].role}</p>
                   
-                  <div className="bg-gradient-to-r from-primary to-red-600 text-white px-6 py-2 rounded-full font-bold text-lg shadow-lg shadow-primary/20">
+                  <div className="bg-linear-to-r from-primary to-red-600 text-white px-6 py-2 rounded-full font-bold text-lg shadow-lg shadow-primary/20">
                     {topThree[0].exp.toLocaleString()} EXP
                   </div>
                   
@@ -151,7 +151,7 @@ export default function LeaderboardPage() {
                     </div>
                   </div>
 
-                  <div className="w-20 h-20 mt-4 bg-gradient-to-br from-amber-600 to-amber-800 rounded-2xl mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                  <div className="w-20 h-20 mt-4 bg-linear-to-br from-amber-600 to-amber-800 rounded-2xl mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition-transform duration-300">
                     {topThree[2].name.charAt(0).toUpperCase()}
                   </div>
                   

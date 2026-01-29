@@ -184,7 +184,7 @@ export function ArticleSection() {
                 >
                   <Link href={`/articles/${article.id}`}>
                     <article className="flex gap-4 group py-3 border-b border-gray-100 last:border-0">
-                      <div className="relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden">
+                      <div className="relative w-20 h-20 shrink-0 rounded-xl overflow-hidden">
                         <Image
                           src={getArticleImage(article.thumbnail, index + 1)}
                           alt={article.title}

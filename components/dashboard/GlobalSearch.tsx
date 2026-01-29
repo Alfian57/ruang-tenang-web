@@ -109,7 +109,7 @@ export function GlobalSearch() {
                   onClick={() => handleSelect(`/dashboard/articles/${article.id}`)}
                   className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-md cursor-pointer group"
                 >
-                  <div className="relative w-10 h-10 rounded-md overflow-hidden flex-shrink-0 bg-gray-100">
+                  <div className="relative w-10 h-10 rounded-md overflow-hidden shrink-0 bg-gray-100">
                     <Image
                       src={getUploadUrl(article.thumbnail)}
                       alt={article.title}
@@ -148,7 +148,7 @@ export function GlobalSearch() {
                   onClick={() => handleSelect(`/dashboard/songs/${song.id}`)}
                   className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-md cursor-pointer group"
                 >
-                  <div className="relative w-10 h-10 rounded-md overflow-hidden flex-shrink-0 bg-gray-100">
+                  <div className="relative w-10 h-10 rounded-md overflow-hidden shrink-0 bg-gray-100">
                      <Image
                       src={getUploadUrl(song.thumbnail)}
                       alt={song.title}

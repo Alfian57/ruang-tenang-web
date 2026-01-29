@@ -215,7 +215,7 @@ export default function MusicPage() {
                   className="w-full p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors"
                   onClick={() => loadSongs(category)}
                 >
-                  <div className="w-16 h-16 rounded-xl overflow-hidden bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center shrink-0">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden bg-linear-to-br from-red-100 to-red-200 flex items-center justify-center shrink-0">
                     {category.thumbnail ? (
                       <Image
                         src={category.thumbnail}
@@ -289,7 +289,7 @@ export default function MusicPage() {
       {currentSong && (
         <div className="fixed bottom-0 left-0 right-0 lg:left-56 h-20 bg-white border-t shadow-lg px-4 flex items-center gap-4 z-50">
           <div className="flex items-center gap-4 flex-1 min-w-0">
-            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center shrink-0 overflow-hidden">
+            <div className="w-14 h-14 rounded-xl bg-linear-to-br from-red-100 to-red-200 flex items-center justify-center shrink-0 overflow-hidden">
               {currentSong.thumbnail ? (
                 <Image
                   src={currentSong.thumbnail}

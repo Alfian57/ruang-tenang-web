@@ -4,8 +4,8 @@ import { useEffect, useCallback, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { 
-  FileText, 
+import {
+  FileText,
   LogOut,
   Menu,
   X,
@@ -17,7 +17,8 @@ import {
   ChevronDown,
   LayoutDashboard,
   Music,
-  Trophy
+  Trophy,
+  Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LogoutModal } from "@/components/ui/logout-modal";
@@ -55,6 +56,17 @@ const adminLinks = [
   { href: "/dashboard/admin/songs", icon: Music, label: "Kelola Musik" },
   { href: "/dashboard/admin/forums", icon: MessageSquare, label: "Kelola Forum" },
   { href: "/dashboard/admin/levels", icon: Trophy, label: "Kelola Level" },
+  { href: "/dashboard/moderation", icon: Shield, label: "Moderasi" },
+];
+
+// Moderator menu items (for moderator role)
+const moderatorLinks = [
+  { href: "/dashboard", icon: LayoutDashboard, label: "Beranda" },
+  { href: "/dashboard/articles", icon: FileText, label: "Artikel" },
+  { href: "/dashboard/chat", icon: MessageSquare, label: "AI Chat" },
+  { href: "/dashboard/forum", icon: Users, label: "Forum" },
+  { href: "/dashboard/music", icon: Music, label: "Musik" },
+  { href: "/dashboard/moderation", icon: Shield, label: "Moderasi" },
 ];
 
 export default function DashboardLayout({
@@ -76,7 +88,7 @@ function DashboardContent({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isAdmin, isModerator } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -107,13 +119,13 @@ function DashboardContent({
         onClose={() => setShowLogoutModal(false)}
         onConfirm={handleLogout}
       />
-      <EditProfileModal 
-        isOpen={showEditProfileModal} 
-        onClose={() => setShowEditProfileModal(false)} 
+      <EditProfileModal
+        isOpen={showEditProfileModal}
+        onClose={() => setShowEditProfileModal(false)}
       />
-      <ChangePasswordModal 
-        isOpen={showChangePasswordModal} 
-        onClose={() => setShowChangePasswordModal(false)} 
+      <ChangePasswordModal
+        isOpen={showChangePasswordModal}
+        onClose={() => setShowChangePasswordModal(false)}
       />
       {!isAdmin && (
         <ExpHistoryModal
@@ -138,7 +150,7 @@ function DashboardContent({
           {!isAdmin && (
             <button
               onClick={() => setShowExpHistoryModal(true)}
-              className="flex items-center gap-1 bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-full px-2 py-1 shadow-sm hover:shadow-md hover:border-yellow-300 transition-all cursor-pointer"
+              className="flex items-center gap-1 bg-linear-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-full px-2 py-1 shadow-sm hover:shadow-md hover:border-yellow-300 transition-all cursor-pointer"
               title="Lihat riwayat EXP"
             >
               <span className="text-sm">{user?.badge_icon || "🌱"}</span>
@@ -148,9 +160,15 @@ function DashboardContent({
             </button>
           )}
           {isAdmin && (
-            <div className="flex items-center gap-1 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-full px-2 py-1 shadow-sm">
+            <div className="flex items-center gap-1 bg-linear-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-full px-2 py-1 shadow-sm">
               <span className="text-sm">👑</span>
               <span className="text-[10px] font-semibold text-purple-600">Admin</span>
+            </div>
+          )}
+          {isModerator && (
+            <div className="flex items-center gap-1 bg-linear-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-full px-2 py-1 shadow-sm">
+              <span className="text-sm">🛡️</span>
+              <span className="text-[10px] font-semibold text-blue-600">Moderator</span>
             </div>
           )}
           {/* Mobile Avatar Dropdown */}
@@ -158,11 +176,11 @@ function DashboardContent({
             <DropdownMenuTrigger asChild>
               <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden relative border border-gray-200 cursor-pointer">
                 {user?.avatar ? (
-                  <Image 
-                    src={user.avatar.startsWith("http") ? user.avatar : getUploadUrl(user.avatar)} 
-                    alt={user.name} 
-                    fill 
-                    className="object-cover" 
+                  <Image
+                    src={user.avatar.startsWith("http") ? user.avatar : getUploadUrl(user.avatar)}
+                    alt={user.name}
+                    fill
+                    className="object-cover"
                   />
                 ) : (
                   <span className="text-primary font-bold text-sm">{user?.name?.charAt(0).toUpperCase()}</span>
@@ -195,7 +213,7 @@ function DashboardContent({
 
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-black/50 z-40"
           onClick={() => setSidebarOpen(false)}
         />
@@ -212,14 +230,14 @@ function DashboardContent({
         {/* Logo */}
         <div className="p-4 h-16 flex items-center justify-between border-b">
           <Link href="/dashboard" className="flex items-center gap-2">
-          {sidebarCollapsed ? (
-            <Image src="/logo.png" alt="Ruang Tenang" width={32} height={32} className="object-contain" />
-          ): (
-            <Image src="/logo-full.png" alt="Ruang Tenang" width={sidebarCollapsed ? 32 : 120} height={32} className="object-contain" />
-          )}
+            {sidebarCollapsed ? (
+              <Image src="/logo.png" alt="Ruang Tenang" width={32} height={32} className="object-contain" />
+            ) : (
+              <Image src="/logo-full.png" alt="Ruang Tenang" width={sidebarCollapsed ? 32 : 120} height={32} className="object-contain" />
+            )}
           </Link>
           {!sidebarCollapsed && (
-            <button 
+            <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
               className="hidden lg:flex w-8 h-8 rounded-lg bg-gray-100 items-center justify-center hover:bg-gray-200 transition-colors"
             >
@@ -230,7 +248,7 @@ function DashboardContent({
 
         {/* Toggle button for collapsed state */}
         {sidebarCollapsed && (
-          <button 
+          <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className="absolute top-16 -right-3 hidden lg:flex w-6 h-6 rounded-full bg-white border shadow-sm items-center justify-center hover:bg-gray-50 transition-colors"
           >
@@ -242,7 +260,7 @@ function DashboardContent({
         <nav className="py-6 overflow-y-auto h-[calc(100vh-10rem)]">
           {/* Show different menus based on role */}
           {isAdmin ? (
-            // Admin sees only admin links
+            // Admin sees admin links (includes moderation)
             adminLinks.map((link) => {
               const isActive = pathname === link.href || (link.href !== "/dashboard" && pathname.startsWith(link.href));
               return (
@@ -252,14 +270,37 @@ function DashboardContent({
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
                     "flex items-center gap-3 mx-3 px-4 py-3 rounded-xl transition-all relative",
-                    isActive 
-                      ? "text-white bg-primary shadow-md" 
+                    isActive
+                      ? "text-white bg-primary shadow-md"
                       : "text-gray-600 hover:bg-gray-100",
                     sidebarCollapsed && "lg:justify-center lg:mx-2 lg:px-3"
                   )}
                   title={sidebarCollapsed ? link.label : undefined}
                 >
                   <link.icon className="w-5 h-5 shrink-0" />
+                  {!sidebarCollapsed && <span className="font-medium">{link.label}</span>}
+                </Link>
+              );
+            })
+          ) : isModerator ? (
+            // Moderator sees moderator links (member features + moderation)
+            moderatorLinks.map((link) => {
+              const isActive = pathname === link.href || (link.href !== "/dashboard" && pathname.startsWith(link.href));
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setSidebarOpen(false)}
+                  className={cn(
+                    "flex items-center gap-3 mx-3 px-4 py-3 rounded-xl transition-all relative mb-1",
+                    isActive
+                      ? "text-white bg-primary shadow-md"
+                      : "text-gray-600 hover:bg-gray-100",
+                    sidebarCollapsed && "lg:justify-center lg:mx-2 lg:px-3"
+                  )}
+                  title={sidebarCollapsed ? link.label : undefined}
+                >
+                  <link.icon className={cn("w-5 h-5 shrink-0", isActive ? "text-white" : "text-gray-500")} />
                   {!sidebarCollapsed && <span className="font-medium">{link.label}</span>}
                 </Link>
               );
@@ -275,8 +316,8 @@ function DashboardContent({
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
                     "flex items-center gap-3 mx-3 px-4 py-3 rounded-xl transition-all relative mb-1",
-                    isActive 
-                      ? "text-white bg-primary shadow-md" 
+                    isActive
+                      ? "text-white bg-primary shadow-md"
                       : "text-gray-600 hover:bg-gray-100",
                     sidebarCollapsed && "lg:justify-center lg:mx-2 lg:px-3"
                   )}
@@ -298,9 +339,9 @@ function DashboardContent({
         {/* Bottom section (Updated to remove logout, maybe add something else or leave empty) */}
         {/* Logout moved to top bar dropdown */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t bg-white">
-           <div className="flex items-center justify-center p-2">
-              <span className="text-xs text-gray-400">v1.0.0</span>
-           </div>
+          <div className="flex items-center justify-center p-2">
+            <span className="text-xs text-gray-400">v1.0.0</span>
+          </div>
         </div>
       </aside>
 
@@ -315,10 +356,10 @@ function DashboardContent({
           <div className="flex items-center gap-4">
             {/* Search */}
             <GlobalSearch />
-            
+
             {/* Gamification Info */}
             {isAdmin ? (
-              <div className="hidden md:flex items-center mr-4 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-full px-4 py-1.5 shadow-sm">
+              <div className="hidden md:flex items-center mr-4 bg-linear-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-full px-4 py-1.5 shadow-sm">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">👑</span>
                   <span className="text-purple-600 font-semibold">Admin</span>
@@ -327,7 +368,7 @@ function DashboardContent({
             ) : (
               <button
                 onClick={() => setShowExpHistoryModal(true)}
-                className="hidden md:flex items-center mr-4 bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-full px-4 py-1.5 shadow-sm hover:shadow-md hover:border-yellow-300 transition-all cursor-pointer"
+                className="hidden md:flex items-center mr-4 bg-linear-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-full px-4 py-1.5 shadow-sm hover:shadow-md hover:border-yellow-300 transition-all cursor-pointer"
                 title="Klik untuk melihat riwayat EXP"
               >
                 <div className="flex items-center gap-2">
@@ -347,11 +388,11 @@ function DashboardContent({
                 <div className="flex items-center gap-2 cursor-pointer">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden relative border border-gray-200">
                     {user?.avatar ? (
-                      <Image 
-                        src={user.avatar.startsWith("http") ? user.avatar : getUploadUrl(user.avatar)} 
-                        alt={user.name} 
-                        fill 
-                        className="object-cover" 
+                      <Image
+                        src={user.avatar.startsWith("http") ? user.avatar : getUploadUrl(user.avatar)}
+                        alt={user.name}
+                        fill
+                        className="object-cover"
                       />
                     ) : (
                       <span className="text-primary font-bold">{user?.name?.charAt(0).toUpperCase()}</span>

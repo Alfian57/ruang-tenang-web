@@ -103,7 +103,7 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         class: cn(
-          "prose prose-sm sm:prose max-w-none focus:outline-none min-h-[200px] p-4",
+          "prose prose-sm sm:prose max-w-none focus:outline-none min-h-50 p-4",
           "prose-headings:font-semibold prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg",
           "prose-p:my-2 prose-ul:my-2 prose-ol:my-2",
           "prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic"
