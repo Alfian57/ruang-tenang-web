@@ -4,6 +4,7 @@ import { useState, useRef, FormEvent, useEffect, useCallback } from "react";
 import { Send, Mic, Square, Keyboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import { VoiceInput } from "./VoiceInput";
 
 interface ChatInputProps {
@@ -89,7 +90,9 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
       }, 1000);
     } catch (error) {
       console.error("ChatInput.startRecording: failed to access microphone", error);
-      alert("Gagal mengakses mikrofon. Pastikan izin telah diberikan.");
+      toast.error("Gagal mengakses mikrofon", {
+        description: "Pastikan izin mikrofon telah diberikan di pengaturan browser."
+      });
     }
   };
 

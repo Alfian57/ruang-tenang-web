@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { ChatSession, ChatMessage, ChatFolder, ChatSessionSummary, SuggestedPrompt, ChatExportResponse } from "@/types";
 import { useAuthStore } from "./authStore";
@@ -259,7 +260,9 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
       }));
     } catch (error) {
       console.error("ChatStore.sendAudioMessage: failed", error);
-      alert("Gagal mengirim pesan suara");
+      toast.error("Gagal mengirim pesan suara", {
+        description: "Silakan coba lagi."
+      });
       set({ isSending: false, isRecording: false });
     }
   },
