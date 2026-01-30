@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
 import { useJournalStore } from "@/stores/journalStore";
@@ -57,7 +57,6 @@ export default function JournalPage() {
         isExporting,
         error,
         loadJournals,
-        loadJournal,
         createJournal,
         updateJournal,
         deleteJournal,
@@ -73,8 +72,6 @@ export default function JournalPage() {
         exportJournals,
         setActiveJournal,
         clearError,
-        clearFilters,
-        searchQuery,
         searchResults,
         isSearching,
     } = useJournalStore();

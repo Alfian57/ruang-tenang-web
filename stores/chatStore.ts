@@ -198,6 +198,7 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
       type: "text",
       is_liked: false,
       is_disliked: false,
+      is_pinned: false,
       created_at: new Date().toISOString(),
     };
     set((state) => ({ messages: [...state.messages, optimisticMessage] }));

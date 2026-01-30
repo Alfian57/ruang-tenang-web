@@ -127,9 +127,9 @@ export function JournalEditor({
     // Update placeholder when writingPrompt changes
     useEffect(() => {
         if (editor && writingPrompt) {
-            editor.extensionManager.extensions
-                .find((ext) => ext.name === "placeholder")
-                ?.options &&
+            const placeholderExt = editor.extensionManager.extensions
+                .find((ext) => ext.name === "placeholder");
+            if (placeholderExt?.options) {
                 editor.setOptions({
                     extensions: [
                         StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
@@ -138,6 +138,7 @@ export function JournalEditor({
                         }),
                     ],
                 });
+            }
         }
     }, [writingPrompt, editor]);
 

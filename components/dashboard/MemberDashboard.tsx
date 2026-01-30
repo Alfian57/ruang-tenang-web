@@ -435,7 +435,7 @@ export function MemberDashboard() {
 
         {/* Breathing Exercise Widget */}
         <div className="lg:col-span-4">
-          <BreathingWidget data={breathingWidgetData} />
+          {breathingWidgetData && <BreathingWidget data={breathingWidgetData} />}
         </div>
       </div>
 

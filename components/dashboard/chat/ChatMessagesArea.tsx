@@ -28,7 +28,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
 
 /**
  * Props for the ChatMessagesArea component.
@@ -222,10 +221,10 @@ export function ChatMessagesArea({
             <div className="space-y-3">
               <p className="text-sm text-gray-700 leading-relaxed">{summary.summary}</p>
 
-              {summary.topics && summary.topics.length > 0 && (
+              {summary.main_topics && summary.main_topics.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   <span className="text-xs text-gray-500">Topik:</span>
-                  {summary.topics.map((topic, i) => (
+                  {summary.main_topics.map((topic, i) => (
                     <span key={i} className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
                       {topic}
                     </span>
@@ -233,9 +232,9 @@ export function ChatMessagesArea({
                 </div>
               )}
 
-              {summary.mood && (
+              {summary.sentiment && (
                 <p className="text-xs text-gray-500">
-                  <span className="font-medium">Mood:</span> {summary.mood}
+                  <span className="font-medium">Mood:</span> {summary.sentiment}
                 </p>
               )}
 
@@ -301,10 +300,10 @@ export function ChatMessagesArea({
               {suggestedPrompts.slice(0, 4).map((prompt, i) => (
                 <button
                   key={i}
-                  onClick={() => onSuggestedPromptClick?.(prompt.prompt)}
+                  onClick={() => onSuggestedPromptClick?.(prompt.text)}
                   className="px-3 py-2 text-sm bg-gray-100 hover:bg-primary/10 hover:text-primary rounded-lg transition-colors text-left"
                 >
-                  {prompt.prompt}
+                  {prompt.text}
                 </button>
               ))}
             </div>

@@ -50,11 +50,11 @@ export function EmptyState({ onCreateSession, suggestedPrompts, onSuggestedPromp
             {suggestedPrompts.slice(0, 4).map((prompt, i) => (
               <button
                 key={i}
-                onClick={() => onSuggestedPromptClick?.(prompt.prompt)}
+                onClick={() => onSuggestedPromptClick?.(prompt.text)}
                 className="p-3 text-sm bg-white hover:bg-primary/5 hover:border-primary/20 border border-gray-200 rounded-xl transition-all text-left group"
               >
                 <span className="text-gray-700 group-hover:text-primary line-clamp-2">
-                  {prompt.prompt}
+                  {prompt.text}
                 </span>
                 <span className="text-xs text-gray-400 mt-1 block capitalize">
                   {prompt.category === "mood" ? "Berdasarkan Mood" :

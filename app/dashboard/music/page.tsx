@@ -11,7 +11,6 @@ import {
   Plus,
   ListMusic,
   Library,
-  ArrowLeft
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -62,7 +61,6 @@ export default function MusicPage() {
     isPlaying,
     playSong,
     setIsPlaying,
-    playPlaylist
   } = useMusicPlayerStore();
 
   // Debounce search
@@ -137,12 +135,6 @@ export default function MusicPage() {
       setIsPlaying(!isPlaying);
     } else {
       playSong(song, songs, { type: "category", name: selectedCategory?.name || "Musik" });
-    }
-  };
-
-  const handlePlaylistPlay = (playlist: Playlist) => {
-    if (playlist.items && playlist.items.length > 0) {
-      playPlaylist(playlist);
     }
   };
 
