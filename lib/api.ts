@@ -1309,6 +1309,145 @@ class ApiClient {
     const query = searchParams.toString();
     return this.request<{ data: RecommendationsResponse }>(`/breathing/recommendations${query ? `?${query}` : ""}`, { token });
   }
+
+  // ==================== JOURNAL API ====================
+
+  // CRUD Operations
+  async createJournal(token: string, data: {
+    title: string;
+    content: string;
+    mood_id?: number;
+    tags?: string[];
+    is_private?: boolean;
+    share_with_ai?: boolean;
+  }) {
+    return this.request<{ data: import("@/types").Journal }>("/journals", {
+      method: "POST",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getJournal(token: string, id: number) {
+    return this.request<{ data: import("@/types").Journal }>(`/journals/${id}`, { token });
+  }
+
+  async updateJournal(token: string, id: number, data: {
+    title?: string;
+    content?: string;
+    mood_id?: number;
+    tags?: string[];
+    is_private?: boolean;
+    share_with_ai?: boolean;
+  }) {
+    return this.request<{ data: import("@/types").Journal }>(`/journals/${id}`, {
+      method: "PUT",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteJournal(token: string, id: number) {
+    return this.request<{ message: string }>(`/journals/${id}`, {
+      method: "DELETE",
+      token,
+    });
+  }
+
+  async listJournals(token: string, params?: {
+    page?: number;
+    limit?: number;
+    tags?: string[];
+    start_date?: string;
+    end_date?: string;
+    mood_id?: number;
+  }) {
+    const searchParams = new URLSearchParams();
+    if (params?.page) searchParams.set("page", params.page.toString());
+    if (params?.limit) searchParams.set("limit", params.limit.toString());
+    if (params?.tags && params.tags.length > 0) {
+      params.tags.forEach(tag => searchParams.append("tags", tag));
+    }
+    if (params?.start_date) searchParams.set("start_date", params.start_date);
+    if (params?.end_date) searchParams.set("end_date", params.end_date);
+    if (params?.mood_id) searchParams.set("mood_id", params.mood_id.toString());
+    const query = searchParams.toString();
+    return this.request<import("@/types").JournalListResponse>(`/journals${query ? `?${query}` : ""}`, { token });
+  }
+
+  async searchJournals(token: string, query: string, page?: number, limit?: number) {
+    const searchParams = new URLSearchParams();
+    searchParams.set("q", query);
+    if (page) searchParams.set("page", page.toString());
+    if (limit) searchParams.set("limit", limit.toString());
+    return this.request<import("@/types").JournalListResponse>(`/journals/search?${searchParams.toString()}`, { token });
+  }
+
+  // Settings
+  async getJournalSettings(token: string) {
+    return this.request<{ data: import("@/types").JournalSettings }>("/journals/settings", { token });
+  }
+
+  async updateJournalSettings(token: string, data: {
+    allow_ai_access?: boolean;
+    ai_context_days?: number;
+    ai_context_max_entries?: number;
+    default_share_with_ai?: boolean;
+  }) {
+    return this.request<{ data: import("@/types").JournalSettings }>("/journals/settings", {
+      method: "PUT",
+      token,
+      body: JSON.stringify(data),
+    });
+  }
+
+  // AI Integration
+  async toggleJournalAIShare(token: string, journalId: number) {
+    return this.request<{ data: import("@/types").Journal }>(`/journals/${journalId}/toggle-ai-share`, {
+      method: "PUT",
+      token,
+    });
+  }
+
+  async getJournalAIContext(token: string) {
+    return this.request<{ data: import("@/types").JournalAIContext }>("/journals/ai-context", { token });
+  }
+
+  async getJournalAIAccessLogs(token: string, page?: number, limit?: number) {
+    const searchParams = new URLSearchParams();
+    if (page) searchParams.set("page", page.toString());
+    if (limit) searchParams.set("limit", limit.toString());
+    const query = searchParams.toString();
+    return this.request<{
+      data: import("@/types").JournalAIAccessLog[];
+      total: number;
+      page: number;
+      limit: number;
+    }>(`/journals/ai-access-logs${query ? `?${query}` : ""}`, { token });
+  }
+
+  // Analytics & AI Features
+  async getJournalAnalytics(token: string) {
+    return this.request<{ data: import("@/types").JournalAnalytics }>("/journals/analytics", { token });
+  }
+
+  async getJournalWritingPrompt(token: string, mood?: string) {
+    const query = mood ? `?mood=${mood}` : "";
+    return this.request<{ data: import("@/types").JournalPrompt }>(`/journals/prompt${query}`, { token });
+  }
+
+  async getJournalWeeklySummary(token: string) {
+    return this.request<{ data: import("@/types").JournalWeeklySummary }>("/journals/weekly-summary", { token });
+  }
+
+  // Export
+  async exportJournals(token: string, format: "txt" | "html", startDate?: string, endDate?: string) {
+    const searchParams = new URLSearchParams();
+    searchParams.set("format", format);
+    if (startDate) searchParams.set("start_date", startDate);
+    if (endDate) searchParams.set("end_date", endDate);
+    return this.request<{ data: import("@/types").JournalExportData }>(`/journals/export?${searchParams.toString()}`, { token });
+  }
 }
 
 export const api = new ApiClient(API_BASE_URL);

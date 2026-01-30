@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 import { useAuthStore } from "@/stores/authStore";
 import { useChatStore } from "@/stores/chatStore";
+import { useJournalStore } from "@/stores/journalStore";
 import {
   ChatSidebar,
   NewSessionDialog,
@@ -65,6 +66,14 @@ export default function ChatPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
+  // Journal store for AI context indicator
+  const {
+    settings: journalSettings,
+    aiContext,
+    loadSettings: loadJournalSettings,
+    loadAIContext,
+  } = useJournalStore();
+
   // Ref for auto-scrolling to bottom
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -82,8 +91,11 @@ export default function ChatPage() {
     if (token) {
       loadSessions(token);
       loadFolders(token);
+      // Load journal settings for AI context indicator
+      loadJournalSettings(token);
+      loadAIContext(token);
     }
-  }, [token, loadSessions, loadFolders]);
+  }, [token, loadSessions, loadFolders, loadJournalSettings, loadAIContext]);
 
   // Reload sessions when filter or activeFolderId changes
   useEffect(() => {
@@ -221,6 +233,8 @@ export default function ChatPage() {
           onGenerateSummary={handleGenerateSummary}
           suggestedPrompts={suggestedPrompts}
           onSuggestedPromptClick={handleSuggestedPrompt}
+          journalAIAccessEnabled={journalSettings?.allow_ai_access}
+          journalSharedCount={aiContext?.total_shared ?? 0}
         />
       </div>
 
