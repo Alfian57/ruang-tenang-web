@@ -12,6 +12,11 @@ export interface ForumPost {
   created_at: string;
   updated_at: string;
   user?: User;
+  
+  // Interaction
+  likes_count?: number;
+  is_liked?: boolean;
+  is_best_answer?: boolean;
 }
 
 export interface ForumCategory {
@@ -36,6 +41,7 @@ export interface Forum {
   replies_count?: number;
   likes_count?: number;
   is_liked?: boolean;
+  has_best_answer?: boolean; // Helpful to know if topic is resolved
 }
 
 export interface CreateForumRequest {
@@ -60,4 +66,13 @@ export interface ForumPostResponse {
   total: number;
   limit: number;
   page: number;
+}
+
+export interface TogglePostLikeResponse {
+  likes_count: number;
+  is_liked: boolean;
+}
+
+export interface ToggleBestAnswerResponse {
+  is_best_answer: boolean;
 }

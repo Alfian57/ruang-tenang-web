@@ -20,7 +20,7 @@ export function BreathingWidget({ data }: BreathingWidgetProps) {
                     <h3 className="font-semibold">Latihan Pernapasan</h3>
                 </div>
                 <Link
-                    href="/member/breathing"
+                    href="/dashboard/breathing"
                     className="text-sm text-primary hover:underline flex items-center gap-1"
                 >
                     Lihat semua
@@ -111,7 +111,7 @@ export function BreathingWidget({ data }: BreathingWidgetProps) {
 
             {/* Action Button */}
             <Link
-                href="/member/breathing"
+                href="/dashboard/breathing"
                 className={cn(
                     "w-full py-3 rounded-lg font-medium text-center block transition-colors",
                     data.needs_practice_today

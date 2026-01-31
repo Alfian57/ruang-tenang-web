@@ -147,7 +147,7 @@ export function JournalAnalytics({ analytics, isLoading = false }: JournalAnalyt
                             </div>
                             <div>
                                 <p className="text-sm text-gray-500">Total Kata</p>
-                                <p className="text-2xl font-bold">{analytics.total_word_count.toLocaleString()}</p>
+                                <p className="text-2xl font-bold">{(analytics.total_word_count ?? 0).toLocaleString()}</p>
                             </div>
                         </div>
                     </CardContent>
@@ -313,7 +313,7 @@ export function JournalWeeklySummaryCard({
                     </div>
                     <div className="flex items-center gap-1">
                         <TrendingUp className="w-4 h-4 text-gray-400" />
-                        <span>{summary.total_words.toLocaleString()} kata</span>
+                        <span>{(summary.total_words ?? 0).toLocaleString()} kata</span>
                     </div>
                     {summary.dominant_mood && (
                         <div className="flex items-center gap-1">

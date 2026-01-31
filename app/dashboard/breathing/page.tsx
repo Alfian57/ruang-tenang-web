@@ -545,37 +545,57 @@ export default function BreathingPage() {
             {showCompletionModal && completionResult && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                     <div className="bg-card rounded-xl w-full max-w-md p-6 text-center">
-                        <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-                            <Check className="w-10 h-10 text-green-500" />
+                        <div className={cn(
+                            "w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4",
+                            completionResult.session.completed ? "bg-green-500/20" : "bg-amber-500/20"
+                        )}>
+                            <Check className={cn(
+                                "w-10 h-10",
+                                completionResult.session.completed ? "text-green-500" : "text-amber-500"
+                            )} />
                         </div>
 
-                        <h3 className="text-2xl font-bold mb-2">Sesi Selesai!</h3>
+                        <h3 className="text-2xl font-bold mb-2">
+                            {completionResult.session.completed ? "Sesi Selesai!" : "Sesi Belum Selesai"}
+                        </h3>
                         <p className="text-muted-foreground mb-6">
                             Kamu telah berlatih selama {formatBreathingDuration(completionResult.session.duration_seconds)}
                         </p>
 
-                        {/* XP Earned */}
-                        <div className="p-4 rounded-xl bg-primary/10 mb-6">
-                            <div className="text-3xl font-bold text-primary mb-1">
-                                +{completionResult.total_xp} XP
-                            </div>
-                            {completionResult.bonus_xp > 0 && (
+                        {/* Daily Task Completion - Only show if completed */}
+                        {completionResult.session.completed ? (
+                            <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 mb-6">
+                                <div className="flex items-center justify-center gap-2 mb-2">
+                                    <span className="text-2xl">✅</span>
+                                    <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                                        Daily Task Selesai!
+                                    </span>
+                                </div>
                                 <p className="text-sm text-muted-foreground">
-                                    Termasuk bonus {completionResult.bonus_xp} XP: {completionResult.bonus_reason}
+                                    Klaim poin di menu Daily Tasks
                                 </p>
-                            )}
-                            {completionResult.streak_milestone && (
-                                <p className="text-sm text-primary font-medium mt-2">
-                                    🎉 Milestone streak! +{completionResult.streak_milestone_xp} XP
+                            </div>
+                        ) : (
+                            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-6">
+                                <div className="flex items-center justify-center gap-2 mb-2">
+                                    <span className="text-2xl">⚠️</span>
+                                    <span className="text-lg font-bold text-amber-600 dark:text-amber-400">
+                                        Belum Memenuhi Target
+                                    </span>
+                                </div>
+                                <p className="text-sm text-muted-foreground">
+                                    Selesaikan latihan hingga penuh untuk menyelesaikan daily task
                                 </p>
-                            )}
-                        </div>
+                            </div>
+                        )}
 
-                        {/* Streak Info */}
-                        <div className="flex items-center justify-center gap-2 mb-6">
-                            <div className="text-2xl">🔥</div>
-                            <span className="text-lg font-semibold">{completionResult.new_streak} Hari Streak</span>
-                        </div>
+                        {/* Streak Info - Only show if completed */}
+                        {completionResult.session.completed && (
+                            <div className="flex items-center justify-center gap-2 mb-6">
+                                <div className="text-2xl">🔥</div>
+                                <span className="text-lg font-semibold">{completionResult.new_streak} Hari Streak</span>
+                            </div>
+                        )}
 
                         {/* Mood After */}
                         <div className="mb-6">

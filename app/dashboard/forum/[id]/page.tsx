@@ -7,12 +7,20 @@ import { Forum, ForumPost } from "@/types/forum";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { ArrowLeft, Send, Trash2, Clock, Heart, MessageSquare, Share2 } from "lucide-react";
+import { ArrowLeft, Send, Trash2, Clock, Heart, MessageSquare, Share2, CheckCircle2, Trophy } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { ReportModal, BlockUserButton } from "@/components/moderation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreVertical, Flag } from "lucide-react";
 
 export default function ForumTopicPage() {
   const params = useParams();
@@ -136,6 +144,57 @@ export default function ForumTopicPage() {
       toast.error("Gagal memproses like");
     }
   };
+  
+  const handleTogglePostLike = async (post: ForumPost) => {
+    if (!token) return;
+    
+    // Optimistic Update
+    const updatedPosts = posts.map(p => {
+      if (p.id === post.id) {
+        const isLiked = !p.is_liked;
+        return {
+          ...p,
+          is_liked: isLiked,
+          likes_count: (p.likes_count || 0) + (isLiked ? 1 : -1)
+        };
+      }
+      return p;
+    });
+    setPosts(updatedPosts);
+    
+    try {
+      await api.toggleForumPostLike(token, post.id);
+    } catch (error) {
+      console.error(error);
+      toast.error("Gagal melike balasan");
+      // Revert would go here
+    }
+  };
+
+  const handleToggleBestAnswer = async (post: ForumPost) => {
+    if (!token) return;
+    
+    const isBest = !post.is_best_answer;
+    
+    // Optimistic Update
+    const updatedPosts = posts.map(p => {
+      if (p.id === post.id) return { ...p, is_best_answer: isBest };
+      // If we are marking as best, verify if we should unmark others? 
+      // Assuming multiple best answers are Allowed or handled by backend? 
+      // Usually only 1 best answer. Let's assume frontend enforces singles.
+      if (isBest) return { ...p, is_best_answer: false }; 
+      return p;
+    });
+    setPosts(updatedPosts);
+    
+    try {
+      await api.toggleBestAnswer(token, post.id);
+      toast.success(isBest ? "Ditandai sebagai Jawaban Terbaik" : "Status Jawaban Terbaik dihapus");
+    } catch (error) {
+       console.error(error);
+       toast.error("Gagal mengubah status jawaban terbaik");
+    }
+  };
 
   if (loading) return <div className="p-10 text-center text-gray-500">Memuat diskusi...</div>;
   if (!forum) return <div className="p-10 text-center text-gray-500">Topik tidak ditemukan</div>;
@@ -193,12 +252,45 @@ export default function ForumTopicPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            {(isOwner || isAdmin) && (
-              <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-50 rounded-full" onClick={() => setShowDeleteForumDialog(true)}>
-                <Trash2 className="w-5 h-5" />
-              </Button>
-            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full">
+                  <MoreVertical className="w-5 h-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {(isOwner || isAdmin) && (
+                  <DropdownMenuItem
+                    className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+                    onClick={() => setShowDeleteForumDialog(true)}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Hapus Topik
+                  </DropdownMenuItem>
+                )}
+                {user && user.id !== forum.user_id && (
+                  <>
+                    <ReportModal
+                      type="forum"
+                      contentId={forum.id}
+                      trigger={
+                        <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer">
+                          <Flag className="w-4 h-4 mr-2" />
+                          Laporkan Topik
+                        </div>
+                      }
+                    />
+                    <BlockUserButton
+                      userId={forum.user_id}
+                      userName={forum.user?.name || "User"}
+                      className="w-full justify-start text-sm font-normal px-2 py-1.5 h-auto text-red-600 hover:text-red-600 hover:bg-red-50"
+                    />
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
+
         </div>
 
         {/* Content Scroll Area */}
@@ -223,18 +315,25 @@ export default function ForumTopicPage() {
               </div>
 
               <div className="flex items-center gap-4 mt-6 pt-4 border-t">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    "gap-2 hover:bg-red-50 hover:text-red-500 transition-colors",
-                    isLiked && "text-red-500 bg-red-50"
-                  )}
-                  onClick={handleToggleLike}
-                >
-                  <Heart className={cn("w-4 h-4", isLiked && "fill-current")} />
-                  <span>{likesCount} Suka</span>
-                </Button>
+                {user?.id !== forum.user_id ? (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={cn(
+                      "gap-2 hover:bg-red-50 hover:text-red-500 transition-colors",
+                      isLiked && "text-red-500 bg-red-50"
+                    )}
+                    onClick={handleToggleLike}
+                  >
+                    <Heart className={cn("w-4 h-4", isLiked && "fill-current")} />
+                    <span>{likesCount} Suka</span>
+                  </Button>
+                ) : (
+                  <div className="flex items-center gap-2 text-sm text-gray-400 px-3 py-2">
+                    <Heart className="w-4 h-4" />
+                    <span>{likesCount} Suka</span>
+                  </div>
+                )}
                 <div className="flex items-center gap-2 text-sm text-gray-500 px-3 py-2">
                   <MessageSquare className="w-4 h-4" />
                   <span>{posts.length} Balasan</span>
@@ -258,11 +357,6 @@ export default function ForumTopicPage() {
 
             {/* Reply Input */}
             <div className="bg-white border p-4 rounded-xl shadow-sm mb-6">
-              <div className="mb-3 flex items-center gap-2">
-                <div className="text-[10px] text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full font-medium border border-yellow-200">
-                  ✨ 5 EXP / komentar (Maks 5x/hari)
-                </div>
-              </div>
               <div className="flex gap-3">
                 <div className="flex-1 relative">
                   <Textarea
@@ -282,35 +376,114 @@ export default function ForumTopicPage() {
             {/* Posts List */}
             <div className="space-y-4 pb-4">
               {posts.map((post) => (
-                <div key={post.id} className="flex gap-3 group">
+                <div key={post.id} className={cn("flex gap-3 group transition-all", post.is_best_answer && "translate-x-2")}>
                   <div className="shrink-0">
-                    <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden relative">
-                      <div className="w-full h-full flex items-center justify-center text-gray-500 text-xs font-bold">
-                        {post.user?.name?.charAt(0).toUpperCase() || "U"}
-                      </div>
+                    <div className={cn(
+                      "w-8 h-8 rounded-full overflow-hidden relative flex items-center justify-center text-xs font-bold ring-2",
+                      post.is_best_answer ? "bg-green-100 text-green-700 ring-green-500" : "bg-gray-200 text-gray-500 ring-transparent"
+                    )}>
+                      {post.is_best_answer ? <Trophy className="w-4 h-4" /> : (post.user?.name?.charAt(0).toUpperCase() || "U")}
                     </div>
                   </div>
-                  <div className="flex-1 bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border">
+                  <div className={cn(
+                    "flex-1 p-4 rounded-2xl rounded-tl-none shadow-sm border transaction-colors relative",
+                    post.is_best_answer ? "bg-green-50 border-green-200" : "bg-white"
+                  )}>
+                    {post.is_best_answer && (
+                       <div className="absolute -top-3 -right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm flex items-center gap-1">
+                         <CheckCircle2 className="w-3 h-3" /> BEST ANSWER
+                       </div>
+                    )}
+                    
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-gray-900">{post.user?.name}</span>
+                        <span className={cn("text-sm font-semibold", post.is_best_answer ? "text-green-800" : "text-gray-900")}>
+                          {post.user?.name}
+                        </span>
                         <span className="text-xs text-gray-400">•</span>
                         <span className="text-xs text-gray-400">{formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: idLocale })}</span>
                       </div>
-                      {(user?.id === post.user_id || isAdmin) && (
-                        <button
-                          onClick={() => {
-                            setDeletePostId(post.id);
-                            setShowDeletePostDialog(true);
-                          }}
-                          className="text-gray-400 hover:text-red-500 transition-colors"
-                          title="Hapus balasan"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                      )}
+                      <div className="flex items-center gap-2">
+                         {isOwner && !post.is_best_answer && (
+                           <Button 
+                             variant="ghost" 
+                             size="sm" 
+                             className="h-6 px-2 text-[10px] text-gray-400 hover:text-green-600 hover:bg-green-50"
+                             onClick={() => handleToggleBestAnswer(post)}
+                             title="Tandai sebagai Jawaban Terbaik"
+                           >
+                              <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+                              Best Answer
+                           </Button>
+                         )}
+                         
+                         <DropdownMenu>
+                           <DropdownMenuTrigger asChild>
+                             <Button variant="ghost" size="sm" className="h-6 w-6 p-0 rounded-full">
+                               <MoreVertical className="w-3 h-3 text-gray-400" />
+                             </Button>
+                           </DropdownMenuTrigger>
+                           <DropdownMenuContent align="end">
+                              {(user?.id === post.user_id || isAdmin) && (
+                                <DropdownMenuItem 
+                                  onClick={() => {
+                                    setDeletePostId(post.id);
+                                    setShowDeletePostDialog(true);
+                                  }}
+                                  className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+                                >
+                                  <Trash2 className="w-4 h-4 mr-2" />
+                                  Hapus Balasan
+                                </DropdownMenuItem>
+                              )}
+                              {user && user.id !== post.user_id && (
+                                <>
+                                  <ReportModal
+                                    type="forum_post"
+                                    contentId={post.id}
+                                    userId={post.user_id}
+                                    trigger={
+                                      <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer">
+                                        <Flag className="w-4 h-4 mr-2" />
+                                        Laporkan Balasan
+                                      </div>
+                                    }
+                                  />
+                                  <BlockUserButton
+                                    userId={post.user_id}
+                                    userName={post.user?.name || "User"}
+                                    className="w-full justify-start text-sm font-normal px-2 py-1.5 h-auto text-red-600 hover:text-red-600 hover:bg-red-50"
+                                  />
+                                </>
+                              )}
+                           </DropdownMenuContent>
+                         </DropdownMenu>
+                      </div>
                     </div>
-                    <p className="text-gray-700 text-sm whitespace-pre-wrap leading-relaxed">{post.content}</p>
+                    
+                    <p className={cn("text-sm whitespace-pre-wrap leading-relaxed mb-3", post.is_best_answer ? "text-green-900" : "text-gray-700")}>
+                      {post.content}
+                    </p>
+
+                    <div className="flex items-center gap-3 border-t border-gray-100/50 pt-2">
+                       {user?.id !== post.user_id ? (
+                         <button 
+                           onClick={() => handleTogglePostLike(post)}
+                           className={cn(
+                             "flex items-center gap-1.5 text-xs font-medium transition-colors p-1 rounded",
+                             post.is_liked ? "text-red-500 bg-red-50" : "text-gray-500 hover:text-red-500 hover:bg-red-50"
+                           )}
+                         >
+                           <Heart className={cn("w-3.5 h-3.5", post.is_liked && "fill-current")} />
+                           {post.likes_count || 0}
+                         </button>
+                       ) : (
+                         <div className="flex items-center gap-1.5 text-xs text-gray-400 p-1">
+                           <Heart className="w-3.5 h-3.5" />
+                           {post.likes_count || 0}
+                         </div>
+                       )}
+                    </div>
                   </div>
                 </div>
               ))}

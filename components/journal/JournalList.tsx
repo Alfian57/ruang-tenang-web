@@ -19,6 +19,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface JournalListProps {
     journals: Journal[];
@@ -36,15 +37,15 @@ function JournalListSkeleton() {
             {[1, 2, 3, 4].map((i) => (
                 <div
                     key={i}
-                    className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 animate-pulse"
+                    className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
                 >
                     <div className="flex items-start justify-between">
                         <div className="flex-1 space-y-2">
-                            <div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded" />
-                            <div className="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded" />
-                            <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded" />
+                            <Skeleton className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700" />
+                            <Skeleton className="h-4 w-full bg-gray-200 dark:bg-gray-700" />
+                            <Skeleton className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700" />
                         </div>
-                        <div className="h-8 w-8 bg-gray-200 dark:bg-gray-700 rounded" />
+                        <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700 ml-4" />
                     </div>
                 </div>
             ))}

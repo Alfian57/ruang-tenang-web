@@ -32,12 +32,14 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { AIDisclaimerModal } from "@/components/ui/ai-disclaimer-modal";
+import { api } from "@/lib/api";
 
 type ViewMode = "list" | "write" | "edit" | "detail" | "analytics" | "settings";
 
 export default function JournalPage() {
     const router = useRouter();
-    const { token, isAuthenticated, isLoading: authLoading } = useAuthStore();
+    const { token, isAuthenticated, isLoading: authLoading, user } = useAuthStore();
 
     // Store state
     const {
@@ -83,6 +85,23 @@ export default function JournalPage() {
     const [journalToDelete, setJournalToDelete] = useState<Journal | null>(null);
     const [showFilters, setShowFilters] = useState(false);
     const [activeTab, setActiveTab] = useState<"journals" | "analytics" | "settings">("journals");
+    const [showDisclaimer, setShowDisclaimer] = useState(false);
+
+    useEffect(() => {
+        if (user && user.has_accepted_ai_disclaimer === false) {
+            setShowDisclaimer(true);
+        }
+    }, [user]);
+    
+    const handleAcceptDisclaimer = async () => {
+        if(!token) return;
+        try {
+            await api.acceptAIDisclaimer(token);
+            setShowDisclaimer(false);
+        } catch (error) {
+            console.error("Failed to accept disclaimer:", error);
+        }
+    };
 
     // Auth check
     useEffect(() => {
@@ -411,23 +430,23 @@ export default function JournalPage() {
                                 />
 
                                 {/* Quick Stats */}
-                                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-                                    <h3 className="font-medium mb-3">Statistik Cepat</h3>
+                                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
+                                    <h3 className="font-medium mb-3 text-gray-900 dark:text-gray-100">Statistik Cepat</h3>
                                     <div className="space-y-2 text-sm">
                                         <div className="flex justify-between">
-                                            <span className="text-gray-500">Total Jurnal</span>
-                                            <span className="font-medium">{totalJournals}</span>
+                                            <span className="text-gray-600 dark:text-gray-400">Total Jurnal</span>
+                                            <span className="font-medium text-gray-900 dark:text-gray-100">{totalJournals}</span>
                                         </div>
                                         {settings && (
                                             <>
                                                 <div className="flex justify-between">
-                                                    <span className="text-gray-500">AI Akses</span>
+                                                    <span className="text-gray-600 dark:text-gray-400">AI Akses</span>
                                                     <span
                                                         className={cn(
                                                             "font-medium",
                                                             settings.allow_ai_access
-                                                                ? "text-green-600"
-                                                                : "text-gray-400"
+                                                                ? "text-green-600 dark:text-green-400"
+                                                                : "text-gray-500 dark:text-gray-500"
                                                         )}
                                                     >
                                                         {settings.allow_ai_access ? "Aktif" : "Nonaktif"}
@@ -474,6 +493,11 @@ export default function JournalPage() {
                 title="Hapus Jurnal"
                 description={`Apakah kamu yakin ingin menghapus jurnal "${journalToDelete?.title}"? Tindakan ini tidak dapat dibatalkan.`}
                 isLoading={isLoading}
+            />
+            {/* AI Disclaimer Modal */}
+            <AIDisclaimerModal
+                isOpen={showDisclaimer}
+                onAccept={handleAcceptDisclaimer}
             />
         </div>
     );

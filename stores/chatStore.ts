@@ -468,9 +468,56 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
       const response = (await api.exportChat(token, sessionId, format, includePinned, true)) as {
         data: ChatExportResponse;
       };
-      return response.data;
+      
+      const exportData = response.data;
+      
+      if (format === "pdf") {
+        // The content is base64 encoded HTML, decode it
+        const htmlContent = atob(exportData.content);
+        
+        // Create a temporary container for the HTML
+        const container = document.createElement('div');
+        container.innerHTML = htmlContent;
+        container.style.position = 'absolute';
+        container.style.left = '-9999px';
+        document.body.appendChild(container);
+        
+        // Dynamically import html2pdf.js (browser-only library)
+        const html2pdf = (await import('html2pdf.js')).default;
+        
+        // Generate PDF with proper filename
+        const pdfFilename = exportData.filename.replace('.html', '.pdf');
+        await html2pdf(container, {
+          margin: 10,
+          filename: pdfFilename,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        });
+        
+        // Cleanup
+        document.body.removeChild(container);
+        
+        toast.success('Chat berhasil diekspor sebagai PDF');
+      } else {
+        // For TXT, download as plain text
+        const blob = new Blob([exportData.content], { type: exportData.content_type });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = exportData.filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        toast.success('Chat berhasil diekspor sebagai TXT');
+      }
+      
+      return exportData;
     } catch (error) {
       console.error("ChatStore.exportChat: failed", error);
+      toast.error("Gagal mengekspor chat");
       return null;
     }
   },
@@ -484,8 +531,8 @@ export const useChatStore = create<ChatStore>()((set, get) => ({
         data: ChatSessionSummary;
       };
       set({ currentSummary: response.data });
-    } catch (error) {
-      console.error("ChatStore.loadSummary: failed", error);
+    } catch {
+      // Expected to fail with 404 when no summary exists yet - silently set to null
       set({ currentSummary: null });
     }
   },

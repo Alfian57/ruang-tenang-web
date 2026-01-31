@@ -23,13 +23,9 @@ export function EmptyState({ onCreateSession, suggestedPrompts, onSuggestedPromp
         Mulai Percakapan Baru
       </h3>
 
-      <p className="text-gray-500 max-w-sm mb-2 leading-relaxed text-sm">
+      <p className="text-gray-500 max-w-sm mb-6 leading-relaxed text-sm">
         Ceritakan apa yang sedang kamu rasakan. AI kami siap mendengarkan.
       </p>
-
-      <div className="mb-6 px-3 py-1 bg-yellow-50 text-yellow-700 rounded-full text-xs font-medium border border-yellow-200">
-        ✨ Dapatkan 10 EXP per respon AI (Maks 1x/hari)
-      </div>
 
       <Button
         onClick={onCreateSession}

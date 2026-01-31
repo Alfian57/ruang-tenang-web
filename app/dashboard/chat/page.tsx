@@ -10,6 +10,21 @@ import {
   NewSessionDialog,
   ChatMessagesArea,
 } from "@/components/dashboard/chat";
+import { AIDisclaimerModal } from "@/components/ui/ai-disclaimer-modal";
+import { CrisisSupportModal } from "@/components/moderation";
+import { api } from "@/lib/api";
+
+const CRISIS_KEYWORDS = [
+  "bunuh diri",
+  "ingin mati",
+  "akhiri hidup",
+  "cutting",
+  "silet tangan",
+  "tidak kuat hidup",
+  "mau mati",
+  "gantung diri",
+  "lukai diri",
+];
 
 /**
  * Chat page component for AI-powered mental health conversations.
@@ -65,6 +80,28 @@ export default function ChatPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [showCrisisModal, setShowCrisisModal] = useState(false);
+
+  useEffect(() => {
+    if (user && user.has_accepted_ai_disclaimer === false) {
+      setShowDisclaimer(true);
+    }
+  }, [user]);
+
+  const handleAcceptDisclaimer = async () => {
+    if(!token) return;
+    try {
+        await api.acceptAIDisclaimer(token);
+        setShowDisclaimer(false);
+        // Optimistically update user in store if possible, or reload user
+        // useAuthStore.setState({ user: { ...user!, has_accepted_ai_disclaimer: true } });
+        // Assuming refreshUser or manual update is needed. 
+        // For now, simple state update is enough for this session.
+    } catch (error) {
+        console.error("Failed to accept disclaimer:", error);
+    }
+  };
 
   // Journal store for AI context indicator
   const {
@@ -130,6 +167,17 @@ export default function ChatPage() {
   };
 
   const handleSendText = async (content: string) => {
+    const lowerContent = content.toLowerCase();
+    const hasCrisisKeyword = CRISIS_KEYWORDS.some(keyword => lowerContent.includes(keyword));
+    
+    if (hasCrisisKeyword) {
+      setShowCrisisModal(true);
+      // We don't block sending completely in a real app, usually we flag it. 
+      // But here we show modal first. If user insists, they might just type again.
+      // Or we can add a "send anyway" logic, but for safety, stopping and showing help is better.
+      return;
+    }
+
     if (token) await sendTextMessage(token, content);
   };
 
@@ -205,9 +253,17 @@ export default function ChatPage() {
     }
   };
 
-  // Suggested prompt handler
-  const handleSuggestedPrompt = (prompt: string) => {
-    if (token) sendTextMessage(token, prompt);
+  // Suggested prompt handler - creates a new session and sends the prompt
+  const handleSuggestedPrompt = async (prompt: string) => {
+    if (!token) return;
+    
+    // Create a session with the prompt as title (truncated)
+    const sessionTitle = prompt.length > 50 ? prompt.substring(0, 50) + "..." : prompt;
+    await createSession(token, sessionTitle);
+    
+    // After session is created and loaded, send the prompt as first message
+    // The createSession function already loads the session, so we can send the message
+    await sendTextMessage(token, prompt);
   };
 
   return (
@@ -267,6 +323,18 @@ export default function ChatPage() {
         onCreateSession={handleCreateSession}
       />
 
+      {/* AI Disclaimer Modal */}
+      <AIDisclaimerModal
+        isOpen={showDisclaimer}
+        onAccept={handleAcceptDisclaimer}
+      />
+
+      {/* Crisis Support Modal */}
+      <CrisisSupportModal
+        isOpen={showCrisisModal}
+        onClose={() => setShowCrisisModal(false)}
+      />
+
       {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal
         isOpen={showDeleteModal}
@@ -279,3 +347,4 @@ export default function ChatPage() {
     </div>
   );
 }
+

@@ -25,6 +25,19 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MoodType } from "@/types";
+import { CrisisSupportModal } from "@/components/moderation";
+
+const CRISIS_KEYWORDS = [
+  "bunuh diri",
+  "ingin mati",
+  "akhiri hidup",
+  "cutting",
+  "silet tangan",
+  "tidak kuat hidup",
+  "mau mati",
+  "gantung diri",
+  "lukai diri",
+];
 
 interface JournalEditorProps {
     initialTitle?: string;
@@ -106,6 +119,7 @@ export function JournalEditor({
     const [shareWithAI, setShareWithAI] = useState(initialShareWithAI || defaultShareWithAI);
     const [showMoodPicker, setShowMoodPicker] = useState(false);
     const [wordCount, setWordCount] = useState(0);
+    const [showCrisisModal, setShowCrisisModal] = useState(false);
 
     const editor = useEditor({
         extensions: [
@@ -163,6 +177,17 @@ export function JournalEditor({
 
     const handleSave = () => {
         if (!editor || !title.trim()) return;
+
+        // Check for crisis keywords
+        const contentText = editor.getText().toLowerCase();
+        const titleText = title.toLowerCase();
+        const hasCrisisKeyword = CRISIS_KEYWORDS.some(k => contentText.includes(k) || titleText.includes(k));
+
+        if (hasCrisisKeyword) {
+            setShowCrisisModal(true);
+            return;
+        }
+
         onSave({
             title: title.trim(),
             content: editor.getHTML(),
@@ -415,6 +440,11 @@ export function JournalEditor({
                     </div>
                 </div>
             </div>
+            {/* Crisis Support Modal */}
+            <CrisisSupportModal
+                isOpen={showCrisisModal}
+                onClose={() => setShowCrisisModal(false)}
+            />
         </div>
     );
 }

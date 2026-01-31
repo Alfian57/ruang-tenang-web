@@ -10,6 +10,7 @@ import {
     ListMusic,
     Globe,
     Lock,
+    BadgeCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -84,7 +85,9 @@ export function PlaylistCard({
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                         <h3 className="font-semibold text-gray-900 truncate">{playlist.name}</h3>
-                        {playlist.is_public ? (
+                        {playlist.is_admin_playlist ? (
+                            <BadgeCheck className="w-4 h-4 text-primary shrink-0" />
+                        ) : playlist.is_public ? (
                             <Globe className="w-4 h-4 text-gray-400" />
                         ) : (
                             <Lock className="w-4 h-4 text-gray-400" />

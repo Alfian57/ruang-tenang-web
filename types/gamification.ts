@@ -401,3 +401,31 @@ export interface UserProfile {
   badges: Badge[];
   joined_at: string;
 }
+
+// ==========================================
+// Daily Task Types
+// ==========================================
+
+export interface DailyTask {
+  id: number;
+  task_type: string;
+  task_name: string;
+  task_description: string;
+  xp_reward: number;
+  task_icon: string;
+  target_count: number;
+  current_count: number;
+  is_completed: boolean;
+  is_claimed: boolean;
+  task_date: string;
+  completed_at?: string;
+  claimed_at?: string;
+}
+
+export interface ClaimTaskResponse {
+  success: boolean;
+  message: string;
+  exp_gained: number;
+  new_total_exp: number;
+  level_up: boolean;
+}

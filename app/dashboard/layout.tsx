@@ -19,7 +19,12 @@ import {
   Music,
   Trophy,
   Shield,
+  Sparkles,
+  Ban,
+  BookOpen,
+  Wind,
 } from "lucide-react";
+import { BlockedUsersModal } from "@/components/moderation";
 import { Button } from "@/components/ui/button";
 import { LogoutModal } from "@/components/ui/logout-modal";
 import { EditProfileModal } from "@/components/dashboard/EditProfileModal";
@@ -36,6 +41,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { AuthProvider, useAuth } from "@/components/providers/AuthProvider";
 import { GlobalMusicPlayer } from "@/components/music";
+import { DailyTaskFAB } from "@/components/gamification";
 import { getUploadUrl } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
@@ -45,7 +51,10 @@ const memberLinks = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Beranda" },
   { href: "/dashboard/articles", icon: FileText, label: "Artikel" },
   { href: "/dashboard/chat", icon: MessageSquare, label: "AI Chat" },
+  { href: "/dashboard/journal", icon: BookOpen, label: "Jurnal" },
   { href: "/dashboard/forum", icon: Users, label: "Forum" },
+  { href: "/dashboard/stories", icon: Sparkles, label: "Kisah Inspiratif" },
+  { href: "/dashboard/breathing", icon: Wind, label: "Latihan Pernapasan" },
   { href: "/dashboard/music", icon: Music, label: "Musik" },
 ];
 
@@ -65,7 +74,10 @@ const moderatorLinks = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Beranda" },
   { href: "/dashboard/articles", icon: FileText, label: "Artikel" },
   { href: "/dashboard/chat", icon: MessageSquare, label: "AI Chat" },
+  { href: "/dashboard/journal", icon: BookOpen, label: "Jurnal" },
   { href: "/dashboard/forum", icon: Users, label: "Forum" },
+  { href: "/dashboard/stories", icon: Sparkles, label: "Kisah Inspiratif" },
+  { href: "/dashboard/breathing", icon: Wind, label: "Latihan Pernapasan" },
   { href: "/dashboard/music", icon: Music, label: "Musik" },
   { href: "/dashboard/moderation", icon: Shield, label: "Moderasi" },
 ];
@@ -95,6 +107,7 @@ function DashboardContent({
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [showBlockedUsersModal, setShowBlockedUsersModal] = useState(false);
   const [showExpHistoryModal, setShowExpHistoryModal] = useState(false);
   const { token } = useAuthStore();
 
@@ -127,6 +140,10 @@ function DashboardContent({
       <ChangePasswordModal
         isOpen={showChangePasswordModal}
         onClose={() => setShowChangePasswordModal(false)}
+      />
+      <BlockedUsersModal
+        isOpen={showBlockedUsersModal}
+        onClose={() => setShowBlockedUsersModal(false)}
       />
       {!isAdmin && (
         <ExpHistoryModal
@@ -413,6 +430,10 @@ function DashboardContent({
                   <KeyRound className="mr-2 h-4 w-4" />
                   <span>Ganti Password</span>
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowBlockedUsersModal(true)} className="cursor-pointer">
+                  <Ban className="mr-2 h-4 w-4" />
+                  <span>Pengguna Diblokir</span>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => setShowLogoutModal(true)} className="text-red-500 hover:text-red-600 hover:bg-red-50 focus:text-red-600 focus:bg-red-50 cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
@@ -427,6 +448,9 @@ function DashboardContent({
         <main className="flex-1 pt-16 lg:pt-0">
           {children}
         </main>
+
+        {/* Daily Task FAB (for non-admin users) */}
+        {!isAdmin && <DailyTaskFAB />}
 
         {/* Global Music Player */}
         <GlobalMusicPlayer />

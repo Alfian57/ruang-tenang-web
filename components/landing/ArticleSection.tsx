@@ -148,6 +148,7 @@ export function ArticleSection() {
                       src={getArticleImage(featuredArticle.thumbnail, 0)}
                       alt={featuredArticle.title}
                       fill
+                      sizes="(max-width: 1024px) 100vw, 60vw"
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
@@ -189,6 +190,7 @@ export function ArticleSection() {
                           src={getArticleImage(article.thumbnail, index + 1)}
                           alt={article.title}
                           fill
+                          sizes="80px"
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>

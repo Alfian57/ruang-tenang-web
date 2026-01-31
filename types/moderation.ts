@@ -61,7 +61,7 @@ export type FlagSeverity = "low" | "medium" | "high" | "critical";
 
 export interface ContentFlag {
   id: number;
-  content_type: "article" | "forum" | "forum_post";
+  content_type: "article" | "forum" | "forum_post" | "story" | "story_comment";
   content_id: number;
   flag_type: FlagType;
   flag_category: FlagCategory;
@@ -82,7 +82,7 @@ export interface ContentFlag {
 // Report Types
 // ========================
 
-export type ReportType = "article" | "forum" | "forum_post" | "user";
+export type ReportType = "article" | "forum" | "forum_post" | "user" | "story" | "story_comment";
 
 export type ReportReason =
   | "misinformation"
@@ -104,7 +104,7 @@ export type ActionTaken =
 
 export interface CreateReportRequest {
   report_type: ReportType;
-  content_id?: number;
+  content_id?: number | string;
   user_id?: number;
   reason: ReportReason;
   description?: string;

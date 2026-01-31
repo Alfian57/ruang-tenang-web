@@ -75,6 +75,11 @@ export interface Article {
   category: ArticleCategory;
   created_at: string;
   updated_at: string;
+  user_id?: number;
+  author?: {
+    id: number;
+    name: string;
+  };
 }
 
 // Chat types
@@ -169,6 +174,7 @@ export interface Playlist {
   description: string;
   thumbnail: string;
   is_public: boolean;
+  is_admin_playlist: boolean;
   item_count: number;
   total_songs: number;
   created_at: string;
@@ -196,9 +202,15 @@ export interface PlaylistListItem {
   description: string;
   thumbnail: string;
   is_public: boolean;
+  is_admin_playlist: boolean;
   item_count: number;
   created_at: string;
   updated_at: string;
+  user?: {
+    id: number;
+    name: string;
+    avatar: string;
+  };
 }
 
 export interface CreatePlaylistRequest {

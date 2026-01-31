@@ -4,12 +4,13 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { Calendar, ArrowLeft, Tag } from "lucide-react";
+import { Calendar, ArrowLeft, Tag, Flag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import { Article } from "@/types";
 import { formatDate } from "@/lib/utils";
+import { ReportModal } from "@/components/moderation";
 
 export default function DashboardArticleDetailPage() {
   const params = useParams();
@@ -118,6 +119,20 @@ export default function DashboardArticleDetailPage() {
                 className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-primary prose-img:rounded-xl"
                 dangerouslySetInnerHTML={{ __html: article.content }}
               />
+
+              <div className="mt-8 pt-6 border-t flex justify-end">
+                <ReportModal
+                  type="article"
+                  contentId={article.id}
+                  userId={article.user_id}
+                  trigger={
+                    <Button variant="ghost" size="sm" className="text-gray-500 hover:text-red-600 hover:bg-red-50">
+                      <Flag className="w-4 h-4 mr-2" />
+                      Laporkan Artikel
+                    </Button>
+                  }
+                />
+              </div>
             </Card>
           </div>
 

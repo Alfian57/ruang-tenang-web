@@ -3,3 +3,5 @@ export { PlaylistCard, PlaylistCardCompact } from "./PlaylistCard";
 export { PlaylistDialog } from "./PlaylistDialog";
 export { PlaylistDetail } from "./PlaylistDetail";
 export { AddSongsDialog } from "./AddSongsDialog";
+export { MusicCategoryCard } from "./MusicCategoryCard";
+export { PublicPlaylistCard, PublicPlaylistCardHorizontal } from "./PublicPlaylistCard";

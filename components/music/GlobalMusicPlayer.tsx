@@ -101,7 +101,18 @@ export function GlobalMusicPlayer() {
         const audio = audioRef.current;
         if (!audio || !currentSong) return;
 
-        audio.src = currentSong.file_path;
+        if (currentSong.file_path.startsWith("http")) {
+            audio.src = currentSong.file_path;
+        } else {
+            // Ensure we use the correct API URL
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+            // Remove /api/v1 if it exists in the path to avoid duplication
+            // However, usually file_path might be /uploads/... or /api/v1/stream...
+            // If it starts with /, we append it to the base URL (minus /api/v1 if it's there? No, usually API_URL includes /api/v1)
+            // Let's check how images are handled. They usually strip /api/v1.
+            const baseUrl = apiUrl.replace("/api/v1", "");
+            audio.src = `${baseUrl}${currentSong.file_path}`;
+        }
         audio.load();
 
         // We check the store's isPlaying state when song changes

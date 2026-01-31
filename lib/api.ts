@@ -1,4 +1,4 @@
-import { Article, Song, ApiResponse, CommunityStats, PersonalJourney, LevelHallOfFameResponse, WeeklyProgress, MonthlyProgress, AllTimeStats, LevelUpCelebration, UserFeatures, FeatureAccess, FeaturesByLevel, UserBadges, BadgeProgress, InspiringStory, StoriesListResponse, StoryCategory, StoryComment, StoryCommentsListResponse, StoryStats, CreateStoryRequest, UpdateStoryRequest, StoryFilterParams, CreateStoryCommentRequest } from "@/types";
+import { Article, Song, ApiResponse, CommunityStats, PersonalJourney, LevelHallOfFameResponse, WeeklyProgress, MonthlyProgress, AllTimeStats, LevelUpCelebration, UserFeatures, FeatureAccess, FeaturesByLevel, UserBadges, BadgeProgress, InspiringStory, StoriesListResponse, StoryCategory, StoryComment, StoryCommentsListResponse, StoryStats, CreateStoryRequest, UpdateStoryRequest, StoryFilterParams, CreateStoryCommentRequest, DailyTask, ClaimTaskResponse } from "@/types";
 import { CreateForumRequest, CreateForumPostRequest, Forum } from "@/types/forum";
 import {
   BreathingTechnique,
@@ -18,6 +18,7 @@ import {
   UpdatePreferencesRequest,
   SessionHistoryParams,
 } from "@/types/breathing";
+import { toast } from "sonner";
 
 // Placeholder __NEXT_PUBLIC_API_URL__ akan diganti saat runtime oleh entrypoint.sh
 // Jika menggunakan build-arg, gunakan process.env.NEXT_PUBLIC_API_URL langsung
@@ -56,6 +57,10 @@ class ApiClient {
     const data = await response.json();
 
     if (!response.ok) {
+      if (response.status === 429) {
+        toast.error("Terlalu banyak permintaan. Silakan coba lagi beberapa saat lagi.");
+        throw new Error("Rate limit exceeded");
+      }
       throw new Error(data.error || "An error occurred");
     }
 
@@ -700,6 +705,20 @@ class ApiClient {
     });
   }
 
+  async toggleForumPostLike(token: string, id: number) {
+    return this.request(`/posts/${id}/upvote`, {
+      method: "PUT",
+      token,
+    });
+  }
+
+  async toggleBestAnswer(token: string, id: number) {
+    return this.request(`/posts/${id}/accept`, {
+      method: "PUT",
+      token,
+    });
+  }
+
   // Forum Category endpoints (Public)
   async getForumCategories() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -792,6 +811,18 @@ class ApiClient {
   async adminDeleteLevelConfig(token: string, id: number) {
     return this.request(`/admin/level-configs/${id}`, {
       method: "DELETE",
+      token,
+    });
+  }
+
+  // Daily Tasks endpoints
+  async getDailyTasks(token: string) {
+    return this.request<{ data: DailyTask[] }>("/daily-tasks", { token });
+  }
+
+  async claimDailyTask(token: string, taskId: number) {
+    return this.request<ClaimTaskResponse>(`/daily-tasks/${taskId}/claim`, {
+      method: "POST",
       token,
     });
   }
@@ -893,7 +924,7 @@ class ApiClient {
   // User Report Endpoints (Any authenticated user)
   // ========================
 
-  async createReport(token: string, data: { report_type: string; content_id?: number; user_id?: number; reason: string; description?: string }) {
+  async createReport(token: string, data: { report_type: string; content_id?: number | string; user_id?: number; reason: string; description?: string }) {
     return this.request("/reports", {
       method: "POST",
       token,

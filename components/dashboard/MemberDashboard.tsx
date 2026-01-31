@@ -7,9 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
-import { UserMood, MoodType, ChatSession, Article, SongCategory, Song } from "@/types";
+import { UserMood, MoodType, ChatSession, Article, SongCategory, Song, DailyTask } from "@/types";
 import { BreathingWidgetData } from "@/types/breathing";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import {
   ArrowRight,
   ChevronDown,
@@ -21,7 +22,9 @@ import {
   MoreVertical
 } from "lucide-react";
 import { BreathingWidget } from "@/components/breathing";
+import { DailyTaskWidget, InspiringStoryWidget } from "@/components/gamification";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
+import { MoodCheckinModal } from "./MoodCheckinModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -63,16 +66,49 @@ const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
 
 export function MemberDashboard() {
   const { token } = useAuthStore();
-  const [, setLatestMood] = useState<UserMood | null>(null);
+  const [latestMood, setLatestMood] = useState<UserMood | null>(null);
   const [moodHistory, setMoodHistory] = useState<UserMood[]>([]);
   const [recentSessions, setRecentSessions] = useState<ChatSession[]>([]);
   const [articles, setArticles] = useState<Article[]>([]);
+
   const [categories, setCategories] = useState<SongCategory[]>([]);
+  const [dailyTasks, setDailyTasks] = useState<DailyTask[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [showMoodPicker, setShowMoodPicker] = useState(false);
   const [deleteChatId, setDeleteChatId] = useState<number | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showMoodCheckin, setShowMoodCheckin] = useState(false);
+  const [hasCheckedInitialMood, setHasCheckedInitialMood] = useState(false);
+  const [isMoodDataLoaded, setIsMoodDataLoaded] = useState(false);
+
+  // Check if user needs to check in mood - only runs AFTER data is loaded
+  useEffect(() => {
+    // Skip if already checked, no token, or mood data hasn't been loaded yet
+    if (hasCheckedInitialMood || !token || !isMoodDataLoaded) return;
+
+    // Now we know data has been loaded, check if user needs to check in
+    if (!latestMood) {
+      // No mood recorded at all - show check-in
+      setShowMoodCheckin(true);
+    } else {
+      // Compare dates using LOCAL timezone (not UTC!) for proper comparison
+      const today = new Date();
+      const moodDate = new Date(latestMood.created_at);
+      
+      // Compare year, month, and day in local timezone
+      const isSameDay = 
+        today.getFullYear() === moodDate.getFullYear() &&
+        today.getMonth() === moodDate.getMonth() &&
+        today.getDate() === moodDate.getDate();
+      
+      if (!isSameDay) {
+        // Mood was recorded on a different day - show check-in
+        setShowMoodCheckin(true);
+      }
+    }
+    setHasCheckedInitialMood(true);
+  }, [latestMood, hasCheckedInitialMood, token, isMoodDataLoaded]);
 
   // Breathing widget state
   const [breathingWidgetData, setBreathingWidgetData] = useState<BreathingWidgetData | null>(null);
@@ -94,18 +130,24 @@ export function MemberDashboard() {
     if (!token) return;
     try {
       const moodLimit = chartPeriod === "1month" ? 30 : 7;
-      const [moodRes, sessionsRes, articlesRes, categoriesRes, breathingWidgetRes] = await Promise.all([
+      const [moodRes, sessionsRes, articlesRes, categoriesRes, breathingWidgetRes, dailyTasksRes] = await Promise.all([
         api.getMoodHistory(token, { limit: moodLimit }).catch(() => null) as Promise<{ data: { moods: UserMood[] } } | null>,
         api.getChatSessions(token).catch(() => null) as Promise<{ data: ChatSession[] } | null>,
         api.getArticles({ limit: 5 }).catch(() => null) as Promise<{ data: Article[] } | null>,
         api.getSongCategories().catch(() => null) as Promise<{ data: SongCategory[] } | null>,
         api.getBreathingWidgetData(token).catch(() => null) as Promise<{ data: BreathingWidgetData } | null>,
+        api.getDailyTasks(token).catch(() => null) as Promise<{ data: DailyTask[] } | null>,
       ]);
 
       if (moodRes?.data?.moods) {
         setMoodHistory(moodRes.data.moods);
         setLatestMood(moodRes.data.moods[0] || null);
+      } else {
+        // API returned but no moods - user has no mood history
+        setLatestMood(null);
       }
+      // Mark mood data as loaded regardless of whether there are moods
+      setIsMoodDataLoaded(true);
       if (sessionsRes?.data) {
         setRecentSessions(sessionsRes.data.slice(0, 2));
       }
@@ -117,6 +159,16 @@ export function MemberDashboard() {
       }
       if (breathingWidgetRes?.data) {
         setBreathingWidgetData(breathingWidgetRes.data);
+      }
+      if (dailyTasksRes?.data) {
+        // API returns DailyTaskSummary which has tasks property
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const taskData = dailyTasksRes.data as any;
+        if (taskData?.tasks && Array.isArray(taskData.tasks)) {
+          setDailyTasks(taskData.tasks);
+        } else if (Array.isArray(taskData)) {
+          setDailyTasks(taskData);
+        }
       }
     } catch (error) {
       console.error("Failed to load dashboard data:", error);
@@ -131,11 +183,23 @@ export function MemberDashboard() {
     if (!token || isRecording) return;
     setIsRecording(true);
     try {
-      await api.recordMood(token, mood);
-      loadDashboardData();
-      setShowMoodPicker(false);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response = await api.recordMood(token, mood) as any;
+      if (response?.data) {
+        toast.success("Mood berhasil dicatat!", {
+          description: "Semoga harimu menyenangkan 😊",
+        });
+        await loadDashboardData();
+        setShowMoodPicker(false);
+        setShowMoodCheckin(false);
+      } else {
+        toast.error("Gagal mencatat mood");
+      }
     } catch (error) {
       console.error("Failed to record mood:", error);
+      toast.error("Gagal mencatat mood", {
+        description: "Silakan coba lagi",
+      });
     } finally {
       setIsRecording(false);
     }
@@ -254,21 +318,33 @@ export function MemberDashboard() {
   // Create a map of day index (0=Sunday, 1=Monday, etc.) to mood
   const moodByDayOfWeek = new Map<number, UserMood>();
 
-  // Get today"s date in Indonesian timezone
+  // Get today's date components in local timezone
   const today = new Date();
-  const todayIndonesia = new Date(today.toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
+  const todayYear = today.getFullYear();
+  const todayMonth = today.getMonth();
+  const todayDate = today.getDate();
+
+  // Calculate the date 7 days ago for comparison
+  const sevenDaysAgo = new Date(todayYear, todayMonth, todayDate - 6); // 6 days back = 7 day range including today
 
   // Map each mood entry to its day of week
   moodHistory.forEach(mood => {
     const moodDate = new Date(mood.created_at);
-    // Convert to Indonesian timezone for comparison
-    const moodDateIndonesia = new Date(moodDate.toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
+    
+    // Get mood date components in local timezone
+    const moodYear = moodDate.getFullYear();
+    const moodMonth = moodDate.getMonth();
+    const moodDay = moodDate.getDate();
+    
+    // Create date objects with only date components (no time) for comparison
+    const moodDateOnly = new Date(moodYear, moodMonth, moodDay);
+    const todayDateOnly = new Date(todayYear, todayMonth, todayDate);
+    const sevenDaysAgoDateOnly = new Date(sevenDaysAgo.getFullYear(), sevenDaysAgo.getMonth(), sevenDaysAgo.getDate());
 
-    // Only include moods from the last 7 days
-    const daysDiff = Math.floor((todayIndonesia.getTime() - moodDateIndonesia.getTime()) / (1000 * 60 * 60 * 24));
-    if (daysDiff >= 0 && daysDiff < 7) {
-      const dayOfWeek = moodDateIndonesia.getDay(); // 0=Sunday, 1=Monday, etc.
-      // Keep the most recent mood for each day
+    // Only include moods from the last 7 days (including today)
+    if (moodDateOnly >= sevenDaysAgoDateOnly && moodDateOnly <= todayDateOnly) {
+      const dayOfWeek = moodDate.getDay(); // 0=Sunday, 1=Monday, etc.
+      // Keep the most recent mood for each day (first one in array since sorted desc)
       if (!moodByDayOfWeek.has(dayOfWeek)) {
         moodByDayOfWeek.set(dayOfWeek, mood);
       }
@@ -347,91 +423,18 @@ export function MemberDashboard() {
         isLoading={isDeleting}
       />
 
-      {/* Top Row: Mood + Chat + Breathing */}
+      <MoodCheckinModal 
+        isOpen={showMoodCheckin} 
+        onMoodSelected={recordMood} 
+        isSubmitting={isRecording} 
+      />
+
+      {/* Top Row: Mood Check-in (Hidden/Modal) + Daily Task + Breathing */}
       <div className="grid lg:grid-cols-12 gap-4">
-        {/* Mood Picker Card */}
-        <Card className="lg:col-span-3 bg-linear-to-br from-sky-400 to-blue-500 text-white border-0 shadow-lg overflow-hidden relative">
-          <CardContent className="p-6 text-center relative z-10">
-            <h3 className="text-xl font-bold mb-1">Gimana Kondisimu</h3>
-            <h3 className="text-xl font-bold mb-6">Hari ini?</h3>
-
-            {showMoodPicker ? (
-              <div className="grid grid-cols-3 gap-3">
-                {moodEmojis.map((m) => (
-                  <button
-                    key={m.type}
-                    onClick={() => recordMood(m.type)}
-                    disabled={isRecording}
-                    className="mood-btn w-14 h-14 bg-white/20 rounded-xl flex flex-col items-center justify-center mx-auto hover:bg-white/30 transition-all disabled:opacity-50"
-                  >
-                    <Image src={m.inactive} alt={m.label} width={32} height={32} />
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <button
-                className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto hover:bg-white/30 hover:scale-105 transition-all"
-                onClick={() => setShowMoodPicker(true)}
-              >
-                <Image src="/images/smile-plus.png" alt="Add mood" width={40} height={40} />
-              </button>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Last Chat Sessions */}
-        <Card className="lg:col-span-5 shadow-sm hover:shadow-md transition-shadow bg-white">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                <Image src="/images/ai-chat-blue.png" alt="" width={24} height={24} />
-              </div>
-              <span className="font-semibold text-gray-800">Lanjutkan chat terakhir</span>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {recentSessions.length > 0 ? (
-              recentSessions.map((session) => (
-                <Link
-                  key={session.id}
-                  href={`/dashboard/chat`}
-                  className="flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 transition-colors border border-gray-100 group bg-white"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-gray-800">{session.title}</p>
-                    <p className="text-sm text-gray-500 truncate">{session.last_message || "Tidak ada pesan"}</p>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
-                      <button className="p-2 hover:bg-gray-100 rounded-full outline-none transition-colors">
-                        <MoreVertical className="w-5 h-5 text-gray-400" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
-                        onClick={(e) => handleDeleteChatClick(e, session.id)}
-                      >
-                        <AlertTriangle className="mr-2 h-4 w-4" />
-                        <span>Hapus Chat</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </Link>
-              ))
-            ) : (
-              <div className="text-center py-6 text-gray-400">
-                <MessageCircle className="w-10 h-10 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Belum ada sesi chat</p>
-                <Link href="/dashboard/chat">
-                  <Button variant="outline" size="sm" className="mt-3 rounded-full text-xs">
-                    Mulai Chat Baru
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* Daily Task Widget (Expanded) */}
+        <div className="lg:col-span-8">
+           <DailyTaskWidget tasks={dailyTasks} onTaskClaimed={loadDashboardData} />
+        </div>
 
         {/* Breathing Exercise Widget */}
         <div className="lg:col-span-4">
@@ -764,53 +767,107 @@ export function MemberDashboard() {
         </Card>
       </div>
 
-      {/* Articles Carousel */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-800">Artikel Terbaru</h2>
+      <div className="grid lg:grid-cols-12 gap-4">
+        {/* Inspiring Story Widget */}
+        <div className="lg:col-span-6">
+          <InspiringStoryWidget />
         </div>
-        <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x scrollbar-hide">
-          {articles.map((article) => (
-            <Link
-              key={article.id}
-              href={`/dashboard/reading/${article.id}`}
-              className="shrink-0 w-56 snap-start group"
-            >
-              <Card className="overflow-hidden card-hover h-full border-0 shadow-sm group-hover:shadow-lg transition-all bg-white">
-                <div className="h-32 relative overflow-hidden">
-                  {article.thumbnail ? (
-                    <Image
-                      src={article.thumbnail}
-                      alt={article.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-linear-to-br from-red-100 to-red-200 flex items-center justify-center">
-                      <span className="text-4xl">📄</span>
-                    </div>
-                  )}
-                  <div className="absolute top-2 left-2">
-                    <span className="bg-primary text-white text-xs px-3 py-1 rounded-full shadow font-medium">
-                      Artikel
-                    </span>
-                  </div>
-                </div>
-                <CardContent className="p-4">
-                  <h4 className="font-semibold text-sm line-clamp-2 mb-3 text-gray-800 group-hover:text-primary transition-colors leading-snug">{article.title}</h4>
-                  <p className="text-xs text-primary flex items-center gap-1 font-medium">
-                    Baca Selengkapnya <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                  </p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
 
-          {articles.length === 0 && (
-            <div className="w-full text-center py-8 text-gray-400">
-              <p>Belum ada artikel</p>
+        {/* Last Chat Sessions */}
+        <Card className="lg:col-span-6 shadow-sm hover:shadow-md transition-shadow bg-white">
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                <Image src="/images/ai-chat-blue.png" alt="" width={24} height={24} style={{ width: 'auto', height: 'auto' }} />
+              </div>
+              <span className="font-semibold text-gray-800">Lanjutkan chat terakhir</span>
             </div>
-          )}
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {recentSessions.length > 0 ? (
+              recentSessions.map((session) => (
+                <Link
+                  key={session.id}
+                  href={`/dashboard/chat`}
+                  className="flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 transition-colors border border-gray-100 group bg-white"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-gray-800">{session.title}</p>
+                    <p className="text-sm text-gray-500 truncate">{session.last_message || "Tidak ada pesan"}</p>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
+                      <button className="p-2 hover:bg-gray-100 rounded-full outline-none transition-colors">
+                        <MoreVertical className="w-5 h-5 text-gray-400" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+                        onClick={(e) => handleDeleteChatClick(e, session.id)}
+                      >
+                        <AlertTriangle className="mr-2 h-4 w-4" />
+                        <span>Hapus Chat</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </Link>
+              ))
+            ) : (
+              <div className="text-center py-6 text-gray-400">
+                <MessageCircle className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">Belum ada sesi chat</p>
+                <Link href="/dashboard/chat">
+                  <Button variant="outline" size="sm" className="mt-3 rounded-full text-xs">
+                    Mulai Chat Baru
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Fourth Row: Articles */}
+      <div className="grid lg:grid-cols-12 gap-4">
+        <div className="lg:col-span-12">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-gray-800">Artikel Terbaru</h2>
+          </div>
+          <div className="flex gap-4 overflow-x-auto pb-4 px-1 snap-x scrollbar-hide">
+            {articles.map((article) => (
+              <Link
+                key={article.id}
+                href={`/dashboard/reading/${article.id}`}
+                className="shrink-0 w-64 snap-start group"
+              >
+                <Card className="overflow-hidden card-hover h-full border-0 shadow-sm group-hover:shadow-lg transition-all bg-white">
+                  <div className="h-40 relative overflow-hidden">
+                    {article.thumbnail ? (
+                      <Image
+                        src={article.thumbnail}
+                        alt={article.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-linear-to-br from-red-100 to-red-200 flex items-center justify-center">
+                        <span className="text-4xl">📄</span>
+                      </div>
+                    )}
+                    <div className="absolute top-2 left-2">
+                      <span className="bg-primary text-white text-xs px-3 py-1 rounded-full shadow font-medium">
+                        Artikel
+                      </span>
+                    </div>
+                  </div>
+                  <CardContent className="p-4">
+                    <h4 className="font-semibold text-sm line-clamp-2 mb-3 text-gray-800 group-hover:text-primary transition-colors leading-snug">{article.title}</h4>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
 

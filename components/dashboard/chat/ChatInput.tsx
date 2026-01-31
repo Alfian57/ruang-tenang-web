@@ -139,13 +139,6 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
 
   return (
     <div className="p-3 bg-white border-t">
-      {/* EXP indicator */}
-      <div className="max-w-4xl mx-auto flex items-center justify-center mb-2">
-        <span className="text-[10px] text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full">
-          ✨ 10 EXP / hari
-        </span>
-      </div>
-
       <div className="max-w-4xl mx-auto flex items-end gap-2">
         {isRecording ? (
           // Recording UI

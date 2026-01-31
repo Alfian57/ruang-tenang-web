@@ -98,6 +98,8 @@ export function ChatSidebar({
   const [newFolderName, setNewFolderName] = useState("");
   const [newFolderColor, setNewFolderColor] = useState("#6366f1");
   const [expandedFolders, setExpandedFolders] = useState<Set<number>>(new Set());
+  const [isFolderSectionCollapsed, setIsFolderSectionCollapsed] = useState(false);
+  const [isUnassignedSectionCollapsed, setIsUnassignedSectionCollapsed] = useState(false);
 
   const handleCreateFolder = () => {
     if (newFolderName.trim() && onCreateFolder) {
@@ -224,8 +226,19 @@ export function ChatSidebar({
         {/* Folders section */}
         {folders.length > 0 && filter === "all" && (
           <div className="px-4 py-2 border-b">
-            <div className="text-xs font-medium text-gray-500 mb-2 px-1">Folder</div>
-            <div className="space-y-1">
+            <button
+              onClick={() => setIsFolderSectionCollapsed(!isFolderSectionCollapsed)}
+              className="w-full flex items-center justify-between text-xs font-medium text-gray-500 mb-2 px-1 hover:text-gray-700 transition-colors"
+            >
+              <span>Folder</span>
+              {isFolderSectionCollapsed ? (
+                <ChevronRight className="w-3.5 h-3.5" />
+              ) : (
+                <ChevronDown className="w-3.5 h-3.5" />
+              )}
+            </button>
+            {!isFolderSectionCollapsed && (
+              <div className="space-y-1">
               {folders.map((folder) => {
                 const folderSessions = sessionsByFolder[folder.id] || [];
                 const isExpanded = expandedFolders.has(folder.id);
@@ -308,51 +321,70 @@ export function ChatSidebar({
                   </div>
                 );
               })}
-            </div>
+              </div>
+            )}
           </div>
         )}
 
         {/* Session list */}
         <div className="flex-1 overflow-y-auto p-4 min-h-0">
-          <div className="space-y-2">
-            {/* Show filtered sessions based on active folder or filter */}
-            {(() => {
-              let displaySessions = sessions;
-
-              if (activeFolderId) {
-                displaySessions = sessionsByFolder[activeFolderId] || [];
-              } else if (filter === "all") {
-                // Show only unassigned sessions when viewing "all" with folders
-                displaySessions = folders.length > 0 ? unassignedSessions : sessions;
-              }
-
-              return displaySessions.length > 0 ? (
-                displaySessions.map((session) => (
-                  <SessionItem
-                    key={session.id}
-                    session={session}
-                    isActive={activeSessionId === session.id}
-                    isTrashView={filter === "trash"}
-                    folders={folders}
-                    onSelect={() => {
-                      onSessionSelect(session.id);
-                      if (onClose) onClose();
-                    }}
-                    onToggleFavorite={onToggleFavorite}
-                    onToggleTrash={onToggleTrash}
-                    onDeletePermanent={onDeletePermanent}
-                    onMoveToFolder={onMoveToFolder}
-                  />
-                ))
+          {/* Section title for unassigned chats */}
+          {folders.length > 0 && filter === "all" && !activeFolderId && (
+            <button
+              onClick={() => setIsUnassignedSectionCollapsed(!isUnassignedSectionCollapsed)}
+              className="w-full flex items-center justify-between text-xs font-medium text-gray-500 mb-3 px-1 hover:text-gray-700 transition-colors"
+            >
+              <span>Chat Lainnya</span>
+              {isUnassignedSectionCollapsed ? (
+                <ChevronRight className="w-3.5 h-3.5" />
               ) : (
-                <div className="text-center py-8 text-gray-400">
-                  <p className="text-sm">
-                    {activeFolderId ? "Folder kosong" : "Belum ada percakapan"}
-                  </p>
-                </div>
-              );
-            })()}
-          </div>
+                <ChevronDown className="w-3.5 h-3.5" />
+              )}
+            </button>
+          )}
+          
+          {/* Hide content if collapsed */}
+          {!(folders.length > 0 && filter === "all" && !activeFolderId && isUnassignedSectionCollapsed) && (
+            <div className="space-y-2">
+              {/* Show filtered sessions based on active folder or filter */}
+              {(() => {
+                let displaySessions = sessions;
+
+                if (activeFolderId) {
+                  displaySessions = sessionsByFolder[activeFolderId] || [];
+                } else if (filter === "all") {
+                  // Show only unassigned sessions when viewing "all" with folders
+                  displaySessions = folders.length > 0 ? unassignedSessions : sessions;
+                }
+
+                return displaySessions.length > 0 ? (
+                  displaySessions.map((session) => (
+                    <SessionItem
+                      key={session.id}
+                      session={session}
+                      isActive={activeSessionId === session.id}
+                      isTrashView={filter === "trash"}
+                      folders={folders}
+                      onSelect={() => {
+                        onSessionSelect(session.id);
+                        if (onClose) onClose();
+                      }}
+                      onToggleFavorite={onToggleFavorite}
+                      onToggleTrash={onToggleTrash}
+                      onDeletePermanent={onDeletePermanent}
+                      onMoveToFolder={onMoveToFolder}
+                    />
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-gray-400">
+                    <p className="text-sm">
+                      {activeFolderId ? "Folder kosong" : "Belum ada percakapan"}
+                    </p>
+                  </div>
+                );
+              })()}
+            </div>
+          )}
         </div>
       </div>
 

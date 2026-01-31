@@ -207,7 +207,7 @@ export function SessionPlayer({
         onComplete({
             durationSeconds: state.elapsedTime,
             cyclesCompleted: state.currentCycle > 0 ? state.currentCycle - 1 : 0,
-            completed: completedPercentage >= 80,
+            completed: completedPercentage >= 95, // Must complete at least 95% of the session
             completedPercentage,
         });
     };
