@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
 import { useJournalStore } from "@/stores/journalStore";
 import { Journal } from "@/types";
@@ -80,12 +80,33 @@ export default function JournalPage() {
 
     // Local state
     const [viewMode, setViewMode] = useState<ViewMode>("list");
-    const [localSearchQuery, setLocalSearchQuery] = useState("");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [journalToDelete, setJournalToDelete] = useState<Journal | null>(null);
     const [showFilters, setShowFilters] = useState(false);
-    const [activeTab, setActiveTab] = useState<"journals" | "analytics" | "settings">("journals");
     const [showDisclaimer, setShowDisclaimer] = useState(false);
+
+    // URL state management
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+
+    const updateUrlParam = useCallback((key: string, value: string | null) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (value) params.set(key, value);
+        else params.delete(key);
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }, [searchParams, router, pathname]);
+
+    // Read from URL
+    const activeTab = (searchParams.get("tab") || "journals") as "journals" | "analytics" | "settings";
+    const localSearchQuery = searchParams.get("search") || "";
+
+    const setActiveTab = (tab: "journals" | "analytics" | "settings") => {
+        updateUrlParam("tab", tab === "journals" ? null : tab);
+    };
+
+    const setLocalSearchQuery = (query: string) => {
+        updateUrlParam("search", query || null);
+    };
 
     useEffect(() => {
         if (user && user.has_accepted_ai_disclaimer === false) {
@@ -368,7 +389,7 @@ export default function JournalPage() {
                         {/* Search & Filter */}
                         <div className="flex items-center gap-4">
                             <div className="relative flex-1">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
                                 <Input
                                     placeholder="Cari jurnal..."
                                     value={localSearchQuery}

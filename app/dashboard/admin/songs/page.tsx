@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Trash2, Plus, Music, Upload, Loader2, Edit, Search, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -19,9 +20,33 @@ interface SongWithCategory extends Omit<Song, 'category'> {
 
 export default function AdminSongsPage() {
   const { token, user } = useAuthStore();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // URL state
+  const activeTab = searchParams.get("tab") || "songs";
+  const searchSong = searchParams.get("search") || "";
+  const searchCategory = searchParams.get("categorySearch") || "";
+  const selectedCategoryIdParam = searchParams.get("category");
+  const selectedCategoryId: number | "all" = selectedCategoryIdParam === null ? "all" : selectedCategoryIdParam === "all" ? "all" : parseInt(selectedCategoryIdParam, 10);
+
+  const updateUrl = useCallback((updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) params.set(key, value);
+      else params.delete(key);
+    });
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchParams, router, pathname]);
+
+  const setSearchSong = (value: string) => updateUrl({ search: value || null });
+  const setSearchCategory = (value: string) => updateUrl({ categorySearch: value || null });
+  const setSelectedCategoryId = (value: number | "all") => updateUrl({ category: value === "all" ? null : value.toString() });
+  const setActiveTab = (value: string) => updateUrl({ tab: value === "songs" ? null : value });
+
   const [categories, setCategories] = useState<SongCategory[]>([]);
   const [songs, setSongs] = useState<SongWithCategory[]>([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number | "all">("all");
   const [categoryDialog, setCategoryDialog] = useState(false);
   const [songDialog, setSongDialog] = useState(false);
   const [categoryForm, setCategoryForm] = useState({ name: "", thumbnail: "" });
@@ -31,8 +56,6 @@ export default function AdminSongsPage() {
   const [deleteSongId, setDeleteSongId] = useState<number | null>(null);
   const [editingCategory, setEditingCategory] = useState<SongCategory | null>(null);
   const [editingSong, setEditingSong] = useState<SongWithCategory | null>(null);
-  const [searchSong, setSearchSong] = useState("");
-  const [searchCategory, setSearchCategory] = useState("");
   const [cannotDeleteDialog, setCannotDeleteDialog] = useState(false);
   const [errorDialog, setErrorDialog] = useState({ open: false, title: "", message: "" });
   const audioInputRef = useRef<HTMLInputElement>(null);
@@ -195,17 +218,17 @@ export default function AdminSongsPage() {
         <p className="text-gray-500">Kelola kategori dan lagu</p>
       </div>
 
-      <Tabs defaultValue="categories" className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="categories">Kategori</TabsTrigger>
           <TabsTrigger value="songs">Lagu</TabsTrigger>
+          <TabsTrigger value="categories">Kategori</TabsTrigger>
         </TabsList>
 
         {/* Categories Tab */}
         <TabsContent value="categories" className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
               <Input
                 placeholder="Cari kategori..."
                 value={searchCategory}
@@ -297,7 +320,7 @@ export default function AdminSongsPage() {
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <div className="flex flex-col sm:flex-row gap-4 flex-1">
               <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
                 <Input
                   placeholder="Cari lagu..."
                   value={searchSong}

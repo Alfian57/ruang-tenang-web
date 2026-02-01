@@ -178,7 +178,7 @@ export default function LevelsManagementPage() {
                 level: (levels.length > 0 ? Math.max(...levels.map(l => l.level)) + 1 : 1),
                 min_exp: (levels.length > 0 ? Math.max(...levels.map(l => l.min_exp)) + 500 : 0),
                 badge_name: "",
-                badge_icon: "",
+                badge_icon: "🌱",
               });
             }}
             className="bg-primary hover:bg-primary/90"
@@ -231,7 +231,7 @@ export default function LevelsManagementPage() {
               <div className="flex gap-2">
                 <Input
                   type="text"
-                  placeholder="🏆"
+                  placeholder=""
                   value={formData.badge_icon}
                   onChange={(e) => setFormData({ ...formData, badge_icon: e.target.value })}
                   className="w-20"

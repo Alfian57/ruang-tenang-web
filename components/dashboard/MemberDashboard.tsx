@@ -42,6 +42,7 @@ import {
   CartesianGrid,
   Area,
   AreaChart,
+  Cell,
 } from "recharts";
 
 const moodEmojis: { type: MoodType; emoji: string; label: string; active: string; inactive: string; color: string }[] = [
@@ -92,15 +93,15 @@ export function MemberDashboard() {
       // No mood recorded at all - show check-in
       setShowMoodCheckin(true);
     } else {
-      // Compare dates using LOCAL timezone (not UTC!) for proper comparison
+      // Backend stores timestamps as UTC, so compare using UTC dates
       const today = new Date();
       const moodDate = new Date(latestMood.created_at);
       
-      // Compare year, month, and day in local timezone
+      // Compare year, month, and day in UTC timezone (matching backend storage)
       const isSameDay = 
-        today.getFullYear() === moodDate.getFullYear() &&
-        today.getMonth() === moodDate.getMonth() &&
-        today.getDate() === moodDate.getDate();
+        today.getUTCFullYear() === moodDate.getUTCFullYear() &&
+        today.getUTCMonth() === moodDate.getUTCMonth() &&
+        today.getUTCDate() === moodDate.getUTCDate();
       
       if (!isSameDay) {
         // Mood was recorded on a different day - show check-in
@@ -116,6 +117,11 @@ export function MemberDashboard() {
   // Chart filter states
   const [chartPeriod, setChartPeriod] = useState<"7days" | "1month">("7days");
   const [showChartDropdown, setShowChartDropdown] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Music player states
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
@@ -498,123 +504,147 @@ export function MemberDashboard() {
           </CardHeader>
           <CardContent>
             {/* Chart */}
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                {chartPeriod === "7days" ? (
-                  <BarChart data={weeklyChartData} margin={{ top: 20, right: 20, left: 10, bottom: 0 }}>
-                    <XAxis
-                      dataKey="name"
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 12, fill: "#9ca3af" }}
-                      padding={{ left: 20, right: 20 }}
-                    />
-                    <YAxis
-                      domain={[0, 7]}
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 11, fill: "#9ca3af" }}
-                      width={70}
-                      tickFormatter={(value) => {
-                        const labels: Record<number, string> = {
-                          6: "Bahagia",
-                          5: "Netral",
-                          4: "Marah",
-                          3: "Kecewa",
-                          2: "Sedih",
-                          1: "Menangis"
-                        };
-                        return labels[value] || "";
-                      }}
-                    />
-                    <Tooltip
-                      content={({ active, payload }) => {
-                        if (active && payload && payload.length) {
-                          const data = payload[0].payload;
-                          const moodInfo = moodEmojis.find(m => m.type === data.mood);
-                          return (
-                            <div className="bg-white p-3 rounded-xl shadow-lg border">
-                              <p className="text-sm font-medium text-gray-800">
-                                {moodInfo?.emoji} {moodInfo?.label || "Belum ada"}
-                              </p>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    {moodEmojis.map((mood) => (
-                      <Bar
-                        key={mood.type}
-                        dataKey={mood.label.toLowerCase()}
-                        fill={mood.color}
-                        radius={[4, 4, 0, 0]}
-                        barSize={30}
+            <div className="h-56 w-full">
+              {isMounted ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  {chartPeriod === "7days" ? (
+                    <BarChart data={weeklyChartData} margin={{ top: 20, right: 20, left: 10, bottom: 0 }}>
+                      <XAxis
+                        dataKey="name"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 12, fill: "#9ca3af" }}
+                        padding={{ left: 20, right: 20 }}
                       />
-                    ))}
-                  </BarChart>
-                ) : (
-                  <AreaChart data={monthlyChartData} margin={{ top: 20, right: 20, left: 10, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorMood" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis
-                      dataKey="name"
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 10, fill: "#9ca3af" }}
-                      interval={Math.ceil(monthlyChartData.length / 10)}
-                    />
-                    <YAxis
-                      domain={[0, 7]}
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fontSize: 11, fill: "#9ca3af" }}
-                      width={70}
-                      tickFormatter={(value) => {
-                        const labels: Record<number, string> = {
-                          6: "Bahagia",
-                          5: "Netral",
-                          4: "Marah",
-                          3: "Kecewa",
-                          2: "Sedih",
-                          1: "Menangis"
-                        };
-                        return labels[value] || "";
-                      }}
-                    />
-                    <Tooltip
-                      content={({ active, payload }) => {
-                        if (active && payload && payload.length) {
-                          const data = payload[0].payload;
-                          return (
-                            <div className="bg-white p-3 rounded-xl shadow-lg border">
-                              <p className="text-xs text-gray-500 mb-1">{data.fullDate}</p>
-                              <p className="text-sm font-medium text-gray-800">
-                                {data.emoji} {data.label || "Belum ada"}
-                              </p>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="value"
-                      stroke="#ef4444"
-                      strokeWidth={2}
-                      fill="url(#colorMood)"
-                      dot={{ fill: "#ef4444", strokeWidth: 0, r: 3 }}
-                      activeDot={{ r: 6, fill: "#ef4444" }}
-                    />
-                  </AreaChart>
-                )}
-              </ResponsiveContainer>
+                      <YAxis
+                        domain={[0, 7]}
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11, fill: "#9ca3af" }}
+                        width={70}
+                        tickFormatter={(value) => {
+                          const labels: Record<number, string> = {
+                            6: "Bahagia",
+                            4: "Neutral",
+                            2: "Sedih",
+                            0: "",
+                          };
+                          return labels[value] || "";
+                        }}
+                      />
+                      <Tooltip
+                        cursor={{ fill: "#f3f4f6", radius: 4 }}
+                        content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            const data = payload[0].payload;
+                            if (data.emoji) {
+                              return (
+                                <div className="bg-white p-2 rounded-lg shadow-lg border text-center">
+                                  <div className="text-2xl mb-1">{data.emoji}</div>
+                                  <div className="text-xs font-medium text-gray-500">
+                                    {data.fullDate}
+                                  </div>
+                                  <div className="text-xs font-bold capitalize text-primary">
+                                    {data.mood}
+                                  </div>
+                                </div>
+                              );
+                            }
+                            return (
+                              <div className="bg-white p-2 rounded-lg shadow-lg border">
+                                <p className="text-sm text-gray-500">Tidak ada data</p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      <Bar
+                        dataKey="value"
+                        radius={[4, 4, 4, 4]}
+                        maxBarSize={40}
+                      >
+                        {weeklyChartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  ) : (
+                    <AreaChart data={monthlyChartData} margin={{ top: 20, right: 20, left: 10, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorMood" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#ef4444" stopOpacity={0.1} />
+                          <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <XAxis
+                        dataKey="day"
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 10, fill: "#9ca3af" }}
+                        interval={2} // Show every 3rd label to avoid clutter
+                      />
+                      <YAxis
+                        domain={[0, 7]}
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 11, fill: "#9ca3af" }}
+                        width={70}
+                        tickFormatter={(value: number) => {
+                          const labels: Record<number, string> = {
+                            6: "Bahagia",
+                            4: "Neutral",
+                            2: "Sedih",
+                            0: "",
+                          };
+                          return labels[value] || "";
+                        }}
+                      />
+                      <Tooltip
+                        content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            const data = payload[0].payload as MonthlyChartData;
+                            if (data.emoji) {
+                              return (
+                                <div className="bg-white p-2 rounded-lg shadow-lg border text-center">
+                                  <div className="text-2xl mb-1">{data.emoji}</div>
+                                  <div className="text-xs font-medium text-gray-500">
+                                    {data.fullDate}
+                                  </div>
+                                  <div className="text-xs font-bold capitalize text-primary">
+                                    {data.mood}
+                                  </div>
+                                </div>
+                              );
+                            }
+                            return (
+                              <div className="bg-white p-2 rounded-lg shadow-lg border">
+                                <p className="text-sm text-gray-500">Tidak ada data</p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="value"
+                        stroke="#ef4444"
+                        fillOpacity={1}
+                        fill="url(#colorMood)"
+                        strokeWidth={2}
+                        connectNulls
+                        dot={{ fill: "#ef4444", strokeWidth: 0, r: 3 }}
+                        activeDot={{ r: 6, fill: "#ef4444" }}
+                      />
+                    </AreaChart>
+                  )}
+                </ResponsiveContainer>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg animate-pulse">
+                  <span className="text-sm text-gray-400">Loading chart...</span>
+                </div>
+              )}
             </div>
 
             {/* Legend */}
@@ -848,6 +878,7 @@ export function MemberDashboard() {
                         src={article.thumbnail}
                         alt={article.title}
                         fill
+                        sizes="256px"
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (

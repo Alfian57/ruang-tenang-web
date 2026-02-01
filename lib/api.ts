@@ -754,6 +754,13 @@ class ApiClient {
     });
   }
 
+  async toggleForumFlag(token: string, forumId: number) {
+    return this.request(`/admin/forums/${forumId}/toggle-flag`, {
+      method: "POST",
+      token,
+    });
+  }
+
   // Search endpoints
   async search(query: string) {
     return this.request<ApiResponse<{ articles: Article[]; songs: Song[] }>>(`/search?q=${encodeURIComponent(query)}`);

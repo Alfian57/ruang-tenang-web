@@ -35,6 +35,10 @@ export interface Forum {
   created_at: string;
   updated_at: string;
   
+  // Moderation fields
+  is_flagged?: boolean;
+  flagged_reason?: string;
+  
   user?: User;
   category?: ForumCategory;
   posts?: ForumPost[];

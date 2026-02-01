@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Check, Gift, Lock, RefreshCw, Trophy, X, Sparkles } from "lucide-react";
+import { Check, Gift, Lock, RefreshCw, Trophy, X } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { DailyTask } from "@/types";
@@ -248,7 +249,14 @@ export function DailyTaskFAB({ className }: DailyTaskFABProps) {
             {isOpen ? (
               <X className="w-6 h-6 text-white" />
             ) : (
-              <Sparkles className="w-6 h-6 text-white" />
+              <div className="relative w-8 h-8">
+                <Image 
+                  src="/icons/story-icon.png" 
+                  alt="Tasks" 
+                  fill 
+                  className="object-contain"
+                />
+              </div>
             )}
           </div>
 

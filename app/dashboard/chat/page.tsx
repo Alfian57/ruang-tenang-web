@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 import { useAuthStore } from "@/stores/authStore";
 import { useChatStore } from "@/stores/chatStore";
@@ -32,6 +33,18 @@ const CRISIS_KEYWORDS = [
  */
 export default function ChatPage() {
   const { user, token } = useAuthStore();
+
+  // URL state management
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const updateUrlParam = useCallback((key: string, value: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) params.set(key, value);
+    else params.delete(key);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchParams, router, pathname]);
 
   // Zustand store state and actions
   const {
@@ -140,6 +153,39 @@ export default function ChatPage() {
       loadSessions(token);
     }
   }, [token, filter, activeFolderId, loadSessions]);
+
+  // Sync URL -> Store on mount and URL change
+  useEffect(() => {
+    const urlView = searchParams.get("view");
+    if (urlView && (urlView === "all" || urlView === "favorites" || urlView === "trash")) {
+      if (urlView !== filter) setFilter(urlView as "all" | "favorites" | "trash");
+    }
+    const urlSession = searchParams.get("session");
+    if (urlSession && token) {
+      const sessionId = parseInt(urlSession, 10);
+      if (!isNaN(sessionId) && activeSession?.id !== sessionId) {
+        loadSession(token, sessionId);
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, token]);
+
+  // Sync Store -> URL when filter or session changes
+  useEffect(() => {
+    if (filter !== "all") {
+      updateUrlParam("view", filter);
+    } else {
+      updateUrlParam("view", null);
+    }
+  }, [filter, updateUrlParam]);
+
+  useEffect(() => {
+    if (activeSession?.id) {
+      updateUrlParam("session", activeSession.id.toString());
+    } else {
+      updateUrlParam("session", null);
+    }
+  }, [activeSession?.id, updateUrlParam]);
 
   // Load suggested prompts when token changes
   useEffect(() => {

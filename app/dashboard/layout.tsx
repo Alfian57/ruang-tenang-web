@@ -47,13 +47,25 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
 
 // Member menu items (for regular users)
+const StoryIcon = ({ className }: { className?: string }) => (
+  <div className={cn("relative", className)}>
+    <Image 
+      src="/icons/story-icon.png" 
+      alt="Story" 
+      fill 
+      className="object-contain" 
+      sizes="20px"
+    />
+  </div>
+);
+
 const memberLinks = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Beranda" },
   { href: "/dashboard/articles", icon: FileText, label: "Artikel" },
   { href: "/dashboard/chat", icon: MessageSquare, label: "AI Chat" },
   { href: "/dashboard/journal", icon: BookOpen, label: "Jurnal" },
   { href: "/dashboard/forum", icon: Users, label: "Forum" },
-  { href: "/dashboard/stories", icon: Sparkles, label: "Kisah Inspiratif" },
+  { href: "/dashboard/stories", icon: StoryIcon, label: "Kisah Inspiratif" },
   { href: "/dashboard/breathing", icon: Wind, label: "Latihan Pernapasan" },
   { href: "/dashboard/music", icon: Music, label: "Musik" },
 ];
@@ -76,7 +88,7 @@ const moderatorLinks = [
   { href: "/dashboard/chat", icon: MessageSquare, label: "AI Chat" },
   { href: "/dashboard/journal", icon: BookOpen, label: "Jurnal" },
   { href: "/dashboard/forum", icon: Users, label: "Forum" },
-  { href: "/dashboard/stories", icon: Sparkles, label: "Kisah Inspiratif" },
+  { href: "/dashboard/stories", icon: StoryIcon, label: "Kisah Inspiratif" },
   { href: "/dashboard/breathing", icon: Wind, label: "Latihan Pernapasan" },
   { href: "/dashboard/music", icon: Music, label: "Musik" },
   { href: "/dashboard/moderation", icon: Shield, label: "Moderasi" },
@@ -198,6 +210,7 @@ function DashboardContent({
                     src={user.avatar.startsWith("http") ? user.avatar : getUploadUrl(user.avatar)}
                     alt={user.name}
                     fill
+                    sizes="36px"
                     className="object-cover"
                   />
                 ) : (
@@ -251,7 +264,7 @@ function DashboardContent({
             {sidebarCollapsed ? (
               <Image src="/logo.png" alt="Ruang Tenang" width={32} height={32} className="object-contain" />
             ) : (
-              <Image src="/logo-full.png" alt="Ruang Tenang" width={sidebarCollapsed ? 32 : 120} height={32} className="object-contain" />
+              <Image src="/logo-full.png" alt="Ruang Tenang" width={0} height={0} sizes="100vw" className="h-8 w-auto object-contain" />
             )}
           </Link>
           {!sidebarCollapsed && (
@@ -296,7 +309,7 @@ function DashboardContent({
                   title={sidebarCollapsed ? link.label : undefined}
                 >
                   <link.icon className="w-5 h-5 shrink-0" />
-                  {!sidebarCollapsed && <span className="font-medium">{link.label}</span>}
+                  {!sidebarCollapsed && <span className="font-medium whitespace-nowrap overflow-hidden text-ellipsis">{link.label}</span>}
                 </Link>
               );
             })
@@ -319,7 +332,7 @@ function DashboardContent({
                   title={sidebarCollapsed ? link.label : undefined}
                 >
                   <link.icon className={cn("w-5 h-5 shrink-0", isActive ? "text-white" : "text-gray-500")} />
-                  {!sidebarCollapsed && <span className="font-medium">{link.label}</span>}
+                  {!sidebarCollapsed && <span className="font-medium whitespace-nowrap overflow-hidden text-ellipsis">{link.label}</span>}
                 </Link>
               );
             })
@@ -344,7 +357,7 @@ function DashboardContent({
                   <link.icon className={cn("w-5 h-5 shrink-0", isActive ? "text-white" : "text-gray-500")} />
                   {!sidebarCollapsed && (
                     <>
-                      <span className="font-medium flex-1">{link.label}</span>
+                      <span className="font-medium flex-1 whitespace-nowrap overflow-hidden text-ellipsis">{link.label}</span>
                     </>
                   )}
                 </Link>
@@ -410,6 +423,7 @@ function DashboardContent({
                         src={user.avatar.startsWith("http") ? user.avatar : getUploadUrl(user.avatar)}
                         alt={user.name}
                         fill
+                        sizes="40px"
                         className="object-cover"
                       />
                     ) : (
@@ -430,10 +444,12 @@ function DashboardContent({
                   <KeyRound className="mr-2 h-4 w-4" />
                   <span>Ganti Password</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowBlockedUsersModal(true)} className="cursor-pointer">
-                  <Ban className="mr-2 h-4 w-4" />
-                  <span>Pengguna Diblokir</span>
-                </DropdownMenuItem>
+                {!isAdmin && !isModerator && (
+                  <DropdownMenuItem onClick={() => setShowBlockedUsersModal(true)} className="cursor-pointer">
+                    <Ban className="mr-2 h-4 w-4" />
+                    <span>Pengguna Diblokir</span>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => setShowLogoutModal(true)} className="text-red-500 hover:text-red-600 hover:bg-red-50 focus:text-red-600 focus:bg-red-50 cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />

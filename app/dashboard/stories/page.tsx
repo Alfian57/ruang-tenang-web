@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import {
   Heart,
@@ -34,11 +34,28 @@ export default function StoriesPage() {
   const [featuredStories, setFeaturedStories] = useState<InspiringStory[]>([]);
   const [categories, setCategories] = useState<StoryCategory[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<"recent" | "hearts" | "featured">("recent");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  // URL state management
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const updateUrlParam = useCallback((key: string, value: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) params.set(key, value);
+    else params.delete(key);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchParams, router, pathname]);
+
+  // Read from URL
+  const searchQuery = searchParams.get("search") || "";
+  const selectedCategory = searchParams.get("category") || "all";
+  const sortBy = (searchParams.get("sort") || "recent") as "recent" | "hearts" | "featured";
+
+  const setSearchQuery = (value: string) => updateUrlParam("search", value || null);
+  const setSelectedCategory = (value: string) => updateUrlParam("category", value === "all" ? null : value);
+  const setSortBy = (value: "recent" | "hearts" | "featured") => updateUrlParam("sort", value === "recent" ? null : value);
 
   const loadStories = useCallback(async () => {
     setLoading(true);
@@ -177,7 +194,7 @@ export default function StoriesPage() {
         <section className="mb-8">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
               <Input
                 placeholder="Cari kisah..."
                 value={searchQuery}

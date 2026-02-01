@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Search, Trash2, Shield, User, Ban, CheckCircle } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { Search, Shield, User, Ban, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -20,23 +21,33 @@ interface UserData {
 
 export default function AdminUsersPage() {
   const { token, user } = useAuthStore();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // URL state
+  const search = searchParams.get("search") || "";
+  const page = parseInt(searchParams.get("page") || "1", 10);
+
   const [users, setUsers] = useState<UserData[]>([]);
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
-  const [deleteId, setDeleteId] = useState<number | null>(null);
   const [blockId, setBlockId] = useState<number | null>(null);
   const [blockAction, setBlockAction] = useState<"block" | "unblock">("block");
 
-  useEffect(() => {
-    if (token) {
-      loadUsers();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, page, search]);
+  const updateUrl = useCallback((updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) params.set(key, value);
+      else params.delete(key);
+    });
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchParams, router, pathname]);
 
-  const loadUsers = async () => {
+  const setSearch = (value: string) => updateUrl({ search: value || null, page: null });
+  const setPage = (value: number) => updateUrl({ page: value > 1 ? value.toString() : null });
+
+  const loadUsers = useCallback(async () => {
     if (!token) return;
     setIsLoading(true);
     try {
@@ -59,21 +70,12 @@ export default function AdminUsersPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [token, page, search]);
 
-  const handleDelete = async () => {
-    if (!token || !deleteId) return;
-    try {
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/admin/users/${deleteId}`,
-        { method: "DELETE", headers: { Authorization: `Bearer ${token}` } }
-      );
-      setDeleteId(null);
-      loadUsers();
-    } catch (error) {
-      console.error("Failed to delete user:", error);
-    }
-  };
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
+
 
   const handleBlockAction = async () => {
     if (!token || !blockId) return;
@@ -108,7 +110,10 @@ export default function AdminUsersPage() {
     if (role === "admin") {
       return <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700">Admin</span>;
     }
-    return <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">Member</span>;
+    if (role === "moderator") {
+      return <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">Moderator</span>;
+    }
+    return <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">User</span>;
   };
 
   const getStatusBadge = (isBlocked: boolean) => {
@@ -128,11 +133,11 @@ export default function AdminUsersPage() {
       {/* Search */}
       <div className="mb-6">
         <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
           <Input
             placeholder="Cari nama atau email..."
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            onChange={(e) => setSearch(e.target.value)}
             className="pl-10"
           />
         </div>
@@ -181,14 +186,16 @@ export default function AdminUsersPage() {
                     <td className="p-4">
                       <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          u.role === "admin" ? "bg-purple-100" : u.is_blocked ? "bg-red-100" : "bg-blue-100"
+                          u.role === "admin" ? "bg-purple-100" : u.role === "moderator" ? "bg-blue-100" : u.is_blocked ? "bg-red-100" : "bg-gray-100"
                         }`}>
                           {u.role === "admin" ? (
                             <Shield className="w-5 h-5 text-purple-600" />
+                          ) : u.role === "moderator" ? (
+                            <Shield className="w-5 h-5 text-blue-600" />
                           ) : u.is_blocked ? (
                             <Ban className="w-5 h-5 text-red-500" />
                           ) : (
-                            <User className="w-5 h-5 text-blue-600" />
+                            <User className="w-5 h-5 text-gray-600" />
                           )}
                         </div>
                         <div className="min-w-0">
@@ -211,7 +218,7 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="p-4">
                       <div className="flex gap-1 justify-end">
-                        {u.role !== "admin" && (
+                        {u.role !== "admin" && u.role !== "moderator" && (
                           <>
                             {u.is_blocked ? (
                               <Button
@@ -236,16 +243,6 @@ export default function AdminUsersPage() {
                             )}
                           </>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setDeleteId(u.id)}
-                          disabled={u.id === user?.id || u.role === "admin"}
-                          className="text-red-500 hover:text-red-600 disabled:opacity-30"
-                          title="Hapus"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -266,7 +263,7 @@ export default function AdminUsersPage() {
                 variant="outline"
                 size="sm"
                 disabled={page === 1}
-                onClick={() => setPage(p => p - 1)}
+                onClick={() => setPage(page - 1)}
               >
                 Sebelumnya
               </Button>
@@ -274,7 +271,7 @@ export default function AdminUsersPage() {
                 variant="outline"
                 size="sm"
                 disabled={page === totalPages}
-                onClick={() => setPage(p => p + 1)}
+                onClick={() => setPage(page + 1)}
               >
                 Selanjutnya
               </Button>
@@ -283,23 +280,6 @@ export default function AdminUsersPage() {
         )}
       </div>
 
-      {/* Delete Confirmation Modal */}
-      <Dialog open={deleteId !== null} onOpenChange={() => setDeleteId(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Hapus Pengguna?</DialogTitle>
-          </DialogHeader>
-          <p className="text-gray-600 py-4">
-            Pengguna yang dihapus tidak dapat dikembalikan. Semua data terkait pengguna ini juga akan dihapus.
-          </p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteId(null)}>Batal</Button>
-            <Button className="bg-red-500 hover:bg-red-600 text-white" onClick={handleDelete}>
-              Hapus
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Block/Unblock Confirmation Modal */}
       <Dialog open={blockId !== null} onOpenChange={() => setBlockId(null)}>

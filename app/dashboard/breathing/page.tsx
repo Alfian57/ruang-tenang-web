@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
 import {
@@ -48,8 +48,26 @@ export default function BreathingPage() {
     const router = useRouter();
     const { token } = useAuthStore();
 
+    // URL state management
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+
+    const updateUrlParam = useCallback((key: string, value: string | null) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (value) params.set(key, value);
+        else params.delete(key);
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }, [searchParams, router, pathname]);
+
+    // Read view from URL, default to "techniques"
+    const urlView = searchParams.get("view") as ViewMode | null;
+    const viewMode: ViewMode = urlView && ["techniques", "session", "history", "stats"].includes(urlView) ? urlView : "techniques";
+
+    const setViewMode = (mode: ViewMode) => {
+        updateUrlParam("view", mode === "techniques" ? null : mode);
+    };
+
     // Main state
-    const [viewMode, setViewMode] = useState<ViewMode>("techniques");
     const [isLoading, setIsLoading] = useState(true);
 
     // Data state

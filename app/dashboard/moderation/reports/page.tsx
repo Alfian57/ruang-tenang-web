@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -60,12 +61,32 @@ const REASON_LABELS: Record<ReportReason, string> = {
 
 export default function ModerationReportsPage() {
     const { token } = useAuthStore();
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+
+    // URL state
+    const statusFilter = searchParams.get("status") || "pending";
+    const typeFilter = searchParams.get("type") || "all";
+    const searchQuery = searchParams.get("search") || "";
+    const page = parseInt(searchParams.get("page") || "1", 10);
+
+    const updateUrl = useCallback((updates: Record<string, string | null>) => {
+        const params = new URLSearchParams(searchParams.toString());
+        Object.entries(updates).forEach(([key, value]) => {
+            if (value) params.set(key, value);
+            else params.delete(key);
+        });
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }, [searchParams, router, pathname]);
+
+    const setStatusFilter = (value: string) => updateUrl({ status: value === "pending" ? null : value, page: null });
+    const setTypeFilter = (value: string) => updateUrl({ type: value === "all" ? null : value, page: null });
+    const setSearchQuery = (value: string) => updateUrl({ search: value || null });
+    const setPage = (value: number) => updateUrl({ page: value > 1 ? value.toString() : null });
+
     const [reports, setReports] = useState<UserReport[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [statusFilter, setStatusFilter] = useState<string>("pending");
-    const [typeFilter, setTypeFilter] = useState<string>("all");
-    const [searchQuery, setSearchQuery] = useState("");
-    const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const limit = 20;
 
@@ -101,7 +122,7 @@ export default function ModerationReportsPage() {
     );
 
     return (
-        <div className="space-y-6">
+        <div className="p-4 lg:p-6 space-y-6">
             {/* Header */}
             <div className="flex items-center gap-4">
                 <Button asChild variant="ghost" size="icon">
@@ -126,7 +147,7 @@ export default function ModerationReportsPage() {
                 <CardContent className="pt-6">
                     <div className="flex flex-col sm:flex-row gap-4">
                         <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
                             <Input
                                 placeholder="Cari berdasarkan konten atau pengguna..."
                                 value={searchQuery}
@@ -143,14 +164,14 @@ export default function ModerationReportsPage() {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => { setStatusFilter("all"); setPage(1); }}>
+                                <DropdownMenuItem onClick={() => setStatusFilter("all")}>
                                     Semua Status
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 {Object.entries(STATUS_CONFIG).map(([key, config]) => {
                                     const Icon = config.icon;
                                     return (
-                                        <DropdownMenuItem key={key} onClick={() => { setStatusFilter(key); setPage(1); }}>
+                                        <DropdownMenuItem key={key} onClick={() => setStatusFilter(key)}>
                                             <Icon className="h-4 w-4 mr-2" />
                                             {config.label}
                                         </DropdownMenuItem>
@@ -166,14 +187,14 @@ export default function ModerationReportsPage() {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => { setTypeFilter("all"); setPage(1); }}>
+                                <DropdownMenuItem onClick={() => setTypeFilter("all")}>
                                     Semua Tipe
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 {Object.entries(TYPE_CONFIG).map(([key, config]) => {
                                     const Icon = config.icon;
                                     return (
-                                        <DropdownMenuItem key={key} onClick={() => { setTypeFilter(key); setPage(1); }}>
+                                        <DropdownMenuItem key={key} onClick={() => setTypeFilter(key)}>
                                             <Icon className="h-4 w-4 mr-2" />
                                             {config.label}
                                         </DropdownMenuItem>
@@ -277,7 +298,7 @@ export default function ModerationReportsPage() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                onClick={() => setPage(page - 1)}
                                 disabled={page === 1 || isLoading}
                             >
                                 Sebelumnya
@@ -288,7 +309,7 @@ export default function ModerationReportsPage() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                                onClick={() => setPage(page + 1)}
                                 disabled={page === totalPages || isLoading}
                             >
                                 Selanjutnya

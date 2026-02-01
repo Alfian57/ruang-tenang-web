@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus, MessageSquare, Clock, User, Heart, Search } from "lucide-react";
@@ -28,10 +29,6 @@ export default function ForumPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { token } = useAuthStore();
   
-  // Filters
-  const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<number | undefined>(undefined);
-  
   // Create Modal State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
@@ -39,7 +36,26 @@ export default function ForumPage() {
   const [newCategoryId, setNewCategoryId] = useState<number | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Debounce search
+  // URL state management
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const updateUrlParam = useCallback((key: string, value: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) params.set(key, value);
+    else params.delete(key);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchParams, router, pathname]);
+
+  // Read from URL
+  const search = searchParams.get("search") || "";
+  const selectedCategory = searchParams.get("category") ? parseInt(searchParams.get("category")!, 10) : undefined;
+
+  const setSearch = (value: string) => updateUrlParam("search", value || null);
+  const setSelectedCategory = (id: number | undefined) => updateUrlParam("category", id ? String(id) : null);
+
+  // Debounce search from URL
   const [debouncedSearch, setDebouncedSearch] = useState(search);
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 500);
@@ -161,7 +177,7 @@ export default function ForumPage() {
       <div className="space-y-4">
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
           <Input 
             placeholder="Cari topik diskusi..." 
             className="pl-10 bg-white"

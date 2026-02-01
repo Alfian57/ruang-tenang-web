@@ -7,22 +7,22 @@ import { Forum, ForumPost } from "@/types/forum";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { ArrowLeft, Send, Trash2, Clock, Heart, MessageSquare, Share2, CheckCircle2, Trophy, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Send, Trash2, Clock, Heart, MessageSquare, Share2, CheckCircle2, Trophy, AlertTriangle, ShieldAlert } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { ReportModal, BlockUserButton } from "@/components/moderation";
+import { BlockUserButton } from "@/components/moderation";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, Flag } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 
-export default function ForumTopicPage() {
+export default function AdminForumTopicPage() {
   const params = useParams();
   const router = useRouter();
   const { user, token } = useAuthStore();
@@ -41,14 +41,14 @@ export default function ForumTopicPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const id = parseInt(params.id as string);
-  const isAdmin = user?.role === "admin";
+  const isAdmin = user?.role === "admin" || user?.role === "moderator";
 
   const fetchForum = useCallback(async () => {
     if (!token) return;
     try {
       const data = await api.getForumByID(token, id);
       setForum(data);
-      setIsLiked(!!data.is_liked); // Needs to be added to type
+      setIsLiked(!!data.is_liked);
       setLikesCount(data.likes_count || 0);
     } catch (error) {
       console.error(error);
@@ -116,7 +116,7 @@ export default function ForumTopicPage() {
     try {
       await api.deleteForum(token, id);
       toast.success("Topik dihapus");
-      router.push("/dashboard/forum");
+      router.push("/dashboard/admin/forums");
     } catch (error) {
       console.error(error);
       toast.error("Gagal menghapus topik");
@@ -179,9 +179,6 @@ export default function ForumTopicPage() {
     // Optimistic Update
     const updatedPosts = posts.map(p => {
       if (p.id === post.id) return { ...p, is_best_answer: isBest };
-      // If we are marking as best, verify if we should unmark others? 
-      // Assuming multiple best answers are Allowed or handled by backend? 
-      // Usually only 1 best answer. Let's assume frontend enforces singles.
       if (isBest) return { ...p, is_best_answer: false }; 
       return p;
     });
@@ -196,14 +193,13 @@ export default function ForumTopicPage() {
     }
   };
 
-  if (loading) return <div className="p-10 text-center text-gray-500">Memuat diskusi...</div>;
+  if (loading) return <div className="p-10 text-center text-gray-500">Memuat data forum...</div>;
   if (!forum) return <div className="p-10 text-center text-gray-500">Topik tidak ditemukan</div>;
 
   const isOwner = user?.id === forum.user_id;
 
   return (
     <>
-      {/* Delete Post Confirmation Dialog */}
       <ConfirmDialog
         isOpen={showDeletePostDialog}
         onClose={() => {
@@ -212,34 +208,38 @@ export default function ForumTopicPage() {
         }}
         onConfirm={handleDeletePost}
         title="Hapus Balasan"
-        description="Apakah kamu yakin ingin menghapus balasan ini? Tindakan ini tidak dapat dibatalkan."
-        confirmText="Ya, Hapus"
+        description="Apakah Anda yakin ingin menghapus balasan ini secara permanen sebagai admin?"
+        confirmText="Hapus (Admin)"
         cancelText="Batal"
         variant="danger"
         isLoading={isDeleting}
       />
 
-      {/* Delete Forum Confirmation Dialog */}
       <ConfirmDialog
         isOpen={showDeleteForumDialog}
         onClose={() => setShowDeleteForumDialog(false)}
         onConfirm={handleDeleteForum}
         title="Hapus Topik Diskusi"
-        description="Apakah kamu yakin ingin menghapus topik diskusi ini selamanya? Semua balasan juga akan dihapus. Tindakan ini tidak dapat dibatalkan."
-        confirmText="Ya, Hapus Selamanya"
+        description="Apakah Anda yakin ingin menghapus topik ini? Tindakan ini tidak dapat dibatalkan."
+        confirmText="Hapus Topik (Admin)"
         cancelText="Batal"
         variant="danger"
         isLoading={isDeleting}
       />
+
       <div className="flex flex-col h-[calc(100vh-4rem)] lg:h-[calc(100vh-0rem)] bg-gray-50">
         {/* Header */}
         <div className="bg-white border-b px-4 lg:px-6 py-4 flex items-center justify-between sticky top-0 z-10 shrink-0 shadow-sm">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full">
+            <Button variant="ghost" size="icon" onClick={() => router.push('/dashboard/admin/forums')} className="rounded-full">
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div>
               <div className="flex items-center gap-2">
+                <span className="flex items-center gap-1 bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
+                   <ShieldAlert className="w-3 h-3" />
+                   ADMIN MODE
+                </span>
                 {forum.category && (
                   <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 uppercase tracking-wide">
                     {forum.category.name}
@@ -259,34 +259,21 @@ export default function ForumTopicPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                {(isOwner || isAdmin) && (
                   <DropdownMenuItem
                     className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
                     onClick={() => setShowDeleteForumDialog(true)}
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Hapus Topik
+                    Hapus Topik (Admin)
                   </DropdownMenuItem>
-                )}
-                {user && user.id !== forum.user_id && (
-                  <>
-                    <ReportModal
-                      type="forum"
-                      contentId={forum.id}
-                      trigger={
-                        <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer">
-                          <Flag className="w-4 h-4 mr-2" />
-                          Laporkan Topik
-                        </div>
-                      }
-                    />
+                  
+                  {user && user.id !== forum.user_id && (
                     <BlockUserButton
                       userId={forum.user_id}
                       userName={forum.user?.name || "User"}
                       className="w-full justify-start text-sm font-normal px-2 py-1.5 h-auto text-red-600 hover:text-red-600 hover:bg-red-50"
                     />
-                  </>
-                )}
+                  )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -297,13 +284,15 @@ export default function ForumTopicPage() {
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-4xl mx-auto p-4 lg:p-6 space-y-6">
             {forum.is_flagged && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3 text-red-800">
-                <div className="bg-red-100 p-2 rounded-full shrink-0">
-                  <AlertTriangle className="w-5 h-5 text-red-600" />
+              <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-center gap-3 text-orange-800">
+                <div className="bg-orange-100 p-2 rounded-full shrink-0">
+                  <AlertTriangle className="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">Topik Ini Diblokir</h3>
-                  <p className="text-sm text-red-700">Topik ini telah ditandai/diblokir oleh moderator dan tidak dapat menerima balasan baru.</p>
+                  <h3 className="font-semibold">Status: DIBLOKIR</h3>
+                  <p className="text-sm text-orange-700">
+                    Topik ini sedang diblokir untuk pengguna umum. Sebagai admin, Anda masih dapat melihat dan membalas.
+                  </p>
                 </div>
               </div>
             )}
@@ -317,7 +306,7 @@ export default function ForumTopicPage() {
                   </div>
                   <div>
                     <p className="font-semibold text-gray-900">{forum.user?.name}</p>
-                    <p className="text-xs text-gray-500">Penulis</p>
+                    <p className="text-xs text-gray-500">Penulis (ID: {forum.user_id})</p>
                   </div>
                 </div>
               </div>
@@ -327,7 +316,6 @@ export default function ForumTopicPage() {
               </div>
 
               <div className="flex items-center gap-4 mt-6 pt-4 border-t">
-                {user?.id !== forum.user_id ? (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -340,20 +328,10 @@ export default function ForumTopicPage() {
                     <Heart className={cn("w-4 h-4", isLiked && "fill-current")} />
                     <span>{likesCount} Suka</span>
                   </Button>
-                ) : (
-                  <div className="flex items-center gap-2 text-sm text-gray-400 px-3 py-2">
-                    <Heart className="w-4 h-4" />
-                    <span>{likesCount} Suka</span>
-                  </div>
-                )}
                 <div className="flex items-center gap-2 text-sm text-gray-500 px-3 py-2">
                   <MessageSquare className="w-4 h-4" />
                   <span>{posts.length} Balasan</span>
                 </div>
-                <Button variant="ghost" size="sm" className="gap-2 ml-auto text-gray-500">
-                  <Share2 className="w-4 h-4" />
-                  <span className="hidden sm:inline">Bagikan</span>
-                </Button>
               </div>
             </div>
 
@@ -372,15 +350,14 @@ export default function ForumTopicPage() {
               <div className="flex gap-3">
                 <div className="flex-1 relative">
                   <Textarea
-                    placeholder={forum.is_flagged ? "Topik ini telah diblokir..." : "Tulis balasan Anda..."}
+                    placeholder="Tulis balasan sebagai Admin..."
                     value={replyContent}
                     onChange={(e) => setReplyContent(e.target.value)}
                     className="min-h-[44px] max-h-[120px] resize-none pr-12 py-3 bg-gray-50 border-gray-200 focus:bg-white transition-colors"
                     style={{ height: '44px' }} // Initial height
-                    disabled={!!forum.is_flagged}
                   />
                 </div>
-                <Button className="h-[44px] w-[44px] p-0 shrink-0 rounded-xl" disabled={!replyContent.trim() || submitting || !!forum.is_flagged} onClick={handleReply}>
+                <Button className="h-[44px] w-[44px] p-0 shrink-0 rounded-xl" disabled={!replyContent.trim() || submitting} onClick={handleReply}>
                   {submitting ? <Clock className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
                 </Button>
               </div>
@@ -417,7 +394,6 @@ export default function ForumTopicPage() {
                         <span className="text-xs text-gray-400">{formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: idLocale })}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                         {isOwner && !post.is_best_answer && (
                            <Button 
                              variant="ghost" 
                              size="sm" 
@@ -428,7 +404,6 @@ export default function ForumTopicPage() {
                               <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
                               Best Answer
                            </Button>
-                         )}
                          
                          <DropdownMenu>
                            <DropdownMenuTrigger asChild>
@@ -437,7 +412,6 @@ export default function ForumTopicPage() {
                              </Button>
                            </DropdownMenuTrigger>
                            <DropdownMenuContent align="end">
-                              {(user?.id === post.user_id || isAdmin) && (
                                 <DropdownMenuItem 
                                   onClick={() => {
                                     setDeletePostId(post.id);
@@ -446,28 +420,15 @@ export default function ForumTopicPage() {
                                   className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
                                 >
                                   <Trash2 className="w-4 h-4 mr-2" />
-                                  Hapus Balasan
+                                  Hapus Balasan (Admin)
                                 </DropdownMenuItem>
-                              )}
+                             
                               {user && user.id !== post.user_id && (
-                                <>
-                                  <ReportModal
-                                    type="forum_post"
-                                    contentId={post.id}
-                                    userId={post.user_id}
-                                    trigger={
-                                      <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer">
-                                        <Flag className="w-4 h-4 mr-2" />
-                                        Laporkan Balasan
-                                      </div>
-                                    }
-                                  />
                                   <BlockUserButton
                                     userId={post.user_id}
                                     userName={post.user?.name || "User"}
                                     className="w-full justify-start text-sm font-normal px-2 py-1.5 h-auto text-red-600 hover:text-red-600 hover:bg-red-50"
                                   />
-                                </>
                               )}
                            </DropdownMenuContent>
                          </DropdownMenu>
@@ -479,23 +440,16 @@ export default function ForumTopicPage() {
                     </p>
 
                     <div className="flex items-center gap-3 border-t border-gray-100/50 pt-2">
-                       {user?.id !== post.user_id ? (
-                         <button 
-                           onClick={() => handleTogglePostLike(post)}
-                           className={cn(
-                             "flex items-center gap-1.5 text-xs font-medium transition-colors p-1 rounded",
-                             post.is_liked ? "text-red-500 bg-red-50" : "text-gray-500 hover:text-red-500 hover:bg-red-50"
-                           )}
-                         >
-                           <Heart className={cn("w-3.5 h-3.5", post.is_liked && "fill-current")} />
-                           {post.likes_count || 0}
-                         </button>
-                       ) : (
-                         <div className="flex items-center gap-1.5 text-xs text-gray-400 p-1">
-                           <Heart className="w-3.5 h-3.5" />
-                           {post.likes_count || 0}
-                         </div>
-                       )}
+                          <button 
+                            onClick={() => handleTogglePostLike(post)}
+                            className={cn(
+                              "flex items-center gap-1.5 text-xs font-medium transition-colors p-1 rounded",
+                              post.is_liked ? "text-red-500 bg-red-50" : "text-gray-500 hover:text-red-500 hover:bg-red-50"
+                            )}
+                          >
+                            <Heart className={cn("w-3.5 h-3.5", post.is_liked && "fill-current")} />
+                            {post.likes_count || 0}
+                          </button>
                     </div>
                   </div>
                 </div>
@@ -506,7 +460,7 @@ export default function ForumTopicPage() {
                   <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-300">
                     <MessageSquare className="w-6 h-6" />
                   </div>
-                  <p className="text-gray-500 text-sm">Belum ada balasan. Jadilah yang pertama!</p>
+                  <p className="text-gray-500 text-sm">Belum ada balasan.</p>
                 </div>
               )}
             </div>

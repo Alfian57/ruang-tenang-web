@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -41,8 +42,7 @@ export default function MusicPage() {
   const [songs, setSongs] = useState<Song[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<SongCategory | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   // Playlist state
   const [playlists, setPlaylists] = useState<PlaylistListItem[]>([]);
@@ -66,6 +66,25 @@ export default function MusicPage() {
 
   // Auth
   const { token } = useAuthStore();
+
+  // URL state management
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const updateUrlParam = useCallback((key: string, value: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) params.set(key, value);
+    else params.delete(key);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchParams, router, pathname]);
+
+  // Read from URL
+  const activeTab = searchParams.get("tab") || "browse";
+  const search = searchParams.get("search") || "";
+
+  const setActiveTab = (tab: string) => updateUrlParam("tab", tab === "browse" ? null : tab);
+  const setSearch = (value: string) => updateUrlParam("search", value || null);
 
   // Global player store
   const {
@@ -486,7 +505,7 @@ export default function MusicPage() {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="browse" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="w-full mb-6 grid grid-cols-3">
             <TabsTrigger value="browse" className="text-xs sm:text-sm">
               <Library className="w-4 h-4 mr-1.5" />

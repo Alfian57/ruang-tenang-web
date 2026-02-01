@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Trash2, Search, Plus, Ban, CheckCircle, Eye, Edit } from "lucide-react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { Trash2, Search, Plus, Ban, CheckCircle, Eye, Edit, FileText } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -30,13 +31,34 @@ interface AdminArticle {
 
 export default function AdminArticlesPage() {
   const { token, user } = useAuthStore();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // URL state
+  const activeTab = searchParams.get("tab") || "articles";
+  const search = searchParams.get("search") || "";
+  const statusFilter = searchParams.get("status") || "";
+  const categorySearch = searchParams.get("categorySearch") || "";
+
+  const updateUrl = useCallback((updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) params.set(key, value);
+      else params.delete(key);
+    });
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchParams, router, pathname]);
+
+  const setSearch = (value: string) => updateUrl({ search: value || null });
+  const setStatusFilter = (value: string) => updateUrl({ status: value || null });
+  const setCategorySearch = (value: string) => updateUrl({ categorySearch: value || null });
+  const setActiveTab = (value: string) => updateUrl({ tab: value === "articles" ? null : value });
   
   // Articles state
   const [articles, setArticles] = useState<AdminArticle[]>([]);
   const [categories, setCategories] = useState<ArticleCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
   const [editDialog, setEditDialog] = useState(false);
   const [editingArticle, setEditingArticle] = useState<AdminArticle | null>(null);
   const [formData, setFormData] = useState({ title: "", content: "", category_id: 0, thumbnail: "" });
@@ -45,11 +67,11 @@ export default function AdminArticlesPage() {
   const [isSaving, setIsSaving] = useState(false);
 
   // Categories state
-  const [categorySearch, setCategorySearch] = useState("");
   const [categoryDialog, setCategoryDialog] = useState(false);
   const [editingCategory, setEditingCategory] = useState<ArticleCategory | null>(null);
   const [categoryForm, setCategoryForm] = useState({ name: "", description: "" });
   const [deleteCategoryId, setDeleteCategoryId] = useState<number | null>(null);
+  const [cannotDeleteCategoryDialog, setCannotDeleteCategoryDialog] = useState(false);
   const [isCategorySaving, setIsCategorySaving] = useState(false);
 
   const loadData = useCallback(async () => {
@@ -58,7 +80,7 @@ export default function AdminArticlesPage() {
     try {
       const [articlesRes, categoriesRes] = await Promise.all([
         api.adminGetArticles(token, { status: statusFilter || undefined }) as Promise<{ data: AdminArticle[] }>,
-        api.getArticleCategories() as Promise<{ data: ArticleCategory[] }>,
+        api.adminGetArticleCategories(token) as Promise<{ data: ArticleCategory[] }>,
       ]);
       setArticles(articlesRes.data || []);
       setCategories(categoriesRes.data || []);
@@ -78,6 +100,29 @@ export default function AdminArticlesPage() {
     setEditingArticle(null);
     setFormData({ title: "", content: "", category_id: categories[0]?.id || 0, thumbnail: "" });
     setEditDialog(true);
+  };
+
+  const openEditDialog = async (article: AdminArticle) => {
+    if (!token) return;
+    try {
+      // Fetch full article content
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/articles/${article.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      const fullArticle = data.data;
+      
+      setEditingArticle(article);
+      setFormData({
+        title: fullArticle.title || article.title,
+        content: fullArticle.content || "",
+        category_id: fullArticle.category_id || article.category_id,
+        thumbnail: fullArticle.thumbnail || article.thumbnail || "",
+      });
+      setEditDialog(true);
+    } catch (error) {
+      console.error("Failed to load article for editing:", error);
+    }
   };
 
   const saveArticle = async () => {
@@ -217,7 +262,7 @@ export default function AdminArticlesPage() {
         <p className="text-gray-500">Kelola artikel dan kategori artikel</p>
       </div>
 
-      <Tabs defaultValue="articles" className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="articles">Artikel</TabsTrigger>
           <TabsTrigger value="categories">Kategori</TabsTrigger>
@@ -227,7 +272,7 @@ export default function AdminArticlesPage() {
         <TabsContent value="articles" className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
               <Input
                 placeholder="Cari artikel..."
                 value={search}
@@ -338,11 +383,23 @@ export default function AdminArticlesPage() {
                         </td>
                         <td className="p-4">
                           <div className="flex gap-1 justify-end">
-                            <Link href={`/articles/${article.id}`}>
-                              <Button variant="ghost" size="icon" title="Lihat">
-                                <Eye className="w-4 h-4" />
-                              </Button>
-                            </Link>
+                            {article.status !== "blocked" && (
+                              <>
+                                <Link href={`/dashboard/reading/articles/${article.id}`}>
+                                  <Button variant="ghost" size="icon" title="Lihat">
+                                    <Eye className="w-4 h-4" />
+                                  </Button>
+                                </Link>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => openEditDialog(article)}
+                                  title="Edit"
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                              </>
+                            )}
                             <Button
                               variant="ghost"
                               size="icon"
@@ -376,7 +433,7 @@ export default function AdminArticlesPage() {
         <TabsContent value="categories" className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
               <Input
                 placeholder="Cari kategori..."
                 value={categorySearch}
@@ -445,9 +502,14 @@ export default function AdminArticlesPage() {
                               variant="ghost"
                               size="icon"
                               className="text-red-500 hover:text-red-600"
-                              onClick={() => setDeleteCategoryId(category.id)}
+                              onClick={() => {
+                                if ((category.article_count || 0) > 0) {
+                                  setCannotDeleteCategoryDialog(true);
+                                } else {
+                                  setDeleteCategoryId(category.id);
+                                }
+                              }}
                               title="Hapus"
-                              disabled={(category.article_count || 0) > 0}
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
@@ -612,6 +674,28 @@ export default function AdminArticlesPage() {
             <Button variant="outline" onClick={() => setDeleteCategoryId(null)}>Batal</Button>
             <Button className="bg-red-500 hover:bg-red-600 text-white" onClick={handleDeleteCategory}>
               Hapus
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cannot Delete Category Modal */}
+      <Dialog open={cannotDeleteCategoryDialog} onOpenChange={setCannotDeleteCategoryDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Tidak Bisa Menghapus Kategori</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FileText className="w-8 h-8 text-red-600" />
+            </div>
+            <p className="text-center text-gray-600">
+              Kategori ini masih memiliki artikel di dalamnya. Silakan hapus atau pindahkan artikel-artikel tersebut terlebih dahulu sebelum menghapus kategori ini.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setCannotDeleteCategoryDialog(false)} className="gradient-primary w-full">
+              Mengerti
             </Button>
           </DialogFooter>
         </DialogContent>

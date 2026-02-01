@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Search, Plus, Edit, Trash2, Eye, AlertCircle } from "lucide-react";
@@ -28,8 +29,20 @@ export default function MyArticlesPage() {
   const { token } = useAuthStore();
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [search, setSearch] = useState("");
   const [deleteArticleId, setDeleteArticleId] = useState<number | null>(null);
+
+  // URL state management
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const search = searchParams.get("search") || "";
+
+  const updateSearch = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) params.set("search", value);
+    else params.delete("search");
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const loadArticles = useCallback(async () => {
     if (!token) return;
@@ -91,11 +104,11 @@ export default function MyArticlesPage() {
       </div>
 
       <div className="relative mb-6 max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
         <Input
           placeholder="Cari artikel..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => updateSearch(e.target.value)}
           className="pl-10"
         />
       </div>
@@ -148,7 +161,7 @@ export default function MyArticlesPage() {
                   )}
                 </div>
                 <div className="flex gap-2 shrink-0">
-                  <Link href={`/articles/${article.id}`}>
+                  <Link href={`/dashboard/reading/articles/${article.id}`}>
                     <Button variant="outline" size="icon" title="Lihat">
                       <Eye className="w-4 h-4" />
                     </Button>

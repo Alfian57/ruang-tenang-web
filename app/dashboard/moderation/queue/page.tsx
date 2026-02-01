@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -37,11 +38,30 @@ const STATUS_LABELS: Record<ArticleModerationStatus, { label: string; color: str
 
 export default function ModerationQueuePage() {
     const { token } = useAuthStore();
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+
+    // URL state
+    const statusFilter = searchParams.get("status") || "pending";
+    const searchQuery = searchParams.get("search") || "";
+    const page = parseInt(searchParams.get("page") || "1", 10);
+
+    const updateUrl = useCallback((updates: Record<string, string | null>) => {
+        const params = new URLSearchParams(searchParams.toString());
+        Object.entries(updates).forEach(([key, value]) => {
+            if (value) params.set(key, value);
+            else params.delete(key);
+        });
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }, [searchParams, router, pathname]);
+
+    const setStatusFilter = (value: string) => updateUrl({ status: value === "pending" ? null : value, page: null });
+    const setSearchQuery = (value: string) => updateUrl({ search: value || null });
+    const setPage = (value: number) => updateUrl({ page: value > 1 ? value.toString() : null });
+
     const [items, setItems] = useState<ModerationQueueItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [statusFilter, setStatusFilter] = useState<string>("pending");
-    const [searchQuery, setSearchQuery] = useState("");
-    const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const limit = 20;
 
@@ -75,7 +95,7 @@ export default function ModerationQueuePage() {
     );
 
     return (
-        <div className="space-y-6">
+        <div className="p-4 lg:p-6 space-y-6">
             {/* Header */}
             <div className="flex items-center gap-4">
                 <Button asChild variant="ghost" size="icon">
@@ -100,7 +120,7 @@ export default function ModerationQueuePage() {
                 <CardContent className="pt-6">
                     <div className="flex flex-col sm:flex-row gap-4">
                         <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
                             <Input
                                 placeholder="Cari berdasarkan judul atau penulis..."
                                 value={searchQuery}
@@ -116,18 +136,18 @@ export default function ModerationQueuePage() {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => { setStatusFilter("all"); setPage(1); }}>
+                                <DropdownMenuItem onClick={() => setStatusFilter("all")}>
                                     Semua Status
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => { setStatusFilter("pending"); setPage(1); }}>
+                                <DropdownMenuItem onClick={() => setStatusFilter("pending")}>
                                     <Clock className="h-4 w-4 mr-2 text-amber-500" />
                                     Menunggu
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => { setStatusFilter("flagged"); setPage(1); }}>
+                                <DropdownMenuItem onClick={() => setStatusFilter("flagged")}>
                                     <AlertTriangle className="h-4 w-4 mr-2 text-red-500" />
                                     Ditandai
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => { setStatusFilter("revision_needed"); setPage(1); }}>
+                                <DropdownMenuItem onClick={() => setStatusFilter("revision_needed")}>
                                     <FileText className="h-4 w-4 mr-2 text-blue-500" />
                                     Perlu Revisi
                                 </DropdownMenuItem>
@@ -239,7 +259,7 @@ export default function ModerationQueuePage() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                                onClick={() => setPage(page - 1)}
                                 disabled={page === 1 || isLoading}
                             >
                                 Sebelumnya
@@ -250,7 +270,7 @@ export default function ModerationQueuePage() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                                onClick={() => setPage(page + 1)}
                                 disabled={page === totalPages || isLoading}
                             >
                                 Selanjutnya

@@ -72,7 +72,7 @@ export default function ModerationDashboardPage() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="p-4 lg:p-6 space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
@@ -308,41 +308,6 @@ export default function ModerationDashboardPage() {
                     </CardContent>
                 </Card>
             </div>
-
-            {/* Quick Actions */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-lg">Aksi Cepat</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <Button asChild variant="outline" className="h-auto py-4 flex-col">
-                            <Link href="/dashboard/moderation/queue">
-                                <FileText className="h-6 w-6 mb-2" />
-                                <span>Antrian Moderasi</span>
-                            </Link>
-                        </Button>
-                        <Button asChild variant="outline" className="h-auto py-4 flex-col">
-                            <Link href="/dashboard/moderation/reports">
-                                <Flag className="h-6 w-6 mb-2" />
-                                <span>Kelola Laporan</span>
-                            </Link>
-                        </Button>
-                        <Button asChild variant="outline" className="h-auto py-4 flex-col">
-                            <Link href="/dashboard/moderation/actions">
-                                <Shield className="h-6 w-6 mb-2" />
-                                <span>Log Aksi</span>
-                            </Link>
-                        </Button>
-                        <Button asChild variant="outline" className="h-auto py-4 flex-col">
-                            <Link href="/dashboard/moderation/crisis-keywords">
-                                <AlertTriangle className="h-6 w-6 mb-2" />
-                                <span>Kata Kunci Krisis</span>
-                            </Link>
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
         </div>
     );
 }

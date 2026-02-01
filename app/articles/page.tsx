@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Search, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -12,11 +13,31 @@ import { Article, ArticleCategory } from "@/types";
 import { formatDate } from "@/lib/utils";
 
 export default function ArticlesPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // URL state management
+  const search = searchParams.get("search") || "";
+  const categoryId = searchParams.get("category") || "";
+
   const [articles, setArticles] = useState<Article[]>([]);
   const [categories, setCategories] = useState<ArticleCategory[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+
+  const updateUrl = useCallback((updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) params.set(key, value);
+      else params.delete(key);
+    });
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchParams, router, pathname]);
+
+  const setSearch = (value: string) => updateUrl({ search: value || null });
+  const setSelectedCategory = (id: number | null) => updateUrl({ category: id ? String(id) : null });
+
+  const selectedCategory = categoryId ? Number(categoryId) : null;
 
   const loadCategories = useCallback(async () => {
     try {
@@ -70,38 +91,38 @@ export default function ArticlesPage() {
         <div className="grid lg:grid-cols-12 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-8">
-            {/* Search & Filter */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-6">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <Input
-                  placeholder="Cari artikel..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10 rounded-full bg-white border-gray-200"
-                />
-              </div>
-              <div className="flex gap-2 flex-wrap">
+            {/* Search */}
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Input
+                placeholder="Cari artikel..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-10 rounded-full bg-white border-gray-200"
+              />
+            </div>
+
+            {/* Category Filter */}
+            <div className="flex gap-2 flex-wrap mb-6">
+              <Button
+                variant={selectedCategory === null ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedCategory(null)}
+                className={selectedCategory === null ? "gradient-primary" : ""}
+              >
+                Semua
+              </Button>
+              {categories.map((cat) => (
                 <Button
-                  variant={selectedCategory === null ? "default" : "outline"}
+                  key={cat.id}
+                  variant={selectedCategory === cat.id ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setSelectedCategory(null)}
-                  className={selectedCategory === null ? "gradient-primary" : ""}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={selectedCategory === cat.id ? "gradient-primary" : ""}
                 >
-                  Semua
+                  {cat.name}
                 </Button>
-                {categories.map((cat) => (
-                  <Button
-                    key={cat.id}
-                    variant={selectedCategory === cat.id ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={selectedCategory === cat.id ? "gradient-primary" : ""}
-                  >
-                    {cat.name}
-                  </Button>
-                ))}
-              </div>
+              ))}
             </div>
 
             {/* Articles List */}
