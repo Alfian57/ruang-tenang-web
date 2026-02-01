@@ -9,9 +9,9 @@ export default function DashboardPage() {
 
   // Check if user is admin
   // user?.role might be undefined initially, but auth protection usually handles this
-  const isAdmin = user?.role === "admin";
+  const isAdminOrMod = user?.role === "admin" || user?.role === "moderator";
 
-  if (isAdmin) {
+  if (isAdminOrMod) {
     return <AdminDashboard />;
   }
 

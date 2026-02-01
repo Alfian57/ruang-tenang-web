@@ -132,7 +132,7 @@ export default function AdminForumsPage() {
     }
   };
 
-  if (user?.role !== "admin") {
+  if (user?.role !== "admin" && user?.role !== "moderator") {
     return <div className="p-8 text-center">Akses ditolak</div>;
   }
 

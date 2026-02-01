@@ -8,6 +8,7 @@ import {
   CTASection,
   Footer,
 } from "@/components/landing";
+import { DailyTaskFAB } from "@/components/gamification";
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
         <CTASection />
       </main>
       <Footer />
+      <DailyTaskFAB />
     </div>
   );
 }

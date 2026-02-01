@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/stores/authStore";
+import { AuthIllustration } from "@/components/auth/AuthIllustration";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter"),
@@ -201,46 +202,11 @@ export default function RegisterPage() {
       </div>
 
       {/* Right Side - Illustration */}
-      <div className="hidden lg:flex w-1/2 relative overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-linear-to-br from-red-400 via-red-500 to-red-600">
-          {/* Decorative circles */}
-          <div className="absolute top-20 right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-32 left-20 w-48 h-48 bg-white/10 rounded-full blur-2xl" />
-        </div>
-
-        {/* Content */}
-        <div className="relative z-10 flex flex-col items-center justify-center w-full p-12 text-white">
-          <h2 className="text-4xl font-bold mb-6">RuangTenang</h2>
-          <p className="text-center text-white/90 max-w-lg leading-relaxed mb-10">
-            Bergabunglah dengan ribuan mahasiswa yang telah menemukan ketenangan dalam 
-            menghadapi tekanan akademik. Platform kami hadir untuk membantu Anda mengelola 
-            stres, memahami emosi, dan menemukan keseimbangan dalam hidup.
-          </p>
-
-          {/* Illustration */}
-          <div className="relative">
-            <Image
-              src="/images/landing/about-doctor.png"
-              alt="RuangTenang App"
-              width={350}
-              height={450}
-              className="object-contain drop-shadow-2xl"
-            />
-            
-            {/* Floating icons */}
-            <div className="absolute top-0 right-0 bg-white rounded-full p-3 shadow-lg">
-              <span className="text-2xl">❤️</span>
-            </div>
-            <div className="absolute bottom-20 -left-4 bg-white rounded-full p-3 shadow-lg">
-              <span className="text-2xl">🩺</span>
-            </div>
-            <div className="absolute top-1/2 -right-4 bg-white rounded-full p-3 shadow-lg">
-              <span className="text-2xl">💊</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Right Side - Illustration */}
+      <AuthIllustration 
+        title="RuangTenang"
+        description="Bergabunglah dengan ribuan mahasiswa yang telah menemukan ketenangan dalam menghadapi tekanan akademik. Platform kami hadir untuk membantu Anda mengelola stres, memahami emosi, dan menemukan keseimbangan dalam hidup."
+      />
     </div>
   );
 }

@@ -47,17 +47,7 @@ import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
 
 // Member menu items (for regular users)
-const StoryIcon = ({ className }: { className?: string }) => (
-  <div className={cn("relative", className)}>
-    <Image 
-      src="/icons/story-icon.png" 
-      alt="Story" 
-      fill 
-      className="object-contain" 
-      sizes="20px"
-    />
-  </div>
-);
+
 
 const memberLinks = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Beranda" },
@@ -65,7 +55,7 @@ const memberLinks = [
   { href: "/dashboard/chat", icon: MessageSquare, label: "AI Chat" },
   { href: "/dashboard/journal", icon: BookOpen, label: "Jurnal" },
   { href: "/dashboard/forum", icon: Users, label: "Forum" },
-  { href: "/dashboard/stories", icon: StoryIcon, label: "Kisah Inspiratif" },
+  { href: "/dashboard/stories", icon: Sparkles, label: "Kisah Inspiratif" },
   { href: "/dashboard/breathing", icon: Wind, label: "Latihan Pernapasan" },
   { href: "/dashboard/music", icon: Music, label: "Musik" },
 ];
@@ -81,16 +71,11 @@ const adminLinks = [
   { href: "/dashboard/moderation", icon: Shield, label: "Moderasi" },
 ];
 
-// Moderator menu items (for moderator role)
 const moderatorLinks = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "Beranda" },
-  { href: "/dashboard/articles", icon: FileText, label: "Artikel" },
-  { href: "/dashboard/chat", icon: MessageSquare, label: "AI Chat" },
-  { href: "/dashboard/journal", icon: BookOpen, label: "Jurnal" },
-  { href: "/dashboard/forum", icon: Users, label: "Forum" },
-  { href: "/dashboard/stories", icon: StoryIcon, label: "Kisah Inspiratif" },
-  { href: "/dashboard/breathing", icon: Wind, label: "Latihan Pernapasan" },
-  { href: "/dashboard/music", icon: Music, label: "Musik" },
+  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/dashboard/admin/articles", icon: FileText, label: "Kelola Artikel" },
+  { href: "/dashboard/admin/forums", icon: MessageSquare, label: "Kelola Forum" },
+
   { href: "/dashboard/moderation", icon: Shield, label: "Moderasi" },
 ];
 
@@ -465,8 +450,8 @@ function DashboardContent({
           {children}
         </main>
 
-        {/* Daily Task FAB (for non-admin users) */}
-        {!isAdmin && <DailyTaskFAB />}
+        {/* Daily Task FAB (for non-admin and non-moderator users) */}
+        {!isAdmin && !isModerator && <DailyTaskFAB />}
 
         {/* Global Music Player */}
         <GlobalMusicPlayer />

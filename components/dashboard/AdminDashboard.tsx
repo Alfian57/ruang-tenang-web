@@ -67,6 +67,7 @@ export interface DashboardStats {
 
 export function AdminDashboard() {
   const { token, user } = useAuthStore();
+  const isModerator = user?.role === 'moderator';
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -165,6 +166,7 @@ export function AdminDashboard() {
 
           {/* Stats Cards */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {!isModerator && (
             <Card className="border-l-4 border-l-primary">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -198,6 +200,7 @@ export function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
+            )}
 
             <Card className="border-l-4 border-l-blue-500">
               <CardContent className="p-6">
@@ -263,6 +266,7 @@ export function AdminDashboard() {
 
           {/* Second Row */}
           <div className="grid lg:grid-cols-3 gap-6 mb-8">
+            {!isModerator && (
             <Card className="lg:col-span-2">
               <CardHeader>
                 <CardTitle>Pengguna Terbaru</CardTitle>
@@ -312,6 +316,7 @@ export function AdminDashboard() {
                 </Link>
               </CardContent>
             </Card>
+            )}
 
             <Card>
               <CardHeader>
@@ -319,6 +324,7 @@ export function AdminDashboard() {
                 <CardDescription>Kelola konten platform</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
+                {!isModerator && (
                 <Link href="/dashboard/admin/users" className="block">
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
                     <div className="flex items-center gap-3">
@@ -328,6 +334,7 @@ export function AdminDashboard() {
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   </div>
                 </Link>
+                )}
                 <Link href="/dashboard/admin/articles" className="block">
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
                     <div className="flex items-center gap-3">
@@ -337,6 +344,7 @@ export function AdminDashboard() {
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   </div>
                 </Link>
+                {!isModerator && (
                 <Link href="/dashboard/admin/songs" className="block">
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
                     <div className="flex items-center gap-3">
@@ -346,12 +354,14 @@ export function AdminDashboard() {
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   </div>
                 </Link>
+                )}
               </CardContent>
             </Card>
           </div>
 
           {/* Third Row - Summary */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {!isModerator && (
             <Card>
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -365,6 +375,7 @@ export function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
+            )}
             <Card>
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -378,6 +389,7 @@ export function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
+            {!isModerator && (
             <Card>
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -391,6 +403,7 @@ export function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
+            )}
             <Card>
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
