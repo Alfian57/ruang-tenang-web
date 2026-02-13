@@ -394,7 +394,7 @@ export default function JournalPage() {
                                     placeholder="Cari jurnal..."
                                     value={localSearchQuery}
                                     onChange={(e) => setLocalSearchQuery(e.target.value)}
-                                    className="pl-10"
+                                    className="pl-10 bg-white"
                                 />
                                 {localSearchQuery && (
                                     <button

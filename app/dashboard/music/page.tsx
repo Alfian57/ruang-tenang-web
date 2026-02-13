@@ -38,11 +38,38 @@ import {
 } from "@/components/music";
 
 export default function MusicPage() {
+  // URL state management — must come first
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { token } = useAuthStore();
+
+  const updateUrlParam = useCallback((key: string, value: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) params.set(key, value);
+    else params.delete(key);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchParams, router, pathname]);
+
+  // Read from URL
+  const activeTab = searchParams.get("tab") || "browse";
+  const search = searchParams.get("search") || "";
+  const categoryIdParam = searchParams.get("categoryId");
+  const viewMode = (searchParams.get("view") || "browse") as "browse" | "category";
+
+  const setActiveTab = (tab: string) => updateUrlParam("tab", tab === "browse" ? null : tab);
+  const setSearch = (value: string) => updateUrlParam("search", value || null);
+  const setViewMode = (mode: "browse" | "category") => updateUrlParam("view", mode === "browse" ? null : mode);
+  const setSelectedCategoryId = (id: number | null) => updateUrlParam("categoryId", id ? String(id) : null);
+
+  // Data state
   const [categories, setCategories] = useState<SongCategory[]>([]);
   const [songs, setSongs] = useState<Song[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<SongCategory | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Derive selectedCategory from URL + loaded categories
+  const selectedCategory = categoryIdParam ? categories.find(c => c.id === parseInt(categoryIdParam, 10)) || null : null;
 
   // Playlist state
   const [playlists, setPlaylists] = useState<PlaylistListItem[]>([]);
@@ -60,31 +87,6 @@ export default function MusicPage() {
   const [deletePlaylistId, setDeletePlaylistId] = useState<number | null>(null);
   const [showDeletePlaylistDialog, setShowDeletePlaylistDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  // View mode for category detail
-  const [viewMode, setViewMode] = useState<"browse" | "category">("browse");
-
-  // Auth
-  const { token } = useAuthStore();
-
-  // URL state management
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const updateUrlParam = useCallback((key: string, value: string | null) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) params.set(key, value);
-    else params.delete(key);
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [searchParams, router, pathname]);
-
-  // Read from URL
-  const activeTab = searchParams.get("tab") || "browse";
-  const search = searchParams.get("search") || "";
-
-  const setActiveTab = (tab: string) => updateUrlParam("tab", tab === "browse" ? null : tab);
-  const setSearch = (value: string) => updateUrlParam("search", value || null);
 
   // Global player store
   const {
@@ -146,8 +148,23 @@ export default function MusicPage() {
     loadPublicPlaylists();
   }, [loadCategories, loadPlaylists, loadPublicPlaylists]);
 
+  // Auto-load songs when navigating to a category via URL
+  useEffect(() => {
+    if (selectedCategory && viewMode === "category" && songs.length === 0) {
+      const doLoadSongs = async () => {
+        try {
+          const response = await api.getSongsByCategory(selectedCategory.id) as { data: Song[] };
+          setSongs(response.data || []);
+        } catch (error) {
+          console.error("Failed to load songs:", error);
+        }
+      };
+      doLoadSongs();
+    }
+  }, [selectedCategory, viewMode, songs.length]);
+
   const loadSongs = async (category: SongCategory) => {
-    setSelectedCategory(category);
+    setSelectedCategoryId(category.id);
     setViewMode("category");
     try {
       const response = await api.getSongsByCategory(category.id) as { data: Song[] };
@@ -164,7 +181,7 @@ export default function MusicPage() {
         try {
           const response = await api.search(debouncedSearch);
           setSongs(response.data?.songs || []);
-          setSelectedCategory(null);
+          setSelectedCategoryId(null);
           setViewMode("category");
         } catch (error) {
           console.error("Search failed:", error);
@@ -293,7 +310,7 @@ export default function MusicPage() {
   // If viewing a playlist detail
   if (selectedPlaylist) {
     return (
-      <div className="p-4 lg:p-6 pb-32">
+      <div className="container mx-auto px-4 py-6 max-w-6xl pb-32">
         <PlaylistDetail
           playlist={selectedPlaylist}
           onBack={() => setSelectedPlaylist(null)}
@@ -316,7 +333,7 @@ export default function MusicPage() {
   // Category detail view
   if (viewMode === "category" && selectedCategory) {
     return (
-      <div className="p-0 pb-32">
+      <div className="container mx-auto px-4 py-6 max-w-6xl pb-32">
         <AnimatePresence mode="wait">
           <motion.div
             key="category-detail"
@@ -324,72 +341,49 @@ export default function MusicPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            {/* Hero Header */}
-            <div className="relative h-64 md:h-80 w-full overflow-hidden">
-              <div className="absolute inset-0 bg-gray-900/40 z-10" />
-              {selectedCategory.thumbnail ? (
-                <Image
-                  src={selectedCategory.thumbnail}
-                  alt={selectedCategory.name}
-                  fill
-                  className="object-cover blur-sm scale-110"
-                />
-              ) : (
-                <div className="w-full h-full bg-linear-to-br from-primary to-purple-700" />
-              )}
-              
-              <div className="absolute inset-0 z-20 flex flex-col justify-end p-6 md:p-10 text-white bg-gradient-to-t from-gray-900/90 to-transparent">
-                <Button
-                  variant="ghost"
-                  className="absolute top-6 left-6 text-white hover:bg-white/20 w-10 h-10 p-0 rounded-full"
-                  onClick={() => {
-                    setViewMode("browse");
-                    setSelectedCategory(null);
-                    setSongs([]);
-                  }}
-                >
-                  <ChevronLeft className="w-6 h-6" />
-                </Button>
+            {/* Compact Header */}
+            <div className="mb-6">
+              <button
+                onClick={() => {
+                  setViewMode("browse");
+                  setSelectedCategoryId(null);
+                  setSongs([]);
+                }}
+                className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 transition-colors mb-4"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Kembali
+              </button>
 
-                <div className="flex flex-col md:flex-row gap-6 md:items-end">
-                  <div className="w-32 h-32 md:w-48 md:h-48 rounded-2xl overflow-hidden shadow-2xl relative shrink-0 border-4 border-white/20">
-                    {selectedCategory.thumbnail ? (
-                      <Image
-                        src={selectedCategory.thumbnail}
-                        alt={selectedCategory.name}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-white/10 backdrop-blur-md">
-                        <Music className="w-16 h-16 text-white/80" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="space-y-2 mb-2">
-                    <span className="text-xs font-medium uppercase tracking-wider text-white/80">Kategori Musik</span>
-                    <h1 className="text-3xl md:text-5xl font-bold">{selectedCategory.name}</h1>
-                    <p className="text-white/80 max-w-xl text-sm md:text-base">
-                      Koleksi musik pilihan untuk kategori {selectedCategory.name}. {songs.length} lagu tersedia.
-                    </p>
-                  </div>
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 relative shrink-0">
+                  {selectedCategory.thumbnail ? (
+                    <Image
+                      src={selectedCategory.thumbnail}
+                      alt={selectedCategory.name}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20">
+                      <Music className="w-8 h-8 text-primary/60" />
+                    </div>
+                  )}
                 </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Kategori</p>
+                  <h1 className="text-2xl font-bold text-gray-900">{selectedCategory.name}</h1>
+                  <p className="text-sm text-gray-500">{songs.length} lagu tersedia</p>
+                </div>
+                <Button
+                  className="gradient-primary rounded-full px-6"
+                  onClick={() => songs.length > 0 && handlePlaySong(songs[0])}
+                >
+                  <Play className="w-4 h-4 mr-2 fill-current" />
+                  Putar Semua
+                </Button>
               </div>
             </div>
-
-            {/* Content Body */}
-            <div className="p-4 lg:p-8 max-w-7xl mx-auto space-y-6">
-              {/* Actions Bar */}
-              <div className="flex items-center gap-3">
-                 <Button 
-                   size="lg" 
-                   className="rounded-full h-12 px-8 bg-primary hover:bg-primary/90 text-white font-semibold shadow-lg shadow-primary/30"
-                   onClick={() => songs.length > 0 && handlePlaySong(songs[0])}
-                 >
-                   <Play className="w-5 h-5 mr-2 fill-current" />
-                   Putar Semua
-                 </Button>
-              </div>
 
               {/* Songs List */}
               <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
@@ -463,7 +457,6 @@ export default function MusicPage() {
                   ))}
                 </div>
               </div>
-            </div>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -488,25 +481,18 @@ export default function MusicPage() {
         isLoading={isDeleting}
       />
 
-      <div className="p-4 lg:p-6 pb-32">
-        {/* Header with Gradient */}
-        <div className="bg-gradient-to-r from-primary to-red-600 rounded-2xl p-5 mb-6 shadow-lg">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <Music className="w-6 h-6 text-white" />
-            </div>
-            <div className="text-white">
-              <h1 className="text-2xl font-bold">Musik Relaksasi</h1>
-              <p className="text-white/80 text-sm">
-                Biarkan musik menenangkan harimu
-              </p>
-            </div>
-          </div>
+      <div className="container mx-auto px-4 py-6 max-w-6xl pb-32">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold">Musik Relaksasi</h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Biarkan musik menenangkan harimu
+          </p>
         </div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full mb-6 grid grid-cols-3">
+          <TabsList className="mb-6">
             <TabsTrigger value="browse" className="text-xs sm:text-sm">
               <Library className="w-4 h-4 mr-1.5" />
               Jelajahi
@@ -524,29 +510,22 @@ export default function MusicPage() {
           {/* Browse Tab - Categories */}
           <TabsContent value="browse" className="space-y-6">
             {/* Search Input */}
-            <div className="relative mb-8">
-              <div className="relative group">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors" />
-                </div>
-                <Input
-                  className="pl-10 h-12 bg-white border-gray-200 focus:border-primary focus:ring-primary/20 rounded-xl shadow-sm transition-all text-base"
-                  placeholder="Cari lagu, artis, atau kategori mood..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                  {search && (
-                    <button
-                      onClick={() => setSearch("")}
-                      className="text-gray-400 hover:text-gray-600 focus:outline-none"
-                    >
-                      <span className="sr-only">Hapus pencarian</span>
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
-                </div>
-              </div>
+            <div className="relative flex-1 mb-6">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
+              <Input
+                className="pl-10 bg-white"
+                placeholder="Cari lagu, artis, atau kategori mood..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
             </div>
 
             {/* Categories Grid */}
@@ -602,7 +581,7 @@ export default function MusicPage() {
               </div>
             ) : (
               // Category Grid
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {categories.map((category, index) => (
                   <motion.div
                     key={category.id}
@@ -682,7 +661,7 @@ export default function MusicPage() {
                 setEditingPlaylist(null);
                 setIsPlaylistDialogOpen(true);
               }}
-              className="w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600"
+              className="w-full gradient-primary"
             >
               <Plus className="w-4 h-4 mr-2" />
               Buat Playlist Baru

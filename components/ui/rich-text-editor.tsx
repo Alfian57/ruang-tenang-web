@@ -2,9 +2,7 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
-import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import {
   Bold,
@@ -85,13 +83,15 @@ export function RichTextEditor({
           levels: [1, 2, 3],
         },
       }),
-      Underline,
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: "text-primary underline",
-        },
-      }),
+      // Underline and Link are apparently included in StarterKit or duplicated elsewhere
+      // Removing them to fix "Duplicate extension names found" warning
+      // Underline, 
+      // Link.configure({
+      //   openOnClick: false,
+      //   HTMLAttributes: {
+      //     class: "text-primary underline",
+      //   },
+      // }),
       Image.configure({
         HTMLAttributes: {
           class: "max-w-full rounded-lg",

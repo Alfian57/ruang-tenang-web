@@ -22,7 +22,7 @@ export default function DashboardArticleDetailPage() {
 
   const isAdmin = user?.role === "admin";
   const isModerator = user?.role === "moderator";
-  const isOwner = user?.id === article?.author?.id;
+  const isArticleAuthor = user?.id === article?.author?.id;
 
   const loadArticle = useCallback(async () => {
     const id = params.id as string;
@@ -139,9 +139,10 @@ export default function DashboardArticleDetailPage() {
           </div>
         </div>
         {/* Show edit button for owner or admin/moderator */}
-        {(isOwner || isAdmin || isModerator) && article.status !== "blocked" && (
-          <Link href={isOwner ? `/dashboard/articles/${article.id}` : "#"}>
-            <Button variant="outline" size="sm" disabled={!isOwner && !isAdmin}>
+        {/* Show edit button for owner or admin/moderator */}
+        {(isArticleAuthor || isAdmin || isModerator) && article.status !== "blocked" && (
+          <Link href={isArticleAuthor ? `/dashboard/articles/${article.id}` : "#"}>
+            <Button variant="outline" size="sm" disabled={!isArticleAuthor && !isAdmin}>
               <Edit className="w-4 h-4 mr-2" />
               Edit
             </Button>
@@ -205,7 +206,7 @@ export default function DashboardArticleDetailPage() {
                 relatedArticles.map((related) => (
                   <Link
                     key={related.id}
-                    href={`/dashboard/reading/articles/${related.id}`}
+                    href={`/dashboard/articles/read/${related.id}`}
                     className="block"
                   >
                     <Card className="overflow-hidden hover:shadow-md transition-shadow bg-white">

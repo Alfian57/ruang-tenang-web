@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Sparkles, Heart, ChevronRight, User } from "lucide-react";
+import Image from "next/image";
 import { api } from "@/lib/api";
 import { InspiringStory } from "@/types";
-import { cn } from "@/lib/utils";
 
 export function InspiringStoryWidget() {
   const [featuredStory, setFeaturedStory] = useState<InspiringStory | null>(null);
@@ -69,10 +69,11 @@ export function InspiringStoryWidget() {
     >
       {featuredStory.cover_image && (
         <div className="h-32 overflow-hidden">
-          <img
+          <Image
             src={featuredStory.cover_image}
             alt={featuredStory.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+            fill
+            className="object-cover group-hover:scale-105 transition-transform"
           />
         </div>
       )}

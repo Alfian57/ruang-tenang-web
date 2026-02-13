@@ -23,6 +23,9 @@ import {
   Ban,
   BookOpen,
   Wind,
+
+  Newspaper,
+  type LucideIcon,
 } from "lucide-react";
 import { BlockedUsersModal } from "@/components/moderation";
 import { Button } from "@/components/ui/button";
@@ -46,37 +49,94 @@ import { getUploadUrl } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
 
-// Member menu items (for regular users)
+// Types
+interface NavLink {
+  href: string;
+  icon: LucideIcon;
+  label: string;
+  highlight?: boolean;
+}
 
+interface NavGroup {
+  title: string;
+  links: NavLink[];
+}
 
-const memberLinks = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "Beranda" },
-  { href: "/dashboard/articles", icon: FileText, label: "Artikel" },
-  { href: "/dashboard/chat", icon: MessageSquare, label: "AI Chat" },
-  { href: "/dashboard/journal", icon: BookOpen, label: "Jurnal" },
-  { href: "/dashboard/forum", icon: Users, label: "Forum" },
-  { href: "/dashboard/stories", icon: Sparkles, label: "Kisah Inspiratif" },
-  { href: "/dashboard/breathing", icon: Wind, label: "Latihan Pernapasan" },
-  { href: "/dashboard/music", icon: Music, label: "Musik" },
+// Member menu items (for regular users) — grouped
+const memberGroups: NavGroup[] = [
+  {
+    title: "Utama",
+    links: [
+      { href: "/dashboard", icon: LayoutDashboard, label: "Beranda" },
+      { href: "/dashboard/chat", icon: MessageSquare, label: "AI Chat", highlight: true },
+    ],
+  },
+  {
+    title: "Aktivitas",
+    links: [
+      { href: "/dashboard/journal", icon: BookOpen, label: "Jurnal" },
+
+      { href: "/dashboard/breathing", icon: Wind, label: "Latihan Pernapasan" },
+    ],
+  },
+  {
+    title: "Konten",
+    links: [
+      { href: "/dashboard/articles", icon: Newspaper, label: "Artikel" },
+      { href: "/dashboard/music", icon: Music, label: "Musik" },
+      { href: "/dashboard/forum", icon: Users, label: "Forum" },
+      { href: "/dashboard/stories", icon: Sparkles, label: "Kisah Inspiratif" },
+    ],
+  },
 ];
 
-// Admin menu items (for admin only)
-const adminLinks = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/dashboard/admin/users", icon: Users, label: "Pengguna" },
-  { href: "/dashboard/admin/articles", icon: FileText, label: "Kelola Artikel" },
-  { href: "/dashboard/admin/songs", icon: Music, label: "Kelola Musik" },
-  { href: "/dashboard/admin/forums", icon: MessageSquare, label: "Kelola Forum" },
-  { href: "/dashboard/admin/levels", icon: Trophy, label: "Kelola Level" },
-  { href: "/dashboard/moderation", icon: Shield, label: "Moderasi" },
+// Admin menu items (for admin only) — grouped
+const adminGroups: NavGroup[] = [
+  {
+    title: "Utama",
+    links: [
+      { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    ],
+  },
+  {
+    title: "Kelola Konten",
+    links: [
+      { href: "/dashboard/admin/users", icon: Users, label: "Pengguna" },
+      { href: "/dashboard/admin/articles", icon: FileText, label: "Artikel" },
+      { href: "/dashboard/admin/songs", icon: Music, label: "Musik" },
+      { href: "/dashboard/admin/forums", icon: MessageSquare, label: "Forum" },
+      { href: "/dashboard/admin/levels", icon: Trophy, label: "Level" },
+    ],
+  },
+  {
+    title: "Moderasi",
+    links: [
+      { href: "/dashboard/moderation", icon: Shield, label: "Moderasi" },
+    ],
+  },
 ];
 
-const moderatorLinks = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/dashboard/admin/articles", icon: FileText, label: "Kelola Artikel" },
-  { href: "/dashboard/admin/forums", icon: MessageSquare, label: "Kelola Forum" },
-
-  { href: "/dashboard/moderation", icon: Shield, label: "Moderasi" },
+// Moderator menu items
+const moderatorGroups: NavGroup[] = [
+  {
+    title: "Utama",
+    links: [
+      { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    ],
+  },
+  {
+    title: "Kelola Konten",
+    links: [
+      { href: "/dashboard/admin/articles", icon: FileText, label: "Artikel" },
+      { href: "/dashboard/admin/forums", icon: MessageSquare, label: "Forum" },
+    ],
+  },
+  {
+    title: "Moderasi",
+    links: [
+      { href: "/dashboard/moderation", icon: Shield, label: "Moderasi" },
+    ],
+  },
 ];
 
 export default function DashboardLayout({
@@ -273,82 +333,57 @@ function DashboardContent({
         )}
 
         {/* Navigation */}
-        <nav className="py-6 overflow-y-auto h-[calc(100vh-10rem)]">
-          {/* Show different menus based on role */}
-          {isAdmin ? (
-            // Admin sees admin links (includes moderation)
-            adminLinks.map((link) => {
-              const isActive = pathname === link.href || (link.href !== "/dashboard" && pathname.startsWith(link.href));
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setSidebarOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 mx-3 px-4 py-3 rounded-xl transition-all relative",
-                    isActive
-                      ? "text-white bg-primary shadow-md"
-                      : "text-gray-600 hover:bg-gray-100",
-                    sidebarCollapsed && "lg:justify-center lg:mx-2 lg:px-3"
-                  )}
-                  title={sidebarCollapsed ? link.label : undefined}
-                >
-                  <link.icon className="w-5 h-5 shrink-0" />
-                  {!sidebarCollapsed && <span className="font-medium whitespace-nowrap overflow-hidden text-ellipsis">{link.label}</span>}
-                </Link>
-              );
-            })
-          ) : isModerator ? (
-            // Moderator sees moderator links (member features + moderation)
-            moderatorLinks.map((link) => {
-              const isActive = pathname === link.href || (link.href !== "/dashboard" && pathname.startsWith(link.href));
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setSidebarOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 mx-3 px-4 py-3 rounded-xl transition-all relative mb-1",
-                    isActive
-                      ? "text-white bg-primary shadow-md"
-                      : "text-gray-600 hover:bg-gray-100",
-                    sidebarCollapsed && "lg:justify-center lg:mx-2 lg:px-3"
-                  )}
-                  title={sidebarCollapsed ? link.label : undefined}
-                >
-                  <link.icon className={cn("w-5 h-5 shrink-0", isActive ? "text-white" : "text-gray-500")} />
-                  {!sidebarCollapsed && <span className="font-medium whitespace-nowrap overflow-hidden text-ellipsis">{link.label}</span>}
-                </Link>
-              );
-            })
-          ) : (
-            // Member sees only member links
-            memberLinks.map((link) => {
-              const isActive = pathname === link.href || (link.href !== "/dashboard" && pathname.startsWith(link.href));
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setSidebarOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 mx-3 px-4 py-3 rounded-xl transition-all relative mb-1",
-                    isActive
-                      ? "text-white bg-primary shadow-md"
-                      : "text-gray-600 hover:bg-gray-100",
-                    sidebarCollapsed && "lg:justify-center lg:mx-2 lg:px-3"
-                  )}
-                  title={sidebarCollapsed ? link.label : undefined}
-                >
-                  <link.icon className={cn("w-5 h-5 shrink-0", isActive ? "text-white" : "text-gray-500")} />
-                  {!sidebarCollapsed && (
-                    <>
-                      <span className="font-medium flex-1 whitespace-nowrap overflow-hidden text-ellipsis">{link.label}</span>
-                    </>
-                  )}
-                </Link>
-              );
-            })
-          )}
+        <nav className="py-4 overflow-y-auto h-[calc(100vh-10rem)]">
+          {/* Render grouped navigation */}
+          {(() => {
+            const groups = isAdmin ? adminGroups : isModerator ? moderatorGroups : memberGroups;
+            return groups.map((group, groupIdx) => (
+              <div key={group.title} className={cn(groupIdx > 0 && "mt-4")}>
+                {/* Group title */}
+                {!sidebarCollapsed ? (
+                  <div className="px-6 mb-1">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+                      {group.title}
+                    </span>
+                  </div>
+                ) : (
+                  groupIdx > 0 && (
+                    <div className="mx-4 mb-2 border-t border-gray-100" />
+                  )
+                )}
+
+                {/* Group links */}
+                {group.links.map((link) => {
+                  const isActive = pathname === link.href || (link.href !== "/dashboard" && pathname.startsWith(link.href));
+                  const isHighlight = link.highlight && !isActive;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setSidebarOpen(false)}
+                      className={cn(
+                        "flex items-center gap-3 mx-3 px-4 py-2.5 rounded-xl transition-all relative mb-0.5",
+                        isActive
+                          ? "text-white bg-primary shadow-md"
+                          : isHighlight
+                          ? "text-white bg-gradient-to-r from-purple-500 to-primary shadow-sm hover:shadow-md hover:brightness-110"
+                          : "text-gray-600 hover:bg-gray-100",
+                        sidebarCollapsed && "lg:justify-center lg:mx-2 lg:px-3"
+                      )}
+                      title={sidebarCollapsed ? link.label : undefined}
+                    >
+                      <link.icon className={cn("w-5 h-5 shrink-0", (isActive || isHighlight) ? "text-white" : "text-gray-500")} />
+                      {!sidebarCollapsed && (
+                        <span className="font-medium flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                          {link.label}
+                        </span>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            ));
+          })()}
         </nav>
 
         {/* Bottom section */}

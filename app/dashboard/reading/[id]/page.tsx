@@ -65,8 +65,8 @@ export default function DashboardArticleDetailPage() {
     return (
       <div className="p-4 lg:p-6 text-center">
         <p className="text-gray-500 mb-4">Artikel tidak ditemukan</p>
-        <Link href="/dashboard/reading">
-          <Button variant="outline">Kembali ke Pustaka</Button>
+        <Link href="/dashboard/articles">
+          <Button variant="outline">Kembali ke Artikel</Button>
         </Link>
       </div>
     );
@@ -75,9 +75,9 @@ export default function DashboardArticleDetailPage() {
   return (
     <div className="p-4 lg:p-6">
       <div className="max-w-6xl mx-auto">
-        <Link href="/dashboard/reading" className="inline-flex items-center gap-2 text-gray-500 hover:text-primary mb-6 transition-colors">
+        <Link href="/dashboard/articles" className="inline-flex items-center gap-2 text-gray-500 hover:text-primary mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" />
-            <span>Kembali ke Pustaka</span>
+            <span>Kembali ke Artikel</span>
         </Link>
 
         <div className="grid lg:grid-cols-12 gap-8">
@@ -144,7 +144,7 @@ export default function DashboardArticleDetailPage() {
                 {relatedArticles.map((related) => (
                   <Link
                     key={related.id}
-                    href={`/dashboard/reading/${related.id}`}
+                    href={`/dashboard/articles/read/${related.id}`}
                     className="block group"
                   >
                     <Card className="overflow-hidden hover:shadow-md transition-all bg-white border-none shadow-sm">
@@ -179,7 +179,7 @@ export default function DashboardArticleDetailPage() {
               </div>
 
               <div className="mt-6">
-                <Link href="/dashboard/reading">
+                <Link href="/dashboard/articles">
                   <Button variant="outline" className="w-full rounded-xl">
                     Lihat Semua Artikel
                   </Button>

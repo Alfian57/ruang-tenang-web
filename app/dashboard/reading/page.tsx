@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Search } from "lucide-react";
@@ -12,10 +13,27 @@ import { Article, ArticleCategory } from "@/types";
 import { formatDate } from "@/lib/utils";
 
 export default function DashboardReadingPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const updateUrl = useCallback((updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value) params.set(key, value);
+      else params.delete(key);
+    });
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [searchParams, router, pathname]);
+
+  // URL state
+  const search = searchParams.get("search") || "";
+  const selectedCategory = searchParams.get("category") ? parseInt(searchParams.get("category")!, 10) : null;
+  const setSearch = (value: string) => updateUrl({ search: value || null });
+  const setSelectedCategory = (id: number | null) => updateUrl({ category: id ? String(id) : null });
+
   const [articles, setArticles] = useState<Article[]>([]);
   const [categories, setCategories] = useState<ArticleCategory[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   const loadCategories = useCallback(async () => {
@@ -109,7 +127,7 @@ export default function DashboardReadingPage() {
       ) : articles.length > 0 ? (
         <div className="grid gap-4">
           {articles.map((article) => (
-            <Link key={article.id} href={`/dashboard/reading/${article.id}`}>
+            <Link key={article.id} href={`/dashboard/articles/read/${article.id}`}>
               <Card className="overflow-hidden hover:shadow-md transition-shadow bg-white cursor-pointer group">
                 <div className="flex gap-4 p-4">
                   <div className="w-32 h-24 rounded-lg overflow-hidden shrink-0 bg-gray-100">

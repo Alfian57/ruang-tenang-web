@@ -24,9 +24,9 @@ export function PublicPlaylistCard({
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4 }}
       className={cn(
-        "group relative bg-white dark:bg-gray-900 rounded-2xl overflow-hidden",
-        "border border-gray-100 dark:border-gray-800",
-        "hover:shadow-xl hover:shadow-primary/5 transition-all duration-300",
+        "group relative bg-white rounded-2xl overflow-hidden",
+        "border border-gray-100",
+        "hover:shadow-md transition-all duration-300",
         "cursor-pointer"
       )}
       onClick={onClick}
@@ -41,7 +41,7 @@ export function PublicPlaylistCard({
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/30 dark:to-purple-800/30 flex items-center justify-center">
+          <div className="w-full h-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
             <ListMusic className="w-16 h-16 text-purple-400" />
           </div>
         )}
@@ -79,12 +79,12 @@ export function PublicPlaylistCard({
 
       {/* Info */}
       <div className="p-4">
-        <h3 className="font-semibold text-gray-900 dark:text-white truncate mb-1">
+        <h3 className="font-semibold text-gray-900 truncate mb-1">
           {playlist.name}
         </h3>
         
         {playlist.description ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">
+          <p className="text-sm text-gray-500 line-clamp-2 mb-3">
             {playlist.description}
           </p>
         ) : (
@@ -93,7 +93,7 @@ export function PublicPlaylistCard({
 
         {/* Author Info */}
         {playlist.user && !playlist.is_admin_playlist && (
-          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+          <div className="flex items-center gap-2 text-xs text-gray-500">
             {playlist.user.avatar ? (
               <Image
                 src={playlist.user.avatar}
@@ -103,7 +103,7 @@ export function PublicPlaylistCard({
                 className="rounded-full"
               />
             ) : (
-              <div className="w-5 h-5 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+              <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center">
                 <User className="w-3 h-3" />
               </div>
             )}
@@ -142,7 +142,7 @@ export function PublicPlaylistCardHorizontal({
       whileHover={{ scale: 1.02 }}
       className={cn(
         "group flex gap-4 p-3 rounded-xl",
-        "bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800",
+        "bg-white border border-gray-100",
         "hover:shadow-lg transition-all cursor-pointer"
       )}
       onClick={onClick}
@@ -177,7 +177,7 @@ export function PublicPlaylistCardHorizontal({
       {/* Info */}
       <div className="flex-1 min-w-0 flex flex-col justify-center">
         <div className="flex items-center gap-2 mb-1">
-          <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+          <h3 className="font-semibold text-gray-900 truncate">
             {playlist.name}
           </h3>
           {playlist.is_admin_playlist && (

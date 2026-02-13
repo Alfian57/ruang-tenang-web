@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, CheckCircle2, Circle, Gift, Lock, RefreshCw, Trophy } from "lucide-react";
+import { Check, Gift, Lock, RefreshCw, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { DailyTask } from "@/types";

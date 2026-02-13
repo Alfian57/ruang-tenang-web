@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Ban, AlertCircle, UserX } from "lucide-react";
+import Image from "next/image";
 
 interface BlockUserModalProps {
     isOpen: boolean;
@@ -73,10 +74,12 @@ export function BlockUserModal({
                     <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
                         <div className="w-10 h-10 rounded-full bg-muted-foreground/20 flex items-center justify-center overflow-hidden">
                             {userAvatar ? (
-                                <img
+                                <Image
                                     src={userAvatar}
                                     alt={userName}
-                                    className="w-full h-full object-cover"
+                                    width={40}
+                                    height={40}
+                                    className="object-cover"
                                 />
                             ) : (
                                 <UserX className="h-5 w-5 text-muted-foreground" />

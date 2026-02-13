@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   ArrowLeft,
   Loader2,
@@ -204,10 +205,11 @@ export default function NewStoryPage() {
             />
             {coverImage && (
               <div className="mt-2 rounded-lg overflow-hidden border h-40">
-                <img
+                <Image
                   src={coverImage}
                   alt="Preview"
-                  className="w-full h-full object-cover"
+                  className="object-cover"
+                  fill
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = "none";
                   }}

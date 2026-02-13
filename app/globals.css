@@ -93,6 +93,23 @@ body {
   font-feature-settings: "rlig" 1, "calt" 1;
 }
 
+/* Interactive elements should show pointer cursor */
+button,
+a,
+[role="button"],
+select,
+summary,
+[type="checkbox"],
+[type="radio"],
+label[for] {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -115,6 +132,33 @@ body {
 /* Utility classes */
 .gradient-primary {
   background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+}
+
+/* Consistent admin select dropdown */
+.admin-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.625rem center;
+  background-size: 1rem;
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  border: 1px solid #E5E7EB;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #374151;
+  background-color: white;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-select:hover {
+  border-color: #D1D5DB;
+}
+
+.admin-select:focus {
+  outline: none;
+  border-color: #EF4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
 }
 
 .gradient-primary-soft {
@@ -167,6 +211,7 @@ body {
 /* Card hover effect */
 .card-hover {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .card-hover:hover {
@@ -177,6 +222,7 @@ body {
 /* Mood emoji button */
 .mood-btn {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .mood-btn:hover {
@@ -206,6 +252,7 @@ body {
 /* Dashboard card enhancements */
 .dashboard-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .dashboard-card:hover {

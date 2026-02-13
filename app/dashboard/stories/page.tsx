@@ -3,13 +3,13 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Heart,
   MessageCircle,
   Search,
   Filter,
   Sparkles,
-  PenSquare,
   AlertTriangle,
   User,
 } from "lucide-react";
@@ -112,33 +112,7 @@ export default function StoriesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="p-4 lg:p-6">
-        {/* Hero Section */}
-        <div className="bg-gradient-to-r from-primary to-red-600 rounded-2xl p-5 mb-6 shadow-lg">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <Sparkles className="w-6 h-6 text-white" />
-              </div>
-              <div className="text-white">
-                <h1 className="text-2xl font-bold">Kisah Inspiratif</h1>
-                <p className="text-white/80 text-sm">
-                  Temukan kekuatan dalam cerita orang lain
-                </p>
-              </div>
-            </div>
-            <Button
-              onClick={() => router.push("/dashboard/stories/new")}
-              className="bg-white text-primary hover:bg-white/90 font-semibold gap-2"
-            >
-              <PenSquare className="w-4 h-4" />
-              Tulis Kisahmu
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div className="px-4 lg:px-6 pb-8">
+      <div className="px-4 lg:px-6 pt-4 lg:pt-6 pb-8">
         {/* Featured Stories */}
         {featuredStories.length > 0 && (
           <section className="mb-12">
@@ -155,10 +129,11 @@ export default function StoriesPage() {
                 >
                   {story.cover_image && (
                     <div className="h-40 overflow-hidden">
-                      <img
+                      <Image
                         src={story.cover_image}
                         alt={story.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform"
                       />
                     </div>
                   )}
@@ -199,7 +174,7 @@ export default function StoriesPage() {
                 placeholder="Cari kisah..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 bg-white"
               />
             </div>
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
@@ -266,10 +241,11 @@ export default function StoriesPage() {
                 >
                   {story.cover_image && (
                     <div className="h-40 overflow-hidden bg-gray-100">
-                      <img
+                      <Image
                         src={story.cover_image}
                         alt={story.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform"
                       />
                     </div>
                   )}

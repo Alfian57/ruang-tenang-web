@@ -68,6 +68,7 @@ export interface ArticleCategory {
 export interface Article {
   id: number;
   title: string;
+  status: string;
   thumbnail: string;
   content: string;
   excerpt?: string;

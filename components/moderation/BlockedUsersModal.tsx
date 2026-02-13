@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { UserX, Loader2, Ban } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,7 +15,6 @@ import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { useAuthStore } from "@/stores/authStore";
 import { UserBlock } from "@/types/moderation";
-import { cn } from "@/lib/utils";
 
 interface BlockedUsersModalProps {
   isOpen: boolean;
@@ -92,10 +92,12 @@ export function BlockedUsersModal({ isOpen, onClose }: BlockedUsersModalProps) {
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold overflow-hidden">
                     {block.blocked_avatar ? (
-                      <img
+                      <Image
                         src={block.blocked_avatar}
                         alt={block.blocked_name}
-                        className="w-full h-full object-cover"
+                        width={40}
+                        height={40}
+                        className="object-cover"
                       />
                     ) : (
                       <Ban className="w-5 h-5" />

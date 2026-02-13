@@ -124,7 +124,7 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="p-4 md:p-6 lg:p-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Kelola Pengguna</h1>
         <p className="text-gray-500">Lihat dan kelola semua pengguna terdaftar</p>
@@ -132,13 +132,13 @@ export default function AdminUsersPage() {
 
       {/* Search */}
       <div className="mb-6">
-        <div className="relative max-w-md">
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
           <Input
             placeholder="Cari nama atau email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
+            className="pl-10 bg-white"
           />
         </div>
       </div>

@@ -274,7 +274,7 @@ export default function ForumTopicPage() {
                       type="forum"
                       contentId={forum.id}
                       trigger={
-                        <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer">
+                        <div className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer">
                           <Flag className="w-4 h-4 mr-2" />
                           Laporkan Topik
                         </div>
@@ -456,7 +456,7 @@ export default function ForumTopicPage() {
                                     contentId={post.id}
                                     userId={post.user_id}
                                     trigger={
-                                      <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer">
+                                      <div className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer">
                                         <Flag className="w-4 h-4 mr-2" />
                                         Laporkan Balasan
                                       </div>

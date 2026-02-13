@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Heart,
   MessageCircle,
@@ -12,7 +13,6 @@ import {
   Flag,
   AlertTriangle,
   User,
-  Clock,
   Send,
   Loader2,
   Calendar,
@@ -23,7 +23,6 @@ import { ReportModal, BlockUserButton } from "@/components/moderation";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
@@ -154,7 +153,7 @@ export default function StoryDetailPage() {
     try {
       await navigator.clipboard.writeText(window.location.href);
       toast.success("Link berhasil disalin!");
-    } catch (error) {
+    } catch {
       toast.error("Gagal menyalin link");
     }
   };
@@ -209,7 +208,7 @@ export default function StoryDetailPage() {
                       contentId={storyId}
                       userId={story?.author?.id}
                       trigger={
-                        <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer">
+                        <div className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer">
                           <Flag className="w-4 h-4 mr-2" />
                           Laporkan Kisah
                         </div>
@@ -262,11 +261,12 @@ export default function StoryDetailPage() {
           <>
             {/* Cover Image */}
             {story.cover_image && (
-              <div className="rounded-2xl overflow-hidden mb-8 aspect-video bg-gray-100">
-                <img
+              <div className="rounded-2xl overflow-hidden mb-8 aspect-video bg-gray-100 relative">
+                <Image
                   src={story.cover_image}
                   alt={story.title}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               </div>
             )}
@@ -293,10 +293,12 @@ export default function StoryDetailPage() {
                   ) : (
                     <>
                       {story.author?.avatar ? (
-                        <img
+                        <Image
                           src={story.author.avatar}
                           alt={story.author.name}
-                          className="w-8 h-8 rounded-full"
+                          width={32}
+                          height={32}
+                          className="rounded-full"
                         />
                       ) : (
                         <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
@@ -425,10 +427,12 @@ export default function StoryDetailPage() {
                     >
                       <div className="flex items-start gap-3">
                         {comment.author?.avatar ? (
-                          <img
+                          <Image
                             src={comment.author.avatar}
                             alt={comment.author.name}
-                            className="w-10 h-10 rounded-full"
+                            width={40}
+                            height={40}
+                            className="rounded-full"
                           />
                         ) : (
                           <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
@@ -462,7 +466,7 @@ export default function StoryDetailPage() {
                                     contentId={comment.id}
                                     userId={comment.author?.id}
                                     trigger={
-                                      <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer">
+                                      <div className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer">
                                         <Flag className="w-4 h-4 mr-2" />
                                         Laporkan
                                       </div>

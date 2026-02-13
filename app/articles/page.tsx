@@ -12,7 +12,9 @@ import { api } from "@/lib/api";
 import { Article, ArticleCategory } from "@/types";
 import { formatDate } from "@/lib/utils";
 
-export default function ArticlesPage() {
+import { Suspense } from "react";
+
+function ArticlesContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -234,5 +236,13 @@ export default function ArticlesPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function ArticlesPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ArticlesContent />
+    </Suspense>
   );
 }

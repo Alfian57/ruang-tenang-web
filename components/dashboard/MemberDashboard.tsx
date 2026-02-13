@@ -3,11 +3,10 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/authStore";
 import { api } from "@/lib/api";
-import { UserMood, MoodType, ChatSession, Article, SongCategory, Song, DailyTask } from "@/types";
+import { UserMood, MoodType, SongCategory, Song, DailyTask } from "@/types";
 import { BreathingWidgetData } from "@/types/breathing";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -15,113 +14,29 @@ import {
   ArrowRight,
   ChevronDown,
   Music,
-  MessageCircle,
   Play,
   Pause,
-  AlertTriangle,
-  MoreVertical
+  Sparkles,
+  Calendar,
 } from "lucide-react";
 import { BreathingWidget } from "@/components/breathing";
-import { DailyTaskWidget, InspiringStoryWidget } from "@/components/gamification";
-import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
+import { DailyTaskWidget } from "@/components/gamification";
 import { MoodCheckinModal } from "./MoodCheckinModal";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-  Area,
-  AreaChart,
-  Cell,
-} from "recharts";
-
-const moodEmojis: { type: MoodType; emoji: string; label: string; active: string; inactive: string; color: string }[] = [
-  { type: "happy", emoji: "😊", label: "Bahagia", active: "/images/1-happy-active.png", inactive: "/images/1-smile.png", color: "#22c55e" },
-  { type: "neutral", emoji: "😐", label: "Netral", active: "/images/2-netral-active.png", inactive: "/images/2-netral.png", color: "#eab308" },
-  { type: "angry", emoji: "😠", label: "Marah", active: "/images/3-angry-active.png", inactive: "/images/3-angry.png", color: "#ef4444" },
-  { type: "disappointed", emoji: "😞", label: "Kecewa", active: "/images/4-disappointed-active.png", inactive: "/images/4-disappointed.png", color: "#f97316" },
-  { type: "sad", emoji: "😢", label: "Sedih", active: "/images/5-sad-active.png", inactive: "/images/5-sad.png", color: "#3b82f6" },
-  { type: "crying", emoji: "😭", label: "Menangis", active: "/images/6-cry-active.png", inactive: "/images/6-cry.png", color: "#8b5cf6" },
-];
-
-const moodLevels: Record<MoodType, number> = {
-  happy: 6,
-  neutral: 5,
-  angry: 4,
-  disappointed: 3,
-  sad: 2,
-  crying: 1,
-};
-
-const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
+import { MoodCalendar } from "./MoodCalendar";
 
 export function MemberDashboard() {
-  const { token } = useAuthStore();
+  const { user, token } = useAuthStore();
   const [latestMood, setLatestMood] = useState<UserMood | null>(null);
   const [moodHistory, setMoodHistory] = useState<UserMood[]>([]);
-  const [recentSessions, setRecentSessions] = useState<ChatSession[]>([]);
-  const [articles, setArticles] = useState<Article[]>([]);
-
   const [categories, setCategories] = useState<SongCategory[]>([]);
   const [dailyTasks, setDailyTasks] = useState<DailyTask[]>([]);
   const [isRecording, setIsRecording] = useState(false);
-  const [showMoodPicker, setShowMoodPicker] = useState(false);
-  const [deleteChatId, setDeleteChatId] = useState<number | null>(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [showMoodCheckin, setShowMoodCheckin] = useState(false);
   const [hasCheckedInitialMood, setHasCheckedInitialMood] = useState(false);
   const [isMoodDataLoaded, setIsMoodDataLoaded] = useState(false);
 
-  // Check if user needs to check in mood - only runs AFTER data is loaded
-  useEffect(() => {
-    // Skip if already checked, no token, or mood data hasn't been loaded yet
-    if (hasCheckedInitialMood || !token || !isMoodDataLoaded) return;
-
-    // Now we know data has been loaded, check if user needs to check in
-    if (!latestMood) {
-      // No mood recorded at all - show check-in
-      setShowMoodCheckin(true);
-    } else {
-      // Backend stores timestamps as UTC, so compare using UTC dates
-      const today = new Date();
-      const moodDate = new Date(latestMood.created_at);
-      
-      // Compare year, month, and day in UTC timezone (matching backend storage)
-      const isSameDay = 
-        today.getUTCFullYear() === moodDate.getUTCFullYear() &&
-        today.getUTCMonth() === moodDate.getUTCMonth() &&
-        today.getUTCDate() === moodDate.getUTCDate();
-      
-      if (!isSameDay) {
-        // Mood was recorded on a different day - show check-in
-        setShowMoodCheckin(true);
-      }
-    }
-    setHasCheckedInitialMood(true);
-  }, [latestMood, hasCheckedInitialMood, token, isMoodDataLoaded]);
-
   // Breathing widget state
   const [breathingWidgetData, setBreathingWidgetData] = useState<BreathingWidgetData | null>(null);
-
-  // Chart filter states
-  const [chartPeriod, setChartPeriod] = useState<"7days" | "1month">("7days");
-  const [showChartDropdown, setShowChartDropdown] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   // Music player states
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
@@ -135,11 +50,9 @@ export function MemberDashboard() {
   const loadDashboardData = useCallback(async () => {
     if (!token) return;
     try {
-      const moodLimit = chartPeriod === "1month" ? 30 : 7;
-      const [moodRes, sessionsRes, articlesRes, categoriesRes, breathingWidgetRes, dailyTasksRes] = await Promise.all([
-        api.getMoodHistory(token, { limit: moodLimit }).catch(() => null) as Promise<{ data: { moods: UserMood[] } } | null>,
-        api.getChatSessions(token).catch(() => null) as Promise<{ data: ChatSession[] } | null>,
-        api.getArticles({ limit: 5 }).catch(() => null) as Promise<{ data: Article[] } | null>,
+      // Load all data in parallel
+      const [moodRes, categoriesRes, breathingWidgetRes, dailyTasksRes] = await Promise.all([
+        api.getMoodHistory(token, { limit: 100 }).catch(() => null) as Promise<{ data: { moods: UserMood[] } } | null>,
         api.getSongCategories().catch(() => null) as Promise<{ data: SongCategory[] } | null>,
         api.getBreathingWidgetData(token).catch(() => null) as Promise<{ data: BreathingWidgetData } | null>,
         api.getDailyTasks(token).catch(() => null) as Promise<{ data: DailyTask[] } | null>,
@@ -149,17 +62,10 @@ export function MemberDashboard() {
         setMoodHistory(moodRes.data.moods);
         setLatestMood(moodRes.data.moods[0] || null);
       } else {
-        // API returned but no moods - user has no mood history
         setLatestMood(null);
       }
-      // Mark mood data as loaded regardless of whether there are moods
       setIsMoodDataLoaded(true);
-      if (sessionsRes?.data) {
-        setRecentSessions(sessionsRes.data.slice(0, 2));
-      }
-      if (articlesRes?.data) {
-        setArticles(articlesRes.data);
-      }
+
       if (categoriesRes?.data) {
         setCategories(categoriesRes.data);
       }
@@ -167,7 +73,7 @@ export function MemberDashboard() {
         setBreathingWidgetData(breathingWidgetRes.data);
       }
       if (dailyTasksRes?.data) {
-        // API returns DailyTaskSummary which has tasks property
+        // Handle various API response shapes safely
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const taskData = dailyTasksRes.data as any;
         if (taskData?.tasks && Array.isArray(taskData.tasks)) {
@@ -179,11 +85,33 @@ export function MemberDashboard() {
     } catch (error) {
       console.error("Failed to load dashboard data:", error);
     }
-  }, [token, chartPeriod]);
+  }, [token]);
 
   useEffect(() => {
     loadDashboardData();
   }, [loadDashboardData]);
+
+  // Check for mood check-in necessity
+  useEffect(() => {
+    if (hasCheckedInitialMood || !token || !isMoodDataLoaded) return;
+
+    if (!latestMood) {
+      setShowMoodCheckin(true);
+    } else {
+      const today = new Date();
+      const moodDate = new Date(latestMood.created_at);
+      
+      const isSameDay = 
+        today.getUTCFullYear() === moodDate.getUTCFullYear() &&
+        today.getUTCMonth() === moodDate.getUTCMonth() &&
+        today.getUTCDate() === moodDate.getUTCDate();
+      
+      if (!isSameDay) {
+        setShowMoodCheckin(true);
+      }
+    }
+    setHasCheckedInitialMood(true);
+  }, [latestMood, hasCheckedInitialMood, token, isMoodDataLoaded]);
 
   const recordMood = async (mood: MoodType) => {
     if (!token || isRecording) return;
@@ -196,51 +124,19 @@ export function MemberDashboard() {
           description: "Semoga harimu menyenangkan 😊",
         });
         await loadDashboardData();
-        setShowMoodPicker(false);
         setShowMoodCheckin(false);
       } else {
         toast.error("Gagal mencatat mood");
       }
     } catch (error) {
       console.error("Failed to record mood:", error);
-      toast.error("Gagal mencatat mood", {
-        description: "Silakan coba lagi",
-      });
+      toast.error("Gagal mencatat mood");
     } finally {
       setIsRecording(false);
     }
   };
 
-  const handleDeleteChatClick = (e: React.MouseEvent, id: number) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDeleteChatId(id);
-    setShowDeleteModal(true);
-  };
-
-  const confirmDeleteChat = async () => {
-    if (!token || !deleteChatId) return;
-
-    setIsDeleting(true);
-    try {
-      await api.deleteChatSession(token, deleteChatId);
-
-      // Update UI immediately (Optimistic/Local update)
-      setRecentSessions(prev => prev.filter(session => session.id !== deleteChatId));
-
-      // Reload data to ensure consistency
-      await loadDashboardData();
-
-      setShowDeleteModal(false);
-      setDeleteChatId(null);
-    } catch (error) {
-      console.error("Failed to delete chat session:", error);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  // Music player functions
+  // Music Player Logic
   const handleCategoryClick = async (categoryId: number) => {
     if (expandedCategory === categoryId) {
       setExpandedCategory(null);
@@ -249,7 +145,6 @@ export function MemberDashboard() {
 
     setExpandedCategory(categoryId);
 
-    // Fetch songs if not already loaded
     if (!categorySongs[categoryId]) {
       try {
         const response = await api.getSongsByCategory(categoryId) as { data: Song[] };
@@ -264,7 +159,6 @@ export function MemberDashboard() {
 
   const playSong = (song: Song) => {
     if (currentSong?.id === song.id) {
-      // Toggle play/pause for same song
       if (isPlaying) {
         audioRef.current?.pause();
         setIsPlaying(false);
@@ -273,26 +167,18 @@ export function MemberDashboard() {
         setIsPlaying(true);
       }
     } else {
-      // Play new song
       setCurrentSong(song);
       setIsPlaying(true);
       setAudioProgress(0);
     }
   };
 
-  // Audio event handlers
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !currentSong) return;
 
-    const handleTimeUpdate = () => {
-      setAudioProgress(audio.currentTime);
-    };
-
-    const handleLoadedMetadata = () => {
-      setAudioDuration(audio.duration);
-    };
-
+    const handleTimeUpdate = () => setAudioProgress(audio.currentTime);
+    const handleLoadedMetadata = () => setAudioDuration(audio.duration);
     const handleEnded = () => {
       setIsPlaying(false);
       setAudioProgress(0);
@@ -302,7 +188,6 @@ export function MemberDashboard() {
     audio.addEventListener("loadedmetadata", handleLoadedMetadata);
     audio.addEventListener("ended", handleEnded);
 
-    // Auto-play when song changes
     if (isPlaying) {
       audio.play().catch(console.error);
     }
@@ -320,114 +205,34 @@ export function MemberDashboard() {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // Prepare chart data for bar chart (7 days)
-  // Create a map of day index (0=Sunday, 1=Monday, etc.) to mood
-  const moodByDayOfWeek = new Map<number, UserMood>();
-
-  // Get today's date components in local timezone
-  const today = new Date();
-  const todayYear = today.getFullYear();
-  const todayMonth = today.getMonth();
-  const todayDate = today.getDate();
-
-  // Calculate the date 7 days ago for comparison
-  const sevenDaysAgo = new Date(todayYear, todayMonth, todayDate - 6); // 6 days back = 7 day range including today
-
-  // Map each mood entry to its day of week
-  moodHistory.forEach(mood => {
-    const moodDate = new Date(mood.created_at);
-    
-    // Get mood date components in local timezone
-    const moodYear = moodDate.getFullYear();
-    const moodMonth = moodDate.getMonth();
-    const moodDay = moodDate.getDate();
-    
-    // Create date objects with only date components (no time) for comparison
-    const moodDateOnly = new Date(moodYear, moodMonth, moodDay);
-    const todayDateOnly = new Date(todayYear, todayMonth, todayDate);
-    const sevenDaysAgoDateOnly = new Date(sevenDaysAgo.getFullYear(), sevenDaysAgo.getMonth(), sevenDaysAgo.getDate());
-
-    // Only include moods from the last 7 days (including today)
-    if (moodDateOnly >= sevenDaysAgoDateOnly && moodDateOnly <= todayDateOnly) {
-      const dayOfWeek = moodDate.getDay(); // 0=Sunday, 1=Monday, etc.
-      // Keep the most recent mood for each day (first one in array since sorted desc)
-      if (!moodByDayOfWeek.has(dayOfWeek)) {
-        moodByDayOfWeek.set(dayOfWeek, mood);
-      }
-    }
-  });
-
-  // Map Indonesian day names to day index (Senin=1, Selasa=2, etc.)
-  const dayIndexMap: Record<string, number> = {
-    "Senin": 1, "Selasa": 2, "Rabu": 3, "Kamis": 4, "Jumat": 5, "Sabtu": 6, "Minggu": 0
-  };
-
-  const weeklyChartData = days.map((day) => {
-    const dayIndex = dayIndexMap[day];
-    const moodEntry = moodByDayOfWeek.get(dayIndex);
-    const mood = moodEntry?.mood;
-    const moodInfo = moodEmojis.find(m => m.type === mood);
-    return {
-      name: day,
-      bahagia: mood === "happy" ? moodLevels.happy : 0,
-      netral: mood === "neutral" ? moodLevels.neutral : 0,
-      marah: mood === "angry" ? moodLevels.angry : 0,
-      kecewa: mood === "disappointed" ? moodLevels.disappointed : 0,
-      sedih: mood === "sad" ? moodLevels.sad : 0,
-      menangis: mood === "crying" ? moodLevels.crying : 0,
-      mood: mood,
-      color: moodInfo?.color || "#94a3b8",
-      value: mood ? moodLevels[mood] : 0,
-    };
-  });
-
-  // Prepare chart data for line chart (30 days)
-  const monthlyChartData = moodHistory.slice().reverse().map((item, index) => {
-    const date = new Date(item.created_at);
-    // Use Indonesian timezone for display
-    const dateIndonesia = new Date(date.toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
-    const dayLabel = dateIndonesia.getDate().toString();
-    const moodInfo = moodEmojis.find(m => m.type === item.mood);
-    return {
-      name: dayLabel,
-      fullDate: dateIndonesia.toLocaleDateString("id-ID", { day: "numeric", month: "short", timeZone: "Asia/Jakarta" }),
-      value: moodLevels[item.mood] || 0,
-      mood: item.mood,
-      emoji: moodInfo?.emoji || "",
-      label: moodInfo?.label || "",
-      color: moodInfo?.color || "#94a3b8",
-      index,
-    };
-  });
-
   return (
-    <div className="p-4 lg:p-6 space-y-5 bg-gray-50 min-h-screen">
-      {/* Alert Banner */}
-      <div className="bg-linear-to-r from-primary to-red-600 rounded-2xl p-5 flex items-center justify-between shadow-lg">
-        <div className="flex items-center gap-4">
-          <p className="text-white">
-            Hari ini kamu terlihat <strong>sedikit lelah</strong>,
-            <br /><span className="text-white/80">Ingin ngobrol sebentar?</span>
-          </p>
+    <div className="min-h-screen bg-gray-50/50 p-6 lg:p-8 space-y-8">
+      
+      {/* 1. Welcoming Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+             Halo, <span className="text-primary">{user?.name?.split(" ")[0] || "Teman"}!</span> 👋
+           </h1>
+           <p className="text-gray-500 mt-1 text-lg">
+             Bagaimana perasaanmu hari ini? Luangkan waktu sejenak untuk dirimu.
+           </p>
         </div>
-        <div className="flex items-center gap-4">
-          <Image src="/images/home-banner-emote.png" alt="" width={64} height={64} className="hidden sm:block" />
-          <Link href="/dashboard/chat">
-            <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full px-6 shadow-md hover:shadow-lg transition-all font-semibold">
-              Ngobrol Sekarang!
-            </Button>
-          </Link>
+        <div className="flex items-center gap-3">
+            <Link href="/dashboard/journal/new">
+                <Button variant="outline" className="rounded-full border-gray-200 hover:border-primary hover:text-primary transition-colors gap-2">
+                   <Calendar className="w-4 h-4" />
+                   Tulis Jurnal
+                </Button>
+            </Link>
+            <Link href="/dashboard/chat">
+                <Button className="rounded-full shadow-lg hover:shadow-xl transition-all gap-2 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-700 border-0">
+                    <Sparkles className="w-4 h-4" />
+                    Teman Cerita AI
+                </Button>
+            </Link>
         </div>
       </div>
-
-      <DeleteConfirmationModal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        onConfirm={confirmDeleteChat}
-        title="Hapus Sesi Chat"
-        description="Apakah Anda yakin ingin menghapus sesi chat ini? Riwayat percakapan tidak dapat dipulihkan."
-        isLoading={isDeleting}
-      />
 
       <MoodCheckinModal 
         isOpen={showMoodCheckin} 
@@ -435,479 +240,153 @@ export function MemberDashboard() {
         isSubmitting={isRecording} 
       />
 
-      {/* Top Row: Mood Check-in (Hidden/Modal) + Daily Task + Breathing */}
-      <div className="grid lg:grid-cols-12 gap-4">
-        {/* Daily Task Widget (Expanded) */}
-        <div className="lg:col-span-8">
-           <DailyTaskWidget tasks={dailyTasks} onTaskClaimed={loadDashboardData} />
+      {/* 2. Main Dashboard Grid (Bento Box Style) */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+        
+        {/* Left Column: Daily Tasks & Mood Calendar */}
+        <div className="md:col-span-8 space-y-6">
+            
+            {/* Daily Task Section - Full Width */}
+            <div className="w-full">
+                <DailyTaskWidget tasks={dailyTasks} onTaskClaimed={loadDashboardData} />
+            </div>
+
+            {/* Mood Calendar Section */}
+            <MoodCalendar moods={moodHistory} />
         </div>
 
-        {/* Breathing Exercise Widget */}
-        <div className="lg:col-span-4">
-          {breathingWidgetData && <BreathingWidget data={breathingWidgetData} />}
-        </div>
-      </div>
-
-      {/* Second Row: Mood Chart + Music */}
-      <div className="grid lg:grid-cols-12 gap-4">
-        {/* Mood Chart */}
-        <Card className="lg:col-span-8 shadow-sm hover:shadow-md transition-shadow bg-white">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-lg font-bold">
-                  {chartPeriod === "7days" ? "Perjalanan Emosimu Sepanjang Minggu" : "Tren Emosimu Sebulan Terakhir"}
-                </CardTitle>
-                <p className="text-sm text-gray-500 mt-1">
-                  Pantau fluktuasi emosi harian dan temukan pola yang bisa kamu sadari lebih awal.
-                </p>
-              </div>
-              <div className="relative">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowChartDropdown(!showChartDropdown)}
-                  className="rounded-full text-xs gap-1 border-gray-200"
-                >
-                  {chartPeriod === "7days" ? "7 Hari terakhir" : "1 Bulan terakhir"} <ChevronDown className="w-3 h-3" />
-                </Button>
-                {showChartDropdown && (
-                  <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border py-1 z-10 min-w-[140px]">
-                    <button
-                      onClick={() => {
-                        setChartPeriod("7days");
-                        setShowChartDropdown(false);
-                      }}
-                      className={cn(
-                        "w-full px-3 py-2 text-left text-sm hover:bg-gray-50 transition-colors",
-                        chartPeriod === "7days" && "bg-primary/10 text-primary font-medium"
-                      )}
-                    >
-                      7 Hari terakhir
-                    </button>
-                    <button
-                      onClick={() => {
-                        setChartPeriod("1month");
-                        setShowChartDropdown(false);
-                      }}
-                      className={cn(
-                        "w-full px-3 py-2 text-left text-sm hover:bg-gray-50 transition-colors",
-                        chartPeriod === "1month" && "bg-primary/10 text-primary font-medium"
-                      )}
-                    >
-                      1 Bulan terakhir
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {/* Chart */}
-            <div className="h-56 w-full">
-              {isMounted ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  {chartPeriod === "7days" ? (
-                    <BarChart data={weeklyChartData} margin={{ top: 20, right: 20, left: 10, bottom: 0 }}>
-                      <XAxis
-                        dataKey="name"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 12, fill: "#9ca3af" }}
-                        padding={{ left: 20, right: 20 }}
-                      />
-                      <YAxis
-                        domain={[0, 7]}
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 11, fill: "#9ca3af" }}
-                        width={70}
-                        tickFormatter={(value) => {
-                          const labels: Record<number, string> = {
-                            6: "Bahagia",
-                            4: "Neutral",
-                            2: "Sedih",
-                            0: "",
-                          };
-                          return labels[value] || "";
-                        }}
-                      />
-                      <Tooltip
-                        cursor={{ fill: "#f3f4f6", radius: 4 }}
-                        content={({ active, payload }) => {
-                          if (active && payload && payload.length) {
-                            const data = payload[0].payload;
-                            if (data.emoji) {
-                              return (
-                                <div className="bg-white p-2 rounded-lg shadow-lg border text-center">
-                                  <div className="text-2xl mb-1">{data.emoji}</div>
-                                  <div className="text-xs font-medium text-gray-500">
-                                    {data.fullDate}
-                                  </div>
-                                  <div className="text-xs font-bold capitalize text-primary">
-                                    {data.mood}
-                                  </div>
-                                </div>
-                              );
-                            }
-                            return (
-                              <div className="bg-white p-2 rounded-lg shadow-lg border">
-                                <p className="text-sm text-gray-500">Tidak ada data</p>
-                              </div>
-                            );
-                          }
-                          return null;
-                        }}
-                      />
-                      <Bar
-                        dataKey="value"
-                        radius={[4, 4, 4, 4]}
-                        maxBarSize={40}
-                      >
-                        {weeklyChartData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  ) : (
-                    <AreaChart data={monthlyChartData} margin={{ top: 20, right: 20, left: 10, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="colorMood" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#ef4444" stopOpacity={0.1} />
-                          <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <XAxis
-                        dataKey="day"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 10, fill: "#9ca3af" }}
-                        interval={2} // Show every 3rd label to avoid clutter
-                      />
-                      <YAxis
-                        domain={[0, 7]}
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fontSize: 11, fill: "#9ca3af" }}
-                        width={70}
-                        tickFormatter={(value: number) => {
-                          const labels: Record<number, string> = {
-                            6: "Bahagia",
-                            4: "Neutral",
-                            2: "Sedih",
-                            0: "",
-                          };
-                          return labels[value] || "";
-                        }}
-                      />
-                      <Tooltip
-                        content={({ active, payload }) => {
-                          if (active && payload && payload.length) {
-                            const data = payload[0].payload as MonthlyChartData;
-                            if (data.emoji) {
-                              return (
-                                <div className="bg-white p-2 rounded-lg shadow-lg border text-center">
-                                  <div className="text-2xl mb-1">{data.emoji}</div>
-                                  <div className="text-xs font-medium text-gray-500">
-                                    {data.fullDate}
-                                  </div>
-                                  <div className="text-xs font-bold capitalize text-primary">
-                                    {data.mood}
-                                  </div>
-                                </div>
-                              );
-                            }
-                            return (
-                              <div className="bg-white p-2 rounded-lg shadow-lg border">
-                                <p className="text-sm text-gray-500">Tidak ada data</p>
-                              </div>
-                            );
-                          }
-                          return null;
-                        }}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="value"
-                        stroke="#ef4444"
-                        fillOpacity={1}
-                        fill="url(#colorMood)"
-                        strokeWidth={2}
-                        connectNulls
-                        dot={{ fill: "#ef4444", strokeWidth: 0, r: 3 }}
-                        activeDot={{ r: 6, fill: "#ef4444" }}
-                      />
-                    </AreaChart>
-                  )}
-                </ResponsiveContainer>
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg animate-pulse">
-                  <span className="text-sm text-gray-400">Loading chart...</span>
+        {/* Right Column: Widgets */}
+        <div className="md:col-span-4 space-y-6">
+            
+            {/* Breathing Widget */}
+            {breathingWidgetData && (
+                <div className="transform hover:scale-[1.02] transition-transform duration-300">
+                    <BreathingWidget data={breathingWidgetData} />
                 </div>
-              )}
-            </div>
-
-            {/* Legend */}
-            <div className="flex flex-wrap gap-4 justify-center text-xs text-gray-500 mt-4 pt-4 border-t">
-              {moodEmojis.map((m) => (
-                <div key={m.type} className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: m.color }} />
-                  <span>{m.label}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Music Widget */}
-        <Card className="lg:col-span-4 bg-linear-to-br from-primary to-red-600 text-white border-0 shadow-lg overflow-hidden relative">
-          <CardHeader className="pb-2">
-            <div className="flex justify-between items-start">
-              <div>
-                <CardTitle className="text-white text-lg font-bold">Biarkan Musik Menenangkan Harimu</CardTitle>
-                <p className="text-white/80 text-sm">
-                  Putar musik pilihan untuk bantu kamu melepas stres, mengatur napas, dan kembali fokus.
-                </p>
-              </div>
-              <Link href="/dashboard/music">
-                <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 gap-1">
-                  Lihat Semua <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {/* Hidden audio element */}
-            {currentSong && (
-              <audio
-                ref={audioRef}
-                src={currentSong.file_path.startsWith("http") ? currentSong.file_path : `${process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8080"}${currentSong.file_path}`}
-                preload="metadata"
-              />
             )}
 
-            {categories.slice(0, 3).map((cat) => (
-              <div key={cat.id}>
-                <button
-                  onClick={() => handleCategoryClick(cat.id)}
-                  className={cn(
-                    "w-full rounded-xl p-3 flex items-center gap-3 transition-all cursor-pointer",
-                    expandedCategory === cat.id ? "bg-white text-gray-800" : "bg-white/10 hover:bg-white/20"
-                  )}
-                >
-                  <div className={cn(
-                    "w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden shrink-0",
-                    expandedCategory === cat.id ? "bg-gray-100" : "bg-white/20"
-                  )}>
-                    {cat.thumbnail ? (
-                      <Image src={cat.thumbnail} alt="" width={48} height={48} className="object-cover" />
-                    ) : (
-                      <Music className={cn("w-6 h-6", expandedCategory === cat.id ? "text-gray-600" : "")} />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0 text-left">
-                    <p className={cn("font-semibold truncate", expandedCategory === cat.id ? "text-gray-800" : "text-white")}>{cat.name}</p>
-                    <p className={cn("text-xs", expandedCategory === cat.id ? "text-gray-500" : "text-white/60")}>{cat.song_count || 0} Lagu</p>
-                  </div>
-                  <ChevronDown className={cn(
-                    "w-5 h-5 transition-transform",
-                    expandedCategory === cat.id ? "text-gray-400 rotate-180" : "text-white/60"
-                  )} />
-                </button>
-
-                {/* Expanded song list */}
-                {expandedCategory === cat.id && (
-                  <div className="mt-2 space-y-1 bg-white/10 rounded-xl p-2 max-h-48 overflow-y-auto">
-                    {categorySongs[cat.id]?.length > 0 ? (
-                      categorySongs[cat.id].map((song) => (
-                        <button
-                          key={song.id}
-                          onClick={() => playSong(song)}
-                          className={cn(
-                            "w-full flex items-center gap-3 p-2 rounded-lg transition-all text-left",
-                            currentSong?.id === song.id ? "bg-white text-gray-800" : "hover:bg-white/10"
-                          )}
-                        >
-                          <div className={cn(
-                            "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
-                            currentSong?.id === song.id ? "bg-primary" : "bg-white/20"
-                          )}>
-                            {currentSong?.id === song.id && isPlaying ? (
-                              <Pause className="w-4 h-4 text-white" />
-                            ) : (
-                              <Play className="w-4 h-4 text-white" fill={currentSong?.id === song.id ? "white" : "none"} />
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className={cn(
-                              "text-sm font-medium truncate",
-                              currentSong?.id === song.id ? "text-gray-800" : "text-white"
-                            )}>{song.title}</p>
-                          </div>
-                        </button>
-                      ))
-                    ) : (
-                      <div className="text-center py-3 text-white/60">
-                        <p className="text-xs">Memuat lagu...</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-
-            {/* Now Playing Bar */}
-            {currentSong && (
-              <div className="mt-3 bg-white rounded-xl p-3">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => playSong(currentSong)}
-                    className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0"
-                  >
-                    {isPlaying ? (
-                      <Pause className="w-5 h-5 text-white" />
-                    ) : (
-                      <Play className="w-5 h-5 text-white" fill="white" />
-                    )}
-                  </button>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-800 truncate">{currentSong.title}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-gray-400">{formatTime(audioProgress)}</span>
-                      <div className="flex-1 h-1 bg-gray-200 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-primary rounded-full transition-all duration-100"
-                          style={{ width: audioDuration ? `${(audioProgress / audioDuration) * 100}%` : "0%" }}
-                        />
-                      </div>
-                      <span className="text-xs text-gray-400">{formatTime(audioDuration)}</span>
+            {/* Music Player Widget */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-[400px]">
+                <div className="p-4 bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                            <div className="p-1.5 bg-white/20 rounded-lg">
+                                <Music className="w-4 h-4 text-white" />
+                            </div>
+                            <h3 className="font-bold text-lg">Ruang Musik</h3>
+                        </div>
+                        <Link href="/dashboard/music">
+                           <Button size="icon" variant="ghost" className="h-8 w-8 text-white hover:bg-white/20 rounded-full">
+                               <ArrowRight className="w-4 h-4" />
+                           </Button>
+                        </Link>
                     </div>
-                  </div>
+                    <p className="text-white/80 text-sm line-clamp-2">
+                        Dengarkan musik relaksasi untuk menemanimu
+                    </p>
                 </div>
-              </div>
-            )}
 
-            {categories.length === 0 && (
-              <div className="text-center py-4 text-white/60">
-                <Music className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Belum ada kategori musik</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid lg:grid-cols-12 gap-4">
-        {/* Inspiring Story Widget */}
-        <div className="lg:col-span-6">
-          <InspiringStoryWidget />
-        </div>
-
-        {/* Last Chat Sessions */}
-        <Card className="lg:col-span-6 shadow-sm hover:shadow-md transition-shadow bg-white">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                <Image src="/images/ai-chat-blue.png" alt="" width={24} height={24} style={{ width: 'auto', height: 'auto' }} />
-              </div>
-              <span className="font-semibold text-gray-800">Lanjutkan chat terakhir</span>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {recentSessions.length > 0 ? (
-              recentSessions.map((session) => (
-                <Link
-                  key={session.id}
-                  href={`/dashboard/chat`}
-                  className="flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 transition-colors border border-gray-100 group bg-white"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-gray-800">{session.title}</p>
-                    <p className="text-sm text-gray-500 truncate">{session.last_message || "Tidak ada pesan"}</p>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
-                      <button className="p-2 hover:bg-gray-100 rounded-full outline-none transition-colors">
-                        <MoreVertical className="w-5 h-5 text-gray-400" />
+                {/* Audio Player (Hidden functionality) */}
+                {currentSong && (
+                  <audio
+                    ref={audioRef}
+                    src={currentSong.file_path.startsWith("http") ? currentSong.file_path : `${process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "http://localhost:8080"}${currentSong.file_path}`}
+                    preload="metadata"
+                  />
+                )}
+                
+                {/* Now Playing Bar (Mini) */}
+                {currentSong && (
+                  <div className="bg-gray-900 p-3 text-white flex items-center gap-3">
+                      <button
+                        onClick={() => playSong(currentSong)}
+                        className="w-8 h-8 rounded-full bg-white text-gray-900 flex items-center justify-center shrink-0 hover:bg-gray-100 transition-colors"
+                      >
+                        {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" fill="currentColor" />}
                       </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
-                        onClick={(e) => handleDeleteChatClick(e, session.id)}
-                      >
-                        <AlertTriangle className="mr-2 h-4 w-4" />
-                        <span>Hapus Chat</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </Link>
-              ))
-            ) : (
-              <div className="text-center py-6 text-gray-400">
-                <MessageCircle className="w-10 h-10 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Belum ada sesi chat</p>
-                <Link href="/dashboard/chat">
-                  <Button variant="outline" size="sm" className="mt-3 rounded-full text-xs">
-                    Mulai Chat Baru
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Fourth Row: Articles */}
-      <div className="grid lg:grid-cols-12 gap-4">
-        <div className="lg:col-span-12">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-gray-800">Artikel Terbaru</h2>
-          </div>
-          <div className="flex gap-4 overflow-x-auto pb-4 px-1 snap-x scrollbar-hide">
-            {articles.map((article) => (
-              <Link
-                key={article.id}
-                href={`/dashboard/reading/${article.id}`}
-                className="shrink-0 w-64 snap-start group"
-              >
-                <Card className="overflow-hidden card-hover h-full border-0 shadow-sm group-hover:shadow-lg transition-all bg-white">
-                  <div className="h-40 relative overflow-hidden">
-                    {article.thumbnail ? (
-                      <Image
-                        src={article.thumbnail}
-                        alt={article.title}
-                        fill
-                        sizes="256px"
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-linear-to-br from-red-100 to-red-200 flex items-center justify-center">
-                        <span className="text-4xl">📄</span>
+                      <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold truncate">{currentSong.title}</p>
+                          <div className="text-xs text-white/50 flex justify-between mt-0.5">
+                              <span>{formatTime(audioProgress)}</span>
+                              <span>{formatTime(audioDuration)}</span>
+                          </div>
+                          {/* Progress bar */}
+                          <div className="h-1 w-full bg-white/20 rounded-full mt-1 overflow-hidden">
+                              <div 
+                                className="h-full bg-white/80 rounded-full" 
+                                style={{ width: `${(audioProgress / audioDuration) * 100}%`}}
+                              />
+                          </div>
                       </div>
-                    )}
-                    <div className="absolute top-2 left-2">
-                      <span className="bg-primary text-white text-xs px-3 py-1 rounded-full shadow font-medium">
-                        Artikel
-                      </span>
-                    </div>
                   </div>
-                  <CardContent className="p-4">
-                    <h4 className="font-semibold text-sm line-clamp-2 mb-3 text-gray-800 group-hover:text-primary transition-colors leading-snug">{article.title}</h4>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </div>
+                )}
 
-      <div className="flex justify-end mt-2">
-        <Link href="/dashboard/reading">
-          <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/10 gap-1">
-            Lihat Semua Artikel <ArrowRight className="w-4 h-4" />
-          </Button>
-        </Link>
+                <div className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-thin scrollbar-thumb-gray-200">
+                    {(categories || []).slice(0, 5).map((cat) => (
+                        <div key={cat.id} className="group">
+                             <button
+                                onClick={() => handleCategoryClick(cat.id)}
+                                className={cn(
+                                    "w-full flex items-center gap-3 p-2 rounded-xl transition-all",
+                                    expandedCategory === cat.id ? "bg-indigo-50 border-indigo-100" : "hover:bg-gray-50 border border-transparent"
+                                )}
+                             >
+                                <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden relative shrink-0 shadow-sm group-hover:shadow-md transition-all">
+                                    {cat.thumbnail ? (
+                                        <Image src={cat.thumbnail} alt="" fill className="object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                                            <Music className="w-4 h-4 text-gray-400" />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex-1 text-left">
+                                    <p className={cn("text-sm font-semibold", expandedCategory === cat.id ? "text-indigo-700" : "text-gray-700")}>
+                                        {cat.name}
+                                    </p>
+                                    <p className="text-xs text-gray-500">{cat.song_count || 0} Lagu</p>
+                                </div>
+                                <ChevronDown className={cn(
+                                    "w-4 h-4 text-gray-400 transition-transform duration-300",
+                                    expandedCategory === cat.id && "rotate-180 text-indigo-500"
+                                )} />
+                             </button>
+
+                             {/* Songs Dropdown */}
+                             <div className={cn(
+                                 "grid transition-all duration-300 ease-in-out overflow-hidden",
+                                 expandedCategory === cat.id ? "grid-rows-[1fr] opacity-100 mt-2" : "grid-rows-[0fr] opacity-0"
+                             )}>
+                                 <div className="min-h-0 pl-4 space-y-1 border-l-2 border-indigo-100 ml-6">
+                                     {categorySongs[cat.id]?.map((song) => (
+                                         <button
+                                            key={song.id}
+                                            onClick={() => playSong(song)}
+                                            className={cn(
+                                                "w-full text-left text-sm py-2 px-3 rounded-lg flex items-center gap-2 group/song",
+                                                currentSong?.id === song.id ? "bg-indigo-100 text-indigo-700 font-medium" : "text-gray-600 hover:bg-gray-50"
+                                            )}
+                                         >
+                                            <div className="w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center shrink-0">
+                                                {currentSong?.id === song.id && isPlaying ? (
+                                                     <div className="w-2 h-2 bg-indigo-500 rounded-sm animate-pulse" />
+                                                ) : (
+                                                     <Play className="w-3 h-3 text-gray-400 group-hover/song:text-indigo-500 ml-0.5" />
+                                                )}
+                                            </div>
+                                            <span className="truncate">{song.title}</span>
+                                         </button>
+                                     ))}
+                                     {(!categorySongs[cat.id] || categorySongs[cat.id].length === 0) && (
+                                         <p className="text-xs text-gray-400 py-2 pl-2">Memuat lagu...</p>
+                                     )}
+                                 </div>
+                             </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
       </div>
     </div>
   );

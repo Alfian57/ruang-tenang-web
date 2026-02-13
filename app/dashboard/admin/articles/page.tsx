@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { Trash2, Search, Plus, Ban, CheckCircle, Eye, Edit, FileText } from "lucide-react";
+import { Trash2, Search, Plus, Ban, CheckCircle, Eye, Edit, FileText, XCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ interface AdminArticle {
   category_id: number;
   category: { id: number; name: string };
   status: string;
+  moderation_status?: string;
   user_id?: number;
   author?: { id: number; name: string };
   created_at: string;
@@ -179,6 +180,26 @@ export default function AdminArticlesPage() {
     }
   };
 
+  const handleApprove = async (articleId: number) => {
+    if (!token) return;
+    try {
+      await api.moderateArticle(token, articleId, { action: "approve" });
+      loadData();
+    } catch (error) {
+      console.error("Failed to approve article:", error);
+    }
+  };
+
+  const handleReject = async (articleId: number) => {
+    if (!token) return;
+    try {
+      await api.moderateArticle(token, articleId, { action: "reject", notes: "Ditolak oleh admin" });
+      loadData();
+    } catch (error) {
+      console.error("Failed to reject article:", error);
+    }
+  };
+
   // Category Functions
   const openCategoryDialog = (category?: ArticleCategory) => {
     if (category) {
@@ -248,22 +269,28 @@ export default function AdminArticlesPage() {
         return <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">Dipublikasikan</span>;
       case "draft":
         return <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">Draf</span>;
+      case "pending":
+        return <span className="px-2 py-1 text-xs rounded-full bg-amber-100 text-amber-700">Menunggu Persetujuan</span>;
       case "blocked":
         return <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">Diblokir</span>;
+      case "rejected":
+        return <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">Ditolak</span>;
+      case "revision_needed":
+        return <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">Perlu Revisi</span>;
       default:
         return null;
     }
   };
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="p-4 md:p-6 lg:p-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Kelola Artikel</h1>
         <p className="text-gray-500">Kelola artikel dan kategori artikel</p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsList>
           <TabsTrigger value="articles">Artikel</TabsTrigger>
           <TabsTrigger value="categories">Kategori</TabsTrigger>
         </TabsList>
@@ -271,37 +298,26 @@ export default function AdminArticlesPage() {
         {/* Articles Tab */}
         <TabsContent value="articles" className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <div className="relative flex-1 max-w-md">
+            <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
               <Input
                 placeholder="Cari artikel..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10"
+                className="pl-10 bg-white"
               />
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant={statusFilter === "" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setStatusFilter("")}
+            <div className="flex items-center gap-2">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="admin-select"
               >
-                Semua
-              </Button>
-              <Button
-                variant={statusFilter === "published" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setStatusFilter("published")}
-              >
-                Published
-              </Button>
-              <Button
-                variant={statusFilter === "blocked" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setStatusFilter("blocked")}
-              >
-                Blocked
-              </Button>
+                <option value="">Semua Status</option>
+                <option value="published">Published</option>
+                <option value="draft">Pending</option>
+                <option value="blocked">Blocked</option>
+              </select>
               <Button onClick={openCreateDialog} className="gradient-primary">
                 <Plus className="w-4 h-4 mr-2" /> Tambah
               </Button>
@@ -376,16 +392,38 @@ export default function AdminArticlesPage() {
                           <span className="text-sm text-gray-600">{article.author?.name || "-"}</span>
                         </td>
                         <td className="p-4 hidden sm:table-cell">
-                          {getStatusBadge(article.status)}
+                          {getStatusBadge(article.moderation_status === "pending" || article.moderation_status === "rejected" || article.moderation_status === "revision_needed" ? article.moderation_status : article.status)}
                         </td>
                         <td className="p-4 hidden lg:table-cell">
                           <span className="text-sm text-gray-500">{formatDate(article.created_at)}</span>
                         </td>
                         <td className="p-4">
                           <div className="flex gap-1 justify-end">
-                            {article.status !== "blocked" && (
+                            {article.status === "draft" && (article.moderation_status === "pending" || !article.moderation_status) && (
                               <>
-                                <Link href={`/dashboard/reading/articles/${article.id}`}>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleApprove(article.id)}
+                                  title="Setujui"
+                                  className="text-green-500 hover:text-green-600"
+                                >
+                                  <CheckCircle className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleReject(article.id)}
+                                  title="Tolak"
+                                  className="text-red-500 hover:text-red-600"
+                                >
+                                  <XCircle className="w-4 h-4" />
+                                </Button>
+                              </>
+                            )}
+                            {article.status !== "blocked" && article.status !== "draft" && (
+                              <>
+                                <Link href={`/dashboard/articles/read/${article.id}`}>
                                   <Button variant="ghost" size="icon" title="Lihat">
                                     <Eye className="w-4 h-4" />
                                   </Button>
@@ -399,6 +437,13 @@ export default function AdminArticlesPage() {
                                   <Edit className="w-4 h-4" />
                                 </Button>
                               </>
+                            )}
+                            {article.status === "draft" && (
+                              <Link href={`/dashboard/articles/read/${article.id}`}>
+                                <Button variant="ghost" size="icon" title="Lihat">
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                              </Link>
                             )}
                             <Button
                               variant="ghost"

@@ -7,7 +7,7 @@ import { Forum, ForumPost } from "@/types/forum";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { ArrowLeft, Send, Trash2, Clock, Heart, MessageSquare, Share2, CheckCircle2, Trophy, AlertTriangle, ShieldAlert } from "lucide-react";
+import { ArrowLeft, Send, Trash2, Clock, Heart, MessageSquare, CheckCircle2, Trophy, AlertTriangle, ShieldAlert } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -41,7 +41,7 @@ export default function AdminForumTopicPage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const id = parseInt(params.id as string);
-  const isAdmin = user?.role === "admin" || user?.role === "moderator";
+  // const isAdmin = user?.role === "admin" || user?.role === "moderator";
 
   const fetchForum = useCallback(async () => {
     if (!token) return;
@@ -196,7 +196,7 @@ export default function AdminForumTopicPage() {
   if (loading) return <div className="p-10 text-center text-gray-500">Memuat data forum...</div>;
   if (!forum) return <div className="p-10 text-center text-gray-500">Topik tidak ditemukan</div>;
 
-  const isOwner = user?.id === forum.user_id;
+  // const isOwner = user?.id === forum.user_id;
 
   return (
     <>

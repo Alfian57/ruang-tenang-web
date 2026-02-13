@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Pencil, Trash2, Loader2, Trophy, Save, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
@@ -152,7 +152,7 @@ export default function LevelsManagementPage() {
   const badgeEmojis = ["🌱", "🌿", "📚", "🌳", "🏆", "💎", "⭐", "👑", "🔥", "💪", "🎯", "🚀"];
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6 lg:p-8">
       <DeleteConfirmationModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
@@ -164,11 +164,8 @@ export default function LevelsManagementPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <Trophy className="w-7 h-7 text-yellow-500" />
-            Kelola Level & Badge
-          </h1>
-          <p className="text-gray-500 mt-1">Atur konfigurasi level dan badge untuk sistem gamifikasi</p>
+          <h1 className="text-2xl font-bold">Kelola Level & Badge</h1>
+          <p className="text-gray-500">Atur konfigurasi level dan badge untuk sistem gamifikasi</p>
         </div>
         {!showAddForm && !editingId && (
           <Button
@@ -181,7 +178,7 @@ export default function LevelsManagementPage() {
                 badge_icon: "🌱",
               });
             }}
-            className="bg-primary hover:bg-primary/90"
+            className="gradient-primary text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
             Tambah Level
@@ -273,11 +270,11 @@ export default function LevelsManagementPage() {
           <table className="w-full">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Level</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Min EXP</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Badge</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Icon</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Aksi</th>
+                <th className="text-left p-4 text-sm font-medium text-gray-500">Level</th>
+                <th className="text-left p-4 text-sm font-medium text-gray-500">Min EXP</th>
+                <th className="text-left p-4 text-sm font-medium text-gray-500">Badge</th>
+                <th className="text-left p-4 text-sm font-medium text-gray-500">Icon</th>
+                <th className="text-right p-4 text-sm font-medium text-gray-500">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -285,7 +282,7 @@ export default function LevelsManagementPage() {
                 <tr key={level.id} className="hover:bg-gray-50">
                   {editingId === level.id ? (
                     <>
-                      <td className="px-6 py-4">
+                      <td className="p-4">
                         <Input
                           type="number"
                           min={1}
@@ -294,7 +291,7 @@ export default function LevelsManagementPage() {
                           className="w-20"
                         />
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="p-4">
                         <Input
                           type="number"
                           min={0}
@@ -303,7 +300,7 @@ export default function LevelsManagementPage() {
                           className="w-28"
                         />
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="p-4">
                         <Input
                           type="text"
                           value={formData.badge_name}
@@ -311,7 +308,7 @@ export default function LevelsManagementPage() {
                           className="w-32"
                         />
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="p-4">
                         <div className="flex items-center gap-1">
                           <Input
                             type="text"
@@ -331,7 +328,7 @@ export default function LevelsManagementPage() {
                           ))}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="p-4 text-right">
                         <div className="flex justify-end gap-2">
                           <Button type="button" size="sm" variant="outline" onClick={cancelEdit}>
                             <X className="w-4 h-4" />
@@ -344,21 +341,21 @@ export default function LevelsManagementPage() {
                     </>
                   ) : (
                     <>
-                      <td className="px-6 py-4">
+                      <td className="p-4">
                         <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-linear-to-r from-yellow-400 to-amber-500 text-white font-bold">
                           {level.level}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="p-4">
                         <span className="font-mono text-gray-700">{level.min_exp.toLocaleString()}</span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="p-4">
                         <span className="font-medium text-gray-800">{level.badge_name}</span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="p-4">
                         <span className="text-2xl">{level.badge_icon}</span>
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="p-4 text-right">
                         <div className="flex justify-end gap-2">
                           <Button
                             size="sm"
@@ -388,7 +385,7 @@ export default function LevelsManagementPage() {
               ))}
               {levels.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={5} className="p-8 text-center text-gray-500">
                     Belum ada konfigurasi level. Klik &quot;Tambah Level&quot; untuk memulai.
                   </td>
                 </tr>

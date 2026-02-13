@@ -145,7 +145,7 @@ export default function AdminForumsPage() {
   });
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="p-4 md:p-6 lg:p-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Kelola Forum</h1>
         <p className="text-gray-500">Kelola topik diskusi dan kategori forum</p>
@@ -160,19 +160,19 @@ export default function AdminForumsPage() {
         <TabsContent value="forums" className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <div className="flex flex-1 gap-3 w-full sm:w-auto">
-              <div className="relative flex-1 max-w-md">
+              <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
                 <Input
                   placeholder="Cari topik forum..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-white"
                 />
               </div>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border rounded-lg text-sm bg-white"
+                className="admin-select"
               >
                 <option value="all">Semua Status</option>
                 <option value="published">Dipublikasi</option>
@@ -279,7 +279,7 @@ export default function AdminForumsPage() {
 
         <TabsContent value="categories" className="space-y-6">
           <div className="flex justify-end">
-            <Button onClick={() => openCategoryModal()} className="gap-2">
+            <Button onClick={() => openCategoryModal()} className="gradient-primary text-white gap-2">
               <Plus className="w-4 h-4" /> Tambah Kategori
             </Button>
           </div>

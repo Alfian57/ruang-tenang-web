@@ -15,7 +15,7 @@ interface ContentWarningOverlayProps {
 export function ContentWarningOverlay({
   children,
   warningText = "Konten ini mungkin mengandung materi sensitif.",
-  blurAmount = "md",
+  // blurAmount = "md",
   className,
 }: ContentWarningOverlayProps) {
   const [show, setShow] = useState(false);

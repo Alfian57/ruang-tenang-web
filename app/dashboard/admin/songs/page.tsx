@@ -212,14 +212,14 @@ export default function AdminSongsPage() {
   );
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="p-4 md:p-6 lg:p-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Kelola Musik</h1>
         <p className="text-gray-500">Kelola kategori dan lagu</p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsList>
           <TabsTrigger value="songs">Lagu</TabsTrigger>
           <TabsTrigger value="categories">Kategori</TabsTrigger>
         </TabsList>
@@ -319,17 +319,17 @@ export default function AdminSongsPage() {
         <TabsContent value="songs" className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             <div className="flex flex-col sm:flex-row gap-4 flex-1">
-              <div className="relative flex-1 max-w-md">
+              <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
                 <Input
                   placeholder="Cari lagu..."
                   value={searchSong}
                   onChange={(e) => setSearchSong(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-white"
                 />
               </div>
               <select
-                className="p-2 border rounded-lg bg-white"
+                className="admin-select"
                 value={selectedCategoryId}
                 onChange={(e) => {
                   const value = e.target.value;

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Check, Gift, Lock, RefreshCw, Trophy, X, ClipboardList } from "lucide-react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { DailyTask } from "@/types";
