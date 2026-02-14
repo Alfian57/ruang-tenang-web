@@ -429,3 +429,15 @@ export interface ClaimTaskResponse {
   new_total_exp: number;
   level_up: boolean;
 }
+
+export interface LeaderboardEntry {
+  rank: number;
+  user_id: number;
+  name: string;
+  avatar?: string;
+  level: number;
+  exp: number;
+  badge_name: string;
+  badge_icon: string;
+  role?: string;
+}

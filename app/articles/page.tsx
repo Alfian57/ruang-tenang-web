@@ -8,7 +8,7 @@ import { Search, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { api } from "@/lib/api";
+import { articleService } from "@/services/api";
 import { Article, ArticleCategory } from "@/types";
 import { formatDate } from "@/lib/utils";
 
@@ -43,7 +43,7 @@ function ArticlesContent() {
 
   const loadCategories = useCallback(async () => {
     try {
-      const response = await api.getArticleCategories() as { data: ArticleCategory[] };
+      const response = await articleService.getCategories() as { data: ArticleCategory[] };
       setCategories(response.data || []);
     } catch (error) {
       console.error("Failed to load categories:", error);
@@ -53,7 +53,7 @@ function ArticlesContent() {
   const loadArticles = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await api.getArticles({
+      const response = await articleService.getArticles({
         category_id: selectedCategory || undefined,
         search: search || undefined,
       }) as { data: Article[] };

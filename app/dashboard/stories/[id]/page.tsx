@@ -1,7 +1,5 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -19,7 +17,7 @@ import {
   Tag,
   MoreVertical,
 } from "lucide-react";
-import { ReportModal, BlockUserButton } from "@/components/moderation";
+import { ReportModal, BlockUserButton } from "@/components/shared/moderation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,135 +26,31 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { api } from "@/lib/api";
-import { useAuthStore } from "@/stores/authStore";
-import { InspiringStory, StoryComment } from "@/types";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
-import { toast } from "sonner";
+import { useStoryDetail } from "./_hooks/useStoryDetail";
 
 export default function StoryDetailPage() {
-  const params = useParams();
-  const router = useRouter();
-  const { token, user } = useAuthStore();
-  const storyId = params.id as string;
-
-  const [story, setStory] = useState<InspiringStory | null>(null);
-  const [comments, setComments] = useState<StoryComment[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingComments, setLoadingComments] = useState(false);
-  const [showContent, setShowContent] = useState(false);
-  const [newComment, setNewComment] = useState("");
-  const [submittingComment, setSubmittingComment] = useState(false);
-  const [heartLoading, setHeartLoading] = useState(false);
-
-  const loadStory = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await api.getStory(storyId, token || undefined);
-      if (response.data) {
-        setStory(response.data);
-        // Auto-show content if no trigger warning
-        if (!response.data.has_trigger_warning) {
-          setShowContent(true);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to load story:", error);
-      toast.error("Gagal memuat kisah");
-    } finally {
-      setLoading(false);
-    }
-  }, [storyId, token]);
-
-  const loadComments = useCallback(async () => {
-    setLoadingComments(true);
-    try {
-      const response = await api.getStoryComments(storyId, {}, token || undefined);
-      if (response.comments) {
-        setComments(response.comments);
-      }
-    } catch (error) {
-      console.error("Failed to load comments:", error);
-    } finally {
-      setLoadingComments(false);
-    }
-  }, [storyId, token]);
-
-  useEffect(() => {
-    loadStory();
-    loadComments();
-  }, [loadStory, loadComments]);
-
-  const handleToggleHeart = async () => {
-    if (!token) {
-      toast.error("Silakan login untuk memberikan apresiasi");
-      return;
-    }
-    setHeartLoading(true);
-    try {
-      if (story?.has_hearted) {
-        await api.unheartStory(token, storyId);
-        setStory((prev) =>
-          prev
-            ? { ...prev, has_hearted: false, heart_count: prev.heart_count - 1 }
-            : null
-        );
-      } else {
-        await api.heartStory(token, storyId);
-        setStory((prev) =>
-          prev
-            ? { ...prev, has_hearted: true, heart_count: prev.heart_count + 1 }
-            : null
-        );
-      }
-    } catch (error) {
-      console.error("Failed to toggle heart:", error);
-      toast.error("Gagal memberikan apresiasi");
-    } finally {
-      setHeartLoading(false);
-    }
-  };
-
-  const handleSubmitComment = async () => {
-    if (!token) {
-      toast.error("Silakan login untuk berkomentar");
-      return;
-    }
-    if (!newComment.trim()) {
-      toast.error("Komentar tidak boleh kosong");
-      return;
-    }
-    setSubmittingComment(true);
-    try {
-      const response = await api.createStoryComment(token, storyId, {
-        content: newComment.trim(),
-      });
-      if (response.data) {
-        setComments((prev) => [response.data, ...prev]);
-        setNewComment("");
-        setStory((prev) =>
-          prev ? { ...prev, comment_count: prev.comment_count + 1 } : null
-        );
-        toast.success("Komentar berhasil ditambahkan");
-      }
-    } catch (error) {
-      console.error("Failed to submit comment:", error);
-      toast.error("Gagal menambahkan komentar");
-    } finally {
-      setSubmittingComment(false);
-    }
-  };
-
-  const handleShare = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      toast.success("Link berhasil disalin!");
-    } catch {
-      toast.error("Gagal menyalin link");
-    }
-  };
+  const {
+    token,
+    user,
+    storyId,
+    story,
+    comments,
+    loading,
+    loadingComments,
+    showContent,
+    newComment,
+    submittingComment,
+    heartLoading,
+    router,
+    setShowContent,
+    setNewComment,
+    handleToggleHeart,
+    handleSubmitComment,
+    handleShare,
+  } = useStoryDetail();
 
   if (loading) {
     return (
@@ -205,7 +99,7 @@ export default function StoryDetailPage() {
                   <DropdownMenuContent align="end">
                     <ReportModal
                       type="story"
-                      contentId={storyId}
+                      contentId={parseInt(storyId)}
                       userId={story?.author?.id}
                       trigger={
                         <div className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer">

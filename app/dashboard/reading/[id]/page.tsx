@@ -7,10 +7,10 @@ import { useParams } from "next/navigation";
 import { Calendar, ArrowLeft, Tag, Flag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { api } from "@/lib/api";
+import { articleService } from "@/services/api";
 import { Article } from "@/types";
 import { formatDate } from "@/lib/utils";
-import { ReportModal } from "@/components/moderation";
+import { ReportModal } from "@/components/shared/moderation";
 
 export default function DashboardArticleDetailPage() {
   const params = useParams();
@@ -25,13 +25,13 @@ export default function DashboardArticleDetailPage() {
     setIsLoading(true);
     try {
       const [articleRes, relatedRes] = await Promise.all([
-        api.getArticle(Number(id)) as Promise<{ data: Article }>,
-        api.getArticles({ limit: 6 }) as Promise<{ data: Article[] }>,
+        articleService.getArticle(Number(id)),
+        articleService.getArticles({ limit: 6 }),
       ]);
       setArticle(articleRes.data);
       // Filter out current article from related
       setRelatedArticles(
-        (relatedRes.data || []).filter((a: Article) => a.id !== Number(id)).slice(0, 5)
+        (relatedRes.data || []).filter((a) => a.id !== Number(id)).slice(0, 5)
       );
     } catch (error) {
       console.error("Failed to load article:", error);

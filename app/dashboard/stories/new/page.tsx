@@ -18,8 +18,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { api } from "@/lib/api";
-import { useAuthStore } from "@/stores/authStore";
+import { storyService } from "@/services/api";
+import { useAuthStore } from "@/store/authStore";
 import { StoryCategory, CreateStoryRequest } from "@/types";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -49,7 +49,7 @@ export default function NewStoryPage() {
 
   const loadCategories = useCallback(async () => {
     try {
-      const response = await api.getStoryCategories();
+      const response = await storyService.getCategories();
       if (response.data) {
         setCategories(response.data);
       }
@@ -126,7 +126,7 @@ export default function NewStoryPage() {
         tags: tags.length > 0 ? tags : undefined,
       };
 
-      const response = await api.createStory(token!, storyData);
+      const response = await storyService.create(token!, storyData);
       if (response.data) {
         toast.success("Kisah berhasil dikirim untuk moderasi!");
         router.push("/dashboard/stories");

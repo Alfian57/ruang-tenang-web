@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { ROUTES } from "@/lib/routes";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -11,8 +12,8 @@ import { Loader2, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuthStore } from "@/stores/authStore";
-import { AuthIllustration } from "@/components/auth/AuthIllustration";
+import { useAuthStore } from "@/store/authStore";
+import { AuthIllustration } from "@/components/shared/auth/AuthIllustration";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter"),
@@ -45,10 +46,10 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterFormData) => {
     setError(null);
     try {
-      await registerUser(data.name, data.email, data.password);
+      await registerUser(data.name, data.email, data.password, data.confirmPassword);
       setSuccess(true);
       setTimeout(() => {
-        router.push("/login");
+        router.push(ROUTES.LOGIN);
       }, 2000);
     } catch (error) {
       const err = error as Error;
@@ -63,7 +64,7 @@ export default function RegisterPage() {
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="text-center mb-8">
-            <Link href="/" className="inline-block mb-6">
+            <Link href={ROUTES.HOME} className="inline-block mb-6">
               <Image
                 src="/logo-full.png"
                 alt="Ruang Tenang"
@@ -193,7 +194,7 @@ export default function RegisterPage() {
             {/* Login Link */}
             <p className="text-center text-gray-600">
               Sudah punya akun?{" "}
-              <Link href="/login" className="text-primary font-medium hover:underline">
+              <Link href={ROUTES.LOGIN} className="text-primary font-medium hover:underline">
                 Masuk
               </Link>
             </p>

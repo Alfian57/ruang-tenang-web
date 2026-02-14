@@ -1,8 +1,7 @@
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-}
+import type { User } from "./user";
+
+/** Simplified user shape returned by forum endpoints */
+type ForumUser = Pick<User, "id" | "name" | "email">;
 
 export interface ForumPost {
   id: number;
@@ -11,7 +10,7 @@ export interface ForumPost {
   content: string;
   created_at: string;
   updated_at: string;
-  user?: User;
+  user?: ForumUser;
   
   // Interaction
   likes_count?: number;
@@ -39,7 +38,7 @@ export interface Forum {
   is_flagged?: boolean;
   flagged_reason?: string;
   
-  user?: User;
+  user?: ForumUser;
   category?: ForumCategory;
   posts?: ForumPost[];
   replies_count?: number;

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { ROUTES } from "@/lib/routes";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -11,8 +12,8 @@ import { Loader2, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuthStore } from "@/stores/authStore";
-import { AuthIllustration } from "@/components/auth/AuthIllustration";
+import { useAuthStore } from "@/store/authStore";
+import { AuthIllustration } from "@/components/shared/auth/AuthIllustration";
 
 const loginSchema = z.object({
   email: z.string().email("Email tidak valid"),
@@ -39,7 +40,7 @@ export default function LoginPage() {
     setError(null);
     try {
       await login(data.email, data.password, rememberMe);
-      router.push("/dashboard");
+      router.push(ROUTES.DASHBOARD);
     } catch (error) {
       const err = error as Error;
       setError(err.message || "Login gagal. Silakan coba lagi.");
@@ -53,7 +54,7 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="text-center mb-10">
-            <Link href="/" className="inline-block mb-6">
+            <Link href={ROUTES.HOME} className="inline-block mb-6">
               <Image
                 src="/logo-full.png"
                 alt="Ruang Tenang"
@@ -119,7 +120,7 @@ export default function LoginPage() {
                 />
                 <span className="text-sm text-gray-600">Ingat Aku</span>
               </label>
-              <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+              <Link href={ROUTES.FORGOT_PASSWORD} className="text-sm text-primary hover:underline">
                 Lupa Password?
               </Link>
             </div>
@@ -143,7 +144,7 @@ export default function LoginPage() {
             {/* Register Link */}
             <p className="text-center text-gray-600">
               Tidak punya Akun?{" "}
-              <Link href="/register" className="text-primary font-medium hover:underline">
+              <Link href={ROUTES.REGISTER} className="text-primary font-medium hover:underline">
                 Registrasi disini
               </Link>
             </p>

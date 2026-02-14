@@ -1,202 +1,49 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { api } from "@/lib/api";
-import { Forum, ForumPost } from "@/types/forum";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { ArrowLeft, Send, Trash2, Clock, Heart, MessageSquare, CheckCircle2, Trophy, AlertTriangle, ShieldAlert } from "lucide-react";
-import { useAuthStore } from "@/stores/authStore";
-import { toast } from "sonner";
+import { ArrowLeft, Send, Trash2, Clock, Heart, MessageSquare, CheckCircle2, Trophy, AlertTriangle, ShieldAlert, MoreVertical } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { BlockUserButton } from "@/components/moderation";
+import { BlockUserButton } from "@/components/shared/moderation";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical } from "lucide-react";
+import { useAdminForumDetail } from "./_hooks/useAdminForumDetail";
 
 export default function AdminForumTopicPage() {
-  const params = useParams();
-  const router = useRouter();
-  const { user, token } = useAuthStore();
-  const [forum, setForum] = useState<Forum | null>(null);
-  const [posts, setPosts] = useState<ForumPost[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [replyContent, setReplyContent] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(0);
-
-  // Delete confirmation states
-  const [deletePostId, setDeletePostId] = useState<number | null>(null);
-  const [showDeletePostDialog, setShowDeletePostDialog] = useState(false);
-  const [showDeleteForumDialog, setShowDeleteForumDialog] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const id = parseInt(params.id as string);
-  // const isAdmin = user?.role === "admin" || user?.role === "moderator";
-
-  const fetchForum = useCallback(async () => {
-    if (!token) return;
-    try {
-      const data = await api.getForumByID(token, id);
-      setForum(data);
-      setIsLiked(!!data.is_liked);
-      setLikesCount(data.likes_count || 0);
-    } catch (error) {
-      console.error(error);
-      toast.error("Gagal memuat topik");
-    }
-  }, [id, token]);
-
-  const fetchPosts = useCallback(async () => {
-    if (!token) return;
-    try {
-      const response = await api.getForumPosts(token, id, 100);
-      setPosts(response.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [id, token]);
-
-  useEffect(() => {
-    if (id && token) {
-      fetchForum();
-      fetchPosts();
-    }
-  }, [id, token, fetchForum, fetchPosts]);
-
-  const handleReply = async () => {
-    if (!replyContent.trim() || !token) return;
-
-    setSubmitting(true);
-    try {
-      await api.createForumPost(token, id, { content: replyContent });
-      setReplyContent("");
-      fetchPosts();
-      fetchForum(); // Update reply count if needed
-      toast.success("Balasan terkirim");
-    } catch (error) {
-      console.error(error);
-      toast.error("Gagal mengirim balasan");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleDeletePost = async () => {
-    if (!deletePostId || !token) return;
-    setIsDeleting(true);
-    try {
-      await api.deleteForumPost(token, deletePostId);
-      setPosts(posts.filter(p => p.id !== deletePostId));
-      toast.success("Balasan dihapus");
-      setShowDeletePostDialog(false);
-      setDeletePostId(null);
-    } catch (error) {
-      console.error(error);
-      toast.error("Gagal menghapus balasan");
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  const handleDeleteForum = async () => {
-    if (!token) return;
-    setIsDeleting(true);
-    try {
-      await api.deleteForum(token, id);
-      toast.success("Topik dihapus");
-      router.push("/dashboard/admin/forums");
-    } catch (error) {
-      console.error(error);
-      toast.error("Gagal menghapus topik");
-    } finally {
-      setIsDeleting(false);
-    }
-  }
-
-  const handleToggleLike = async () => {
-    if (!token) return;
-    // Optimistic update
-    const previousLiked = isLiked;
-    const previousCount = likesCount;
-
-    setIsLiked(!isLiked);
-    setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
-
-    try {
-      await api.toggleForumLike(token, id);
-    } catch (error) {
-      console.error("Failed to toggle like:", error);
-      // Revert on error
-      setIsLiked(previousLiked);
-      setLikesCount(previousCount);
-      toast.error("Gagal memproses like");
-    }
-  };
-  
-  const handleTogglePostLike = async (post: ForumPost) => {
-    if (!token) return;
-    
-    // Optimistic Update
-    const updatedPosts = posts.map(p => {
-      if (p.id === post.id) {
-        const isLiked = !p.is_liked;
-        return {
-          ...p,
-          is_liked: isLiked,
-          likes_count: (p.likes_count || 0) + (isLiked ? 1 : -1)
-        };
-      }
-      return p;
-    });
-    setPosts(updatedPosts);
-    
-    try {
-      await api.toggleForumPostLike(token, post.id);
-    } catch (error) {
-      console.error(error);
-      toast.error("Gagal melike balasan");
-      // Revert would go here
-    }
-  };
-
-  const handleToggleBestAnswer = async (post: ForumPost) => {
-    if (!token) return;
-    
-    const isBest = !post.is_best_answer;
-    
-    // Optimistic Update
-    const updatedPosts = posts.map(p => {
-      if (p.id === post.id) return { ...p, is_best_answer: isBest };
-      if (isBest) return { ...p, is_best_answer: false }; 
-      return p;
-    });
-    setPosts(updatedPosts);
-    
-    try {
-      await api.toggleBestAnswer(token, post.id);
-      toast.success(isBest ? "Ditandai sebagai Jawaban Terbaik" : "Status Jawaban Terbaik dihapus");
-    } catch (error) {
-       console.error(error);
-       toast.error("Gagal mengubah status jawaban terbaik");
-    }
-  };
+  const {
+    user,
+    forum,
+    posts,
+    loading,
+    replyContent,
+    submitting,
+    isLiked,
+    likesCount,
+    showDeletePostDialog,
+    showDeleteForumDialog,
+    isDeleting,
+    router,
+    setReplyContent,
+    setDeletePostId,
+    setShowDeletePostDialog,
+    setShowDeleteForumDialog,
+    handleReply,
+    handleDeletePost,
+    handleDeleteForum,
+    handleToggleLike,
+    handleTogglePostLike,
+    handleToggleBestAnswer
+  } = useAdminForumDetail();
 
   if (loading) return <div className="p-10 text-center text-gray-500">Memuat data forum...</div>;
   if (!forum) return <div className="p-10 text-center text-gray-500">Topik tidak ditemukan</div>;
-
-  // const isOwner = user?.id === forum.user_id;
 
   return (
     <>

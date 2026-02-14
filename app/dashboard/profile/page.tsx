@@ -9,8 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuthStore } from "@/stores/authStore";
-import { api } from "@/lib/api";
+import { useAuthStore } from "@/store/authStore";
+import { authService } from "@/services/api";
 
 const profileSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter"),
@@ -56,7 +56,7 @@ export default function ProfilePage() {
     setProfileError("");
     setProfileSuccess(false);
     try {
-      await api.updateProfile(token, data.name, data.email);
+      await authService.updateProfile(token, { name: data.name, email: data.email });
       await refreshUser();
       setProfileSuccess(true);
       setTimeout(() => setProfileSuccess(false), 3000);
@@ -74,9 +74,10 @@ export default function ProfilePage() {
     setPasswordError("");
     setPasswordSuccess(false);
     try {
-      await api.updatePassword(token, { 
-          current_password: data.currentPassword, 
-          new_password: data.newPassword 
+      await authService.updatePassword(token, { 
+          old_password: data.currentPassword, 
+          new_password: data.newPassword,
+          new_password_confirmation: data.confirmPassword
         });
       setPasswordSuccess(true);
       passwordForm.reset();

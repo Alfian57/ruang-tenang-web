@@ -23,15 +23,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { api } from "@/lib/api";
-import { useAuthStore } from "@/stores/authStore";
-import { StoryCard, StoryCategory, InspiringStory } from "@/types";
+import { storyService } from "@/services/api";
+import { useAuthStore } from "@/store/authStore";
+import { StoryCard, StoryCategory } from "@/types";
 
 export default function StoriesPage() {
   const router = useRouter();
   useAuthStore();
   const [stories, setStories] = useState<StoryCard[]>([]);
-  const [featuredStories, setFeaturedStories] = useState<InspiringStory[]>([]);
+  const [featuredStories, setFeaturedStories] = useState<StoryCard[]>([]);
   const [categories, setCategories] = useState<StoryCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -60,15 +60,15 @@ export default function StoriesPage() {
   const loadStories = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await api.getStories({
+      const response = await storyService.getStories({
         page,
         limit: 12,
         sort_by: sortBy,
         category_id: selectedCategory !== "all" ? selectedCategory : undefined,
         search: searchQuery.trim() || undefined,
       });
-      if (response.stories) {
-        setStories(response.stories);
+      if (response.data) {
+        setStories(response.data);
         setTotalPages(response.total_pages || 1);
       }
     } catch (error) {
@@ -80,7 +80,7 @@ export default function StoriesPage() {
 
   const loadFeaturedStories = useCallback(async () => {
     try {
-      const response = await api.getFeaturedStories();
+      const response = await storyService.getFeatured();
       if (response.data) {
         setFeaturedStories(response.data.slice(0, 3));
       }
@@ -91,7 +91,7 @@ export default function StoriesPage() {
 
   const loadCategories = useCallback(async () => {
     try {
-      const response = await api.getStoryCategories();
+      const response = await storyService.getCategories();
       if (response.data) {
         setCategories(response.data);
       }

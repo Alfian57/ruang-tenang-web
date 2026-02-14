@@ -4,14 +4,15 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { ROUTES } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { ImageUpload } from "@/components/ui/image-upload";
-import { api } from "@/lib/api";
-import { useAuthStore } from "@/stores/authStore";
+import { articleService } from "@/services/api";
+import { useAuthStore } from "@/store/authStore";
 import { ArticleCategory } from "@/types";
 
 export default function NewArticlePage() {
@@ -30,7 +31,7 @@ export default function NewArticlePage() {
   useEffect(() => {
     const loadCategories = async () => {
       try {
-        const response = await api.getArticleCategories() as { data: ArticleCategory[] };
+        const response = await articleService.getCategories() as { data: ArticleCategory[] };
         setCategories(response.data || []);
         if (response.data && response.data.length > 0) {
           setFormData(prev => ({ ...prev, category_id: response.data[0].id }));
@@ -55,7 +56,7 @@ export default function NewArticlePage() {
     setError("");
 
     try {
-      await api.createMyArticle(token, {
+      await articleService.createArticle(token, {
         title: formData.title,
         content: formData.content,
         category_id: formData.category_id,
@@ -63,7 +64,7 @@ export default function NewArticlePage() {
       });
       // Refresh user to update EXP
       await useAuthStore.getState().refreshUser();
-      router.push("/dashboard/articles");
+      router.push(ROUTES.ARTICLES);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal membuat artikel");
     } finally {
@@ -74,7 +75,7 @@ export default function NewArticlePage() {
   return (
     <div className="p-4 lg:p-6">
       <div className="flex items-center gap-4 mb-6">
-        <Link href="/dashboard/articles">
+        <Link href={ROUTES.ARTICLES}>
           <Button variant="ghost" size="icon">
             <ArrowLeft className="w-5 h-5" />
           </Button>
@@ -146,7 +147,7 @@ export default function NewArticlePage() {
             </div>
 
             <div className="flex gap-3 justify-end">
-              <Link href="/dashboard/articles">
+              <Link href={ROUTES.ARTICLES}>
                 <Button type="button" variant="outline">
                   Batal
                 </Button>

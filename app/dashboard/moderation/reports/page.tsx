@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { ROUTES } from "@/lib/routes";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,8 +30,8 @@ import {
     DropdownMenuTrigger,
     DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { useAuthStore } from "@/stores/authStore";
-import { api } from "@/lib/api";
+import { useAuthStore } from "@/store/authStore";
+import { moderationService } from "@/services/api";
 import { formatDate } from "@/lib/utils";
 import type { UserReport, ReportStatus, ReportType, ReportReason } from "@/types/moderation";
 
@@ -94,7 +95,7 @@ export default function ModerationReportsPage() {
         if (!token) return;
         setIsLoading(true);
         try {
-            const res = await api.getModerationReports(token, {
+            const res = await moderationService.getReports(token, {
                 status: statusFilter === "all" ? undefined : statusFilter,
                 report_type: typeFilter === "all" ? undefined : typeFilter,
                 page,
@@ -126,7 +127,7 @@ export default function ModerationReportsPage() {
             {/* Header */}
             <div className="flex items-center gap-4">
                 <Button asChild variant="ghost" size="icon">
-                    <Link href="/dashboard/moderation">
+                    <Link href={ROUTES.ADMIN.MODERATION}>
                         <ChevronLeft className="h-5 w-5" />
                     </Link>
                 </Button>
@@ -281,7 +282,7 @@ export default function ModerationReportsPage() {
                                         </div>
 
                                         <Button asChild size="sm">
-                                            <Link href={`/dashboard/moderation/reports/${report.id}`}>
+                                            <Link href={ROUTES.moderationReport(report.id)}>
                                                 <Eye className="h-4 w-4 mr-1" />
                                                 Tinjau
                                             </Link>

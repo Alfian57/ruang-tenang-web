@@ -2,30 +2,20 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
-import { Navbar, Footer } from "@/components/landing";
+import { communityService } from "@/services/api";
+import { Navbar, Footer } from "@/components/layout";
 import { Trophy, Medal } from "lucide-react";
-
-interface LeaderboardUser {
-  id: number;
-  name: string;
-  exp: number;
-  role: string;
-}
-
-interface LeaderboardResponse {
-  data: LeaderboardUser[];
-}
+import { LeaderboardEntry } from "@/types";
 
 export default function LeaderboardPage() {
-  const [users, setUsers] = useState<LeaderboardUser[]>([]);
+  const [users, setUsers] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [limit] = useState(50);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const response = await api.getLeaderboard(limit) as LeaderboardResponse;
+        const response = await communityService.getLeaderboard(limit);
         setUsers(response.data || []);
       } catch (error) {
         console.error("Failed to fetch leaderboard:", error);
@@ -96,7 +86,7 @@ export default function LeaderboardPage() {
                   <h3 className="text-xl font-bold text-gray-800 mb-1 truncate max-w-full text-center px-4 w-full">
                     {topThree[1].name}
                   </h3>
-                  <p className="text-gray-500 font-medium mb-3">{topThree[1].role}</p>
+                  <p className="text-gray-500 font-medium mb-3">{topThree[1].role || topThree[1].badge_name}</p>
                   
                   <div className="bg-gray-100 text-gray-600 px-4 py-1.5 rounded-full font-bold text-sm">
                     {topThree[1].exp.toLocaleString()} EXP
@@ -125,7 +115,7 @@ export default function LeaderboardPage() {
                   <h3 className="text-2xl font-bold text-gray-800 mb-1 truncate max-w-full text-center px-4 w-full">
                     {topThree[0].name}
                   </h3>
-                  <p className="text-primary font-medium mb-4">{topThree[0].role}</p>
+                  <p className="text-primary font-medium mb-4">{topThree[0].role || topThree[0].badge_name}</p>
                   
                   <div className="bg-linear-to-r from-primary to-red-600 text-white px-6 py-2 rounded-full font-bold text-lg shadow-lg shadow-primary/20">
                     {topThree[0].exp.toLocaleString()} EXP
@@ -158,7 +148,7 @@ export default function LeaderboardPage() {
                   <h3 className="text-xl font-bold text-gray-800 mb-1 truncate max-w-full text-center px-4 w-full">
                     {topThree[2].name}
                   </h3>
-                  <p className="text-gray-500 font-medium mb-3">{topThree[2].role}</p>
+                  <p className="text-gray-500 font-medium mb-3">{topThree[2].role || topThree[2].badge_name}</p>
                   
                   <div className="bg-gray-100 text-gray-600 px-4 py-1.5 rounded-full font-bold text-sm">
                     {topThree[2].exp.toLocaleString()} EXP
@@ -179,7 +169,7 @@ export default function LeaderboardPage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    key={user.id} 
+                    key={user.user_id} 
                     className="p-4 md:p-6 flex items-center hover:bg-gray-50 transition-colors group"
                   >
                     <div className="w-12 text-center font-bold text-gray-400 group-hover:text-primary transition-colors">
@@ -192,7 +182,7 @@ export default function LeaderboardPage() {
                     
                     <div className="flex-1 min-w-0 mr-4">
                       <h4 className="font-bold text-gray-800 truncate">{user.name}</h4>
-                      <p className="text-sm text-gray-500 capitalize">{user.role}</p>
+                      <p className="text-sm text-gray-500 capitalize">{user.role || user.badge_name}</p>
                     </div>
                     
                     <div className="font-bold text-gray-800 text-right whitespace-nowrap">

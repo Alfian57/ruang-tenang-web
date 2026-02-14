@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ROUTES } from "@/lib/routes";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,45 +17,18 @@ import {
     Ban,
     Eye,
 } from "lucide-react";
-import { useAuthStore } from "@/stores/authStore";
-import { api } from "@/lib/api";
-import type { ModerationStats, ModerationQueueItem, UserReport } from "@/types/moderation";
+import { useModerationDashboard } from "./_hooks/useModerationDashboard";
 
 export default function ModerationDashboardPage() {
-    const { token, user } = useAuthStore();
-    const [stats, setStats] = useState<ModerationStats | null>(null);
-    const [pendingArticles, setPendingArticles] = useState<ModerationQueueItem[]>([]);
-    const [recentReports, setRecentReports] = useState<UserReport[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const {
+        isModerator,
+        stats,
+        pendingArticles,
+        recentReports,
+        isLoading,
+    } = useModerationDashboard();
 
-    useEffect(() => {
-        if (token && (user?.role === "moderator" || user?.role === "admin")) {
-            loadData();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [token, user]);
-
-    const loadData = async () => {
-        if (!token) return;
-        setIsLoading(true);
-        try {
-            const [statsRes, queueRes, reportsRes] = await Promise.all([
-                api.getModerationStats(token),
-                api.getModerationQueue(token, { status: "pending", limit: 5 }),
-                api.getModerationReports(token, { status: "pending", limit: 5 }),
-            ]);
-
-            setStats((statsRes as { data: ModerationStats }).data);
-            setPendingArticles((queueRes as { data: ModerationQueueItem[] }).data || []);
-            setRecentReports((reportsRes as { data: UserReport[] }).data || []);
-        } catch (error) {
-            console.error("Failed to load moderation data:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    if (user?.role !== "moderator" && user?.role !== "admin") {
+    if (!isModerator) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
                 <Card className="max-w-md">
@@ -83,13 +56,13 @@ export default function ModerationDashboardPage() {
                 </div>
                 <div className="flex gap-2">
                     <Button asChild variant="outline">
-                        <Link href="/dashboard/moderation/reports">
+                        <Link href={ROUTES.ADMIN.MODERATION_REPORTS}>
                             <Flag className="h-4 w-4 mr-2" />
                             Laporan
                         </Link>
                     </Button>
                     <Button asChild>
-                        <Link href="/dashboard/moderation/queue">
+                        <Link href={ROUTES.ADMIN.MODERATION_QUEUE}>
                             <FileText className="h-4 w-4 mr-2" />
                             Antrian Moderasi
                         </Link>
@@ -187,7 +160,7 @@ export default function ModerationDashboardPage() {
                             <CardDescription>Artikel terbaru yang perlu ditinjau</CardDescription>
                         </div>
                         <Button asChild variant="ghost" size="sm">
-                            <Link href="/dashboard/moderation/queue">
+                            <Link href={ROUTES.ADMIN.MODERATION_QUEUE}>
                                 Lihat Semua
                                 <ChevronRight className="h-4 w-4 ml-1" />
                             </Link>
@@ -234,7 +207,7 @@ export default function ModerationDashboardPage() {
                                                 </span>
                                             )}
                                             <Button asChild size="sm" variant="ghost">
-                                                <Link href={`/dashboard/moderation/articles/${article.id}`}>
+                                                <Link href={ROUTES.moderationArticle(article.id)}>
                                                     <Eye className="h-4 w-4" />
                                                 </Link>
                                             </Button>
@@ -254,7 +227,7 @@ export default function ModerationDashboardPage() {
                             <CardDescription>Laporan pengguna yang perlu ditangani</CardDescription>
                         </div>
                         <Button asChild variant="ghost" size="sm">
-                            <Link href="/dashboard/moderation/reports">
+                            <Link href={ROUTES.ADMIN.MODERATION_REPORTS}>
                                 Lihat Semua
                                 <ChevronRight className="h-4 w-4 ml-1" />
                             </Link>
@@ -297,7 +270,7 @@ export default function ModerationDashboardPage() {
                                             </p>
                                         </div>
                                         <Button asChild size="sm" variant="ghost">
-                                            <Link href={`/dashboard/moderation/reports/${report.id}`}>
+                                            <Link href={ROUTES.moderationReport(report.id)}>
                                                 <Eye className="h-4 w-4" />
                                             </Link>
                                         </Button>

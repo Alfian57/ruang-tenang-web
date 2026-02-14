@@ -2,10 +2,10 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
-import { api } from "@/lib/api";
-import { Navbar, Footer } from "@/components/landing";
-import { useAuthStore } from "@/stores/authStore";
-import { StoryDetail, StoryCommentsList, StoryCommentInput } from "@/components/stories";
+import { storyService } from "@/services/api";
+import { Navbar, Footer } from "@/components/layout";
+import { useAuthStore } from "@/store/authStore";
+import { StoryDetail, StoryCommentsList, StoryCommentInput } from "@/components/shared/stories";
 import { InspiringStory, StoryComment } from "@/types";
 import { Loader2, LogIn, MessageCircle } from "lucide-react";
 import Link from "next/link";
@@ -27,7 +27,7 @@ export default function StoryDetailPage() {
 
     const fetchStory = useCallback(async () => {
         try {
-            const response = await api.getStory(id, token || undefined);
+            const response = await storyService.getStory(id, token || undefined);
             setStory(response.data);
         } catch (err) {
             console.error("Failed to fetch story:", err);
@@ -37,8 +37,8 @@ export default function StoryDetailPage() {
 
     const fetchComments = useCallback(async (page: number = 1) => {
         try {
-            const response = await api.getStoryComments(id, { page, limit: 20 }, token || undefined);
-            setComments(response.comments || []);
+            const response = await storyService.getComments(id, { page, limit: 20 }, token || undefined);
+            setComments(response.data || []);
             setTotalCommentPages(response.total_pages || 1);
             setCommentPage(page);
         } catch (err) {
@@ -62,14 +62,14 @@ export default function StoryDetailPage() {
         setHeartLoading(true);
         try {
             if (story.has_hearted) {
-                await api.unheartStory(token, id);
+                await storyService.heart(token, id);
                 setStory({
                     ...story,
                     has_hearted: false,
                     heart_count: story.heart_count - 1,
                 });
             } else {
-                await api.heartStory(token, id);
+                await storyService.heart(token, id);
                 setStory({
                     ...story,
                     has_hearted: true,
@@ -91,9 +91,9 @@ export default function StoryDetailPage() {
             if (!comment) return;
 
             if (comment.has_hearted) {
-                await api.unheartStoryComment(token, id, commentId);
+                await storyService.heartComment(token, id, commentId);
             } else {
-                await api.heartStoryComment(token, id, commentId);
+                await storyService.heartComment(token, id, commentId);
             }
 
             setComments(comments.map(c => {
@@ -116,7 +116,7 @@ export default function StoryDetailPage() {
 
         setCommentLoading(true);
         try {
-            const response = await api.createStoryComment(token, id, { content });
+            const response = await storyService.createComment(token, id, { content });
             setComments([response.data, ...comments]);
             if (story) {
                 setStory({

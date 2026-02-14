@@ -2,16 +2,16 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
-import { Navbar, Footer } from "@/components/landing";
-import { useAuthStore } from "@/stores/authStore";
+import { communityService } from "@/services/api";
+import { Navbar, Footer } from "@/components/layout";
+import { useAuthStore } from "@/store/authStore";
 import {
     CommunityStatsCard,
     PersonalJourneyCard,
     HallOfFame,
     BadgeShowcase,
     UserFeaturesOverview
-} from "@/components/gamification";
+} from "@/components/shared/gamification";
 import {
     CommunityStats,
     PersonalJourney,
@@ -47,15 +47,15 @@ export default function CommunityPage() {
         const fetchData = async () => {
             try {
                 // Fetch community stats (public)
-                const statsRes = await api.getCommunityStats();
+                const statsRes = await communityService.getStats();
                 setCommunityStats(statsRes.data);
 
                 // Fetch authenticated user data
                 if (token) {
                     const [journeyRes, badgesRes, featuresRes] = await Promise.all([
-                        api.getPersonalJourney(token).catch(() => null),
-                        api.getUserBadges(token).catch(() => null),
-                        api.getUserFeatures(token).catch(() => null),
+                        communityService.getPersonalJourney(token).catch(() => null),
+                        communityService.getUserBadges(token).catch(() => null),
+                        communityService.getUserFeatures(token).catch(() => null),
                     ]);
 
                     if (journeyRes?.data) {
@@ -67,7 +67,7 @@ export default function CommunityPage() {
                 }
 
                 // Fetch hall of fame for current level
-                const hofRes = await api.getLevelHallOfFame(currentLevel);
+                const hofRes = await communityService.getLevelHallOfFame(currentLevel);
                 setHallOfFame(hofRes.data);
             } catch (error) {
                 console.error("Failed to fetch community data:", error);
@@ -83,7 +83,7 @@ export default function CommunityPage() {
         if (newLevel < 1 || newLevel > 10) return;
         setCurrentLevel(newLevel);
         try {
-            const hofRes = await api.getLevelHallOfFame(newLevel);
+            const hofRes = await communityService.getLevelHallOfFame(newLevel);
             setHallOfFame(hofRes.data);
         } catch (error) {
             console.error("Failed to fetch hall of fame:", error);

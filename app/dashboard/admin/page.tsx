@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ROUTES } from "@/lib/routes";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -18,79 +18,11 @@ import {
   ChevronRight,
   AlertTriangle
 } from "lucide-react";
-import { useAuthStore } from "@/stores/authStore";
 import { formatDate } from "@/lib/utils";
-
-interface DashboardStats {
-  users: {
-    total: number;
-    active: number;
-    blocked: number;
-    this_month: number;
-    growth: number;
-    chart_data: number[];
-  };
-  articles: {
-    total: number;
-    this_month: number;
-    blocked: number;
-    categories: number;
-  };
-  chat_sessions: {
-    total: number;
-    today: number;
-    chart_data: number[];
-  };
-  messages: {
-    total: number;
-    today: number;
-  };
-  songs: {
-    total: number;
-    categories: number;
-  };
-  moods: {
-    total: number;
-    today: number;
-  };
-  recent_users: Array<{
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-    is_blocked: boolean;
-    created_at: string;
-  }>;
-}
+import { useAdminStats } from "./_hooks/useAdminStats";
 
 export default function AdminDashboardPage() {
-  const { token, user } = useAuthStore();
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (token) {
-      loadStats();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
-
-  const loadStats = async () => {
-    if (!token) return;
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1'}/admin/stats`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      if (data.success) {
-        setStats(data.data);
-      }
-    } catch (error) {
-      console.error("Failed to load stats:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { stats, isLoading, user } = useAdminStats();
 
   if (user?.role !== "admin") {
     return (
@@ -142,7 +74,7 @@ export default function AdminDashboardPage() {
                         <p className="text-sm text-orange-600">Memerlukan perhatian</p>
                       </div>
                     </div>
-                    <Link href="/dashboard/admin/users">
+                    <Link href={ROUTES.ADMIN.USERS}>
                       <Button variant="outline" size="sm" className="border-orange-300 text-orange-700 hover:bg-orange-100">
                         Lihat <ChevronRight className="w-4 h-4 ml-1" />
                       </Button>
@@ -162,7 +94,7 @@ export default function AdminDashboardPage() {
                         <p className="text-sm text-red-600">Perlu ditinjau</p>
                       </div>
                     </div>
-                    <Link href="/dashboard/admin/articles">
+                    <Link href={ROUTES.ADMIN.ARTICLES}>
                       <Button variant="outline" size="sm" className="border-red-300 text-red-700 hover:bg-red-100">
                         Lihat <ChevronRight className="w-4 h-4 ml-1" />
                       </Button>
@@ -315,7 +247,7 @@ export default function AdminDashboardPage() {
                     </div>
                   ))}
                 </div>
-                <Link href="/dashboard/admin/users">
+                <Link href={ROUTES.ADMIN.USERS}>
                   <Button variant="outline" className="w-full mt-4">
                     Lihat Semua Pengguna <ChevronRight className="w-4 h-4 ml-1" />
                   </Button>
@@ -329,7 +261,7 @@ export default function AdminDashboardPage() {
                 <CardDescription>Kelola konten platform</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Link href="/dashboard/admin/users" className="block">
+                <Link href={ROUTES.ADMIN.USERS} className="block">
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
                     <div className="flex items-center gap-3">
                       <Users className="w-5 h-5 text-primary" />
@@ -338,7 +270,7 @@ export default function AdminDashboardPage() {
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   </div>
                 </Link>
-                <Link href="/dashboard/admin/articles" className="block">
+                <Link href={ROUTES.ADMIN.ARTICLES} className="block">
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
                     <div className="flex items-center gap-3">
                       <FileText className="w-5 h-5 text-blue-500" />
@@ -347,16 +279,7 @@ export default function AdminDashboardPage() {
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   </div>
                 </Link>
-                <Link href="/dashboard/admin/categories" className="block">
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
-                    <div className="flex items-center gap-3">
-                      <FolderOpen className="w-5 h-5 text-orange-500" />
-                      <span>Kategori Artikel</span>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                </Link>
-                <Link href="/dashboard/admin/songs" className="block">
+                <Link href={ROUTES.ADMIN.SONGS} className="block">
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
                     <div className="flex items-center gap-3">
                       <Music className="w-5 h-5 text-purple-500" />

@@ -2,11 +2,11 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
-import { Navbar, Footer } from "@/components/landing";
-import { useAuthStore } from "@/stores/authStore";
-import { StoryList } from "@/components/stories";
-import { StoryCard as StoryCardType, StoryCategory, StoryStats, InspiringStory } from "@/types";
+import { storyService } from "@/services/api";
+import { Navbar, Footer } from "@/components/layout";
+import { useAuthStore } from "@/store/authStore";
+import { StoryList } from "@/components/shared/stories";
+import { StoryCard as StoryCardType, StoryCategory, StoryStats } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -32,7 +32,7 @@ import {
 export default function StoriesPage() {
     const { token, user } = useAuthStore();
     const [stories, setStories] = useState<StoryCardType[]>([]);
-    const [featuredStories, setFeaturedStories] = useState<InspiringStory[]>([]);
+    const [featuredStories, setFeaturedStories] = useState<StoryCardType[]>([]);
     const [categories, setCategories] = useState<StoryCategory[]>([]);
     const [myStats, setMyStats] = useState<StoryStats | null>(null);
     const [loading, setLoading] = useState(true);
@@ -46,15 +46,15 @@ export default function StoriesPage() {
         const fetchInitialData = async () => {
             try {
                 const [categoriesRes, featuredRes] = await Promise.all([
-                    api.getStoryCategories(),
-                    api.getFeaturedStories().catch(() => ({ data: [] })),
+                    storyService.getCategories(),
+                    storyService.getFeatured().catch(() => ({ data: [] })),
                 ]);
 
                 setCategories(categoriesRes.data || []);
                 setFeaturedStories(featuredRes.data || []);
 
                 if (token) {
-                    const statsRes = await api.getMyStoryStats(token).catch(() => null);
+                    const statsRes = await storyService.getMyStats(token).catch(() => null);
                     if (statsRes?.data) setMyStats(statsRes.data);
                 }
             } catch (error) {
@@ -69,7 +69,7 @@ export default function StoriesPage() {
         const fetchStories = async () => {
             setLoading(true);
             try {
-                const response = await api.getStories({
+                const response = await storyService.getStories({
                     category_id: selectedCategory || undefined,
                     search: searchQuery || undefined,
                     sort_by: sortBy,
@@ -77,7 +77,7 @@ export default function StoriesPage() {
                     limit: 12,
                 });
 
-                setStories(response.stories || []);
+                setStories(response.data || []);
                 setTotalPages(response.total_pages || 1);
             } catch (error) {
                 console.error("Failed to fetch stories:", error);
@@ -154,7 +154,7 @@ export default function StoriesPage() {
                                         </div>
                                         <h3 className="font-semibold line-clamp-2 mb-2">{story.title}</h3>
                                         <p className="text-sm text-muted-foreground line-clamp-2">
-                                            {story.content.replace(/<[^>]*>/g, '').substring(0, 100)}...
+                                            {story.excerpt}
                                         </p>
                                     </div>
                                 </Link>

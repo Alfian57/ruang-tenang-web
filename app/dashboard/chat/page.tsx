@@ -3,17 +3,17 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
-import { useAuthStore } from "@/stores/authStore";
-import { useChatStore } from "@/stores/chatStore";
-import { useJournalStore } from "@/stores/journalStore";
+import { useAuthStore } from "@/store/authStore";
+import { useChatStore } from "@/store/chatStore";
+import { useJournalStore } from "@/store/journalStore";
 import {
   ChatSidebar,
   NewSessionDialog,
   ChatMessagesArea,
-} from "@/components/dashboard/chat";
+} from "./_components";
 import { AIDisclaimerModal } from "@/components/ui/ai-disclaimer-modal";
-import { CrisisSupportModal } from "@/components/moderation";
-import { api } from "@/lib/api";
+import { CrisisSupportModal } from "@/components/shared/moderation";
+import { moderationService } from "@/services/api";
 
 const CRISIS_KEYWORDS = [
   "bunuh diri",
@@ -105,7 +105,7 @@ export default function ChatPage() {
   const handleAcceptDisclaimer = async () => {
     if(!token) return;
     try {
-        await api.acceptAIDisclaimer(token);
+        await moderationService.acceptAIDisclaimer(token);
         setShowDisclaimer(false);
         // Optimistically update user in store if possible, or reload user
         // useAuthStore.setState({ user: { ...user!, has_accepted_ai_disclaimer: true } });

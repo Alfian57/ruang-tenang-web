@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { ROUTES } from "@/lib/routes";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,8 +24,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuthStore } from "@/stores/authStore";
-import { api } from "@/lib/api";
+import { useAuthStore } from "@/store/authStore";
+import { moderationService } from "@/services/api";
 import { formatDate } from "@/lib/utils";
 import type { ModerationQueueItem, ArticleModerationStatus } from "@/types/moderation";
 
@@ -69,7 +70,7 @@ export default function ModerationQueuePage() {
         if (!token) return;
         setIsLoading(true);
         try {
-            const res = await api.getModerationQueue(token, {
+            const res = await moderationService.getQueue(token, {
                 status: statusFilter === "all" ? undefined : statusFilter,
                 page,
                 limit,
@@ -99,7 +100,7 @@ export default function ModerationQueuePage() {
             {/* Header */}
             <div className="flex items-center gap-4">
                 <Button asChild variant="ghost" size="icon">
-                    <Link href="/dashboard/moderation">
+                    <Link href={ROUTES.ADMIN.MODERATION}>
                         <ChevronLeft className="h-5 w-5" />
                     </Link>
                 </Button>
@@ -242,7 +243,7 @@ export default function ModerationQueuePage() {
                                             </span>
                                         )}
                                         <Button asChild size="sm">
-                                            <Link href={`/dashboard/moderation/articles/${item.id}`}>
+                                            <Link href={ROUTES.moderationArticle(item.id)}>
                                                 <Eye className="h-4 w-4 mr-1" />
                                                 Tinjau
                                             </Link>

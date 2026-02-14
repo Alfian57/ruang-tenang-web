@@ -11,9 +11,11 @@ import { Loader2, Lock, Eye, EyeOff, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/lib/api";
+import { authService } from "@/services/api";
+import { ROUTES } from "@/lib/routes";
 
 const resetPasswordSchema = z.object({
+  email: z.string().email("Email tidak valid"),
   password: z.string().min(6, "Password minimal 6 karakter"),
   confirmPassword: z.string().min(6, "Password minimal 6 karakter"),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -51,10 +53,15 @@ function ResetPasswordForm() {
     setError(null);
     setIsLoading(true);
     try {
-      await api.resetPassword(token, data.password);
+      await authService.resetPassword({
+        email: data.email,
+        token: token,
+        password: data.password,
+        password_confirmation: data.confirmPassword
+      });
       setIsSuccess(true);
       setTimeout(() => {
-        router.push("/login");
+        router.push(ROUTES.LOGIN);
       }, 3000);
     } catch (error) {
       const err = error as Error;
@@ -70,7 +77,7 @@ function ResetPasswordForm() {
             <div className="bg-red-50 p-4 rounded-xl text-red-600 mb-6">
                 Link tidak valid. Pastikan Anda menggunakan link yang benar dari email Anda.
             </div>
-            <Link href="/forgot-password">
+            <Link href={ROUTES.FORGOT_PASSWORD}>
                 <Button variant="outline">Kirim Ulang Link</Button>
             </Link>
         </div>
@@ -87,7 +94,7 @@ function ResetPasswordForm() {
           <h2 className="text-xl font-bold text-gray-900">Password Berhasil Direset!</h2>
           <p className="text-gray-500 mt-2">Anda akan dialihkan ke halaman login sejenak lagi...</p>
         </div>
-        <Link href="/login">
+        <Link href={ROUTES.LOGIN}>
           <Button className="w-full h-12 bg-primary hover:bg-primary/90 text-white rounded-xl">
             Login Sekarang
           </Button>
@@ -103,6 +110,22 @@ function ResetPasswordForm() {
           {error}
         </div>
       )}
+
+      <div className="space-y-2">
+        <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
+        <div className="relative">
+          <Input
+            id="email"
+            type="email"
+            placeholder="nama@email.com"
+            className="pl-4 h-12 rounded-xl border-gray-200 focus:border-primary focus:ring-primary"
+            {...register("email")}
+          />
+        </div>
+        {errors.email && (
+          <p className="text-sm text-red-500">{errors.email.message}</p>
+        )}
+      </div>
 
       <div className="space-y-2">
         <Label htmlFor="password" className="text-gray-700 font-medium">Password Baru</Label>
@@ -177,7 +200,7 @@ export default function ResetPasswordPage() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md">
           <div className="text-center mb-10">
-            <Link href="/" className="inline-block mb-6">
+            <Link href={ROUTES.HOME} className="inline-block mb-6">
               <Image
                 src="/logo-full.png"
                 alt="Ruang Tenang"

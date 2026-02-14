@@ -1,148 +1,46 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Search, ExternalLink, MessageSquare, Plus, Pencil, Trash2, AlertTriangle, Ban, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { useAuthStore } from "@/stores/authStore";
 import { formatDate } from "@/lib/utils";
-import { api } from "@/lib/api";
-import { Forum, ForumCategory } from "@/types/forum";
-import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAdminForums } from "./_hooks/useAdminForums";
 
 export default function AdminForumsPage() {
-  const { token, user } = useAuthStore();
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-
-  // URL state
-  const activeTab = searchParams.get("tab") || "forums";
-  const search = searchParams.get("search") || "";
-  const statusFilter = searchParams.get("status") || "all";
-
-  const updateUrl = useCallback((updates: Record<string, string | null>) => {
-    const params = new URLSearchParams(searchParams.toString());
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value) params.set(key, value);
-      else params.delete(key);
-    });
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [searchParams, router, pathname]);
-
-  const setSearch = (value: string) => updateUrl({ search: value || null });
-  const setStatusFilter = (value: string) => updateUrl({ status: value === "all" ? null : value });
-  const setActiveTab = (value: string) => updateUrl({ tab: value === "forums" ? null : value });
-  
-  const [forums, setForums] = useState<Forum[]>([]);
-  const [categories, setCategories] = useState<ForumCategory[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [blockId, setBlockId] = useState<number | null>(null);
-
-  // Category State
-  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<ForumCategory | null>(null);
-  const [categoryName, setCategoryName] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const loadData = useCallback(async () => {
-    if (!token) return;
-    setIsLoading(true);
-    try {
-      const [forumsRes, categoriesRes] = await Promise.all([
-        api.getForums(token, 100, 0),
-        api.adminGetForumCategories(token)
-      ]);
-      setForums(forumsRes.data);
-      setCategories(categoriesRes.data);
-    } catch (error) {
-      console.error("Failed to load data:", error);
-      toast.error("Gagal memuat data");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [token]);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  const handleDeleteCategory = async () => {
-    if (!token || !deleteId) return;
-    try {
-      await api.deleteForumCategory(token, deleteId);
-      toast.success("Kategori berhasil dihapus");
-      setDeleteId(null);
-      loadData();
-    } catch (error) {
-      console.error("Failed to delete:", error);
-      toast.error("Gagal menghapus kategori");
-    }
-  };
-
-  const handleSaveCategory = async () => {
-    if (!token || !categoryName.trim()) return;
-    setIsSubmitting(true);
-    try {
-      if (editingCategory) {
-        await api.updateForumCategory(token, editingCategory.id, categoryName);
-        toast.success("Kategori diperbarui");
-      } else {
-        await api.createForumCategory(token, categoryName);
-        toast.success("Kategori dibuat");
-      }
-      setIsCategoryModalOpen(false);
-      setEditingCategory(null);
-      setCategoryName("");
-      loadData();
-    } catch (error) {
-      console.error("Failed to save category:", error);
-      toast.error("Gagal menyimpan kategori");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const openCategoryModal = (category?: ForumCategory) => {
-    if (category) {
-      setEditingCategory(category);
-      setCategoryName(category.name);
-    } else {
-      setEditingCategory(null);
-      setCategoryName("");
-    }
-    setIsCategoryModalOpen(true);
-  };
-
-  const confirmToggleFlag = async () => {
-    if (!token || !blockId) return;
-    try {
-      await api.toggleForumFlag(token, blockId);
-      toast.success("Status forum berhasil diperbarui");
-      setBlockId(null);
-      loadData();
-    } catch (error) {
-      console.error("Failed to toggle flag:", error);
-      toast.error("Gagal mengubah status forum");
-    }
-  };
+  const {
+    user,
+    activeTab,
+    search,
+    statusFilter,
+    forums, // This is filteredForums
+    allForums,
+    categories,
+    isLoading,
+    deleteId,
+    blockId,
+    isCategoryModalOpen,
+    editingCategory,
+    categoryName,
+    isSubmitting,
+    setSearch,
+    setStatusFilter,
+    setActiveTab,
+    setDeleteId,
+    setBlockId,
+    setIsCategoryModalOpen,
+    setCategoryName,
+    handleDeleteCategory,
+    handleSaveCategory,
+    openCategoryModal,
+    confirmToggleFlag,
+  } = useAdminForums();
 
   if (user?.role !== "admin" && user?.role !== "moderator") {
     return <div className="p-8 text-center">Akses ditolak</div>;
   }
-
-  const filteredForums = forums.filter(f => {
-    const matchesSearch = f.title.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = statusFilter === "all" || 
-      (statusFilter === "flagged" && f.is_flagged) ||
-      (statusFilter === "published" && !f.is_flagged);
-    return matchesSearch && matchesStatus;
-  });
 
   return (
     <div className="p-4 md:p-6 lg:p-8">
@@ -203,14 +101,14 @@ export default function AdminForumsPage() {
                         </td>
                       </tr>
                     ))
-                  ) : filteredForums.length === 0 ? (
+                  ) : forums.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="p-8 text-center text-gray-500">
                         {search ? "Tidak ada topik yang cocok" : "Belum ada topik forum"}
                       </td>
                     </tr>
                   ) : (
-                    filteredForums.map((forum) => (
+                    forums.map((forum) => (
                       <tr key={forum.id} className="hover:bg-gray-50">
                         <td className="p-4">
                           <div className="flex items-center gap-3">
@@ -379,15 +277,15 @@ export default function AdminForumsPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {forums.find(f => f.id === blockId)?.is_flagged ? "Buka Blokir Forum?" : "Blokir Forum?"}
+              {allForums.find(f => f.id === blockId)?.is_flagged ? "Buka Blokir Forum?" : "Blokir Forum?"}
             </DialogTitle>
           </DialogHeader>
           <div className="py-4 text-center">
-            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${forums.find(f => f.id === blockId)?.is_flagged ? "bg-green-100" : "bg-red-100"}`}>
-               {forums.find(f => f.id === blockId)?.is_flagged ? <CheckCircle className="w-8 h-8 text-green-600" /> : <Ban className="w-8 h-8 text-red-600" />}
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${allForums.find(f => f.id === blockId)?.is_flagged ? "bg-green-100" : "bg-red-100"}`}>
+               {allForums.find(f => f.id === blockId)?.is_flagged ? <CheckCircle className="w-8 h-8 text-green-600" /> : <Ban className="w-8 h-8 text-red-600" />}
             </div>
             <p className="text-gray-600">
-               {forums.find(f => f.id === blockId)?.is_flagged 
+               {allForums.find(f => f.id === blockId)?.is_flagged 
                  ? "Forum ini akan dapat diakses kembali oleh pengguna lain." 
                  : "Forum ini tidak akan dapat diakses oleh pengguna lain selain admin."}
             </p>
@@ -395,10 +293,10 @@ export default function AdminForumsPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setBlockId(null)}>Batal</Button>
             <Button 
-               className={forums.find(f => f.id === blockId)?.is_flagged ? "bg-green-600 hover:bg-green-700 text-white" : "bg-red-600 hover:bg-red-700 text-white"} 
+               className={allForums.find(f => f.id === blockId)?.is_flagged ? "bg-green-600 hover:bg-green-700 text-white" : "bg-red-600 hover:bg-red-700 text-white"} 
                onClick={confirmToggleFlag}
             >
-              {forums.find(f => f.id === blockId)?.is_flagged ? "Buka Blokir" : "Blokir"}
+              {allForums.find(f => f.id === blockId)?.is_flagged ? "Buka Blokir" : "Blokir"}
             </Button>
           </DialogFooter>
         </DialogContent>

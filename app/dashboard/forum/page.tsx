@@ -5,7 +5,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus, MessageSquare, Clock, User, Heart, Search } from "lucide-react";
-import { api } from "@/lib/api";
+import { forumService } from "@/services/api";
 import { Forum, ForumCategory } from "@/types/forum";
 import { formatDistanceToNow } from "date-fns";
 import { id } from "date-fns/locale";
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useAuthStore } from "@/stores/authStore";
+import { useAuthStore } from "@/store/authStore";
 import { toast } from "sonner";
 
 export default function ForumPage() {
@@ -67,8 +67,8 @@ export default function ForumPage() {
     setIsLoading(true);
     try {
       const [forumsRes, categoriesRes] = await Promise.all([
-        api.getForums(token, 20, 0, debouncedSearch, selectedCategory),
-        api.getForumCategories()
+        forumService.getAll(token, 20, 0, debouncedSearch, selectedCategory),
+        forumService.getCategories()
       ]);
       setForums(forumsRes.data);
       // Ensure categoriesRes.data is an array (handle if it's nested or direct)
@@ -91,7 +91,7 @@ export default function ForumPage() {
 
     setIsSubmitting(true);
     try {
-      await api.createForum(token, {
+      await forumService.create(token, {
         title: newTitle,
         content: newContent,
         category_id: newCategoryId,

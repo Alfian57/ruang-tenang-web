@@ -4,7 +4,8 @@ import { useState, useRef, ChangeEvent } from "react";
 import Image from "next/image";
 import { Upload, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { api, getUploadUrl } from "@/lib/api";
+import { uploadService } from "@/services/api";
+import { getUploadUrl } from "@/services/http/upload-url";
 
 interface ImageUploadProps {
   value?: string;
@@ -52,7 +53,7 @@ export function ImageUpload({
     setIsUploading(true);
 
     try {
-      const response = await api.uploadImage(token, file);
+      const response = await uploadService.uploadImage(token, file);
       onChange(response.data.url);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal mengunggah gambar");

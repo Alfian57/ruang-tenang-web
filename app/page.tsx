@@ -1,14 +1,13 @@
+import { Navbar, Footer } from "@/components/layout";
 import {
-  Navbar,
   HeroSection,
   MarqueeSection,
   ArticleSection,
   LeaderboardSection,
   AboutSection,
   CTASection,
-  Footer,
-} from "@/components/landing";
-import { DailyTaskFAB } from "@/components/gamification";
+} from "./_components/landing";
+import { DailyTaskFAB } from "@/components/shared/gamification";
 
 export default function Home() {
   return (

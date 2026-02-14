@@ -10,18 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { ImageUpload } from "@/components/ui/image-upload";
-import { api } from "@/lib/api";
-import { useAuthStore } from "@/stores/authStore";
+import { articleService } from "@/services/api";
+import { useAuthStore } from "@/store/authStore";
 import { ArticleCategory } from "@/types";
-
-interface Article {
-  id: number;
-  title: string;
-  thumbnail: string;
-  content: string;
-  category_id: number;
-  status: string;
-}
 
 export default function EditArticlePage() {
   const params = useParams();
@@ -43,8 +34,8 @@ export default function EditArticlePage() {
     setIsLoading(true);
     try {
       const [articleRes, categoriesRes] = await Promise.all([
-        api.getMyArticle(token, Number(params.id)) as Promise<{ data: Article }>,
-        api.getArticleCategories() as Promise<{ data: ArticleCategory[] }>,
+        articleService.getArticleForUser(token, Number(params.id)),
+        articleService.getCategories(),
       ]);
 
       const article = articleRes.data;
@@ -83,7 +74,7 @@ export default function EditArticlePage() {
     setError("");
 
     try {
-      await api.updateMyArticle(token, Number(params.id), {
+      await articleService.updateArticle(token, Number(params.id), {
         title: formData.title,
         content: formData.content,
         category_id: formData.category_id,

@@ -1,6 +1,6 @@
 "use server";
 
-import { api } from "@/lib/api";
+import { chatService } from "@/services/api";
 import { ChatSession, ChatMessage } from "@/types";
 
 interface CreateSessionResult {
@@ -17,7 +17,7 @@ export async function createChatSession(
   title: string
 ): Promise<CreateSessionResult> {
   try {
-    const response = (await api.createChatSession(token, title)) as {
+    const response = (await chatService.createSession(token, title)) as {
       data: { id: number; title: string };
     };
     return { success: true, session: response.data };
@@ -43,9 +43,7 @@ export async function sendTextMessage(
   content: string
 ): Promise<SendMessageResult> {
   try {
-    const response = (await api.sendMessage(token, sessionId, content)) as {
-      data: { user_message: ChatMessage; ai_message: ChatMessage };
-    };
+    const response = await chatService.sendMessage(token, sessionId, content);
     return {
       success: true,
       userMessage: response.data.user_message,
@@ -66,9 +64,7 @@ export async function sendAudioMessage(
   audioUrl: string
 ): Promise<SendMessageResult> {
   try {
-    const response = (await api.sendMessage(token, sessionId, audioUrl, "audio")) as {
-      data: { user_message: ChatMessage; ai_message: ChatMessage };
-    };
+    const response = await chatService.sendMessage(token, sessionId, audioUrl, "audio");
     return {
       success: true,
       userMessage: response.data.user_message,
@@ -90,7 +86,7 @@ interface ToggleResult {
  */
 export async function toggleFavorite(token: string, sessionId: number): Promise<ToggleResult> {
   try {
-    await api.toggleFavorite(token, sessionId);
+    await chatService.toggleFavorite(token, sessionId);
     return { success: true };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to toggle favorite";
@@ -103,7 +99,7 @@ export async function toggleFavorite(token: string, sessionId: number): Promise<
  */
 export async function toggleTrash(token: string, sessionId: number): Promise<ToggleResult> {
   try {
-    await api.toggleTrash(token, sessionId);
+    await chatService.toggleTrash(token, sessionId);
     return { success: true };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to toggle trash";
@@ -116,7 +112,7 @@ export async function toggleTrash(token: string, sessionId: number): Promise<Tog
  */
 export async function deleteChatSession(token: string, sessionId: number): Promise<ToggleResult> {
   try {
-    await api.deleteChatSession(token, sessionId);
+    await chatService.deleteSession(token, sessionId);
     return { success: true };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to delete session";
@@ -129,7 +125,7 @@ export async function deleteChatSession(token: string, sessionId: number): Promi
  */
 export async function toggleMessageLike(token: string, messageId: number): Promise<ToggleResult> {
   try {
-    await api.toggleMessageLike(token, messageId);
+    await chatService.toggleLike(token, messageId);
     return { success: true };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to toggle like";
@@ -145,7 +141,7 @@ export async function toggleMessageDislike(
   messageId: number
 ): Promise<ToggleResult> {
   try {
-    await api.toggleMessageDislike(token, messageId);
+    await chatService.toggleDislike(token, messageId);
     return { success: true };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to toggle dislike";
@@ -168,7 +164,7 @@ export async function loadChatSessions(
   limit: number = 50
 ): Promise<LoadSessionsResult> {
   try {
-    const response = (await api.getChatSessions(token, { filter, limit })) as {
+    const response = (await chatService.getSessions(token, { filter, limit })) as {
       data: ChatSession[];
     };
     return { success: true, sessions: response.data || [] };
@@ -192,7 +188,7 @@ export async function loadChatSession(
   sessionId: number
 ): Promise<LoadSessionResult> {
   try {
-    const response = (await api.getChatSession(token, sessionId)) as {
+    const response = (await chatService.getSession(token, sessionId)) as {
       data: ChatSession & { messages: ChatMessage[] };
     };
     return { success: true, session: response.data };

@@ -4,13 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { ROUTES } from "@/lib/routes";
 import { Search, Plus, Edit, Trash2, Eye, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { api } from "@/lib/api";
-import { useAuthStore } from "@/stores/authStore";
+import { articleService } from "@/services/api";
+import { useAuthStore } from "@/store/authStore";
 import { formatDate } from "@/lib/utils";
 import { Article, ArticleCategory } from "@/types";
 
@@ -66,7 +67,7 @@ export default function ArticlesPage() {
 
   const loadCategories = useCallback(async () => {
     try {
-      const response = await api.getArticleCategories() as { data: ArticleCategory[] };
+      const response = await articleService.getCategories() as { data: ArticleCategory[] };
       setCategories(response.data || []);
     } catch (error) {
       console.error("Failed to load categories:", error);
@@ -76,7 +77,7 @@ export default function ArticlesPage() {
   const loadPublishedArticles = useCallback(async () => {
     setIsBrowseLoading(true);
     try {
-      const response = await api.getArticles({
+      const response = await articleService.getArticles({
         category_id: selectedCategory || undefined,
         search: search || undefined,
       }) as { data: Article[] };
@@ -92,7 +93,7 @@ export default function ArticlesPage() {
     if (!token) return;
     setIsMyLoading(true);
     try {
-      const response = await api.getMyArticles(token) as { data: MyArticle[] };
+      const response = await articleService.getMyArticles(token) as { data: MyArticle[] };
       setMyArticles(response.data || []);
     } catch (error) {
       console.error("Failed to load my articles:", error);
@@ -116,7 +117,7 @@ export default function ArticlesPage() {
   const handleDelete = async (id: number) => {
     if (!token) return;
     try {
-      await api.deleteMyArticle(token, id);
+      await articleService.deleteArticle(token, id);
       setDeleteArticleId(null);
       loadMyArticles();
     } catch (error) {
@@ -163,7 +164,7 @@ export default function ArticlesPage() {
             <TabsTrigger value="mine">Artikel Saya</TabsTrigger>
           </TabsList>
           {activeTab === "mine" && (
-            <Link href="/dashboard/articles/new">
+            <Link href={ROUTES.ARTICLE_CREATE}>
               <Button className="gradient-primary">
                 <Plus className="w-4 h-4 mr-2" /> Tulis Artikel
               </Button>
@@ -224,7 +225,7 @@ export default function ArticlesPage() {
               {publishedArticles.map((article) => {
                 const isOwn = user?.id === article.author?.id || user?.id === article.user_id;
                 return (
-                  <Link key={article.id} href={`/dashboard/articles/read/${article.id}`}>
+                  <Link key={article.id} href={ROUTES.articleRead(article.id)}>
                     <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 bg-white cursor-pointer group h-full flex flex-col">
                       <div className="relative h-40 overflow-hidden bg-gray-100">
                         {article.thumbnail ? (
@@ -359,13 +360,13 @@ export default function ArticlesPage() {
                       )}
                     </div>
                     <div className="flex gap-2 shrink-0">
-                      <Link href={`/dashboard/articles/read/${article.id}`}>
+                      <Link href={ROUTES.articleRead(article.id)}>
                         <Button variant="outline" size="icon" title="Lihat">
                           <Eye className="w-4 h-4" />
                         </Button>
                       </Link>
                       {article.status !== "blocked" && (
-                        <Link href={`/dashboard/articles/${article.id}`}>
+                        <Link href={ROUTES.articleDetail(article.id)}>
                           <Button variant="outline" size="icon" title="Edit">
                             <Edit className="w-4 h-4" />
                           </Button>
@@ -393,7 +394,7 @@ export default function ArticlesPage() {
                 {mySearch ? "Tidak ada artikel yang cocok" : "Mulai tulis artikel pertamamu"}
               </p>
               {!mySearch && (
-                <Link href="/dashboard/articles/new">
+                <Link href={ROUTES.ARTICLE_CREATE}>
                   <Button className="gradient-primary">
                     <Plus className="w-4 h-4 mr-2" /> Tulis Artikel
                   </Button>

@@ -10,7 +10,7 @@ import { Loader2, Mail, ArrowLeft, CheckCircle, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/lib/api";
+import { authService } from "@/services/api";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Email tidak valid"),
@@ -35,7 +35,7 @@ export default function ForgotPasswordPage() {
     setError(null);
     setIsLoading(true);
     try {
-      await api.forgotPassword(data.email);
+      await authService.forgotPassword(data.email);
       setIsSubmitted(true);
     } catch (error) {
       const err = error as Error;

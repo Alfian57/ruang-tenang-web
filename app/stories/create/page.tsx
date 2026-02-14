@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "@/lib/api";
-import { Navbar, Footer } from "@/components/landing";
-import { useAuthStore } from "@/stores/authStore";
-import { StoryForm } from "@/components/stories";
+import { storyService } from "@/services/api";
+import { Navbar, Footer } from "@/components/layout";
+import { useAuthStore } from "@/store/authStore";
+import { StoryForm } from "@/components/shared/stories";
 import { StoryCategory, StoryStats, CreateStoryRequest } from "@/types";
 import { ArrowLeft, AlertTriangle, Lock } from "lucide-react";
 import Link from "next/link";
@@ -32,8 +32,8 @@ export default function CreateStoryPage() {
         const fetchData = async () => {
             try {
                 const [categoriesRes, statsRes] = await Promise.all([
-                    api.getStoryCategories(),
-                    api.getMyStoryStats(token),
+                    storyService.getCategories(),
+                    storyService.getMyStats(token),
                 ]);
 
                 setCategories(categoriesRes.data || []);
@@ -56,7 +56,7 @@ export default function CreateStoryPage() {
         setError(null);
 
         try {
-            await api.createStory(token, data);
+            await storyService.create(token, data);
             router.push("/stories?success=created");
         } catch (err) {
             console.error("Failed to create story:", err);

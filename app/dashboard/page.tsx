@@ -1,8 +1,8 @@
 "use client";
 
-import { useAuthStore } from "@/stores/authStore";
-import { AdminDashboard } from "@/components/dashboard/AdminDashboard";
-import { MemberDashboard } from "@/components/dashboard/MemberDashboard";
+import { useAuthStore } from "@/store/authStore";
+import { AdminDashboard } from "./_components/AdminDashboard";
+import { MemberDashboard } from "./_components/MemberDashboard";
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
