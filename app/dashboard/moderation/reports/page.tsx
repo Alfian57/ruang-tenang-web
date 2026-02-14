@@ -102,9 +102,9 @@ export default function ModerationReportsPage() {
                 limit,
             });
 
-            const data = res as { data: UserReport[]; total_pages: number };
+            const data = res as { data: UserReport[]; meta?: { total_pages: number } };
             setReports(data.data || []);
-            setTotalPages(data.total_pages || 1);
+            setTotalPages(data.meta?.total_pages || 1);
         } catch (error) {
             console.error("Failed to load reports:", error);
         } finally {

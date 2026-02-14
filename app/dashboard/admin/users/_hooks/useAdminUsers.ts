@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { adminService } from "@/services/api";
 import { httpClient } from "@/services/http/client";
+import type { PaginatedResponse } from "@/services/http/types";
 
 export interface UserData {
   id: number;
@@ -47,7 +48,7 @@ export function useAdminUsers() {
     if (!token) return;
     setIsLoading(true);
     try {
-      const data = await httpClient.get<{ success?: boolean; data?: UserData[]; total_pages?: number }>("/admin/users", {
+      const response = await httpClient.get<PaginatedResponse<UserData>>("/admin/users", {
         token,
         params: {
           search: search || undefined,
@@ -55,10 +56,8 @@ export function useAdminUsers() {
           limit: "10",
         },
       });
-      if (data.success !== false) {
-        setUsers(data.data || []);
-        setTotalPages(data.total_pages || 1);
-      }
+      setUsers(response.data || []);
+      setTotalPages(response.meta?.total_pages || 1);
     } catch (error) {
       console.error("Failed to load users:", error);
     } finally {

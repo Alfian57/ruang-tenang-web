@@ -69,7 +69,7 @@ export default function StoriesPage() {
       });
       if (response.data) {
         setStories(response.data);
-        setTotalPages(response.total_pages || 1);
+        setTotalPages(response.meta?.total_pages || 1);
       }
     } catch (error) {
       console.error("Failed to load stories:", error);

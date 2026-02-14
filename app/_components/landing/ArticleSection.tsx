@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { articleService } from "@/services/api";
 import { ArrowRight, BookOpen } from "lucide-react";
+import type { PaginatedResponse } from "@/services/http/types";
 
 interface Article {
   id: number;
@@ -16,16 +17,6 @@ interface Article {
   category?: {
     id: number;
     name: string;
-  };
-}
-
-interface ApiResponse {
-  data: Article[];
-  meta?: {
-    page: number;
-    limit: number;
-    total: number;
-    total_pages: number;
   };
 }
 
@@ -66,7 +57,7 @@ export function ArticleSection() {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await articleService.getArticles({ limit: 6 }) as ApiResponse;
+        const response = await articleService.getArticles({ limit: 6 }) as PaginatedResponse<Article>;
         setArticles(response.data || []);
       } catch (error) {
         console.error("Failed to fetch articles:", error);

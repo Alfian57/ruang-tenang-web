@@ -159,9 +159,9 @@ export const useJournalStore = create<JournalState & JournalActions>((set, get) 
       });
       set({
         journals: response.data || [],
-        totalJournals: response.total_items,
-        currentPage: response.page,
-        totalPages: response.total_pages,
+        totalJournals: response.meta?.total_items || 0,
+        currentPage: response.meta?.page || 1,
+        totalPages: response.meta?.total_pages || 1,
         isLoading: false,
       });
     } catch (error) {

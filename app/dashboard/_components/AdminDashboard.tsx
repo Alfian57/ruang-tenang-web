@@ -41,10 +41,8 @@ export function AdminDashboard() {
   const loadStats = async () => {
     if (!token) return;
     try {
-      const response = await adminService.getStats(token) as { success: boolean; data: DashboardStats };
-      if (response.success) {
-        setStats(response.data);
-      }
+      const response = await adminService.getStats(token) as { data: DashboardStats };
+      setStats(response.data);
     } catch (error) {
       console.error("Failed to load stats:", error);
     } finally {

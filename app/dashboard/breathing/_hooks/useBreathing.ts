@@ -125,7 +125,7 @@ export function useBreathing() {
                 setIsLoadingHistory(true);
                 const res = await breathingService.getSessions(token, { limit: 20 });
                 setSessions(res.data || []);
-                setSessionsTotal(res.total_items || 0);
+                setSessionsTotal(res.meta?.total_items || 0);
             } catch (error) {
                 console.error("Failed to fetch session history:", error);
                 toast.error("Gagal memuat riwayat latihan");

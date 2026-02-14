@@ -39,7 +39,7 @@ export default function StoryDetailPage() {
         try {
             const response = await storyService.getComments(id, { page, limit: 20 }, token || undefined);
             setComments(response.data || []);
-            setTotalCommentPages(response.total_pages || 1);
+            setTotalCommentPages(response.meta?.total_pages || 1);
             setCommentPage(page);
         } catch (err) {
             console.error("Failed to fetch comments:", err);

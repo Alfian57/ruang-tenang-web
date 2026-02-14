@@ -78,7 +78,7 @@ export default function StoriesPage() {
                 });
 
                 setStories(response.data || []);
-                setTotalPages(response.total_pages || 1);
+                setTotalPages(response.meta?.total_pages || 1);
             } catch (error) {
                 console.error("Failed to fetch stories:", error);
             } finally {

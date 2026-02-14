@@ -76,9 +76,9 @@ export default function ModerationQueuePage() {
                 limit,
             });
 
-            const data = res as { data: ModerationQueueItem[]; total_pages: number };
+            const data = res as { data: ModerationQueueItem[]; meta?: { total_pages: number } };
             setItems(data.data || []);
-            setTotalPages(data.total_pages || 1);
+            setTotalPages(data.meta?.total_pages || 1);
         } catch (error) {
             console.error("Failed to load moderation queue:", error);
         } finally {

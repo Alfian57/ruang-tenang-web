@@ -1,12 +1,12 @@
 /**
  * API error & response types used by the HTTP client wrapper.
+ * Aligned with API-CONTEXT.yml response_contract.
  */
 
 /** Shape of API error responses (aligned with API-CONTEXT.yml error_envelope) */
 export interface ApiErrorResponse {
-  success: false;
   message: string;
-  code?: string;
+  code: string;
   details?: unknown;
   requestId?: string;
 }
@@ -59,22 +59,27 @@ export class ApiError extends Error {
   }
 }
 
-/** Standard success response shape */
+/** Standard success response shape: { data, meta?, requestId? } */
 export interface ApiResponse<T = unknown> {
-  success: true;
-  message?: string;
   data: T;
+  meta?: PaginationMeta;
   requestId?: string;
 }
 
-/** Paginated response shape (matches backend dto.PaginatedResponse) */
-export interface PaginatedResponse<T = unknown> {
-  success: true;
-  data: T[];
+/** Pagination metadata returned in the `meta` field */
+export interface PaginationMeta {
   page: number;
   limit: number;
   total_items: number;
   total_pages: number;
+  has_next: boolean;
+  has_prev: boolean;
+}
+
+/** Paginated response shape: { data, meta, requestId? } */
+export interface PaginatedResponse<T = unknown> {
+  data: T[];
+  meta: PaginationMeta;
   requestId?: string;
 }
 

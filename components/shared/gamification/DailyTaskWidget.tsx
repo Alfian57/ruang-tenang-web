@@ -25,10 +25,8 @@ export function DailyTaskWidget({ tasks, onTaskClaimed, className }: DailyTaskWi
     setClaimingId(task.id);
     try {
       const response = await communityService.claimTaskReward(token, task.id);
-      if (response.success && response.data) {
-        toast.success(`Berhasil klaim! +${response.data.exp_gained} EXP`, {
-          description: response.message
-        });
+      if (response.data) {
+        toast.success(`Berhasil klaim! +${response.data.exp_gained} EXP`);
         if (response.data.level_up) {
            toast.success("Level Up!", {
              description: "Selamat! Kamu naik level 🎉"
