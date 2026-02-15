@@ -7,11 +7,10 @@ import { ROUTES } from "@/lib/routes";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/authStore";
-import { breathingService, communityService, moodService, songService } from "@/services/api";
-import { UserMood, MoodType, SongCategory, Song, DailyTask } from "@/types";
+import { breathingService, moodService, songService, journalService, articleService } from "@/services/api";
+import { UserMood, SongCategory, Song, Journal, Article } from "@/types";
 import { BreathingWidgetData } from "@/types/breathing";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 import {
   ArrowRight,
   ChevronDown,
@@ -22,20 +21,22 @@ import {
   Calendar,
 } from "lucide-react";
 import { BreathingWidget } from "@/app/dashboard/breathing/_components";
-import { DailyTaskWidget } from "@/components/shared/gamification";
-import { MoodCheckinModal } from "./MoodCheckinModal";
+import { useDashboardStore } from "@/store/dashboardStore";
 import { MoodCalendar } from "./MoodCalendar";
+import { QuickJournalWidget } from "./widgets/QuickJournalWidget";
+import { MoodInsightWidget } from "./widgets/MoodInsightWidget";
+import { RecommendedArticlesWidget } from "./widgets/RecommendedArticlesWidget";
+import { ConsultationPromoWidget } from "./widgets/ConsultationPromoWidget";
 
 export function MemberDashboard() {
   const { user, token } = useAuthStore();
-  const [latestMood, setLatestMood] = useState<UserMood | null>(null);
   const [moodHistory, setMoodHistory] = useState<UserMood[]>([]);
   const [categories, setCategories] = useState<SongCategory[]>([]);
-  const [dailyTasks, setDailyTasks] = useState<DailyTask[]>([]);
-  const [isRecording, setIsRecording] = useState(false);
-  const [showMoodCheckin, setShowMoodCheckin] = useState(false);
-  const [hasCheckedInitialMood, setHasCheckedInitialMood] = useState(false);
-  const [isMoodDataLoaded, setIsMoodDataLoaded] = useState(false);
+  
+  // New Widget States
+  const [latestJournal, setLatestJournal] = useState<Journal | null>(null);
+  const [recommendedArticles, setRecommendedArticles] = useState<Article[]>([]);
+  const [isLoadingWidgets, setIsLoadingWidgets] = useState(true);
 
   // Breathing widget state
   const [breathingWidgetData, setBreathingWidgetData] = useState<BreathingWidgetData | null>(null);
@@ -48,25 +49,24 @@ export function MemberDashboard() {
   const [audioProgress, setAudioProgress] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { moodRefreshTrigger } = useDashboardStore();
 
   const loadDashboardData = useCallback(async () => {
     if (!token) return;
+    setIsLoadingWidgets(true);
     try {
       // Load all data in parallel
-      const [moodRes, categoriesRes, breathingWidgetRes, dailyTasksRes] = await Promise.all([
+      const [moodRes, categoriesRes, breathingWidgetRes, journalRes, articlesRes] = await Promise.all([
         moodService.getHistory(token, { limit: 100 }).catch(() => null) as Promise<{ data: { moods: UserMood[] } } | null>,
         songService.getCategories().catch(() => null) as Promise<{ data: SongCategory[] } | null>,
         breathingService.getWidgetData(token).catch(() => null) as Promise<{ data: BreathingWidgetData } | null>,
-        communityService.getDailyTasks(token).catch(() => null) as Promise<{ data: DailyTask[] } | null>,
+        journalService.list(token, { limit: 1 }).catch(() => null) as Promise<{ data: any } | null>,
+        articleService.getArticles({ limit: 3 }).catch(() => null) as Promise<{ data: Article[] } | null>,
       ]);
 
       if (moodRes?.data?.moods) {
         setMoodHistory(moodRes.data.moods);
-        setLatestMood(moodRes.data.moods[0] || null);
-      } else {
-        setLatestMood(null);
       }
-      setIsMoodDataLoaded(true);
 
       if (categoriesRes?.data) {
         setCategories(categoriesRes.data);
@@ -74,69 +74,33 @@ export function MemberDashboard() {
       if (breathingWidgetRes?.data) {
         setBreathingWidgetData(breathingWidgetRes.data);
       }
-      if (dailyTasksRes?.data) {
-        // Handle various API response shapes safely
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const taskData = dailyTasksRes.data as any;
-        if (taskData?.tasks && Array.isArray(taskData.tasks)) {
-          setDailyTasks(taskData.tasks);
-        } else if (Array.isArray(taskData)) {
-          setDailyTasks(taskData);
+      
+      if (journalRes?.data) {
+          // Handle potential paginated response or array
+          const journals = Array.isArray(journalRes.data) ? journalRes.data : (journalRes.data as any).data;
+          if (Array.isArray(journals) && journals.length > 0) {
+              setLatestJournal(journals[0]);
+          }
+      }
+      
+      if (articlesRes?.data) {
+        // Handle potential paginated response or array
+        const articles = Array.isArray(articlesRes.data) ? articlesRes.data : (articlesRes.data as any).data;
+        if (Array.isArray(articles)) {
+             setRecommendedArticles(articles);
         }
       }
+
     } catch (error) {
       console.error("Failed to load dashboard data:", error);
+    } finally {
+      setIsLoadingWidgets(false);
     }
   }, [token]);
 
   useEffect(() => {
     loadDashboardData();
-  }, [loadDashboardData]);
-
-  // Check for mood check-in necessity
-  useEffect(() => {
-    if (hasCheckedInitialMood || !token || !isMoodDataLoaded) return;
-
-    if (!latestMood) {
-      setShowMoodCheckin(true);
-    } else {
-      const today = new Date();
-      const moodDate = new Date(latestMood.created_at);
-      
-      const isSameDay = 
-        today.getUTCFullYear() === moodDate.getUTCFullYear() &&
-        today.getUTCMonth() === moodDate.getUTCMonth() &&
-        today.getUTCDate() === moodDate.getUTCDate();
-      
-      if (!isSameDay) {
-        setShowMoodCheckin(true);
-      }
-    }
-    setHasCheckedInitialMood(true);
-  }, [latestMood, hasCheckedInitialMood, token, isMoodDataLoaded]);
-
-  const recordMood = async (mood: MoodType) => {
-    if (!token || isRecording) return;
-    setIsRecording(true);
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const response = await moodService.record(token, mood) as any;
-      if (response?.data) {
-        toast.success("Mood berhasil dicatat!", {
-          description: "Semoga harimu menyenangkan 😊",
-        });
-        await loadDashboardData();
-        setShowMoodCheckin(false);
-      } else {
-        toast.error("Gagal mencatat mood");
-      }
-    } catch (error) {
-      console.error("Failed to record mood:", error);
-      toast.error("Gagal mencatat mood");
-    } finally {
-      setIsRecording(false);
-    }
-  };
+  }, [loadDashboardData, moodRefreshTrigger]);
 
   // Music Player Logic
   const handleCategoryClick = async (categoryId: number) => {
@@ -236,22 +200,25 @@ export function MemberDashboard() {
         </div>
       </div>
 
-      <MoodCheckinModal 
-        isOpen={showMoodCheckin} 
-        onMoodSelected={recordMood} 
-        isSubmitting={isRecording} 
-      />
 
       {/* 2. Main Dashboard Grid (Bento Box Style) */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         
-        {/* Left Column: Daily Tasks & Mood Calendar */}
+        {/* Left Column: Widgets & Mood Calendar */}
         <div className="md:col-span-8 space-y-6">
             
-            {/* Daily Task Section - Full Width */}
-            <div className="w-full">
-                <DailyTaskWidget tasks={dailyTasks} onTaskClaimed={loadDashboardData} />
+            {/* Top Widgets Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="h-full">
+                    <QuickJournalWidget latestJournal={latestJournal} isLoading={isLoadingWidgets} />
+                </div>
+                <div className="h-full">
+                    <MoodInsightWidget moods={moodHistory} isLoading={isLoadingWidgets} />
+                </div>
             </div>
+
+            {/* Consultation Promo */}
+            <ConsultationPromoWidget />
 
             {/* Mood Calendar Section */}
             <MoodCalendar moods={moodHistory} />
@@ -259,6 +226,8 @@ export function MemberDashboard() {
 
         {/* Right Column: Widgets */}
         <div className="md:col-span-4 space-y-6">
+             {/* Recommended Articles */}
+             <RecommendedArticlesWidget articles={recommendedArticles} isLoading={isLoadingWidgets} />
             
             {/* Breathing Widget */}
             {breathingWidgetData && (

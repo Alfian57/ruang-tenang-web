@@ -19,34 +19,27 @@ export const createExportSlice: StateCreator<ChatStore, [], [], ChatExportState 
       const exportData = response.data;
       
       if (format === "pdf") {
-        // The content is base64 encoded HTML, decode it
-        const htmlContent = atob(exportData.content);
+        // The content is base64 encoded PDF from backend
+        // Convert base64 to Blob
+        const byteCharacters = atob(exportData.content);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: "application/pdf" });
         
-        // Create a temporary container for the HTML
-        const container = document.createElement('div');
-        container.innerHTML = htmlContent;
-        container.style.position = 'absolute';
-        container.style.left = '-9999px';
-        document.body.appendChild(container);
-        
-        // Dynamically import html2pdf.js (browser-only library)
-        // Note: In Next.js with TS, this might need @types/html2pdf.js or ts-ignore if not present
-        // Use require or dynamic import
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const html2pdf = (await import('html2pdf.js' as any)).default;
-        
-        // Generate PDF with proper filename
-        const pdfFilename = exportData.filename.replace('.html', '.pdf');
-        await html2pdf(container, {
-          margin: 10,
-          filename: pdfFilename,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2 },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        });
+        // Create download link
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = exportData.filename;
+        document.body.appendChild(a);
+        a.click();
         
         // Cleanup
-        document.body.removeChild(container);
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
         
         toast.success('Chat berhasil diekspor sebagai PDF');
       } else {

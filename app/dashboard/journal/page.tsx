@@ -163,10 +163,10 @@ export default function JournalPage() {
                         </Button>
                     )}
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                        <h1 className="text-2xl font-bold text-gray-900">
                             📔 Jurnal Pribadi
                         </h1>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-sm text-gray-500">
                             Tulis, refleksi, dan pertumbuhan pribadimu
                         </p>
                     </div>
@@ -265,23 +265,23 @@ export default function JournalPage() {
                                 />
 
                                 {/* Quick Stats */}
-                                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
-                                    <h3 className="font-medium mb-3 text-gray-900 dark:text-gray-100">Statistik Cepat</h3>
+                                <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                                    <h3 className="font-medium mb-3 text-gray-900">Statistik Cepat</h3>
                                     <div className="space-y-2 text-sm">
                                         <div className="flex justify-between">
-                                            <span className="text-gray-600 dark:text-gray-400">Total Jurnal</span>
-                                            <span className="font-medium text-gray-900 dark:text-gray-100">{totalJournals}</span>
+                                            <span className="text-gray-600">Total Jurnal</span>
+                                            <span className="font-medium text-gray-900">{totalJournals}</span>
                                         </div>
                                         {settings && (
                                             <>
                                                 <div className="flex justify-between">
-                                                    <span className="text-gray-600 dark:text-gray-400">AI Akses</span>
+                                                    <span className="text-gray-600">AI Akses</span>
                                                     <span
                                                         className={cn(
                                                             "font-medium",
                                                             settings.allow_ai_access
-                                                                ? "text-green-600 dark:text-green-400"
-                                                                : "text-gray-500 dark:text-gray-500"
+                                                                ? "text-green-600"
+                                                                : "text-gray-500"
                                                         )}
                                                     >
                                                         {settings.allow_ai_access ? "Aktif" : "Nonaktif"}

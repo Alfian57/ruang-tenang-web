@@ -51,7 +51,7 @@ function ToggleSwitch({
             onClick={() => !disabled && onChange(!enabled)}
             className={cn(
                 "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
-                enabled ? "bg-primary" : "bg-gray-200 dark:bg-gray-700",
+                enabled ? "bg-primary" : "bg-gray-200",
                 disabled && "opacity-50 cursor-not-allowed"
             )}
             disabled={disabled}
@@ -114,7 +114,7 @@ export function JournalPrivacySettings({
             {isExpanded && (
                 <CardContent className="space-y-6">
                     {/* Master AI Access Toggle */}
-                    <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+                    <div className="p-4 bg-gray-50 rounded-lg">
                         <div className="flex items-center justify-between">
                             <div className="flex items-start gap-3">
                                 {localSettings.allow_ai_access ? (
@@ -126,7 +126,7 @@ export function JournalPrivacySettings({
                                     <Label className="text-base font-medium">
                                         Izinkan AI Membaca Jurnal
                                     </Label>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                    <p className="text-sm text-gray-600 mt-1">
                                         {localSettings.allow_ai_access
                                             ? "AI chatbot dapat membaca jurnal yang kamu bagikan untuk memberikan respons yang lebih personal."
                                             : "AI chatbot tidak dapat membaca jurnalmu sama sekali."}
@@ -143,10 +143,10 @@ export function JournalPrivacySettings({
 
                     {/* Warning when AI access is enabled */}
                     {localSettings.allow_ai_access && (
-                        <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                        <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                             <div className="flex items-start gap-2">
                                 <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
-                                <p className="text-sm text-yellow-800 dark:text-yellow-300">
+                                <p className="text-sm text-yellow-800">
                                     AI hanya dapat membaca jurnal yang{" "}
                                     <strong>secara spesifik kamu bagikan</strong>. Jurnal dengan status
                                     &ldquo;AI tidak dapat membaca&rdquo; tetap tidak akan diakses.
@@ -162,7 +162,7 @@ export function JournalPrivacySettings({
                             <div className="flex items-center justify-between">
                                 <div>
                                     <Label className="font-medium">Default Bagikan ke AI</Label>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                    <p className="text-sm text-gray-600 mt-1">
                                         Jurnal baru secara default akan dibagikan ke AI
                                     </p>
                                 </div>
@@ -259,7 +259,7 @@ export function JournalAIAccessLogs({ logs, isLoading = false }: JournalAIAccess
                             {logs.map((log) => (
                                 <div
                                     key={log.id}
-                                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg"
+                                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                                 >
                                     <div>
                                         <p className="font-medium text-sm">
@@ -326,7 +326,7 @@ export function JournalAIContextPreview({
             </CardHeader>
             {isExpanded && (
                 <CardContent>
-                    {context.journals.length === 0 ? (
+                    {context.entries.length === 0 ? (
                         <div className="text-center py-4">
                             <EyeOff className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                             <p className="text-sm text-gray-500">
@@ -335,10 +335,10 @@ export function JournalAIContextPreview({
                         </div>
                     ) : (
                         <div className="space-y-3">
-                            {context.journals.map((entry) => (
+                            {context.entries.map((entry) => (
                                 <div
                                     key={entry.id}
-                                    className="p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg"
+                                    className="p-3 bg-purple-50 border border-purple-200 rounded-lg"
                                 >
                                     <div className="flex items-center gap-2 mb-1">
                                         {entry.mood_emoji && (
@@ -346,7 +346,7 @@ export function JournalAIContextPreview({
                                         )}
                                         <p className="font-medium text-sm">{entry.title}</p>
                                     </div>
-                                    <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
+                                    <p className="text-xs text-gray-600 line-clamp-2">
                                         {entry.content_preview}
                                     </p>
                                     <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">

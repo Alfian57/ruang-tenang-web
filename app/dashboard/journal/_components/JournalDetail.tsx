@@ -33,9 +33,9 @@ export function JournalDetail({
     onToggleAIShare,
 }: JournalDetailProps) {
     return (
-        <div className="flex flex-col h-full bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="flex flex-col h-full bg-white rounded-xl border border-gray-200 overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
                 <Button variant="ghost" size="sm" onClick={onBack}>
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Kembali
@@ -75,11 +75,11 @@ export function JournalDetail({
                         </span>
                     )}
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                        <h1 className="text-2xl font-bold text-gray-900">
                             {journal.title}
                         </h1>
                         {journal.mood_label && (
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            <p className="text-sm text-gray-500 mt-1">
                                 Mood: {journal.mood_label}
                             </p>
                         )}
@@ -87,7 +87,7 @@ export function JournalDetail({
                 </div>
 
                 {/* Meta Info */}
-                <div className="flex items-center gap-4 mb-6 text-sm text-gray-500 dark:text-gray-400 flex-wrap">
+                <div className="flex items-center gap-4 mb-6 text-sm text-gray-500 flex-wrap">
                     <div className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
                         <span>
@@ -101,7 +101,7 @@ export function JournalDetail({
                         <span>{journal.word_count} kata</span>
                     </div>
                     {journal.is_private && (
-                        <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                        <div className="flex items-center gap-1 text-green-600">
                             <Lock className="w-4 h-4" />
                             <span>Privat</span>
                         </div>
@@ -110,7 +110,7 @@ export function JournalDetail({
                         className={cn(
                             "flex items-center gap-1",
                             journal.share_with_ai
-                                ? "text-purple-600 dark:text-purple-400"
+                                ? "text-purple-600"
                                 : "text-gray-500"
                         )}
                     >
@@ -135,7 +135,7 @@ export function JournalDetail({
                         {journal.tags.map((tag) => (
                             <span
                                 key={tag}
-                                className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm text-gray-600 dark:text-gray-400"
+                                className="px-2 py-1 bg-gray-100 rounded-full text-sm text-gray-600"
                             >
                                 #{tag}
                             </span>
@@ -145,12 +145,12 @@ export function JournalDetail({
 
                 {/* AI Access Info */}
                 {journal.ai_accessed_at && (
-                    <div className="mb-6 p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
-                        <div className="flex items-center gap-2 text-sm text-purple-700 dark:text-purple-400">
+                    <div className="mb-6 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                        <div className="flex items-center gap-2 text-sm text-purple-700">
                             <Eye className="w-4 h-4" />
                             <span>
                                 AI terakhir membaca jurnal ini:{" "}
-                                {format(new Date(journal.ai_accessed_at), "d MMMM yyyy 'pukul' HH:mm", {
+                                {format(new Date(journal.ai_accessed_at!), "d MMMM yyyy 'pukul' HH:mm", {
                                     locale: id,
                                 })}
                             </span>
@@ -160,7 +160,7 @@ export function JournalDetail({
 
                 {/* Journal Content */}
                 <div
-                    className="prose prose-sm dark:prose-invert max-w-none"
+                    className="prose prose-sm max-w-none"
                     dangerouslySetInnerHTML={{ __html: journal.content }}
                 />
             </div>

@@ -124,8 +124,10 @@ export function useBreathing() {
             try {
                 setIsLoadingHistory(true);
                 const res = await breathingService.getSessions(token, { limit: 20 });
-                setSessions(res.data || []);
-                setSessionsTotal(res.meta?.total_items || 0);
+                if (res.data) {
+                    setSessions(res.data.sessions || []);
+                    setSessionsTotal(res.data.total || 0);
+                }
             } catch (error) {
                 console.error("Failed to fetch session history:", error);
                 toast.error("Gagal memuat riwayat latihan");

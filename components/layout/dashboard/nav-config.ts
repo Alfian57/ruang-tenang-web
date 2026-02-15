@@ -40,7 +40,7 @@ export const memberGroups: NavGroup[] = [
     title: "Aktivitas",
     links: [
       { href: ROUTES.JOURNAL, icon: BookOpen, label: "Jurnal" },
-      { href: ROUTES.BREATHING, icon: Wind, label: "Latihan Pernapasan" },
+      { href: ROUTES.BREATHING, icon: Wind, label: "Pernafasan" },
     ],
   },
   {

@@ -78,13 +78,13 @@ export const chatService = {
   },
 
   // Export
-  exportSession(token: string, sessionId: number, format: "txt" | "json" | "pdf") {
-    return httpClient.get<ApiResponse<ChatExportResponse>>(`/chat-sessions/${sessionId}/export`, { token, params: { format } });
+  exportSession(token: string, sessionId: number, format: "txt" | "json" | "pdf", includePinned?: boolean) {
+    return httpClient.post<ApiResponse<ChatExportResponse>>(`/chat-sessions/${sessionId}/export`, { format, include_pinned: includePinned }, { token });
   },
 
   // Suggested prompts
   getSuggestedPrompts(token: string) {
-    return httpClient.get<ApiResponse<SuggestedPrompt[]>>("/chat-sessions/suggested-prompts", { token });
+    return httpClient.get<ApiResponse<SuggestedPrompt[]>>("/chat-prompts", { token });
   },
 
   // Folders

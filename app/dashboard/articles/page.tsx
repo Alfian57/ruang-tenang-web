@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { articleService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
+import { useBlockStore } from "@/store/blockStore";
 import { formatDate } from "@/lib/utils";
 import { Article, ArticleCategory } from "@/types";
 
@@ -31,6 +32,7 @@ interface MyArticle {
 
 export default function ArticlesPage() {
   const { token, user } = useAuthStore();
+  const isBlocked = useBlockStore((s) => s.isBlocked);
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -222,7 +224,7 @@ export default function ArticlesPage() {
             </div>
           ) : publishedArticles.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {publishedArticles.map((article) => {
+              {publishedArticles.filter((article) => !isBlocked(article.author?.id || article.user_id)).map((article) => {
                 const isOwn = user?.id === article.author?.id || user?.id === article.user_id;
                 return (
                   <Link key={article.id} href={ROUTES.articleRead(article.id)}>

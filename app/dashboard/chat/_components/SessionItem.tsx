@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, MoreVertical, Trash2, Folder, FolderOutput } from "lucide-react";
+import { Heart, MoreVertical, Trash2, Folder, FolderOutput, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ChatSession, ChatFolder } from "@/types";
 import {
@@ -13,6 +13,12 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface SessionItemProps {
   session: ChatSession;
@@ -50,31 +56,51 @@ export function SessionItem({
           : "hover:bg-gray-50 bg-white border-transparent"
       )}
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <p
-              className={cn(
-                "font-medium truncate",
-                compact ? "text-xs" : "text-sm",
-                isActive ? "text-primary" : "text-gray-900"
-              )}
-            >
-              {session.title}
-            </p>
-            {session.is_favorite && (
-              <Heart className="w-3 h-3 text-red-500 fill-red-500 shrink-0" />
-            )}
-            {session.has_summary && (
-              <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded">📝</span>
-            )}
-          </div>
-          {!compact && (
-            <p className="text-xs text-gray-500 truncate mt-1">
-              {session.last_message || "Tidak ada pesan"}
-            </p>
-          )}
-        </div>
+      <div className="flex items-center justify-between gap-2">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="min-w-0 flex-1 flex items-center gap-3">
+                {!compact && (
+                  <div className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                    isActive ? "bg-primary/10 text-primary" : "bg-gray-100 text-gray-400"
+                  )}>
+                    <MessageSquare className="w-4 h-4" />
+                  </div>
+                )}
+                
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p
+                      className={cn(
+                        "font-medium truncate",
+                        compact ? "text-xs" : "text-sm",
+                        isActive ? "text-primary" : "text-gray-900"
+                      )}
+                    >
+                      {session.title}
+                    </p>
+                    {session.is_favorite && (
+                      <Heart className="w-3 h-3 text-red-500 fill-red-500 shrink-0" />
+                    )}
+                    {session.has_summary && (
+                      <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded">📝</span>
+                    )}
+                  </div>
+                  {!compact && (
+                    <p className="text-xs text-gray-500 truncate mt-0.5">
+                      {session.last_message || "Tidak ada pesan"}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{session.title}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>

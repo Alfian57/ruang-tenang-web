@@ -43,7 +43,7 @@ export interface JournalAIAccessLog {
 }
 
 export interface JournalAIContext {
-  journals: JournalAIContextEntry[];
+  entries: JournalAIContextEntry[];
   total_shared: number;
   settings: JournalSettings;
   context_text: string;
@@ -78,7 +78,7 @@ export interface JournalWeeklySummary {
   total_words: number;
   dominant_mood?: string;
   key_themes: string[];
-  ai_summary: string;
+  summary: string;
   recommendations: string[];
 }
 

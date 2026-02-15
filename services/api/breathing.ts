@@ -10,6 +10,7 @@ import type {
   RecommendationsResponse,
   TechniqueUsageStats,
   SessionCompletionResult,
+  SessionHistoryResponse,
 } from "@/types/breathing";
 
 interface BreathingWidgetData {
@@ -46,7 +47,7 @@ export const breathingService = {
 
   // Sessions
   getSessions(token: string, params?: { start_date?: string; end_date?: string; technique_id?: string; page?: number; limit?: number }) {
-    return httpClient.get<PaginatedResponse<BreathingSession>>("/breathing/sessions", { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<ApiResponse<SessionHistoryResponse>>("/breathing/sessions", { token, params: params as Record<string, string | number | boolean | undefined> });
   },
 
   getSession(token: string, id: string) {

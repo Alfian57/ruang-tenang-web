@@ -33,6 +33,8 @@ export function Navbar({ variant = "default" }: NavbarProps) {
             width={120}
             height={40}
             className="object-contain h-8 w-auto"
+            style={{ width: "auto" }}
+            priority
           />
         </Link>
 

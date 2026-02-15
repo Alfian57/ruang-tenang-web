@@ -425,7 +425,7 @@ export interface DailyTask {
 export interface ClaimTaskResponse {
   success: boolean;
   message: string;
-  exp_gained: number;
+  xp_earned: number;
   new_total_exp: number;
   level_up: boolean;
 }

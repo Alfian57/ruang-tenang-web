@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import {
   ArrowLeft,
   Loader2,
@@ -23,6 +22,7 @@ import { useAuthStore } from "@/store/authStore";
 import { StoryCategory, CreateStoryRequest } from "@/types";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 export default function NewStoryPage() {
   const router = useRouter();
@@ -144,7 +144,7 @@ export default function NewStoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-white">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
@@ -195,27 +195,18 @@ export default function NewStoryPage() {
 
           {/* Cover Image */}
           <div>
-            <Label htmlFor="cover">URL Gambar Cover (Opsional)</Label>
-            <Input
-              id="cover"
-              value={coverImage}
-              onChange={(e) => setCoverImage(e.target.value)}
-              placeholder="https://example.com/image.jpg"
-              className="mt-1"
-            />
-            {coverImage && (
-              <div className="mt-2 rounded-lg overflow-hidden border h-40">
-                <Image
-                  src={coverImage}
-                  alt="Preview"
-                  className="object-cover"
-                  fill
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
-                />
-              </div>
-            )}
+            <Label>Cover Cerita (Opsional)</Label>
+            <div className="mt-2">
+              <ImageUpload
+                value={coverImage}
+                onChange={(url) => setCoverImage(url)}
+                token={token}
+                aspectRatio="video"
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              Format: JPG, PNG, GIF, WebP (Maks. 10MB)
+            </p>
           </div>
 
           {/* Categories */}

@@ -310,7 +310,7 @@ export function ChatSidebar({
                             onToggleFavorite={onToggleFavorite}
                             onToggleTrash={onToggleTrash}
                             onMoveToFolder={onMoveToFolder}
-                            compact
+                            onMoveToFolder={onMoveToFolder}
                           />
                         ))}
                       </div>

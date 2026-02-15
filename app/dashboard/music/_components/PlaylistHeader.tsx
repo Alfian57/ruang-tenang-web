@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import Image from "next/image";
 import { ArrowLeft, ListMusic } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,6 +18,8 @@ export function PlaylistHeader({
     onBack,
     itemCount,
 }: PlaylistHeaderProps) {
+    const [imgError, setImgError] = useState(false);
+
     return (
         <div className="flex items-center gap-4">
             <Button
@@ -28,17 +32,18 @@ export function PlaylistHeader({
             </Button>
 
             <div className="w-20 h-20 rounded-xl overflow-hidden bg-linear-to-br from-purple-100 to-purple-200 shrink-0">
-                {playlist.thumbnail ? (
+                {playlist.thumbnail && !imgError ? (
                     <Image
                         src={playlist.thumbnail}
                         alt={playlist.name}
                         width={80}
                         height={80}
                         className="w-full h-full object-cover"
+                        onError={() => setImgError(true)}
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                        <ListMusic className="w-10 h-10 text-purple-500" />
+                    <div className="w-full h-full flex items-center justify-center bg-purple-50">
+                        <ListMusic className="w-8 h-8 text-purple-300" />
                     </div>
                 )}
             </div>

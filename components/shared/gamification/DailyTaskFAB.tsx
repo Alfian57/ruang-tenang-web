@@ -8,17 +8,19 @@ import { DailyTask } from "@/types";
 import { communityService } from "@/services/api";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/authStore";
+import { useDashboardStore } from "@/store/dashboardStore";
 
 interface DailyTaskFABProps {
   className?: string;
 }
 
 export function DailyTaskFAB({ className }: DailyTaskFABProps) {
-  const { token } = useAuthStore();
+  const { token, refreshUser } = useAuthStore();
   const [tasks, setTasks] = useState<DailyTask[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [claimingId, setClaimingId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { taskRefreshTrigger } = useDashboardStore();
 
   const loadTasks = useCallback(async () => {
     if (!token) return;
@@ -43,6 +45,19 @@ export function DailyTaskFAB({ className }: DailyTaskFABProps) {
 
   useEffect(() => {
     loadTasks();
+  }, [loadTasks, taskRefreshTrigger]);
+
+  // Refresh tasks when the panel is opened
+  useEffect(() => {
+    if (isOpen) {
+      loadTasks();
+    }
+  }, [isOpen, loadTasks]);
+
+  // Poll every 30s so FAB stays in sync with other components
+  useEffect(() => {
+    const interval = setInterval(loadTasks, 30_000);
+    return () => clearInterval(interval);
   }, [loadTasks]);
 
   const handleClaim = async (task: DailyTask) => {
@@ -52,13 +67,14 @@ export function DailyTaskFAB({ className }: DailyTaskFABProps) {
     try {
       const response = await communityService.claimTaskReward(token, task.id);
       if (response.data) {
-        toast.success(`Berhasil klaim! +${response.data.exp_gained} EXP`);
+        toast.success(`Berhasil klaim! +${response.data.xp_earned} EXP`);
         if (response.data.level_up) {
           toast.success("Level Up!", {
             description: "Selamat! Kamu naik level 🎉",
           });
         }
         loadTasks();
+        refreshUser(); // Refresh user data to update EXP in navbar
       }
     } catch (error) {
       console.error("Failed to claim task:", error);

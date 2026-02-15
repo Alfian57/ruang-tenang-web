@@ -30,8 +30,8 @@ function ToolbarButton({ onClick, isActive, disabled, children, title }: Toolbar
       disabled={disabled}
       title={title}
       className={cn(
-        "p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
-        isActive && "bg-gray-200 dark:bg-gray-700 text-primary",
+        "p-2 rounded hover:bg-gray-100 transition-colors",
+        isActive && "bg-gray-200 text-primary",
         disabled && "opacity-50 cursor-not-allowed"
       )}
     >
@@ -50,7 +50,7 @@ export function JournalToolbar({ editor, wordCount, onGeneratePrompt }: JournalT
     if (!editor) return null;
 
     return (
-        <div className="flex items-center gap-1 p-2 border-b border-gray-200 dark:border-gray-700 flex-wrap">
+        <div className="flex items-center gap-1 p-2 border-b border-gray-200 flex-wrap">
             <ToolbarButton
                 onClick={() => editor.chain().focus().toggleBold().run()}
                 isActive={editor.isActive("bold")}
@@ -65,7 +65,7 @@ export function JournalToolbar({ editor, wordCount, onGeneratePrompt }: JournalT
             >
                 <Italic className="w-4 h-4" />
             </ToolbarButton>
-            <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" />
+            <div className="w-px h-6 bg-gray-200 mx-1" />
             <ToolbarButton
                 onClick={() => editor.chain().focus().toggleBulletList().run()}
                 isActive={editor.isActive("bulletList")}
@@ -87,7 +87,7 @@ export function JournalToolbar({ editor, wordCount, onGeneratePrompt }: JournalT
             >
                 <Quote className="w-4 h-4" />
             </ToolbarButton>
-            <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" />
+            <div className="w-px h-6 bg-gray-200 mx-1" />
             <ToolbarButton
                 onClick={() => editor.chain().focus().undo().run()}
                 disabled={!editor.can().undo()}
@@ -111,7 +111,7 @@ export function JournalToolbar({ editor, wordCount, onGeneratePrompt }: JournalT
                     variant="ghost"
                     size="sm"
                     onClick={onGeneratePrompt}
-                    className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                    className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
                 >
                     <Sparkles className="w-4 h-4 mr-1" />
                     Ide Menulis
@@ -119,7 +119,7 @@ export function JournalToolbar({ editor, wordCount, onGeneratePrompt }: JournalT
             )}
 
             {/* Word count */}
-            <span className="text-xs text-gray-500 dark:text-gray-400 px-2">
+            <span className="text-xs text-gray-500 px-2">
                 {wordCount} kata
             </span>
         </div>

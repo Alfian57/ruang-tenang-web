@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, PanelLeftClose } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { adminGroups, moderatorGroups, memberGroups, type NavGroup } from "./nav-config";
 import { ROUTES } from "@/lib/routes";
@@ -53,7 +53,7 @@ export function Sidebar({
             {sidebarCollapsed ? (
               <Image src="/logo.png" alt="Ruang Tenang" width={32} height={32} className="object-contain" />
             ) : (
-              <Image src="/logo-full.png" alt="Ruang Tenang" width={0} height={0} sizes="100vw" className="h-8 w-auto object-contain" />
+              <Image src="/logo-full.png" alt="Ruang Tenang" width={0} height={0} sizes="100vw" className="h-8 w-auto object-contain" style={{ width: "auto" }} />
             )}
           </Link>
           {!sidebarCollapsed && (
@@ -61,7 +61,7 @@ export function Sidebar({
               onClick={onToggleCollapsed}
               className="hidden lg:flex w-8 h-8 rounded-lg bg-gray-100 items-center justify-center hover:bg-gray-200 transition-colors"
             >
-              <Image src="/images/sidebar-toggle.png" alt="" width={16} height={16} />
+              <PanelLeftClose className="w-4 h-4 text-gray-500" />
             </button>
           )}
         </div>
@@ -107,17 +107,24 @@ export function Sidebar({
                       isActive
                         ? "text-white bg-primary shadow-md"
                         : isHighlight
-                        ? "text-white bg-gradient-to-r from-purple-500 to-primary shadow-sm hover:shadow-md hover:brightness-110"
+                        ? "text-primary bg-primary/10 border border-primary/20 hover:bg-primary/15"
                         : "text-gray-600 hover:bg-gray-100",
                       sidebarCollapsed && "lg:justify-center lg:mx-2 lg:px-3"
                     )}
                     title={sidebarCollapsed ? link.label : undefined}
                   >
-                    <link.icon className={cn("w-5 h-5 shrink-0", (isActive || isHighlight) ? "text-white" : "text-gray-500")} />
+                    <link.icon className={cn("w-5 h-5 shrink-0", isActive ? "text-white" : isHighlight ? "text-primary" : "text-gray-500")} />
                     {!sidebarCollapsed && (
-                      <span className="font-medium flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
-                        {link.label}
-                      </span>
+                      <>
+                        <span className={cn("font-medium flex-1 whitespace-nowrap overflow-hidden text-ellipsis", isHighlight && "font-semibold")}>
+                          {link.label}
+                        </span>
+                        {isHighlight && (
+                          <span className="text-xs bg-primary/15 text-primary px-1.5 py-0.5 rounded-full font-semibold">
+                            ✨
+                          </span>
+                        )}
+                      </>
                     )}
                   </Link>
                 );

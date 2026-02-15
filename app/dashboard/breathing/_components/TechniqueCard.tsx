@@ -63,7 +63,26 @@ export function TechniqueCard({
                         <h4 className="font-medium text-sm truncate">{technique.name}</h4>
                         <p className="text-xs text-muted-foreground">{pattern}</p>
                     </div>
-                    {technique.is_favorite && (
+                    {onFavoriteToggle ? (
+                        <button
+                            type="button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onFavoriteToggle();
+                            }}
+                            className={cn(
+                                "p-1.5 rounded-full hover:bg-muted transition-colors",
+                                technique.is_favorite ? "text-yellow-400" : "text-muted-foreground hover:text-yellow-400"
+                            )}
+                        >
+                            <Star 
+                                className={cn(
+                                    "w-4 h-4 shrink-0", 
+                                    technique.is_favorite && "fill-current"
+                                )} 
+                            />
+                        </button>
+                    ) : technique.is_favorite && (
                         <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 shrink-0" />
                     )}
                 </div>

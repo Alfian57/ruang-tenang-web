@@ -90,6 +90,7 @@ export function JournalEditor({
     const [showCrisisModal, setShowCrisisModal] = useState(false);
 
     const editor = useEditor({
+        immediatelyRender: false,
         extensions: [
             StarterKit.configure({
                 heading: { levels: [1, 2, 3] },
@@ -169,9 +170,9 @@ export function JournalEditor({
     const selectedMood = moodOptions.find((m) => m.id === moodId);
 
     return (
-        <div className="flex flex-col h-full bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="flex flex-col h-full bg-white rounded-xl border border-gray-200 overflow-hidden">
             {/* Header with title */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="p-4 border-b border-gray-200">
                 <Input
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
@@ -182,12 +183,12 @@ export function JournalEditor({
 
             {/* Writing Prompt Banner */}
             {writingPrompt && (
-                <div className="mx-4 mt-4 p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+                <div className="mx-4 mt-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
                     <div className="flex items-start gap-2">
-                        <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0" />
+                        <Sparkles className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
                         <div>
-                            <p className="text-sm font-medium text-purple-800 dark:text-purple-300">Ide menulis:</p>
-                            <p className="text-sm text-purple-700 dark:text-purple-400 mt-1">{writingPrompt}</p>
+                            <p className="text-sm font-medium text-purple-800">Ide menulis:</p>
+                            <p className="text-sm text-purple-700 mt-1">{writingPrompt}</p>
                         </div>
                     </div>
                 </div>
@@ -204,15 +205,15 @@ export function JournalEditor({
             <div className="flex-1 overflow-auto p-4">
                 <EditorContent
                     editor={editor}
-                    className="prose prose-sm dark:prose-invert max-w-none min-h-[200px] focus:outline-none"
+                    className="prose prose-sm max-w-none min-h-[200px] focus:outline-none"
                 />
             </div>
 
             {/* Metadata & Actions */}
-            <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-4">
+            <div className="p-4 border-t border-gray-200 space-y-4">
                 {/* Mood Picker */}
                 <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Mood:</span>
+                    <span className="text-sm text-gray-600">Mood:</span>
                     <div className="relative">
                         <button
                             onClick={() => setShowMoodPicker(!showMoodPicker)}
@@ -220,7 +221,7 @@ export function JournalEditor({
                                 "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors",
                                 moodId
                                     ? "border-primary/30 bg-primary/5"
-                                    : "border-gray-200 dark:border-gray-600 hover:border-gray-300"
+                                    : "border-gray-200 hover:border-gray-300"
                             )}
                         >
                             {selectedMood ? (
@@ -233,7 +234,7 @@ export function JournalEditor({
                             )}
                         </button>
                         {showMoodPicker && (
-                            <div className="absolute bottom-full left-0 mb-2 p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg flex gap-1 z-10">
+                            <div className="absolute bottom-full left-0 mb-2 p-2 bg-white border border-gray-200 rounded-lg shadow-lg flex gap-1 z-10">
                                 {moodOptions.map((mood) => (
                                     <button
                                         key={mood.id}
@@ -242,7 +243,7 @@ export function JournalEditor({
                                             setShowMoodPicker(false);
                                         }}
                                         className={cn(
-                                            "p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors",
+                                            "p-2 rounded-lg hover:bg-gray-100 transition-colors",
                                             mood.id === moodId && "bg-primary/10 ring-2 ring-primary"
                                         )}
                                         title={mood.label}
@@ -261,7 +262,7 @@ export function JournalEditor({
                     {tags.map((tag) => (
                         <span
                             key={tag}
-                            className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm"
+                            className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-full text-sm text-gray-700"
                         >
                             #{tag}
                             <button
@@ -285,7 +286,7 @@ export function JournalEditor({
                 </div>
 
                 {/* Privacy Controls */}
-                <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-800">
+                <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                     <div className="flex items-center gap-4">
                         {/* Private Toggle */}
                         <button
@@ -293,8 +294,8 @@ export function JournalEditor({
                             className={cn(
                                 "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-colors",
                                 isPrivate
-                                    ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                                    : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                                    ? "bg-green-100 text-green-700"
+                                    : "bg-gray-100 text-gray-600"
                             )}
                         >
                             {isPrivate ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
@@ -307,8 +308,8 @@ export function JournalEditor({
                             className={cn(
                                 "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-colors",
                                 shareWithAI
-                                    ? "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400"
-                                    : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                                    ? "bg-purple-100 text-purple-700"
+                                    : "bg-gray-100 text-gray-600"
                             )}
                             title={shareWithAI ? "AI dapat membaca jurnal ini" : "AI tidak dapat membaca jurnal ini"}
                         >

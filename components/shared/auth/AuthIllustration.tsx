@@ -9,7 +9,7 @@ interface AuthIllustrationProps {
   description: string;
 }
 
-export function AuthIllustration({ title, description }: AuthIllustrationProps) {
+export function AuthIllustration({ title, description, visual, floatingElements }: AuthIllustrationProps & { visual?: React.ReactNode; floatingElements?: React.ReactNode }) {
   return (
     <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-gradient-to-br from-red-600 via-rose-500 to-orange-400">
       {/* Decorative circles/blobs */}
@@ -39,35 +39,41 @@ export function AuthIllustration({ title, description }: AuthIllustrationProps) 
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative z-10"
           >
-            <Image
-              src="/images/landing/about-doctor.png"
-              alt="RuangTenang App"
-              width={400}
-              height={500}
-              className="object-contain drop-shadow-2xl"
-              priority
-            />
+            {visual ? visual : (
+              <Image
+                src="/images/landing/about-doctor.png"
+                alt="RuangTenang App"
+                width={400}
+                height={500}
+                className="object-contain drop-shadow-2xl"
+                priority
+              />
+            )}
           </motion.div>
           
           {/* Floating icons with animation */}
-          <FloatingIcon className="top-0 right-0" delay={0}>
-             <Heart className="w-8 h-8 text-rose-500 fill-rose-500" />
-          </FloatingIcon>
-          
-          <FloatingIcon className="bottom-20 -left-8" delay={1.5}>
-            <Stethoscope className="w-8 h-8 text-blue-500" />
-          </FloatingIcon>
-          
-          <FloatingIcon className="top-1/2 -right-8" delay={0.8}>
-            <Pill className="w-8 h-8 text-orange-500" />
-          </FloatingIcon>
+          {floatingElements ? floatingElements : (
+            <>
+              <FloatingIcon className="top-0 right-0" delay={0}>
+                 <Heart className="w-8 h-8 text-rose-500 fill-rose-500" />
+              </FloatingIcon>
+              
+              <FloatingIcon className="bottom-20 -left-8" delay={1.5}>
+                <Stethoscope className="w-8 h-8 text-blue-500" />
+              </FloatingIcon>
+              
+              <FloatingIcon className="top-1/2 -right-8" delay={0.8}>
+                <Pill className="w-8 h-8 text-orange-500" />
+              </FloatingIcon>
+            </>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-function FloatingIcon({ children, className, delay }: { children: React.ReactNode, className?: string, delay: number }) {
+export function FloatingIcon({ children, className, delay }: { children: React.ReactNode, className?: string, delay: number }) {
   return (
     <motion.div
       className={`absolute bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white/50 ${className} z-20`}

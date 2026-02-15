@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { Loader2, Mail, Lock, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,8 +32,6 @@ export default function RegisterPage() {
   const { register: registerUser, isLoading } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -93,7 +91,6 @@ export default function RegisterPage() {
             <div className="space-y-2">
               <Label htmlFor="name" className="text-gray-700 font-medium">Nama Lengkap</Label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
                   id="name"
                   type="text"
@@ -101,6 +98,7 @@ export default function RegisterPage() {
                   className="pl-12 h-12 rounded-xl border-gray-200 focus:border-primary focus:ring-primary"
                   {...register("name")}
                 />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
               </div>
               {errors.name && (
                 <p className="text-sm text-red-500">{errors.name.message}</p>
@@ -111,7 +109,6 @@ export default function RegisterPage() {
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
                   id="email"
                   type="email"
@@ -119,6 +116,7 @@ export default function RegisterPage() {
                   className="pl-12 h-12 rounded-xl border-gray-200 focus:border-primary focus:ring-primary"
                   {...register("email")}
                 />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
               </div>
               {errors.email && (
                 <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -129,21 +127,14 @@ export default function RegisterPage() {
             <div className="space-y-2">
               <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
                   id="password"
-                  type={showPassword ? "text" : "password"}
+                  type="password"
                   placeholder="••••••••••••"
-                  className="pl-12 pr-12 h-12 rounded-xl border-gray-200 focus:border-primary focus:ring-primary"
+                  className="pl-12 h-12 rounded-xl border-gray-200 focus:border-primary focus:ring-primary"
                   {...register("password")}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
               </div>
               {errors.password && (
                 <p className="text-sm text-red-500">{errors.password.message}</p>
@@ -154,21 +145,14 @@ export default function RegisterPage() {
             <div className="space-y-2">
               <Label htmlFor="confirmPassword" className="text-gray-700 font-medium">Konfirmasi Password</Label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
                   id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
+                  type="password"
                   placeholder="••••••••••••"
-                  className="pl-12 pr-12 h-12 rounded-xl border-gray-200 focus:border-primary focus:ring-primary"
+                  className="pl-12 h-12 rounded-xl border-gray-200 focus:border-primary focus:ring-primary"
                   {...register("confirmPassword")}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
               </div>
               {errors.confirmPassword && (
                 <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
@@ -202,7 +186,6 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* Right Side - Illustration */}
       {/* Right Side - Illustration */}
       <AuthIllustration 
         title="RuangTenang"

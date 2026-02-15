@@ -4,25 +4,55 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { Calendar, ArrowLeft, Tag, Edit } from "lucide-react";
+import { Calendar, ArrowLeft, Tag, Edit, Ban } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { articleService } from "@/services/api";
 import { Article } from "@/types";
 import { formatDate } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
+import { useBlockStore } from "@/store/blockStore";
+import { toast } from "sonner";
 
 export default function DashboardArticleDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user, token } = useAuthStore();
+  const { blockUser, isBlocked } = useBlockStore();
   const [article, setArticle] = useState<Article | null>(null);
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showBlockConfirm, setShowBlockConfirm] = useState(false);
+  const [isBlocking, setIsBlocking] = useState(false);
 
   const isAdmin = user?.role === "admin";
   const isModerator = user?.role === "moderator";
   const isArticleAuthor = user?.id === article?.author?.id;
+  const authorId = article?.author?.id || article?.user_id;
+
+  const handleBlockUser = async () => {
+    if (!token || !authorId) return;
+    setIsBlocking(true);
+    try {
+      await blockUser(token, authorId);
+      toast.success("Pengguna berhasil diblokir");
+      setShowBlockConfirm(false);
+      router.back();
+    } catch (error) {
+      console.error("Failed to block user:", error);
+      toast.error("Gagal memblokir pengguna");
+    } finally {
+      setIsBlocking(false);
+    }
+  };
 
   const loadArticle = useCallback(async () => {
     const id = params.id as string;
@@ -173,6 +203,19 @@ export default function DashboardArticleDetailPage() {
                     oleh <span className="text-gray-600 font-medium">{article.author.name}</span>
                   </span>
                 )}
+                {/* Block User Button */}
+                {article.author && !isArticleAuthor && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-500 hover:text-red-600 hover:bg-red-50 h-7 px-2 text-xs gap-1"
+                    onClick={() => setShowBlockConfirm(true)}
+                    disabled={isBlocked(authorId)}
+                  >
+                    <Ban className="w-3 h-3" />
+                    {isBlocked(authorId) ? "Diblokir" : "Blokir"}
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -254,6 +297,30 @@ export default function DashboardArticleDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Block Confirm Dialog */}
+      <Dialog open={showBlockConfirm} onOpenChange={setShowBlockConfirm}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Blokir Pengguna?</DialogTitle>
+            <DialogDescription>
+              Konten dari <span className="font-semibold text-gray-900">{article?.author?.name}</span> tidak akan ditampilkan lagi kepada Anda. Anda bisa membuka blokir kapan saja melalui menu Pengguna Diblokir.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShowBlockConfirm(false)} disabled={isBlocking}>
+              Batal
+            </Button>
+            <Button
+              className="bg-red-500 hover:bg-red-600 text-white"
+              onClick={handleBlockUser}
+              disabled={isBlocking}
+            >
+              {isBlocking ? "Memblokir..." : "Ya, Blokir"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

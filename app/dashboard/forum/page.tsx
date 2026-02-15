@@ -21,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuthStore } from "@/store/authStore";
+import { useBlockStore } from "@/store/blockStore";
 import { toast } from "sonner";
 
 export default function ForumPage() {
@@ -28,6 +29,7 @@ export default function ForumPage() {
   const [categories, setCategories] = useState<ForumCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { token } = useAuthStore();
+  const isBlocked = useBlockStore((s) => s.isBlocked);
   
   // Create Modal State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -234,7 +236,7 @@ export default function ForumPage() {
              </p>
            </div>
         ) : (
-          forums.map((forum) => (
+          forums.filter((forum) => !isBlocked(forum.user_id)).map((forum) => (
             <Link 
               href={`/dashboard/forum/${forum.id}`} 
               key={forum.id}

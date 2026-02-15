@@ -85,6 +85,7 @@ export default function ChatPage() {
     toggleFavorite,
     toggleTrash,
     setFilter,
+    clearActiveSession,
   } = useChatStore();
 
   // Local UI state for dialogs
@@ -166,6 +167,10 @@ export default function ChatPage() {
       if (!isNaN(sessionId) && activeSession?.id !== sessionId) {
         loadSession(token, sessionId);
       }
+    } else if (!urlSession && activeSession) {
+      // If no session in URL but we have an active session in store, clear it.
+      // This happens when navigating from a specific session to the main chat page (e.g. via sidebar).
+      clearActiveSession();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, token]);
@@ -299,10 +304,17 @@ export default function ChatPage() {
     }
   };
 
-  // Suggested prompt handler - creates a new session and sends the prompt
+  // Suggested prompt handler - creates a new session and sends the prompt OR uses existing session
   const handleSuggestedPrompt = async (prompt: string) => {
     if (!token) return;
     
+    // If there is an active session, send the message to it
+    if (activeSession) {
+      await sendTextMessage(token, prompt);
+      return;
+    }
+
+    // Otherwise create a new session
     // Create a session with the prompt as title (truncated)
     const sessionTitle = prompt.length > 50 ? prompt.substring(0, 50) + "..." : prompt;
     await createSession(token, sessionTitle);

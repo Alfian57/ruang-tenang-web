@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
@@ -39,6 +41,8 @@ export function PlaylistCard({
     onClick,
     isSelected,
 }: PlaylistCardProps) {
+    const [imgError, setImgError] = useState(false);
+
     return (
         <motion.div
             layout
@@ -54,16 +58,17 @@ export function PlaylistCard({
             <div className="flex items-center gap-4">
                 {/* Thumbnail */}
                 <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-linear-to-br from-purple-100 to-purple-200 shrink-0">
-                    {playlist.thumbnail ? (
+                    {playlist.thumbnail && !imgError ? (
                         <Image
                             src={playlist.thumbnail}
                             alt={playlist.name}
                             fill
                             className="object-cover"
+                            onError={() => setImgError(true)}
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                            <ListMusic className="w-8 h-8 text-purple-500" />
+                        <div className="w-full h-full flex items-center justify-center bg-purple-50">
+                            <ListMusic className="w-8 h-8 text-purple-300" />
                         </div>
                     )}
 
@@ -152,6 +157,8 @@ export function PlaylistCardCompact({
     onClick,
     isActive,
 }: PlaylistItemCompactProps) {
+    const [imgError, setImgError] = useState(false);
+
     return (
         <div
             className={cn(
@@ -161,17 +168,18 @@ export function PlaylistCardCompact({
             onClick={onClick}
         >
             <div className="w-10 h-10 rounded-lg overflow-hidden bg-linear-to-br from-purple-100 to-purple-200 shrink-0">
-                {playlist.thumbnail ? (
+                {playlist.thumbnail && !imgError ? (
                     <Image
                         src={playlist.thumbnail}
                         alt={playlist.name}
                         width={40}
                         height={40}
                         className="w-full h-full object-cover"
+                        onError={() => setImgError(true)}
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                        <ListMusic className="w-5 h-5 text-purple-500" />
+                    <div className="w-full h-full flex items-center justify-center bg-purple-50">
+                        <ListMusic className="w-5 h-5 text-purple-300" />
                     </div>
                 )}
             </div>

@@ -146,4 +146,12 @@ export const createSessionSlice: StateCreator<ChatStore, [], [], ChatSessionStat
         isLoading: false,
     });
   },
+
+  clearActiveSession: () => {
+    set({
+      activeSession: null,
+      messages: [],
+      currentSummary: null,
+    });
+  },
 });

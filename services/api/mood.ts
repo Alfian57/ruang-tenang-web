@@ -10,6 +10,11 @@ interface MoodStats {
   [key: string]: unknown;
 }
 
+export interface TodayMoodResponse {
+  has_checked: boolean;
+  mood: UserMood | null;
+}
+
 export const moodService = {
   getHistory(token: string, params?: { start_date?: string; end_date?: string; page?: number; limit?: number }) {
     return httpClient.get<PaginatedResponse<UserMood>>("/user-moods", { token, params: params as Record<string, string | number | boolean | undefined> });
@@ -23,7 +28,12 @@ export const moodService = {
     return httpClient.get<ApiResponse<UserMood>>("/user-moods/latest", { token });
   },
 
+  checkToday(token: string) {
+    return httpClient.get<ApiResponse<TodayMoodResponse>>("/user-moods/today", { token });
+  },
+
   getStats(token: string, days?: number) {
     return httpClient.get<ApiResponse<MoodStats>>("/user-moods/stats", { token, params: days ? { days } : undefined });
   },
 };
+

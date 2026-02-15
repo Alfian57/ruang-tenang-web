@@ -18,6 +18,7 @@ export interface ChatSessionActions {
   toggleTrash: (token: string, sessionId: number) => Promise<void>;
   setFilter: (filter: FilterType) => void;
   reset: () => void;
+  clearActiveSession: () => void;
 }
 
 export interface ChatMessageState {

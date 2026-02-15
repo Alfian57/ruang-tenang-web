@@ -25,11 +25,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { storyService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
+import { useBlockStore } from "@/store/blockStore";
 import { StoryCard, StoryCategory } from "@/types";
 
 export default function StoriesPage() {
   const router = useRouter();
   useAuthStore();
+  const isBlocked = useBlockStore((s) => s.isBlocked);
   const [stories, setStories] = useState<StoryCard[]>([]);
   const [featuredStories, setFeaturedStories] = useState<StoryCard[]>([]);
   const [categories, setCategories] = useState<StoryCategory[]>([]);
@@ -67,9 +69,13 @@ export default function StoriesPage() {
         category_id: selectedCategory !== "all" ? selectedCategory : undefined,
         search: searchQuery.trim() || undefined,
       });
-      if (response.data) {
+      console.log("Stories response:", response);
+      if (response.data && Array.isArray(response.data)) {
         setStories(response.data);
         setTotalPages(response.meta?.total_pages || 1);
+      } else {
+        console.error("Invalid stories response format:", response);
+        setStories([]);
       }
     } catch (error) {
       console.error("Failed to load stories:", error);
@@ -81,8 +87,11 @@ export default function StoriesPage() {
   const loadFeaturedStories = useCallback(async () => {
     try {
       const response = await storyService.getFeatured();
-      if (response.data) {
+      if (response.data && Array.isArray(response.data)) {
         setFeaturedStories(response.data.slice(0, 3));
+      } else {
+        console.error("Invalid featured stories response format:", response);
+        setFeaturedStories([]);
       }
     } catch (error) {
       console.error("Failed to load featured stories:", error);
@@ -121,7 +130,7 @@ export default function StoriesPage() {
               Kisah Pilihan
             </h2>
             <div className="grid md:grid-cols-3 gap-6">
-              {featuredStories.map((story) => (
+              {featuredStories.filter((story) => story.is_anonymous || !isBlocked(story.author?.id)).map((story) => (
                 <Link
                   key={story.id}
                   href={`/dashboard/stories/${story.id}`}
@@ -233,7 +242,7 @@ export default function StoriesPage() {
         ) : (
           <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {stories.map((story) => (
+              {stories.filter((story) => story.is_anonymous || !isBlocked(story.author?.id)).map((story) => (
                 <Link
                   key={story.id}
                   href={`/dashboard/stories/${story.id}`}

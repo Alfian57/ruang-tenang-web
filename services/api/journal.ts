@@ -64,7 +64,7 @@ export const journalService = {
   },
 
   getAIAccessLogs(token: string, page?: number, limit?: number) {
-    return httpClient.get<PaginatedResponse<JournalAIAccessLog>>("/journals/ai-access-logs", { token, params: { page, limit } });
+    return httpClient.get<ApiResponse<JournalAIAccessLog[]>>("/journals/ai-access-logs", { token, params: { page, limit } });
   },
 
   // Analytics

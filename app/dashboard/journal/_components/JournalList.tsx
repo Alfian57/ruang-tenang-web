@@ -37,15 +37,15 @@ function JournalListSkeleton() {
             {[1, 2, 3, 4].map((i) => (
                 <div
                     key={i}
-                    className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+                    className="p-4 bg-white rounded-lg border border-gray-200"
                 >
                     <div className="flex items-start justify-between">
                         <div className="flex-1 space-y-2">
-                            <Skeleton className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700" />
-                            <Skeleton className="h-4 w-full bg-gray-200 dark:bg-gray-700" />
-                            <Skeleton className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700" />
+                            <Skeleton className="h-5 w-3/4 bg-gray-200" />
+                            <Skeleton className="h-4 w-full bg-gray-200" />
+                            <Skeleton className="h-4 w-2/3 bg-gray-200" />
                         </div>
-                        <Skeleton className="h-8 w-8 bg-gray-200 dark:bg-gray-700 ml-4" />
+                        <Skeleton className="h-8 w-8 bg-gray-200 ml-4" />
                     </div>
                 </div>
             ))}
@@ -77,10 +77,10 @@ function JournalListItem({
     return (
         <div
             className={cn(
-                "group p-4 bg-white dark:bg-gray-800 rounded-lg border transition-all cursor-pointer hover:shadow-md",
+                "group p-4 bg-white rounded-lg border transition-all cursor-pointer hover:shadow-md",
                 isActive
                     ? "border-primary ring-2 ring-primary/20"
-                    : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                    : "border-gray-200 hover:border-gray-300"
             )}
             onClick={onSelect}
         >
@@ -93,13 +93,13 @@ function JournalListItem({
                                 {journal.mood_emoji}
                             </span>
                         )}
-                        <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                        <h3 className="font-medium text-gray-900 truncate">
                             {journal.title}
                         </h3>
                     </div>
 
                     {/* Content Preview */}
-                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
+                    <p className="text-sm text-gray-600 line-clamp-2 mb-2">
                         {contentPreview || "Tidak ada konten..."}
                     </p>
 
@@ -110,7 +110,7 @@ function JournalListItem({
                             {journal.tags.slice(0, 3).map((tag) => (
                                 <span
                                     key={tag}
-                                    className="text-xs px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-400"
+                                    className="text-xs px-1.5 py-0.5 bg-gray-100 rounded text-gray-600"
                                 >
                                     #{tag}
                                 </span>
@@ -124,7 +124,7 @@ function JournalListItem({
                     )}
 
                     {/* Meta */}
-                    <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-500">
+                    <div className="flex items-center gap-3 text-xs text-gray-500">
                         <span>
                             {formatDistanceToNow(new Date(journal.created_at), {
                                 addSuffix: true,
@@ -161,7 +161,7 @@ function JournalListItem({
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <button
-                            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="p-1.5 rounded-lg hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <MoreVertical className="w-4 h-4 text-gray-500" />
@@ -216,10 +216,10 @@ export function JournalList({
         return (
             <div className="text-center py-12">
                 <div className="text-5xl mb-4">📝</div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
                     Belum ada jurnal
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-600">
                     Mulai menulis jurnal pertamamu hari ini!
                 </p>
             </div>

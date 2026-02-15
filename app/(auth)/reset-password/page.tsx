@@ -7,12 +7,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Lock, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { Loader2, Lock, Eye, EyeOff, CheckCircle, ShieldCheck, KeyRound, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authService } from "@/services/api";
 import { ROUTES } from "@/lib/routes";
+import { AuthIllustration, FloatingIcon } from "@/components/shared/auth/AuthIllustration";
 
 const resetPasswordSchema = z.object({
   email: z.string().email("Email tidak valid"),
@@ -193,6 +194,8 @@ function ResetPasswordForm() {
   );
 }
 
+
+
 export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen flex">
@@ -222,23 +225,30 @@ export default function ResetPasswordPage() {
       </div>
 
       {/* Right Side */}
-      <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-linear-to-br from-red-400 via-red-500 to-red-600">
-         <div className="absolute inset-0 bg-linear-to-br from-red-400 via-red-500 to-red-600">
-          <div className="absolute top-20 right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-32 left-20 w-48 h-48 bg-white/10 rounded-full blur-2xl" />
-        </div>
-        <div className="relative z-10 flex flex-col items-center justify-center w-full p-12 text-white">
-           <div className="relative mb-8">
-            <div className="w-64 h-64 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-              <CheckCircle className="w-32 h-32 text-white" />
-            </div>
+      <AuthIllustration 
+        title="Mulai Lembaran Baru"
+        description="Pastikan password baru Anda kuat dan unik untuk menjaga keamanan akun Anda."
+        visual={
+          <div className="w-64 h-64 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+            <CheckCircle className="w-32 h-32 text-white drop-shadow-lg" />
           </div>
-          <h2 className="text-3xl font-bold mb-4">Mulai Lembaran Baru</h2>
-          <p className="text-center text-white/90 max-w-md">
-            Pastikan password baru Anda kuat dan unik untuk menjaga keamanan akun Anda.
-          </p>
-        </div>
-      </div>
+        }
+        floatingElements={
+          <>
+            <FloatingIcon className="top-20 right-10" delay={0}>
+               <Sparkles className="w-8 h-8 text-yellow-300" />
+            </FloatingIcon>
+            
+            <FloatingIcon className="bottom-32 left-10" delay={1.5}>
+              <ShieldCheck className="w-8 h-8 text-green-500" />
+            </FloatingIcon>
+            
+            <FloatingIcon className="top-1/2 right-0" delay={0.8}>
+              <KeyRound className="w-8 h-8 text-blue-500" />
+            </FloatingIcon>
+          </>
+        }
+      />
     </div>
   );
 }

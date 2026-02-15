@@ -86,7 +86,7 @@ export default function BreathingPage() {
                         </button>
                     )}
                     <div>
-                        <h1 className="text-2xl font-bold">Latihan Pernapasan</h1>
+                        <h1 className="text-2xl font-bold">Pernafasan</h1>
                         <p className="text-muted-foreground">
                             {viewMode === "techniques" && "Pilih teknik untuk memulai"}
                             {viewMode === "session" && selectedTechnique?.name}

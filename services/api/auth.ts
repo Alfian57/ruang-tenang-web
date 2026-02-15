@@ -20,7 +20,7 @@ export const authService = {
   },
 
   getProfile(token: string) {
-    return httpClient.get<ApiResponse<User>>("/auth/profile", { token });
+    return httpClient.get<ApiResponse<User>>("/auth/me", { token });
   },
 
   updateProfile(token: string, data: { name?: string; email?: string; bio?: string; avatar_url?: string }) {

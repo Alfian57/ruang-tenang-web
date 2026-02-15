@@ -6,11 +6,12 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Mail, ArrowLeft, CheckCircle, Lock } from "lucide-react";
+import { Loader2, Mail, ArrowLeft, CheckCircle, Lock, ShieldCheck, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authService } from "@/services/api";
+import { AuthIllustration, FloatingIcon } from "@/components/shared/auth/AuthIllustration";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Email tidak valid"),
@@ -93,7 +94,6 @@ export default function ForgotPasswordPage() {
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <Input
                     id="email"
                     type="email"
@@ -101,6 +101,7 @@ export default function ForgotPasswordPage() {
                     className="pl-12 h-12 rounded-xl border-gray-200 focus:border-primary focus:ring-primary"
                     {...register("email")}
                   />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                 </div>
                 {errors.email && (
                   <p className="text-sm text-red-500">{errors.email.message}</p>
@@ -133,24 +134,31 @@ export default function ForgotPasswordPage() {
         </div>
       </div>
 
-      {/* Right Side */}
-      <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-linear-to-br from-red-400 via-red-500 to-red-600">
-         <div className="absolute inset-0 bg-linear-to-br from-red-400 via-red-500 to-red-600">
-          <div className="absolute top-20 right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-32 left-20 w-48 h-48 bg-white/10 rounded-full blur-2xl" />
-        </div>
-        <div className="relative z-10 flex flex-col items-center justify-center w-full p-12 text-white">
-          <div className="relative mb-8">
-            <div className="w-64 h-64 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-              <Lock className="w-32 h-32 text-white" />
-            </div>
+      {/* Right Side - Illustration */}
+      <AuthIllustration 
+        title="Keamanan Akun"
+        description="Kami menjaga keamanan akun Anda dengan serius. Reset password Anda jika Anda merasa akun Anda tidak aman."
+        visual={
+          <div className="w-64 h-64 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+            <Lock className="w-32 h-32 text-white drop-shadow-lg" />
           </div>
-          <h2 className="text-3xl font-bold mb-4">Keamanan Akun</h2>
-          <p className="text-center text-white/90 max-w-md">
-            Kami menjaga keamanan akun Anda dengan serius. Reset password Anda jika Anda merasa akun Anda tidak aman.
-          </p>
-        </div>
-      </div>
+        }
+        floatingElements={
+          <>
+            <FloatingIcon className="top-20 right-10" delay={0}>
+               <ShieldCheck className="w-8 h-8 text-green-500" />
+            </FloatingIcon>
+            
+            <FloatingIcon className="bottom-32 left-10" delay={1.5}>
+              <KeyRound className="w-8 h-8 text-yellow-500" />
+            </FloatingIcon>
+            
+            <FloatingIcon className="top-1/2 right-0" delay={0.8}>
+              <Lock className="w-8 h-8 text-blue-500" />
+            </FloatingIcon>
+          </>
+        }
+      />
     </div>
   );
 }

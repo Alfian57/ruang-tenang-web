@@ -1,6 +1,25 @@
 /**
  * Date formatting utilities with Indonesian locale.
+ *
+ * IMPORTANT: The backend sends timestamps from TIMESTAMP WITHOUT TIME ZONE columns.
+ * Due to DSN TimeZone=Asia/Jakarta, the stored values are WIB wall-clock times
+ * but serialized with a "Z" (UTC) suffix. Use parseApiDate() to strip the "Z"
+ * so the browser correctly interprets them as local time.
  */
+
+/**
+ * Parse a date string from the API, stripping any trailing "Z" suffix.
+ * This prevents double timezone conversion since backend timestamps
+ * already represent WIB wall-clock time but are labeled as UTC.
+ */
+export function parseApiDate(date: string | Date): Date {
+  if (typeof date === "string") {
+    // Remove trailing Z or timezone offset to treat as local time
+    return new Date(date.replace(/Z$/i, ""));
+  }
+  return date;
+}
+
 
 /**
  * Format a date to Indonesian long format (e.g., "15 Desember 2024").

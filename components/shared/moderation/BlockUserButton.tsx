@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { moderationService } from "@/services/api";
+import { useBlockStore } from "@/store/blockStore";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/authStore";
 
@@ -32,6 +32,8 @@ export function BlockUserButton({
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { token } = useAuthStore();
+  const { blockUser, isBlocked } = useBlockStore();
+  const userIsBlocked = isBlocked(userId);
 
   const handleBlock = async () => {
     if (!token) {
@@ -41,7 +43,7 @@ export function BlockUserButton({
 
     setSubmitting(true);
     try {
-      await moderationService.blockUser(token, userId);
+      await blockUser(token, userId);
       toast.success(`Berhasil memblokir ${userName}`);
       setOpen(false);
       onSuccess?.();
@@ -56,9 +58,9 @@ export function BlockUserButton({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm" className={className}>
+        <Button variant="ghost" size="sm" className={className} disabled={userIsBlocked}>
           <Ban className="w-4 h-4 mr-2" />
-          Blokir
+          {userIsBlocked ? "Diblokir" : "Blokir"}
         </Button>
       </DialogTrigger>
       <DialogContent>
