@@ -20,7 +20,7 @@ export function Footer() {
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-6">
               <Image
-                src="/logo-full.png"
+                src="/logo-full.webp"
                 alt="Ruang Tenang"
                 width={140}
                 height={50}

@@ -1,8 +1,8 @@
 "use client";
 
 import { BreathingStats, RecommendationsResponse, BreathingTechnique } from "@/types/breathing";
-import { StreakBanner } from "./BreathingStats";
-import { TechniqueGrid } from "./TechniqueCard";
+import { StreakBanner } from "./StreakBanner";
+import { TechniqueGrid } from "./TechniqueGrid";
 import { Sparkles, Star } from "lucide-react";
 
 interface TechniquesViewProps {

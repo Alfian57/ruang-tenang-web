@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, Music, Play, Pause, Plus } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { Song, SongCategory } from "@/types";
 
 interface CategoryDetailViewProps {

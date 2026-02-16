@@ -2,6 +2,7 @@
 export interface SongCategory {
   id: number;
   name: string;
+  slug?: string;
   thumbnail: string;
   song_count?: number;
   created_at: string;

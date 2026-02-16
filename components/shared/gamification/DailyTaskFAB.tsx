@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Check, Gift, Lock, RefreshCw, Trophy, X, ClipboardList } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { DailyTask } from "@/types";
 import { communityService } from "@/services/api";
 import { toast } from "sonner";

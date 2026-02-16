@@ -1,154 +1,39 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
-import { Search, Plus, Edit, Trash2, Eye, AlertCircle } from "lucide-react";
+import { Search, Plus, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { articleService } from "@/services/api";
-import { useAuthStore } from "@/store/authStore";
-import { useBlockStore } from "@/store/blockStore";
-import { formatDate } from "@/lib/utils";
-import { Article, ArticleCategory } from "@/types";
-
-interface MyArticle {
-  id: number;
-  title: string;
-  thumbnail: string;
-  excerpt?: string;
-  status: string;
-  moderation_status?: string;
-  category?: {
-    id: number;
-    name: string;
-  };
-  created_at: string;
-}
+import { EmptyState } from "@/components/ui/empty-state";
+import { useArticlesPage } from "./_hooks/useArticlesPage";
+import { BrowseArticleCard } from "./_components/BrowseArticleCard";
+import { MyArticleCard } from "./_components/MyArticleCard";
 
 export default function ArticlesPage() {
-  const { token, user } = useAuthStore();
-  const isBlocked = useBlockStore((s) => s.isBlocked);
-  const searchParams = useSearchParams();
+  const {
+    user,
+    activeTab,
+    search,
+    mySearch,
+    selectedCategory,
+    categories,
+    publishedArticles,
+    isBrowseLoading,
+    myArticles,
+    isMyLoading,
+    deleteArticleId,
+    setActiveTab,
+    setSearch,
+    setMySearch,
+    setSelectedCategory,
+    setDeleteArticleId,
+    handleDelete,
+  } = useArticlesPage();
   const router = useRouter();
-  const pathname = usePathname();
-
-  // URL state
-  const activeTab = searchParams.get("tab") || "browse";
-  const search = searchParams.get("search") || "";
-  const mySearch = searchParams.get("mySearch") || "";
-
-  const updateUrl = useCallback((updates: Record<string, string | null>) => {
-    const params = new URLSearchParams(searchParams.toString());
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value) params.set(key, value);
-      else params.delete(key);
-    });
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [searchParams, router, pathname]);
-
-  const setActiveTab = (value: string) => updateUrl({ tab: value === "browse" ? null : value });
-  const setSearch = (value: string) => updateUrl({ search: value || null });
-  const setMySearch = (value: string) => updateUrl({ mySearch: value || null });
-  const selectedCategory = searchParams.get("category") ? parseInt(searchParams.get("category")!, 10) : null;
-  const setSelectedCategory = (id: number | null) => updateUrl({ category: id ? String(id) : null });
-
-  // Browse tab state
-  const [publishedArticles, setPublishedArticles] = useState<Article[]>([]);
-  const [categories, setCategories] = useState<ArticleCategory[]>([]);
-  const [isBrowseLoading, setIsBrowseLoading] = useState(true);
-
-  // My articles tab state
-  const [myArticles, setMyArticles] = useState<MyArticle[]>([]);
-  const [isMyLoading, setIsMyLoading] = useState(true);
-  const [deleteArticleId, setDeleteArticleId] = useState<number | null>(null);
-
-  const loadCategories = useCallback(async () => {
-    try {
-      const response = await articleService.getCategories() as { data: ArticleCategory[] };
-      setCategories(response.data || []);
-    } catch (error) {
-      console.error("Failed to load categories:", error);
-    }
-  }, []);
-
-  const loadPublishedArticles = useCallback(async () => {
-    setIsBrowseLoading(true);
-    try {
-      const response = await articleService.getArticles({
-        category_id: selectedCategory || undefined,
-        search: search || undefined,
-      }) as { data: Article[] };
-      setPublishedArticles(response.data || []);
-    } catch (error) {
-      console.error("Failed to load articles:", error);
-    } finally {
-      setIsBrowseLoading(false);
-    }
-  }, [selectedCategory, search]);
-
-  const loadMyArticles = useCallback(async () => {
-    if (!token) return;
-    setIsMyLoading(true);
-    try {
-      const response = await articleService.getMyArticles(token) as { data: MyArticle[] };
-      setMyArticles(response.data || []);
-    } catch (error) {
-      console.error("Failed to load my articles:", error);
-    } finally {
-      setIsMyLoading(false);
-    }
-  }, [token]);
-
-  useEffect(() => {
-    loadCategories();
-  }, [loadCategories]);
-
-  useEffect(() => {
-    loadPublishedArticles();
-  }, [loadPublishedArticles]);
-
-  useEffect(() => {
-    loadMyArticles();
-  }, [loadMyArticles]);
-
-  const handleDelete = async (id: number) => {
-    if (!token) return;
-    try {
-      await articleService.deleteArticle(token, id);
-      setDeleteArticleId(null);
-      loadMyArticles();
-    } catch (error) {
-      console.error("Failed to delete article:", error);
-    }
-  };
-
-  const filteredMyArticles = myArticles.filter(a =>
-    a.title.toLowerCase().includes(mySearch.toLowerCase())
-  );
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case "published":
-        return <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">Dipublikasikan</span>;
-      case "draft":
-        return <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">Draf</span>;
-      case "pending":
-        return <span className="px-2 py-1 text-xs rounded-full bg-amber-100 text-amber-700">Menunggu Persetujuan</span>;
-      case "blocked":
-        return <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">Diblokir</span>;
-      case "rejected":
-        return <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">Ditolak</span>;
-      case "revision_needed":
-        return <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">Perlu Revisi</span>;
-      default:
-        return null;
-    }
-  };
 
   return (
     <div className="p-4 lg:p-6">
@@ -224,63 +109,21 @@ export default function ArticlesPage() {
             </div>
           ) : publishedArticles.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {publishedArticles.filter((article) => !isBlocked(article.author?.id || article.user_id)).map((article) => {
-                const isOwn = user?.id === article.author?.id || user?.id === article.user_id;
-                return (
-                  <Link key={article.id} href={ROUTES.articleRead(article.id)}>
-                    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 bg-white cursor-pointer group h-full flex flex-col">
-                      <div className="relative h-40 overflow-hidden bg-gray-100">
-                        {article.thumbnail ? (
-                          <Image
-                            src={article.thumbnail}
-                            alt={article.title}
-                            width={400}
-                            height={200}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/15">
-                            <span className="text-4xl">📄</span>
-                          </div>
-                        )}
-                        {/* Category badge */}
-                        <span className="absolute top-2 left-2 px-2.5 py-1 text-xs font-medium rounded-full bg-white/90 backdrop-blur-sm text-primary shadow-sm">
-                          {article.category?.name || "Umum"}
-                        </span>
-                        {/* Own article badge */}
-                        {isOwn && (
-                          <span className="absolute top-2 right-2 px-2.5 py-1 text-xs font-medium rounded-full bg-primary text-white shadow-sm">
-                            Artikel Saya
-                          </span>
-                        )}
-                      </div>
-                      <div className="p-4 flex flex-col flex-1">
-                        <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-primary transition-colors leading-snug">
-                          {article.title}
-                        </h3>
-                        <div className="mt-auto flex items-center gap-2 text-xs text-gray-400">
-                          <span>{formatDate(article.created_at)}</span>
-                          {article.author && (
-                            <>
-                              <span>•</span>
-                              <span className="text-gray-500 truncate">{article.author.name}</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </Card>
-                  </Link>
-                );
-              })}
+              {publishedArticles.map((article) => (
+                <BrowseArticleCard
+                  key={article.id}
+                  article={article}
+                  isOwn={user?.id === article.author?.id || user?.id === article.user_id}
+                />
+              ))}
             </div>
           ) : (
-            <div className="text-center py-12 bg-white rounded-xl border border-dashed">
-              <span className="text-4xl mb-4 block">📚</span>
-              <h3 className="font-semibold mb-2">Tidak ada artikel</h3>
-              <p className="text-gray-500 text-sm">
-                {search ? "Coba kata kunci lain" : "Artikel akan segera tersedia"}
-              </p>
-            </div>
+            <EmptyState
+              icon={<Search className="w-8 h-8 text-gray-300" />}
+              title="Tidak ada artikel"
+              description={search ? "Coba kata kunci lain atau filter berbeda" : "Artikel akan segera tersedia"}
+              action={search ? { label: "Hapus Pencarian", onClick: () => setSearch("") } : undefined}
+            />
           )}
         </TabsContent>
 
@@ -310,99 +153,31 @@ export default function ArticlesPage() {
                 </Card>
               ))}
             </div>
-          ) : filteredMyArticles.length > 0 ? (
+          ) : myArticles.length > 0 ? (
             <div className="grid gap-4">
-              {filteredMyArticles.map((article) => (
-                <Card key={article.id}>
-                  <CardContent className="p-4 flex gap-4">
-                    <div className="w-24 h-20 rounded-lg overflow-hidden bg-gray-100 shrink-0">
-                      {article.thumbnail ? (
-                        <Image
-                          src={article.thumbnail}
-                          alt={article.title}
-                          width={96}
-                          height={80}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-2xl">📄</div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold truncate">{article.title}</h3>
-                        {getStatusBadge(article.moderation_status === "pending" || article.moderation_status === "rejected" || article.moderation_status === "revision_needed" ? article.moderation_status : article.status)}
-                      </div>
-                      <p className="text-sm text-gray-500">
-                        {article.category?.name} • {formatDate(article.created_at)}
-                      </p>
-                      {article.status === "blocked" && (
-                        <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
-                          <AlertCircle className="w-3 h-3" />
-                          Artikel ini diblokir oleh admin
-                        </p>
-                      )}
-                      {article.moderation_status === "pending" && (
-                        <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
-                          <AlertCircle className="w-3 h-3" />
-                          Artikel sedang menunggu persetujuan admin
-                        </p>
-                      )}
-                      {article.moderation_status === "rejected" && (
-                        <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
-                          <AlertCircle className="w-3 h-3" />
-                          Artikel ditolak oleh admin
-                        </p>
-                      )}
-                      {article.moderation_status === "revision_needed" && (
-                        <p className="text-xs text-blue-500 mt-1 flex items-center gap-1">
-                          <AlertCircle className="w-3 h-3" />
-                          Artikel perlu direvisi
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex gap-2 shrink-0">
-                      <Link href={ROUTES.articleRead(article.id)}>
-                        <Button variant="outline" size="icon" title="Lihat">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                      </Link>
-                      {article.status !== "blocked" && (
-                        <Link href={ROUTES.articleDetail(article.id)}>
-                          <Button variant="outline" size="icon" title="Edit">
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                        </Link>
-                      )}
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="text-red-500"
-                        onClick={() => setDeleteArticleId(article.id)}
-                        title="Hapus"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+              {myArticles.map((article) => (
+                <MyArticleCard
+                  key={article.id}
+                  article={article}
+                  onDelete={setDeleteArticleId}
+                />
               ))}
             </div>
           ) : (
-            <div className="text-center py-12">
-              <span className="text-4xl mb-4 block">📝</span>
-              <h3 className="font-semibold mb-2">Belum ada artikel</h3>
-              <p className="text-gray-500 text-sm mb-4">
-                {mySearch ? "Tidak ada artikel yang cocok" : "Mulai tulis artikel pertamamu"}
-              </p>
-              {!mySearch && (
-                <Link href={ROUTES.ARTICLE_CREATE}>
-                  <Button className="gradient-primary">
-                    <Plus className="w-4 h-4 mr-2" /> Tulis Artikel
-                  </Button>
-                </Link>
-              )}
-            </div>
+            <EmptyState
+              icon={<FileText className="w-8 h-8 text-gray-300" />}
+              title="Belum ada artikel"
+              description={
+                mySearch
+                  ? `Tidak ada artikel yang cocok dengan "${mySearch}"`
+                  : "Mulai tulis artikel pertamamu hari ini"
+              }
+              action={
+                !mySearch
+                  ? { label: "Tulis Artikel", onClick: () => router.push(ROUTES.ARTICLE_CREATE) }
+                  : { label: "Hapus Pencarian", onClick: () => setMySearch("") }
+              }
+            />
           )}
         </TabsContent>
       </Tabs>

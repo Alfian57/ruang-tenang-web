@@ -8,7 +8,7 @@ import { ArrowRight, HeartPulse, Sparkles } from "lucide-react";
 import { UserMood } from "@/types";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
-import { parseApiDate } from "@/lib/utils/date";
+import { parseApiDate } from "@/utils/date";
 
 interface MoodInsightWidgetProps {
   moods: UserMood[];

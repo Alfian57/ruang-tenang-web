@@ -1,10 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Music, Play } from "lucide-react";
 import { SongCategory } from "@/types";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 interface MusicCategoryCardProps {
   category: SongCategory;
@@ -28,7 +29,7 @@ export function MusicCategoryCard({
   onClick,
   isExpanded,
 }: MusicCategoryCardProps) {
-  const gradient = categoryGradients[category.name.toLowerCase()] || categoryGradients.default;
+  const [imageError, setImageError] = useState(false);
 
   return (
     <motion.div
@@ -45,23 +46,32 @@ export function MusicCategoryCard({
       onClick={onClick}
     >
       {/* Background Image or Gradient */}
-      {category.thumbnail ? (
-        <>
-          <Image
-            src={category.thumbnail}
-            alt={category.name}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-110"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-        </>
-      ) : (
-        <div className={cn(
-          "absolute inset-0 bg-gradient-to-br",
-          gradient.from,
-          gradient.to
-        )} />
-      )}
+      {(() => {
+        // Use name as fallback for slug if not available, converted to lowercase
+        const key = (category.slug || category.name || "default").toLowerCase();
+        const gradient = categoryGradients[key] || categoryGradients.default;
+        
+        return category.thumbnail && !imageError ? (
+          <>
+            <Image
+              src={category.thumbnail}
+              alt={category.name}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-110"
+              onError={() => setImageError(true)}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+          </>
+        ) : (
+          <div className={cn(
+            "absolute inset-0 bg-gradient-to-br flex items-center justify-center",
+            gradient.from,
+            gradient.to
+          )}>
+             <Music className="w-24 h-24 text-white/20 rotate-12" />
+          </div>
+        );
+      })()}
 
       {/* Content */}
       <div className="absolute inset-0 p-4 flex flex-col justify-end">

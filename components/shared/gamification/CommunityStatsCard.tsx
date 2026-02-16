@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { CommunityStats } from "@/types";
 import { Users, Activity, Trophy, Zap, Heart, BookOpen } from "lucide-react";
 
@@ -29,7 +29,7 @@ export function CommunityStatsCard({ stats, className }: CommunityStatsCardProps
         },
         {
             label: "EXP Dikumpulkan",
-            value: stats.exp_earned_this_week.toLocaleString(),
+            value: (stats.exp_earned_this_week || 0).toLocaleString(),
             subtext: "minggu ini",
             icon: Zap,
             color: "text-yellow-500",

@@ -3,7 +3,7 @@
 import { BreathingWidgetData, getTechniqueIcon } from "@/types/breathing";
 import { Flame, Wind, Clock, ArrowRight, AlertTriangle } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 interface BreathingWidgetProps {
     data: BreathingWidgetData;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { useJournalStore } from "@/store/journalStore";
@@ -8,7 +8,7 @@ import { Journal } from "@/types";
 import { toast } from "sonner";
 import { moderationService } from "@/services/api";
 
-export type ViewMode = "list" | "write" | "edit" | "detail" | "analytics" | "settings";
+
 
 export function useJournalPage() {
     const router = useRouter();
@@ -17,14 +17,12 @@ export function useJournalPage() {
     // Store state
     const {
         journals,
-        activeJournal,
         totalJournals,
         currentPage,
         totalPages,
         settings,
         analytics,
         weeklySummary,
-        weeklyPrompt,
         aiContext,
         aiAccessLogs,
         isLoading,
@@ -32,53 +30,65 @@ export function useJournalPage() {
         isExporting,
         error,
         loadJournals,
-        createJournal,
-        updateJournal,
+        
         deleteJournal,
         searchJournals,
         loadSettings,
         updateSettings,
         loadAnalytics,
         loadWeeklySummary,
-        loadWritingPrompt,
         loadAIContext,
         loadAIAccessLogs,
         toggleAIShare,
         exportJournals,
-        setActiveJournal,
         clearError,
         searchResults,
         isSearching,
     } = useJournalStore();
 
-    // Local state
-    const [viewMode, setViewMode] = useState<ViewMode>("list");
+    // URL state management
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+
+    const updateUrlParam = useCallback((params: Record<string, string | null>) => {
+        const newParams = new URLSearchParams(searchParams.toString());
+        Object.entries(params).forEach(([key, value]) => {
+            if (value === null) {
+                newParams.delete(key);
+            } else {
+                newParams.set(key, value);
+            }
+        });
+        router.push(`${pathname}?${newParams.toString()}`, { scroll: false });
+    }, [searchParams, router, pathname]);
+
+    // Derived state from URL
+
+    const activeTab = (searchParams.get("tab") || "journals") as "journals" | "analytics" | "settings";
+    const localSearchQuery = searchParams.get("search") || "";
+
+    // Filter state from URL
+    const filterMoodId = searchParams.get("mood") ? parseInt(searchParams.get("mood")!) : null;
+    const filterStartDate = searchParams.get("start_date");
+    const filterEndDate = searchParams.get("end_date");
+    const filterTags = useMemo(() => {
+        return searchParams.get("tags") ? searchParams.get("tags")!.split(",") : [];
+    }, [searchParams]);
+
+    // Local state (UI only)
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [journalToDelete, setJournalToDelete] = useState<Journal | null>(null);
     const [showFilters, setShowFilters] = useState(false);
     const [showDisclaimer, setShowDisclaimer] = useState(false);
 
-    // URL state management
-    const searchParams = useSearchParams();
-    const pathname = usePathname();
 
-    const updateUrlParam = useCallback((key: string, value: string | null) => {
-        const params = new URLSearchParams(searchParams.toString());
-        if (value) params.set(key, value);
-        else params.delete(key);
-        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    }, [searchParams, router, pathname]);
-
-    // Read from URL
-    const activeTab = (searchParams.get("tab") || "journals") as "journals" | "analytics" | "settings";
-    const localSearchQuery = searchParams.get("search") || "";
 
     const setActiveTab = (tab: "journals" | "analytics" | "settings") => {
-        updateUrlParam("tab", tab === "journals" ? null : tab);
+        updateUrlParam({ tab: tab === "journals" ? null : tab });
     };
 
     const setLocalSearchQuery = (query: string) => {
-        updateUrlParam("search", query || null);
+        updateUrlParam({ search: query || null });
     };
 
     useEffect(() => {
@@ -104,13 +114,18 @@ export function useJournalPage() {
         }
     }, [authLoading, isAuthenticated, router]);
 
-    // Initial data load
+    // Initial data load & Filter change
     useEffect(() => {
         if (token) {
-            loadJournals(token);
+            loadJournals(token, 1, 10, {
+                moodId: filterMoodId,
+                startDate: filterStartDate,
+                endDate: filterEndDate,
+                tags: filterTags
+            });
             loadSettings(token);
         }
-    }, [token, loadJournals, loadSettings]);
+    }, [token, loadJournals, loadSettings, filterMoodId, filterStartDate, filterEndDate, filterTags]); // Add filter dependencies
 
     // Load analytics and settings data when tab changes
     useEffect(() => {
@@ -144,53 +159,13 @@ export function useJournalPage() {
     }, [localSearchQuery, token, searchJournals]);
 
     // Handlers
-    const handleCreateJournal = async (data: {
-        title: string;
-        content: string;
-        mood_id?: number;
-        tags: string[];
-        is_private: boolean;
-        share_with_ai: boolean;
-    }) => {
-        if (!token) return;
-        const newJournal = await createJournal(token, data);
-        if (newJournal) {
-            toast.success("Jurnal berhasil disimpan!");
-            setViewMode("detail");
-        }
-    };
-
-    const handleUpdateJournal = async (data: {
-        title: string;
-        content: string;
-        mood_id?: number;
-        tags: string[];
-        is_private: boolean;
-        share_with_ai: boolean;
-    }) => {
-        if (!token || !activeJournal) return;
-        await updateJournal(token, activeJournal.id, data);
-        toast.success("Jurnal berhasil diperbarui!");
-        setViewMode("detail");
-    };
 
     const handleDeleteJournal = async () => {
         if (!token || !journalToDelete) return;
         await deleteJournal(token, journalToDelete.id);
         setShowDeleteModal(false);
         setJournalToDelete(null);
-        setViewMode("list");
         toast.success("Jurnal berhasil dihapus");
-    };
-
-    const handleSelectJournal = (journal: Journal) => {
-        setActiveJournal(journal);
-        setViewMode("detail");
-    };
-
-    const handleEditJournal = (journal: Journal) => {
-        setActiveJournal(journal);
-        setViewMode("edit");
     };
 
     const handleDeleteClick = (journal: Journal) => {
@@ -214,18 +189,32 @@ export function useJournalPage() {
         toast.success("Pengaturan berhasil disimpan");
     };
 
-    const handleGeneratePrompt = async () => {
-        if (!token) return;
-        await loadWritingPrompt(token);
-        toast.success("Ide menulis berhasil dibuat!");
-    };
 
-    const handleExport = async (format: "txt" | "html") => {
+
+    const handleExport = async (format: "txt" | "pdf") => {
         if (!token) return;
-        const result = await exportJournals(token, format);
+        
+        const result = await exportJournals(token, format, filterStartDate || undefined, filterEndDate || undefined, filterTags);
         if (result) {
             // Create download link
-            const blob = new Blob([result.content], { type: result.content_type });
+            // If content is base64 (which it is for PDF now), we need to handle it.
+            // Backend returns: Content string.
+            // For TXT: Plain text. For PDF: Base64.
+            
+            let blob: Blob;
+            if (format === "pdf") {
+                // Decode base64
+                const byteCharacters = atob(result.content);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                blob = new Blob([byteArray], { type: "application/pdf" });
+            } else {
+                 blob = new Blob([result.content], { type: "text/plain" });
+            }
+
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
@@ -240,7 +229,12 @@ export function useJournalPage() {
 
     const handleLoadMore = () => {
         if (token && currentPage < totalPages) {
-            loadJournals(token, currentPage + 1);
+            loadJournals(token, currentPage + 1, 10, {
+                moodId: filterMoodId,
+                startDate: filterStartDate,
+                endDate: filterEndDate,
+                tags: filterTags
+            });
         }
     };
 
@@ -250,24 +244,25 @@ export function useJournalPage() {
         isAuthenticated,
         
         // State
-        viewMode,
         showDeleteModal,
         journalToDelete,
         showFilters,
         showDisclaimer,
         activeTab,
         localSearchQuery,
+        filterMoodId,
+        filterStartDate,
+        filterEndDate,
+        filterTags,
         
         // Store Data
         journals,
-        activeJournal,
         totalJournals,
         currentPage,
         totalPages,
         settings,
         analytics,
         weeklySummary,
-        weeklyPrompt,
         aiContext,
         aiAccessLogs,
         isLoading,
@@ -275,28 +270,21 @@ export function useJournalPage() {
         isExporting,
         searchResults,
         isSearching,
-
+        
         // Actions
-        setViewMode,
         setShowDeleteModal,
         setJournalToDelete,
         setShowFilters,
         setShowDisclaimer,
         setActiveTab,
         setLocalSearchQuery,
-        setActiveJournal,
         
         // Handlers
         handleAcceptDisclaimer,
-        handleCreateJournal,
-        handleUpdateJournal,
         handleDeleteJournal,
-        handleSelectJournal,
-        handleEditJournal,
         handleDeleteClick,
         handleToggleAIShare,
         handleUpdateSettings,
-        handleGeneratePrompt,
         handleExport,
         handleLoadMore,
     };

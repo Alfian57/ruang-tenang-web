@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { Song } from "@/types/song";
 
 // Format time in mm:ss

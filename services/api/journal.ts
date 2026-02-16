@@ -36,7 +36,7 @@ export const journalService = {
     if (params?.limit) flatParams.limit = params.limit;
     if (params?.start_date) flatParams.start_date = params.start_date;
     if (params?.end_date) flatParams.end_date = params.end_date;
-    if (params?.mood_id) flatParams.mood_id = params.mood_id;
+    if (params?.mood_id) flatParams.mood = params.mood_id;
     if (params?.tags && params.tags.length > 0) flatParams.tags = params.tags.join(",");
     return httpClient.get<PaginatedResponse<Journal>>("/journals", { token, params: flatParams });
   },
@@ -81,7 +81,7 @@ export const journalService = {
   },
 
   // Export
-  export(token: string, format: "txt" | "html", startDate?: string, endDate?: string) {
-    return httpClient.post<ApiResponse<JournalExportData>>("/journals/export", undefined, { token, params: { format, start_date: startDate, end_date: endDate } });
+  export(token: string, format: "txt" | "pdf", startDate?: string, endDate?: string, tags?: string[]) {
+    return httpClient.post<ApiResponse<JournalExportData>>("/journals/export", { format, start_date: startDate, end_date: endDate, tags }, { token });
   },
 };

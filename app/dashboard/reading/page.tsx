@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { articleService } from "@/services/api";
 import { Article, ArticleCategory } from "@/types";
-import { formatDate } from "@/lib/utils";
+import { formatDate } from "@/utils";
 
 export default function DashboardReadingPage() {
   const searchParams = useSearchParams();

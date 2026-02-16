@@ -19,7 +19,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { PlaylistItem } from "@/types";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 interface SortableTrackProps {
     item: PlaylistItem;

@@ -22,7 +22,7 @@ import {
   Redo,
   Minus,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { useCallback, useEffect, useState } from "react";
 import { InputDialog } from "./input-dialog";
 

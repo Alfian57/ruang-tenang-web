@@ -4,7 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Play, ListMusic, BadgeCheck, Globe, User } from "lucide-react";
 import { PlaylistListItem } from "@/types";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 interface PublicPlaylistCardProps {
   playlist: PlaylistListItem;

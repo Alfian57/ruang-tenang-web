@@ -6,7 +6,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { ArrowLeft, Send, Trash2, Clock, Heart, MessageSquare, CheckCircle2, Trophy, AlertTriangle, ShieldAlert, MoreVertical } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { BlockUserButton } from "@/components/shared/moderation";
 import {
   DropdownMenu,
@@ -42,7 +42,39 @@ export default function AdminForumTopicPage() {
     handleToggleBestAnswer
   } = useAdminForumDetail();
 
-  if (loading) return <div className="p-10 text-center text-gray-500">Memuat data forum...</div>;
+  if (loading) return (
+    <div className="flex flex-col h-[calc(100vh-4rem)] lg:h-[calc(100vh-0rem)] bg-gray-50">
+      <div className="bg-white border-b px-4 lg:px-6 py-4 flex items-center gap-4 sticky top-0 z-10 shrink-0 shadow-sm">
+        <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse" />
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2"><div className="h-4 w-20 rounded bg-purple-100 animate-pulse" /><div className="h-4 w-16 rounded bg-gray-200 animate-pulse" /></div>
+          <div className="h-6 w-48 rounded bg-gray-200 animate-pulse" />
+        </div>
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-4xl mx-auto p-4 lg:p-6 space-y-6">
+          <div className="bg-white p-6 rounded-2xl shadow-sm border space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse" />
+              <div className="space-y-1"><div className="h-4 w-24 rounded bg-gray-200 animate-pulse" /><div className="h-3 w-20 rounded bg-gray-200 animate-pulse" /></div>
+            </div>
+            <div className="space-y-2"><div className="h-4 w-full rounded bg-gray-200 animate-pulse" /><div className="h-4 w-3/4 rounded bg-gray-200 animate-pulse" /></div>
+            <div className="flex gap-4 pt-4 border-t"><div className="h-8 w-20 rounded bg-gray-200 animate-pulse" /><div className="h-8 w-24 rounded bg-gray-200 animate-pulse" /></div>
+          </div>
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex gap-3">
+              <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse shrink-0" />
+              <div className="flex-1 p-4 rounded-2xl rounded-tl-none bg-white shadow-sm border space-y-2">
+                <div className="h-4 w-20 rounded bg-gray-200 animate-pulse" />
+                <div className="h-4 w-full rounded bg-gray-200 animate-pulse" />
+                <div className="h-4 w-2/3 rounded bg-gray-200 animate-pulse" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
   if (!forum) return <div className="p-10 text-center text-gray-500">Topik tidak ditemukan</div>;
 
   return (

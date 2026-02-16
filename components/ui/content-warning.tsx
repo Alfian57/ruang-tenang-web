@@ -3,7 +3,7 @@
 import * as React from "react";
 import { AlertTriangle, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 // Trigger warning display names in Indonesian
 const TRIGGER_WARNING_LABELS: Record<string, string> = {

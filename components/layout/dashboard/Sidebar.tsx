@@ -4,8 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ChevronRight, PanelLeftClose } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { adminGroups, moderatorGroups, memberGroups, type NavGroup } from "./nav-config";
+import { cn } from "@/utils";
+import { adminGroups, moderatorGroups, memberGroups, memberHighlightLink, type NavGroup } from "./nav-config";
 import { ROUTES } from "@/lib/routes";
 
 interface SidebarProps {
@@ -28,6 +28,8 @@ export function Sidebar({
   const pathname = usePathname();
 
   const groups: NavGroup[] = isAdmin ? adminGroups : isModerator ? moderatorGroups : memberGroups;
+  const isMember = !isAdmin && !isModerator;
+  const highlightLink = isMember ? memberHighlightLink : null;
 
   return (
     <>
@@ -51,9 +53,9 @@ export function Sidebar({
         <div className="p-4 h-16 flex items-center justify-between border-b">
           <Link href={ROUTES.DASHBOARD} className="flex items-center gap-2">
             {sidebarCollapsed ? (
-              <Image src="/logo.png" alt="Ruang Tenang" width={32} height={32} className="object-contain" />
+              <Image src="/logo.webp" alt="Ruang Tenang" width={32} height={32} className="object-contain" />
             ) : (
-              <Image src="/logo-full.png" alt="Ruang Tenang" width={0} height={0} sizes="100vw" className="h-8 w-auto object-contain" style={{ width: "auto" }} />
+              <Image src="/logo-full.webp" alt="Ruang Tenang" width={0} height={0} sizes="100vw" className="h-8 w-auto object-contain" style={{ width: "auto" }} />
             )}
           </Link>
           {!sidebarCollapsed && (
@@ -78,6 +80,40 @@ export function Sidebar({
 
         {/* Navigation */}
         <nav className="py-4 overflow-y-auto h-[calc(100vh-10rem)]">
+          {/* AI Chat highlight - rendered before groups */}
+          {highlightLink && (() => {
+            const isActive = pathname === highlightLink.href || pathname.startsWith(highlightLink.href);
+            const Icon = highlightLink.icon;
+            return (
+              <Link
+                href={highlightLink.href}
+                onClick={onCloseSidebar}
+                className={cn(
+                  "sidebar-ai-card mx-3 px-4 py-3.5 rounded-2xl relative mb-4 block",
+                  isActive && "active",
+                  sidebarCollapsed && "lg:mx-2 lg:px-3 lg:py-2.5"
+                )}
+                title={sidebarCollapsed ? highlightLink.label : undefined}
+              >
+                <div className={cn("flex items-center gap-3 relative z-10", sidebarCollapsed && "lg:justify-center")}>
+                  <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <Icon className="w-4 h-4 text-white" />
+                  </div>
+                  {!sidebarCollapsed && (
+                    <div className="flex-1 min-w-0">
+                      <span className="font-semibold text-sm text-white block">
+                        {highlightLink.label}
+                      </span>
+                      <span className="text-[10.5px] text-white/60 block mt-0.5 leading-tight">
+                        Apa pun, kapan pun 💬
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </Link>
+            );
+          })()}
+
           {groups.map((group, groupIdx) => (
             <div key={group.title} className={cn(groupIdx > 0 && "mt-4")}>
               {/* Group title */}
@@ -96,7 +132,7 @@ export function Sidebar({
               {/* Group links */}
               {group.links.map((link) => {
                 const isActive = pathname === link.href || (link.href !== "/dashboard" && pathname.startsWith(link.href));
-                const isHighlight = link.highlight && !isActive;
+
                 return (
                   <Link
                     key={link.href}
@@ -106,25 +142,16 @@ export function Sidebar({
                       "flex items-center gap-3 mx-3 px-4 py-2.5 rounded-xl transition-all relative mb-0.5",
                       isActive
                         ? "text-white bg-primary shadow-md"
-                        : isHighlight
-                        ? "text-primary bg-primary/10 border border-primary/20 hover:bg-primary/15"
                         : "text-gray-600 hover:bg-gray-100",
                       sidebarCollapsed && "lg:justify-center lg:mx-2 lg:px-3"
                     )}
                     title={sidebarCollapsed ? link.label : undefined}
                   >
-                    <link.icon className={cn("w-5 h-5 shrink-0", isActive ? "text-white" : isHighlight ? "text-primary" : "text-gray-500")} />
+                    <link.icon className={cn("w-5 h-5 shrink-0", isActive ? "text-white" : "text-gray-500")} />
                     {!sidebarCollapsed && (
-                      <>
-                        <span className={cn("font-medium flex-1 whitespace-nowrap overflow-hidden text-ellipsis", isHighlight && "font-semibold")}>
-                          {link.label}
-                        </span>
-                        {isHighlight && (
-                          <span className="text-xs bg-primary/15 text-primary px-1.5 py-0.5 rounded-full font-semibold">
-                            ✨
-                          </span>
-                        )}
-                      </>
+                      <span className="font-medium flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                        {link.label}
+                      </span>
                     )}
                   </Link>
                 );

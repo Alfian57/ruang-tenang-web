@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Trash2, Info, HelpCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 type ConfirmDialogVariant = "danger" | "warning" | "info" | "default";
 

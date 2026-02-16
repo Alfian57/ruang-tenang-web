@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { MusicCategoryCard } from "./MusicCategoryCard";
 import { Song, SongCategory } from "@/types";
 

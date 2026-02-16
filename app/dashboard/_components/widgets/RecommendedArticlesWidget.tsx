@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BookOpen } from "lucide-react";
 import { Article } from "@/types";
-import { formatDate } from "@/lib/utils";
+import { formatDate } from "@/utils";
 
 interface RecommendedArticlesWidgetProps {
   articles: Article[];

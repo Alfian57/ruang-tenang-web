@@ -1,87 +1,41 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Loader2, Lock, Eye, EyeOff, CheckCircle, ShieldCheck, KeyRound, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authService } from "@/services/api";
 import { ROUTES } from "@/lib/routes";
 import { AuthIllustration, FloatingIcon } from "@/components/shared/auth/AuthIllustration";
-
-const resetPasswordSchema = z.object({
-  email: z.string().email("Email tidak valid"),
-  password: z.string().min(6, "Password minimal 6 karakter"),
-  confirmPassword: z.string().min(6, "Password minimal 6 karakter"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Password tidak sama",
-  path: ["confirmPassword"],
-});
-
-type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+import { useResetPassword } from "./_hooks/useResetPassword";
 
 function ResetPasswordForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
-  
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const {
+    token,
+    isSuccess,
+    isLoading,
+    error,
+    showPassword,
+    showConfirmPassword,
+    errors,
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<ResetPasswordFormData>({
-    resolver: zodResolver(resetPasswordSchema),
-  });
-
-  const onSubmit = async (data: ResetPasswordFormData) => {
-    if (!token) {
-      setError("Token reset password tidak valid atau hilang.");
-      return;
-    }
-
-    setError(null);
-    setIsLoading(true);
-    try {
-      await authService.resetPassword({
-        email: data.email,
-        token: token,
-        password: data.password,
-        password_confirmation: data.confirmPassword
-      });
-      setIsSuccess(true);
-      setTimeout(() => {
-        router.push(ROUTES.LOGIN);
-      }, 3000);
-    } catch (error) {
-      const err = error as Error;
-      setError(err.message || "Gagal mereset password. Token mungkin sudah kedaluwarsa.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    setShowPassword,
+    setShowConfirmPassword,
+  } = useResetPassword();
 
   if (!token) {
     return (
-        <div className="text-center">
-            <div className="bg-red-50 p-4 rounded-xl text-red-600 mb-6">
-                Link tidak valid. Pastikan Anda menggunakan link yang benar dari email Anda.
-            </div>
-            <Link href={ROUTES.FORGOT_PASSWORD}>
-                <Button variant="outline">Kirim Ulang Link</Button>
-            </Link>
+      <div className="text-center">
+        <div className="bg-red-50 p-4 rounded-xl text-red-600 mb-6">
+          Link tidak valid. Pastikan Anda menggunakan link yang benar dari email Anda.
         </div>
+        <Link href={ROUTES.FORGOT_PASSWORD}>
+          <Button variant="outline">Kirim Ulang Link</Button>
+        </Link>
+      </div>
     );
   }
 
@@ -105,7 +59,7 @@ function ResetPasswordForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
         <div className="p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm">
           {error}
@@ -194,8 +148,6 @@ function ResetPasswordForm() {
   );
 }
 
-
-
 export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen flex">
@@ -205,7 +157,7 @@ export default function ResetPasswordPage() {
           <div className="text-center mb-10">
             <Link href={ROUTES.HOME} className="inline-block mb-6">
               <Image
-                src="/logo-full.png"
+                src="/logo-full.webp"
                 alt="Ruang Tenang"
                 width={180}
                 height={60}

@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Flag, AlertCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 export type ReportType = "article" | "forum" | "forum_post" | "user";
 export type ReportReason =

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { StoryCategory, CreateStoryRequest } from "@/types";
 import {
     AlertTriangle,

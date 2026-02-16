@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { LevelUpCelebration as LevelUpCelebrationData } from "@/types";
 import { FeatureUnlockCelebration } from "./FeatureComponents";
 import { Star, Sparkles, ChevronUp } from "lucide-react";

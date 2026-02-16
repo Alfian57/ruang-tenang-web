@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link2, ImageIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 type InputDialogVariant = "url" | "image" | "default";
 

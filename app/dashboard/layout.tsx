@@ -11,7 +11,7 @@ import { AuthProvider, useAuth } from "@/components/providers/AuthProvider";
 import { MoodCheckinProvider } from "@/components/providers/MoodCheckinProvider";
 import { GlobalMusicPlayer } from "@/components/layout";
 import { DailyTaskFAB } from "@/components/shared/gamification";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { useAuthStore } from "@/store/authStore";
 import { useBlockStore } from "@/store/blockStore";
 import { Sidebar, MobileHeader, TopHeader } from "@/components/layout/dashboard";

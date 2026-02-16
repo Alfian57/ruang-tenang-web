@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { StoryCard as StoryCardType } from "@/types";
 import { Heart, MessageCircle, Star, AlertTriangle, User } from "lucide-react";
 import Image from "next/image";

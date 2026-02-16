@@ -4,7 +4,7 @@ import { Search, Shield, User, Ban, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { formatDate } from "@/lib/utils";
+import { formatDate } from "@/utils";
 import { useAdminUsers } from "./_hooks/useAdminUsers";
 
 export default function AdminUsersPage() {

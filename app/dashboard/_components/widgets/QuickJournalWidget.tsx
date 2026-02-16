@@ -52,13 +52,19 @@ export function QuickJournalWidget({ latestJournal, isLoading }: QuickJournalWid
                    <div>
                        <h4 className="font-semibold text-gray-900 line-clamp-1">{latestJournal.title}</h4>
                        <p className="text-xs text-muted-foreground">
-                           {formatDistanceToNow(new Date(latestJournal.created_at), { addSuffix: true, locale: id })}
+                           {(() => {
+                               const date = new Date(latestJournal.created_at);
+                               const now = new Date();
+                               // Clamp future dates to now to avoid "in about X hours"
+                               const safeDate = date > now ? now : date;
+                               return formatDistanceToNow(safeDate, { addSuffix: true, locale: id });
+                           })()}
                        </p>
                    </div>
                 </div>
                 <div className="p-4 bg-white/60 rounded-xl border border-orange-100/50 mb-4 h-24 overflow-hidden relative">
                     <p className="text-sm text-gray-600 line-clamp-3 italic">
-                        &quot;{latestJournal.content.replace(/<[^>]*>/g, '').slice(0, 150)}...&quot;
+                        &quot;{(latestJournal.content || '').replace(/<[^>]*>/g, '').slice(0, 150)}...&quot;
                     </p>
                     <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-white/80 to-transparent" />
                 </div>

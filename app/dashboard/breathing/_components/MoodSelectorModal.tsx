@@ -10,7 +10,7 @@ import {
     BreathingTechnique
 } from "@/types/breathing";
 import { X, Volume2, Vibrate } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 interface MoodSelectorModalProps {
     isOpen: boolean;

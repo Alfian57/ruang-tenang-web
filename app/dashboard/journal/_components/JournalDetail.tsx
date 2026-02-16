@@ -1,6 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
+import { parseApiDate } from "@/utils/date";
 import { id } from "date-fns/locale";
 import { Journal } from "@/types";
 import {
@@ -15,7 +16,7 @@ import {
     FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 interface JournalDetailProps {
     journal: Journal;
@@ -91,69 +92,69 @@ export function JournalDetail({
                     <div className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
                         <span>
-                            {format(new Date(journal.created_at), "EEEE, d MMMM yyyy 'pukul' HH:mm", {
+                            {format(parseApiDate(journal.created_at), "EEEE, d MMMM yyyy 'pukul' HH:mm", {
                                 locale: id,
                             })}
                         </span>
                     </div>
-                    <div className="flex items-center gap-1">
-                        <FileText className="w-4 h-4" />
-                        <span>{journal.word_count} kata</span>
+                        <div className="flex items-center gap-1">
+                            <FileText className="w-4 h-4" />
+                            <span>{journal.word_count} kata</span>
+                        </div>
+                        {journal.is_private && (
+                            <div className="flex items-center gap-1 text-green-600">
+                                <Lock className="w-4 h-4" />
+                                <span>Privat</span>
+                            </div>
+                        )}
+                        <div
+                            className={cn(
+                                "flex items-center gap-1",
+                                journal.share_with_ai
+                                    ? "text-purple-600"
+                                    : "text-gray-500"
+                            )}
+                        >
+                            {journal.share_with_ai ? (
+                                <>
+                                    <Eye className="w-4 h-4" />
+                                    <span>AI dapat membaca</span>
+                                </>
+                            ) : (
+                                <>
+                                    <EyeOff className="w-4 h-4" />
+                                    <span>AI tidak dapat membaca</span>
+                                </>
+                            )}
+                        </div>
                     </div>
-                    {journal.is_private && (
-                        <div className="flex items-center gap-1 text-green-600">
-                            <Lock className="w-4 h-4" />
-                            <span>Privat</span>
+
+                    {/* Tags */}
+                    {journal.tags && journal.tags.length > 0 && (
+                        <div className="flex items-center gap-2 flex-wrap mb-6">
+                            <Tag className="w-4 h-4 text-gray-400" />
+                            {journal.tags.map((tag) => (
+                                <span
+                                    key={tag}
+                                    className="px-2 py-1 bg-gray-100 rounded-full text-sm text-gray-600"
+                                >
+                                    #{tag}
+                                </span>
+                            ))}
                         </div>
                     )}
-                    <div
-                        className={cn(
-                            "flex items-center gap-1",
-                            journal.share_with_ai
-                                ? "text-purple-600"
-                                : "text-gray-500"
-                        )}
-                    >
-                        {journal.share_with_ai ? (
-                            <>
+
+                    {/* AI Access Info */}
+                    {journal.ai_accessed_at && (
+                        <div className="mb-6 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                            <div className="flex items-center gap-2 text-sm text-purple-700">
                                 <Eye className="w-4 h-4" />
-                                <span>AI dapat membaca</span>
-                            </>
-                        ) : (
-                            <>
-                                <EyeOff className="w-4 h-4" />
-                                <span>AI tidak dapat membaca</span>
-                            </>
-                        )}
-                    </div>
-                </div>
-
-                {/* Tags */}
-                {journal.tags && journal.tags.length > 0 && (
-                    <div className="flex items-center gap-2 flex-wrap mb-6">
-                        <Tag className="w-4 h-4 text-gray-400" />
-                        {journal.tags.map((tag) => (
-                            <span
-                                key={tag}
-                                className="px-2 py-1 bg-gray-100 rounded-full text-sm text-gray-600"
-                            >
-                                #{tag}
-                            </span>
-                        ))}
-                    </div>
-                )}
-
-                {/* AI Access Info */}
-                {journal.ai_accessed_at && (
-                    <div className="mb-6 p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                        <div className="flex items-center gap-2 text-sm text-purple-700">
-                            <Eye className="w-4 h-4" />
-                            <span>
-                                AI terakhir membaca jurnal ini:{" "}
-                                {format(new Date(journal.ai_accessed_at!), "d MMMM yyyy 'pukul' HH:mm", {
-                                    locale: id,
-                                })}
-                            </span>
+                                <span>
+                                    AI terakhir membaca jurnal ini:{" "}
+                                    {format(parseApiDate(journal.ai_accessed_at), "d MMMM yyyy 'pukul' HH:mm", {
+                                        locale: id,
+                                    })}
+                                </span>
                         </div>
                     </div>
                 )}

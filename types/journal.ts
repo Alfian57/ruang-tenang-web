@@ -131,7 +131,7 @@ export interface UpdateJournalSettingsRequest {
 }
 
 export interface ExportJournalRequest {
-  format: "txt" | "html";
+  format: "txt" | "pdf";
   start_date?: string;
   end_date?: string;
 }

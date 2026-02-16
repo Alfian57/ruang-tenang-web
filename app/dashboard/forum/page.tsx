@@ -1,15 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus, MessageSquare, Clock, User, Heart, Search } from "lucide-react";
-import { forumService } from "@/services/api";
-import { Forum, ForumCategory } from "@/types/forum";
 import { formatDistanceToNow } from "date-fns";
 import { id } from "date-fns/locale";
-
 import {
   Dialog,
   DialogContent,
@@ -20,97 +15,28 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useAuthStore } from "@/store/authStore";
-import { useBlockStore } from "@/store/blockStore";
-import { toast } from "sonner";
+import { useForumPage } from "./_hooks/useForumPage";
 
 export default function ForumPage() {
-  const [forums, setForums] = useState<Forum[]>([]);
-  const [categories, setCategories] = useState<ForumCategory[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const { token } = useAuthStore();
-  const isBlocked = useBlockStore((s) => s.isBlocked);
-  
-  // Create Modal State
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newContent, setNewContent] = useState("");
-  const [newCategoryId, setNewCategoryId] = useState<number | undefined>(undefined);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // URL state management
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const updateUrlParam = useCallback((key: string, value: string | null) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) params.set(key, value);
-    else params.delete(key);
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [searchParams, router, pathname]);
-
-  // Read from URL
-  const search = searchParams.get("search") || "";
-  const selectedCategory = searchParams.get("category") ? parseInt(searchParams.get("category")!, 10) : undefined;
-
-  const setSearch = (value: string) => updateUrlParam("search", value || null);
-  const setSelectedCategory = (id: number | undefined) => updateUrlParam("category", id ? String(id) : null);
-
-  // Debounce search from URL
-  const [debouncedSearch, setDebouncedSearch] = useState(search);
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 500);
-    return () => clearTimeout(timer);
-  }, [search]);
-
-  const loadData = useCallback(async () => {
-    if (!token) return;
-    setIsLoading(true);
-    try {
-      const [forumsRes, categoriesRes] = await Promise.all([
-        forumService.getAll(token, 20, 0, debouncedSearch, selectedCategory),
-        forumService.getCategories()
-      ]);
-      setForums(forumsRes.data);
-      // Ensure categoriesRes.data is an array (handle if it's nested or direct)
-      const cats = Array.isArray(categoriesRes.data) ? categoriesRes.data : categoriesRes;
-      setCategories(Array.isArray(cats) ? cats : []);
-    } catch (error) {
-      console.error("Failed to load data:", error);
-      toast.error("Gagal memuat data forum");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [token, debouncedSearch, selectedCategory]);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  const handleCreateForum = async () => {
-    if (!newTitle.trim() || !token) return;
-
-    setIsSubmitting(true);
-    try {
-      await forumService.create(token, {
-        title: newTitle,
-        content: newContent,
-        category_id: newCategoryId,
-      });
-      setIsCreateOpen(false);
-      setNewTitle("");
-      setNewContent("");
-      setNewCategoryId(undefined);
-      loadData();
-      toast.success("Topik berhasil dibuat");
-    } catch (error) {
-      console.error("Failed to create forum:", error);
-      toast.error("Gagal membuat topik");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const {
+    forums,
+    categories,
+    isLoading,
+    search,
+    selectedCategory,
+    isCreateOpen,
+    newTitle,
+    newContent,
+    newCategoryId,
+    isSubmitting,
+    setSearch,
+    setSelectedCategory,
+    setIsCreateOpen,
+    setNewTitle,
+    setNewContent,
+    setNewCategoryId,
+    handleCreateForum,
+  } = useForumPage();
 
   return (
     <div className="p-4 lg:p-6 max-w-5xl mx-auto space-y-6">
@@ -177,7 +103,6 @@ export default function ForumPage() {
 
       {/* Filters */}
       <div className="space-y-4">
-        {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
           <Input 
@@ -188,7 +113,6 @@ export default function ForumPage() {
           />
         </div>
 
-        {/* Categories (Horizontal Scroll) */}
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           <button
             onClick={() => setSelectedCategory(undefined)}
@@ -236,7 +160,7 @@ export default function ForumPage() {
              </p>
            </div>
         ) : (
-          forums.filter((forum) => !isBlocked(forum.user_id)).map((forum) => (
+          forums.map((forum) => (
             <Link 
               href={`/dashboard/forum/${forum.id}`} 
               key={forum.id}

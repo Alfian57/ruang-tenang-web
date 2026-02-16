@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { FeatureUnlock, UserFeatures, FeaturesByLevel } from "@/types";
 import { Lock, Unlock, Sparkles, Gift } from "lucide-react";
 

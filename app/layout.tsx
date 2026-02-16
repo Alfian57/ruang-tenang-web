@@ -10,10 +10,11 @@ export const metadata: Metadata = {
   description: "Temukan ketenangan pikiran dengan AI chat therapy, artikel kesehatan mental, dan musik relaksasi.",
   keywords: ["kesehatan mental", "terapi", "meditasi", "relaksasi", "AI chat"],
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/favicon/favicon.ico",
+    shortcut: "/favicon/favicon-16x16.png",
+    apple: "/favicon/apple-touch-icon.png",
   },
+  manifest: "/favicon/site.webmanifest",
 };
 
 export default function RootLayout({

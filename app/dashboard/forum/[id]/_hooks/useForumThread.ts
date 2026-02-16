@@ -32,9 +32,11 @@ export function useForumThread() {
     if (!token) return;
     try {
       const response = await forumService.getById(token, id);
-      setForum(response.data);
-      setIsLiked(!!response.data.is_liked);
-      setLikesCount(response.data.likes_count || 0);
+      if (response.data) {
+        setForum(response.data);
+        setIsLiked(!!response.data.is_liked);
+        setLikesCount(response.data.likes_count || 0);
+      }
     } catch (error) {
       console.error(error);
       toast.error("Gagal memuat topik");

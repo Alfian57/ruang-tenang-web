@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { StoryComment as StoryCommentType } from "@/types";
 import { Heart, User, MoreHorizontal, Flag, EyeOff } from "lucide-react";
 import Image from "next/image";

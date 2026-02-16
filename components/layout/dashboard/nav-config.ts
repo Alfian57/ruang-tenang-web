@@ -27,13 +27,17 @@ export interface NavGroup {
   links: NavLink[];
 }
 
+// Highlighted AI Chat link (rendered separately, outside groups)
+export const memberHighlightLink: NavLink = {
+  href: ROUTES.CHAT, icon: MessageSquare, label: "Teman Cerita AI", highlight: true,
+};
+
 // Member menu items (for regular users) — grouped
 export const memberGroups: NavGroup[] = [
   {
     title: "Utama",
     links: [
       { href: ROUTES.DASHBOARD, icon: LayoutDashboard, label: "Beranda" },
-      { href: ROUTES.CHAT, icon: MessageSquare, label: "AI Chat", highlight: true },
     ],
   },
   {

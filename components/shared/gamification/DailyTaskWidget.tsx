@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Check, Gift, Lock, RefreshCw, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { DailyTask } from "@/types";
 import { communityService } from "@/services/api";
 import { toast } from "sonner";
@@ -26,7 +26,7 @@ export function DailyTaskWidget({ tasks, onTaskClaimed, className }: DailyTaskWi
     try {
       const response = await communityService.claimTaskReward(token, task.id);
       if (response.data) {
-        toast.success(`Berhasil klaim! +${response.data.exp_gained} EXP`);
+        toast.success(`Berhasil klaim! +${response.data.xp_earned} EXP`);
         if (response.data.level_up) {
            toast.success("Level Up!", {
              description: "Selamat! Kamu naik level 🎉"

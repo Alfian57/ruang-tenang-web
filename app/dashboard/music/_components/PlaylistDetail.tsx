@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
     DndContext,
     closestCenter,
@@ -69,9 +69,11 @@ export function PlaylistDetail({
     );
 
     // Update items when playlist changes
-    useState(() => {
-        setItems(playlist.items?.sort((a, b) => a.position - b.position) || []);
-    });
+    useEffect(() => {
+        if (playlist.items) {
+            setItems(playlist.items.sort((a, b) => a.position - b.position));
+        }
+    }, [playlist.items]);
 
     const handleDragEnd = useCallback(async (event: DragEndEvent) => {
         const { active, over } = event;

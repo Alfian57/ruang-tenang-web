@@ -6,7 +6,7 @@ import { ThumbsUp, ThumbsDown, Copy, Check, Pin } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AudioPlayer } from "./AudioPlayer";
 import { ChatMessage } from "@/types";
-import { cn, formatDate } from "@/lib/utils";
+import { cn, formatDate } from "@/utils";
 
 interface ChatMessageBubbleProps {
   message: ChatMessage;

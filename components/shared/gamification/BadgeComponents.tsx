@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { Badge, BadgeProgress, UserBadges, BadgeCategoryStats } from "@/types";
 import { Trophy, Lock, CheckCircle } from "lucide-react";
 

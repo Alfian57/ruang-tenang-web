@@ -6,4 +6,5 @@ export {
   JournalAIAccessLogs,
   JournalAIContextPreview,
 } from "./JournalPrivacyControls";
-export { JournalAnalytics, JournalWeeklySummaryCard } from "./JournalAnalytics";
+export { JournalAnalytics, JournalWeeklySummary } from "./JournalAnalytics"; // Fixed export
+export { JournalFilters } from "./JournalFilters";

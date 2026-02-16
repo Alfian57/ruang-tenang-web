@@ -3,7 +3,7 @@
 import { useState, useRef, ChangeEvent } from "react";
 import Image from "next/image";
 import { Upload, X, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { uploadService } from "@/services/api";
 import { getUploadUrl } from "@/services/http/upload-url";
 

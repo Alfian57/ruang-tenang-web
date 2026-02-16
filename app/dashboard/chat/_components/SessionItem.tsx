@@ -1,7 +1,7 @@
 "use client";
 
 import { Heart, MoreVertical, Trash2, Folder, FolderOutput, MessageSquare } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { ChatSession, ChatFolder } from "@/types";
 import {
   DropdownMenu,

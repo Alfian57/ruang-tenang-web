@@ -3,9 +3,9 @@
 import { useState, useRef, FormEvent, useEffect, useCallback } from "react";
 import { Send, Mic, Square, Keyboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
+import { cn } from "@/utils";
 import { VoiceInput } from "./VoiceInput";
+import { useAudioRecorder } from "../_hooks/useAudioRecorder";
 
 interface ChatInputProps {
   onSendText: (content: string) => Promise<void>;
@@ -13,22 +13,23 @@ interface ChatInputProps {
   disabled?: boolean;
 }
 
-/**
- * Chat input component with text input and voice recording capability.
- */
 export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInputProps) {
   const [input, setInput] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingDuration, setRecordingDuration] = useState(0);
-  const [isSending, setIsSending] = useState(false);
+  const [isSendingText, setIsSendingText] = useState(false);
   const [showVoiceInput, setShowVoiceInput] = useState(false);
-
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  // Auto-resize textarea on input change
+  const {
+    isRecording,
+    recordingDuration,
+    isSending: isSendingAudio,
+    startRecording,
+    stopRecording,
+    formatRecordingTime
+  } = useAudioRecorder({
+    onRecordingComplete: onSendAudio
+  });
+
   const adjustTextareaHeight = useCallback(() => {
     const textarea = textareaRef.current;
     if (textarea) {
@@ -41,107 +42,42 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
     adjustTextareaHeight();
   }, [input, adjustTextareaHeight]);
 
-  const formatRecordingTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isSending || disabled) return;
+    if (!input.trim() || isSendingText || isSendingAudio || disabled) return;
 
     const content = input.trim();
     setInput("");
-    setIsSending(true);
+    setIsSendingText(true);
 
     try {
       await onSendText(content);
     } finally {
-      setIsSending(false);
-      // Refocus the textarea after sending with delay to ensure state updates complete
+      setIsSendingText(false);
       setTimeout(() => {
         textareaRef.current?.focus();
       }, 50);
     }
   };
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-
-      mediaRecorder.onstop = handleRecordingStop;
-
-      mediaRecorder.start();
-      setIsRecording(true);
-      setRecordingDuration(0);
-
-      timerRef.current = setInterval(() => {
-        setRecordingDuration((prev) => prev + 1);
-      }, 1000);
-    } catch (error) {
-      console.error("ChatInput.startRecording: failed to access microphone", error);
-      toast.error("Gagal mengakses mikrofon", {
-        description: "Pastikan izin mikrofon telah diberikan di pengaturan browser."
-      });
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-
-      // Stop all audio tracks
-      mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
-    }
-  };
-
-  const handleRecordingStop = async () => {
-    const audioBlob = new Blob(audioChunksRef.current, { type: "audio/mp3" });
-    setIsSending(true);
-
-    try {
-      await onSendAudio(audioBlob);
-    } finally {
-      setIsSending(false);
-    }
-  };
-
-  // Handle voice input transcript completion
   const handleVoiceTranscript = async (transcript: string) => {
     setShowVoiceInput(false);
     if (transcript.trim()) {
-      setIsSending(true);
+      setIsSendingText(true);
       try {
         await onSendText(transcript);
       } finally {
-        setIsSending(false);
+        setIsSendingText(false);
       }
     }
   };
 
-  const isInputDisabled = isSending || disabled;
+  const isInputDisabled = isSendingText || isSendingAudio || disabled;
 
   return (
     <div className="p-3 bg-white border-t">
       <div className="max-w-4xl mx-auto flex items-end gap-2">
         {isRecording ? (
-          // Recording UI
           <div className="flex-1 bg-red-50 rounded-2xl border border-red-100 p-2 flex items-center justify-between animate-pulse">
             <div className="flex items-center gap-3 px-2">
               <div className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
@@ -160,7 +96,6 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
             </Button>
           </div>
         ) : (
-          // Text input UI
           <form onSubmit={handleSubmit} className="flex-1 flex items-end gap-2">
             <div className="flex-1 bg-gray-50 rounded-2xl border border-gray-200 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all p-1.5 flex items-center">
               <textarea
@@ -180,7 +115,6 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
                 autoComplete="off"
               />
 
-              {/* Mic button - shows speech-to-text panel */}
               <Button
                 type="button"
                 onClick={() => setShowVoiceInput(true)}
@@ -193,7 +127,6 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
                 <Keyboard className="w-4 h-4" />
               </Button>
 
-              {/* Direct audio record button */}
               <Button
                 type="button"
                 onClick={startRecording}
@@ -206,7 +139,6 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
                 <Mic className="w-4 h-4" />
               </Button>
 
-              {/* Send button */}
               <Button
                 type="submit"
                 disabled={!input.trim() || isInputDisabled}
@@ -225,7 +157,6 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
         )}
       </div>
 
-      {/* Voice Input Panel */}
       {showVoiceInput && (
         <VoiceInput
           onTranscriptComplete={handleVoiceTranscript}

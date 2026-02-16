@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Globe, Lock } from "lucide-react";
 import { PlaylistListItem, CreatePlaylistRequest, UpdatePlaylistRequest } from "@/types";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 interface PlaylistDialogProps {
     open: boolean;

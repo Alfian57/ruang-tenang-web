@@ -1,127 +1,149 @@
 "use client";
 
-import {
-  Bold,
-  Italic,
-  List,
-  ListOrdered,
-  Quote,
-  Undo,
-  Redo,
-  Sparkles,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Editor } from "@tiptap/react";
-
-interface ToolbarButtonProps {
-  onClick: () => void;
-  isActive?: boolean;
-  disabled?: boolean;
-  children: React.ReactNode;
-  title?: string;
-}
-
-function ToolbarButton({ onClick, isActive, disabled, children, title }: ToolbarButtonProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      title={title}
-      className={cn(
-        "p-2 rounded hover:bg-gray-100 transition-colors",
-        isActive && "bg-gray-200 text-primary",
-        disabled && "opacity-50 cursor-not-allowed"
-      )}
-    >
-      {children}
-    </button>
-  );
-}
+import {
+    Bold,
+    Italic,
+    Strikethrough,
+    List,
+    ListOrdered,
+    Quote,
+    Undo,
+    Redo,
+    Heading1,
+    Heading2,
+    Sparkles,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/utils";
 
 interface JournalToolbarProps {
     editor: Editor | null;
-    wordCount: number;
     onGeneratePrompt?: () => void;
 }
 
-export function JournalToolbar({ editor, wordCount, onGeneratePrompt }: JournalToolbarProps) {
-    if (!editor) return null;
+interface ToolbarButtonProps {
+    onClick: () => void;
+    isActive?: boolean;
+    disabled?: boolean;
+    children: React.ReactNode;
+    title?: string;
+}
+
+function ToolbarButton({ onClick, isActive, disabled, children, title }: ToolbarButtonProps) {
+    return (
+        <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClick}
+            disabled={disabled}
+            title={title}
+            className={cn(
+                "h-8 w-8 p-0",
+                isActive && "bg-gray-200 text-foreground"
+            )}
+        >
+            {children}
+        </Button>
+    );
+}
+
+export function JournalToolbar({ editor, onGeneratePrompt }: JournalToolbarProps) {
+    if (!editor) {
+        return null;
+    }
 
     return (
-        <div className="flex items-center gap-1 p-2 border-b border-gray-200 flex-wrap">
+        <div className="border-b bg-gray-50/50 p-2 flex flex-wrap gap-1 sticky top-0 z-10 rounded-t-lg items-center">
             <ToolbarButton
                 onClick={() => editor.chain().focus().toggleBold().run()}
                 isActive={editor.isActive("bold")}
-                title="Bold"
+                title="Bold (Ctrl+B)"
             >
-                <Bold className="w-4 h-4" />
+                <Bold className="h-4 w-4" />
             </ToolbarButton>
             <ToolbarButton
                 onClick={() => editor.chain().focus().toggleItalic().run()}
                 isActive={editor.isActive("italic")}
-                title="Italic"
+                title="Italic (Ctrl+I)"
             >
-                <Italic className="w-4 h-4" />
+                <Italic className="h-4 w-4" />
             </ToolbarButton>
-            <div className="w-px h-6 bg-gray-200 mx-1" />
+            <ToolbarButton
+                onClick={() => editor.chain().focus().toggleStrike().run()}
+                isActive={editor.isActive("strike")}
+                title="Strikethrough (Ctrl+Shift+X)"
+            >
+                <Strikethrough className="h-4 w-4" />
+            </ToolbarButton>
+            <div className="w-px h-6 bg-gray-300 mx-1 self-center" />
+            <ToolbarButton
+                onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+                isActive={editor.isActive("heading", { level: 1 })}
+                title="Heading 1"
+            >
+                <Heading1 className="h-4 w-4" />
+            </ToolbarButton>
+            <ToolbarButton
+                onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+                isActive={editor.isActive("heading", { level: 2 })}
+                title="Heading 2"
+            >
+                <Heading2 className="h-4 w-4" />
+            </ToolbarButton>
+            <div className="w-px h-6 bg-gray-300 mx-1 self-center" />
             <ToolbarButton
                 onClick={() => editor.chain().focus().toggleBulletList().run()}
                 isActive={editor.isActive("bulletList")}
                 title="Bullet List"
             >
-                <List className="w-4 h-4" />
+                <List className="h-4 w-4" />
             </ToolbarButton>
             <ToolbarButton
                 onClick={() => editor.chain().focus().toggleOrderedList().run()}
                 isActive={editor.isActive("orderedList")}
-                title="Numbered List"
+                title="Ordered List"
             >
-                <ListOrdered className="w-4 h-4" />
+                <ListOrdered className="h-4 w-4" />
             </ToolbarButton>
+            <div className="w-px h-6 bg-gray-300 mx-1 self-center" />
             <ToolbarButton
                 onClick={() => editor.chain().focus().toggleBlockquote().run()}
                 isActive={editor.isActive("blockquote")}
-                title="Quote"
+                title="Blockquote"
             >
-                <Quote className="w-4 h-4" />
+                <Quote className="h-4 w-4" />
             </ToolbarButton>
-            <div className="w-px h-6 bg-gray-200 mx-1" />
-            <ToolbarButton
-                onClick={() => editor.chain().focus().undo().run()}
-                disabled={!editor.can().undo()}
-                title="Undo"
-            >
-                <Undo className="w-4 h-4" />
-            </ToolbarButton>
-            <ToolbarButton
-                onClick={() => editor.chain().focus().redo().run()}
-                disabled={!editor.can().redo()}
-                title="Redo"
-            >
-                <Redo className="w-4 h-4" />
-            </ToolbarButton>
-
-            <div className="flex-1" />
-
-            {/* Generate Prompt Button */}
-            {onGeneratePrompt && (
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onGeneratePrompt}
-                    className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+            <div className="ml-auto flex items-center gap-1">
+                <ToolbarButton
+                    onClick={() => editor.chain().focus().undo().run()}
+                    disabled={!editor.can().undo()}
+                    title="Undo (Ctrl+Z)"
                 >
-                    <Sparkles className="w-4 h-4 mr-1" />
-                    Ide Menulis
-                </Button>
-            )}
-
-            {/* Word count */}
-            <span className="text-xs text-gray-500 px-2">
-                {wordCount} kata
-            </span>
+                    <Undo className="h-4 w-4" />
+                </ToolbarButton>
+                <ToolbarButton
+                    onClick={() => editor.chain().focus().redo().run()}
+                    disabled={!editor.can().redo()}
+                    title="Redo (Ctrl+Y)"
+                >
+                    <Redo className="h-4 w-4" />
+                </ToolbarButton>
+                {onGeneratePrompt && (
+                    <>
+                        <div className="w-px h-6 bg-gray-300 mx-1 self-center" />
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={onGeneratePrompt}
+                            className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 h-8 px-2"
+                            title="Generate Prompt"
+                        >
+                            <Sparkles className="h-4 w-4" />
+                        </Button>
+                    </>
+                )}
+            </div>
         </div>
     );
 }

@@ -2,22 +2,18 @@
 
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
     FileText,
     Flag,
-    AlertTriangle,
     Shield,
-    Users,
-    Clock,
-    CheckCircle2,
-    XCircle,
-    ChevronRight,
-    Ban,
-    Eye,
 } from "lucide-react";
 import { useModerationDashboard } from "./_hooks/useModerationDashboard";
+import { ModerationStatsGrid } from "./_components/ModerationStatsGrid";
+import { ModerationSecondaryStats } from "./_components/ModerationSecondaryStats";
+import { ModerationPendingArticles } from "./_components/ModerationPendingArticles";
+import { ModerationRecentReports } from "./_components/ModerationRecentReports";
 
 export default function ModerationDashboardPage() {
     const {
@@ -70,216 +66,12 @@ export default function ModerationDashboardPage() {
                 </div>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Artikel Pending</CardTitle>
-                        <Clock className="h-4 w-4 text-amber-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats?.pending_articles ?? "-"}</div>
-                        <p className="text-xs text-muted-foreground">Menunggu moderasi</p>
-                    </CardContent>
-                </Card>
+            <ModerationStatsGrid stats={stats} />
+            <ModerationSecondaryStats stats={stats} />
 
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Artikel Ditandai</CardTitle>
-                        <AlertTriangle className="h-4 w-4 text-red-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats?.flagged_articles ?? "-"}</div>
-                        <p className="text-xs text-muted-foreground">Perlu ditinjau</p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Laporan Pending</CardTitle>
-                        <Flag className="h-4 w-4 text-orange-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats?.pending_reports ?? "-"}</div>
-                        <p className="text-xs text-muted-foreground">Menunggu penanganan</p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Diselesaikan Hari Ini</CardTitle>
-                        <CheckCircle2 className="h-4 w-4 text-green-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats?.resolved_reports_today ?? "-"}</div>
-                        <p className="text-xs text-muted-foreground">Laporan terselesaikan</p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Secondary Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Strike Aktif</CardTitle>
-                        <XCircle className="h-4 w-4 text-amber-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats?.active_strikes ?? "-"}</div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Pengguna Disuspend</CardTitle>
-                        <Users className="h-4 w-4 text-orange-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats?.suspended_users ?? "-"}</div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Pengguna Dibanned</CardTitle>
-                        <Ban className="h-4 w-4 text-red-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{stats?.banned_users ?? "-"}</div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* Content Sections */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Pending Articles */}
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <div>
-                            <CardTitle className="text-lg">Artikel Menunggu Moderasi</CardTitle>
-                            <CardDescription>Artikel terbaru yang perlu ditinjau</CardDescription>
-                        </div>
-                        <Button asChild variant="ghost" size="sm">
-                            <Link href={ROUTES.ADMIN.MODERATION_QUEUE}>
-                                Lihat Semua
-                                <ChevronRight className="h-4 w-4 ml-1" />
-                            </Link>
-                        </Button>
-                    </CardHeader>
-                    <CardContent>
-                        {isLoading ? (
-                            <div className="space-y-3">
-                                {[1, 2, 3].map((i) => (
-                                    <div key={i} className="animate-pulse flex items-center gap-3 p-3 bg-muted rounded-lg">
-                                        <div className="h-10 w-10 bg-muted-foreground/20 rounded" />
-                                        <div className="flex-1 space-y-2">
-                                            <div className="h-4 bg-muted-foreground/20 rounded w-3/4" />
-                                            <div className="h-3 bg-muted-foreground/20 rounded w-1/2" />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : pendingArticles.length === 0 ? (
-                            <div className="text-center py-8 text-muted-foreground">
-                                <CheckCircle2 className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                                <p>Tidak ada artikel yang menunggu moderasi</p>
-                            </div>
-                        ) : (
-                            <div className="space-y-3">
-                                {pendingArticles.map((article) => (
-                                    <div
-                                        key={article.id}
-                                        className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
-                                    >
-                                        <div className="shrink-0">
-                                            <FileText className="h-5 w-5 text-muted-foreground" />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-medium truncate">{article.title}</p>
-                                            <p className="text-sm text-muted-foreground">
-                                                oleh {article.author_name}
-                                            </p>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            {article.moderation_status === "flagged" && (
-                                                <span className="px-2 py-1 text-xs bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 rounded">
-                                                    Ditandai
-                                                </span>
-                                            )}
-                                            <Button asChild size="sm" variant="ghost">
-                                                <Link href={ROUTES.moderationArticle(article.id)}>
-                                                    <Eye className="h-4 w-4" />
-                                                </Link>
-                                            </Button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-
-                {/* Recent Reports */}
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <div>
-                            <CardTitle className="text-lg">Laporan Terbaru</CardTitle>
-                            <CardDescription>Laporan pengguna yang perlu ditangani</CardDescription>
-                        </div>
-                        <Button asChild variant="ghost" size="sm">
-                            <Link href={ROUTES.ADMIN.MODERATION_REPORTS}>
-                                Lihat Semua
-                                <ChevronRight className="h-4 w-4 ml-1" />
-                            </Link>
-                        </Button>
-                    </CardHeader>
-                    <CardContent>
-                        {isLoading ? (
-                            <div className="space-y-3">
-                                {[1, 2, 3].map((i) => (
-                                    <div key={i} className="animate-pulse flex items-center gap-3 p-3 bg-muted rounded-lg">
-                                        <div className="h-10 w-10 bg-muted-foreground/20 rounded" />
-                                        <div className="flex-1 space-y-2">
-                                            <div className="h-4 bg-muted-foreground/20 rounded w-3/4" />
-                                            <div className="h-3 bg-muted-foreground/20 rounded w-1/2" />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : recentReports.length === 0 ? (
-                            <div className="text-center py-8 text-muted-foreground">
-                                <CheckCircle2 className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                                <p>Tidak ada laporan yang menunggu</p>
-                            </div>
-                        ) : (
-                            <div className="space-y-3">
-                                {recentReports.map((report) => (
-                                    <div
-                                        key={report.id}
-                                        className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
-                                    >
-                                        <div className="shrink-0">
-                                            <Flag className="h-5 w-5 text-orange-500" />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="font-medium truncate">
-                                                {report.content_title || `Laporan ${report.report_type}`}
-                                            </p>
-                                            <p className="text-sm text-muted-foreground">
-                                                Dilaporkan oleh {report.reporter_name} • {report.reason}
-                                            </p>
-                                        </div>
-                                        <Button asChild size="sm" variant="ghost">
-                                            <Link href={ROUTES.moderationReport(report.id)}>
-                                                <Eye className="h-4 w-4" />
-                                            </Link>
-                                        </Button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
+                <ModerationPendingArticles articles={pendingArticles} isLoading={isLoading} />
+                <ModerationRecentReports reports={recentReports} isLoading={isLoading} />
             </div>
         </div>
     );

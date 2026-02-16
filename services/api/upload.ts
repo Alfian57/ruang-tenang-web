@@ -10,13 +10,13 @@ interface UploadResponse {
 export const uploadService = {
   async uploadImage(token: string, file: File) {
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("file", file);
     return httpClient.upload<ApiResponse<UploadResponse>>("/upload/image", formData, token);
   },
 
   async uploadAudio(token: string, file: File) {
     const formData = new FormData();
-    formData.append("audio", file);
+    formData.append("file", file);
     return httpClient.upload<ApiResponse<UploadResponse>>("/upload/audio", formData, token);
   },
 };

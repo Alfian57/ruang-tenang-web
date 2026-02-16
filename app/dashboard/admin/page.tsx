@@ -18,7 +18,7 @@ import {
   ChevronRight,
   AlertTriangle
 } from "lucide-react";
-import { formatDate } from "@/lib/utils";
+import { formatDate } from "@/utils";
 import { useAdminStats } from "./_hooks/useAdminStats";
 
 export default function AdminDashboardPage() {

@@ -56,7 +56,7 @@ export default function LoginPage() {
           <div className="text-center mb-10">
             <Link href={ROUTES.HOME} className="inline-block mb-6">
               <Image
-                src="/logo-full.png"
+                src="/logo-full.webp"
                 alt="Ruang Tenang"
                 width={180}
                 height={60}

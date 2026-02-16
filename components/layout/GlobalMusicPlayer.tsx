@@ -4,7 +4,7 @@ import { env } from "@/config/env";
 import { useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMusicPlayerStore } from "@/store/musicPlayerStore";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { MinimizedPlayer } from "./player/MinimizedPlayer";
 import { ExpandedPlayer } from "./player/ExpandedPlayer";
 

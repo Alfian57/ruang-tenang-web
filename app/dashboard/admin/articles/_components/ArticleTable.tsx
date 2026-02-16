@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
-import { formatDate } from "@/lib/utils";
+import { formatDate } from "@/utils";
 import { AdminArticle } from "../_hooks/useAdminArticles";
 
 interface ArticleTableProps {

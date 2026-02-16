@@ -1,11 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
-import { useAuthStore } from "@/store/authStore";
-import { useChatStore } from "@/store/chatStore";
-import { useJournalStore } from "@/store/journalStore";
 import {
   ChatSidebar,
   NewSessionDialog,
@@ -13,316 +8,60 @@ import {
 } from "./_components";
 import { AIDisclaimerModal } from "@/components/ui/ai-disclaimer-modal";
 import { CrisisSupportModal } from "@/components/shared/moderation";
-import { moderationService } from "@/services/api";
-
-const CRISIS_KEYWORDS = [
-  "bunuh diri",
-  "ingin mati",
-  "akhiri hidup",
-  "cutting",
-  "silet tangan",
-  "tidak kuat hidup",
-  "mau mati",
-  "gantung diri",
-  "lukai diri",
-];
+import { useChatPage } from "./_hooks/useChatPage";
 
 /**
  * Chat page component for AI-powered mental health conversations.
  * Allows users to create sessions, send text/voice messages, and manage chat history.
  */
 export default function ChatPage() {
-  const { user, token } = useAuthStore();
-
-  // URL state management
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const updateUrlParam = useCallback((key: string, value: string | null) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) params.set(key, value);
-    else params.delete(key);
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [searchParams, router, pathname]);
-
-  // Zustand store state and actions
   const {
+    user,
     sessions,
     activeSession,
     messages,
     filter,
     isSending,
     isRecording,
-    // Folders
     folders,
     activeFolderId,
-    loadFolders,
-    createFolder,
-    updateFolder,
-    deleteFolder,
-    moveSessionToFolder,
-    setActiveFolderId,
-    // Pin messages
-    toggleMessagePin,
-    // Export & Summary
-    exportChat,
+    messagesEndRef,
+    newSessionDialog,
+    setNewSessionDialog,
+    showDeleteModal,
+    setShowDeleteModal,
+    isDeleting,
+    mobileSidebarOpen,
+    setMobileSidebarOpen,
+    showDisclaimer,
+    showCrisisModal,
+    setShowCrisisModal,
     currentSummary,
     isGeneratingSummary,
-    loadSummary,
-    generateSummary,
-    // Suggested prompts
     suggestedPrompts,
-    loadSuggestedPrompts,
-    // Core actions
-    loadSessions,
-    loadSession,
-    createSession,
-    deleteSession,
-    sendTextMessage,
-    sendAudioMessage,
-    toggleMessageLike,
-    toggleFavorite,
-    toggleTrash,
-    setFilter,
-    clearActiveSession,
-  } = useChatStore();
-
-  // Local UI state for dialogs
-  const [newSessionDialog, setNewSessionDialog] = useState(false);
-  const [deleteSessionId, setDeleteSessionId] = useState<number | null>(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [showDisclaimer, setShowDisclaimer] = useState(false);
-  const [showCrisisModal, setShowCrisisModal] = useState(false);
-
-  useEffect(() => {
-    if (user && user.has_accepted_ai_disclaimer === false) {
-      setShowDisclaimer(true);
-    }
-  }, [user]);
-
-  const handleAcceptDisclaimer = async () => {
-    if(!token) return;
-    try {
-        await moderationService.acceptAIDisclaimer(token);
-        setShowDisclaimer(false);
-        // Optimistically update user in store if possible, or reload user
-        // useAuthStore.setState({ user: { ...user!, has_accepted_ai_disclaimer: true } });
-        // Assuming refreshUser or manual update is needed. 
-        // For now, simple state update is enough for this session.
-    } catch (error) {
-        console.error("Failed to accept disclaimer:", error);
-    }
-  };
-
-  // Journal store for AI context indicator
-  const {
-    settings: journalSettings,
+    journalSettings,
     aiContext,
-    loadSettings: loadJournalSettings,
-    loadAIContext,
-  } = useJournalStore();
-
-  // Ref for auto-scrolling to bottom
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-  // Auto-scroll to bottom when messages change
-  const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, []);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, scrollToBottom]);
-
-  // Load sessions and folders when token changes
-  useEffect(() => {
-    if (token) {
-      loadSessions(token);
-      loadFolders(token);
-      // Load journal settings for AI context indicator
-      loadJournalSettings(token);
-      loadAIContext(token);
-    }
-  }, [token, loadSessions, loadFolders, loadJournalSettings, loadAIContext]);
-
-  // Reload sessions when filter or activeFolderId changes
-  useEffect(() => {
-    if (token) {
-      loadSessions(token);
-    }
-  }, [token, filter, activeFolderId, loadSessions]);
-
-  // Sync URL -> Store on mount and URL change
-  useEffect(() => {
-    const urlView = searchParams.get("view");
-    if (urlView && (urlView === "all" || urlView === "favorites" || urlView === "trash")) {
-      if (urlView !== filter) setFilter(urlView as "all" | "favorites" | "trash");
-    }
-    const urlSession = searchParams.get("session");
-    if (urlSession && token) {
-      const sessionId = parseInt(urlSession, 10);
-      if (!isNaN(sessionId) && activeSession?.id !== sessionId) {
-        loadSession(token, sessionId);
-      }
-    } else if (!urlSession && activeSession) {
-      // If no session in URL but we have an active session in store, clear it.
-      // This happens when navigating from a specific session to the main chat page (e.g. via sidebar).
-      clearActiveSession();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, token]);
-
-  // Sync Store -> URL when filter or session changes
-  useEffect(() => {
-    if (filter !== "all") {
-      updateUrlParam("view", filter);
-    } else {
-      updateUrlParam("view", null);
-    }
-  }, [filter, updateUrlParam]);
-
-  useEffect(() => {
-    if (activeSession?.id) {
-      updateUrlParam("session", activeSession.id.toString());
-    } else {
-      updateUrlParam("session", null);
-    }
-  }, [activeSession?.id, updateUrlParam]);
-
-  // Load suggested prompts when token changes
-  useEffect(() => {
-    if (token) {
-      loadSuggestedPrompts(token);
-    }
-  }, [token, loadSuggestedPrompts]);
-
-  // Load summary when active session changes
-  useEffect(() => {
-    if (token && activeSession?.id) {
-      loadSummary(token, activeSession.id);
-    }
-  }, [token, activeSession?.id, loadSummary]);
-
-  // Session actions with token binding
-  const handleLoadSession = (sessionId: number) => {
-    if (token) loadSession(token, sessionId);
-  };
-
-  const handleCreateSession = async (title: string) => {
-    if (token) {
-      await createSession(token, title);
-    }
-  };
-
-  const handleSendText = async (content: string) => {
-    const lowerContent = content.toLowerCase();
-    const hasCrisisKeyword = CRISIS_KEYWORDS.some(keyword => lowerContent.includes(keyword));
-    
-    if (hasCrisisKeyword) {
-      setShowCrisisModal(true);
-      // We don't block sending completely in a real app, usually we flag it. 
-      // But here we show modal first. If user insists, they might just type again.
-      // Or we can add a "send anyway" logic, but for safety, stopping and showing help is better.
-      return;
-    }
-
-    if (token) await sendTextMessage(token, content);
-  };
-
-  const handleSendAudio = async (audioBlob: Blob) => {
-    if (token) await sendAudioMessage(token, audioBlob);
-  };
-
-  const handleToggleMessageLike = (messageId: number, isLike: boolean) => {
-    if (token) toggleMessageLike(token, messageId, isLike);
-  };
-
-  const handleToggleFavorite = (e: React.MouseEvent, sessionId: number) => {
-    e.stopPropagation();
-    if (token) toggleFavorite(token, sessionId);
-  };
-
-  const handleToggleTrash = (e: React.MouseEvent, sessionId: number) => {
-    e.stopPropagation();
-    if (token) toggleTrash(token, sessionId);
-  };
-
-  const handleDeletePermanent = (e: React.MouseEvent, sessionId: number) => {
-    e.stopPropagation();
-    setDeleteSessionId(sessionId);
-    setShowDeleteModal(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!deleteSessionId || !token) return;
-    setIsDeleting(true);
-    try {
-      await deleteSession(token, deleteSessionId);
-      setShowDeleteModal(false);
-      setDeleteSessionId(null);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  // Folder handlers
-  const handleCreateFolder = async (name: string, color?: string) => {
-    if (token) await createFolder(token, name, color);
-  };
-
-  const handleUpdateFolder = async (folderId: number, data: { name?: string; color?: string }) => {
-    if (token) await updateFolder(token, folderId, data);
-  };
-
-  const handleDeleteFolder = async (folderId: number) => {
-    if (token) await deleteFolder(token, folderId);
-  };
-
-  const handleMoveToFolder = async (sessionId: number, folderId: number | null) => {
-    if (token) await moveSessionToFolder(token, sessionId, folderId);
-  };
-
-  // Pin handler
-  const handleTogglePin = async (messageId: number) => {
-    if (token) await toggleMessagePin(token, messageId);
-  };
-
-  // Export handler
-  const handleExport = async (format: "pdf" | "txt") => {
-    if (token && activeSession) {
-      await exportChat(token, activeSession.id, format);
-    }
-  };
-
-  // Summary handler
-  const handleGenerateSummary = async () => {
-    if (token && activeSession) {
-      await generateSummary(token, activeSession.id);
-    }
-  };
-
-  // Suggested prompt handler - creates a new session and sends the prompt OR uses existing session
-  const handleSuggestedPrompt = async (prompt: string) => {
-    if (!token) return;
-    
-    // If there is an active session, send the message to it
-    if (activeSession) {
-      await sendTextMessage(token, prompt);
-      return;
-    }
-
-    // Otherwise create a new session
-    // Create a session with the prompt as title (truncated)
-    const sessionTitle = prompt.length > 50 ? prompt.substring(0, 50) + "..." : prompt;
-    await createSession(token, sessionTitle);
-    
-    // After session is created and loaded, send the prompt as first message
-    // The createSession function already loads the session, so we can send the message
-    await sendTextMessage(token, prompt);
-  };
+    setFilter,
+    setActiveFolderId,
+    handleLoadSession,
+    handleCreateSession,
+    handleSendText,
+    handleSendAudio,
+    handleToggleMessageLike,
+    handleTogglePin,
+    handleToggleFavorite,
+    handleToggleTrash,
+    handleDeletePermanent,
+    handleConfirmDelete,
+    handleCreateFolder,
+    handleUpdateFolder,
+    handleDeleteFolder,
+    handleMoveToFolder,
+    handleExport,
+    handleGenerateSummary,
+    handleSuggestedPrompt,
+    handleAcceptDisclaimer,
+  } = useChatPage();
 
   return (
     <div className="flex h-[calc(100vh-theme(spacing.16))] overflow-hidden bg-white">
@@ -405,4 +144,3 @@ export default function ChatPage() {
     </div>
   );
 }
-

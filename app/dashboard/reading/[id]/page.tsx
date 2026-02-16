@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { articleService } from "@/services/api";
 import { Article } from "@/types";
-import { formatDate } from "@/lib/utils";
+import { formatDate } from "@/utils";
 import { ReportModal } from "@/components/shared/moderation";
 
 export default function DashboardArticleDetailPage() {

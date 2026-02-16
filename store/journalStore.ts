@@ -57,7 +57,7 @@ interface JournalState {
  */
 interface JournalActions {
   // CRUD Operations
-  loadJournals: (token: string, page?: number, limit?: number) => Promise<void>;
+  loadJournals: (token: string, page?: number, limit?: number, filters?: { tags?: string[], startDate?: string | null, endDate?: string | null, moodId?: number | null }) => Promise<void>;
   loadJournal: (token: string, id: number) => Promise<void>;
   createJournal: (token: string, data: {
     title: string;
@@ -107,7 +107,7 @@ interface JournalActions {
   loadAnalytics: (token: string) => Promise<void>;
 
   // Export
-  exportJournals: (token: string, format: "txt" | "html", startDate?: string, endDate?: string) => Promise<JournalExportData | null>;
+  exportJournals: (token: string, format: "txt" | "pdf", startDate?: string, endDate?: string, tags?: string[]) => Promise<JournalExportData | null>;
 
   // State management
   setActiveJournal: (journal: Journal | null) => void;
@@ -145,17 +145,24 @@ export const useJournalStore = create<JournalState & JournalActions>((set, get) 
 
   // ==================== CRUD Operations ====================
 
-  loadJournals: async (token: string, page = 1, limit = 10) => {
+  loadJournals: async (token: string, page = 1, limit = 10, filters?: { tags?: string[], startDate?: string | null, endDate?: string | null, moodId?: number | null }) => {
     set({ isLoading: true, error: null });
     try {
-      const { filterTags, filterStartDate, filterEndDate, filterMoodId } = get();
+      // Use provided filters or fall back to store state (for backward compatibility if needed, generally we want to use passed filters)
+      const currentFilters = filters || {
+        tags: get().filterTags,
+        startDate: get().filterStartDate,
+        endDate: get().filterEndDate,
+        moodId: get().filterMoodId,
+      };
+
       const response = await journalService.list(token, {
         page,
         limit,
-        tags: filterTags.length > 0 ? filterTags : undefined,
-        start_date: filterStartDate || undefined,
-        end_date: filterEndDate || undefined,
-        mood_id: filterMoodId || undefined,
+        tags: currentFilters.tags && currentFilters.tags.length > 0 ? currentFilters.tags : undefined,
+        start_date: currentFilters.startDate || undefined,
+        end_date: currentFilters.endDate || undefined,
+        mood_id: currentFilters.moodId || undefined,
       });
       set({
         journals: response.data || [],
@@ -379,10 +386,16 @@ export const useJournalStore = create<JournalState & JournalActions>((set, get) 
 
   // ==================== Export ====================
 
-  exportJournals: async (token, format, startDate, endDate) => {
+  exportJournals: async (token, format, startDate, endDate, tags) => {
     set({ isExporting: true, error: null });
     try {
-      const response = await journalService.export(token, format, startDate, endDate);
+      // Use passed arguments or fall back to store state
+      const { filterTags, filterStartDate, filterEndDate } = get();
+      const finalStartDate = startDate !== undefined ? startDate : (filterStartDate || undefined);
+      const finalEndDate = endDate !== undefined ? endDate : (filterEndDate || undefined);
+      const finalTags = tags !== undefined ? tags : filterTags;
+
+      const response = await journalService.export(token, format, finalStartDate, finalEndDate, finalTags);
       set({ isExporting: false });
       return response.data;
     } catch (error) {

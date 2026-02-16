@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { forwardRef } from "react";
 
 interface ResponsiveContainerProps extends React.HTMLAttributes<HTMLDivElement> {

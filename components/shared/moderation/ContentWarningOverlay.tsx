@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AlertTriangle, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 
 interface ContentWarningOverlayProps {
   children: React.ReactNode;

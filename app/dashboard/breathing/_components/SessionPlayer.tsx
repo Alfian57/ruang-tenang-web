@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { useState } from "react";
 import {
     BreathingTechnique,
     BreathingPhase,
-    BreathingState,
     getPhaseLabel,
     formatBreathingDuration,
 } from "@/types/breathing";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils";
 import { Play, Pause, Square, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { BreathingCircle } from "./BreathingCircle";
+import { useSessionPlayer } from "../_hooks/useSessionPlayer";
 
 interface SessionPlayerProps {
     technique: BreathingTechnique;
@@ -35,215 +35,19 @@ export function SessionPlayer({
     voiceGuidance = false,
     hapticFeedback = false,
 }: SessionPlayerProps) {
-    const [state, setState] = useState<BreathingState>({
-        phase: "ready",
-        currentCycle: 0,
-        totalCycles: 0,
-        elapsedTime: 0,
-        remainingTime: targetDurationSeconds,
-        phaseProgress: 0,
-        isActive: false,
-        isPaused: false,
-    });
-
     const [isMuted, setIsMuted] = useState(!voiceGuidance);
-    const intervalRef = useRef<NodeJS.Timeout | null>(null);
-    const startTimeRef = useRef<number>(0);
-    const phaseStartTimeRef = useRef<number>(0);
 
-    // Calculate total cycle duration
-    const cycleDuration =
-        technique.inhale_duration +
-        technique.inhale_hold_duration +
-        technique.exhale_duration +
-        technique.exhale_hold_duration;
-
-    const totalCycles = Math.floor(targetDurationSeconds / cycleDuration);
-
-    // Get phase durations (memoized to prevent unnecessary re-renders)
-    const phaseDurations = useMemo(() => ({
-        inhale: technique.inhale_duration,
-        inhale_hold: technique.inhale_hold_duration,
-        exhale: technique.exhale_duration,
-        exhale_hold: technique.exhale_hold_duration,
-        ready: 3, // Countdown
-        complete: 0,
-    }), [technique.inhale_duration, technique.inhale_hold_duration, technique.exhale_duration, technique.exhale_hold_duration]);
-
-    // Determine current phase based on elapsed time in cycle
-    const getPhaseFromCycleTime = useCallback((cycleTime: number): BreathingPhase => {
-        let accumulated = 0;
-
-        accumulated += technique.inhale_duration;
-        if (cycleTime < accumulated) return "inhale";
-
-        accumulated += technique.inhale_hold_duration;
-        if (cycleTime < accumulated) return "inhale_hold";
-
-        accumulated += technique.exhale_duration;
-        if (cycleTime < accumulated) return "exhale";
-
-        return "exhale_hold";
-    }, [technique]);
-
-    // Haptic feedback
-    const triggerHaptic = useCallback(() => {
-        if (hapticFeedback && navigator.vibrate) {
-            navigator.vibrate(50);
-        }
-    }, [hapticFeedback]);
-
-    // Main timer loop
-    useEffect(() => {
-        if (!state.isActive || state.isPaused) {
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current);
-                intervalRef.current = null;
-            }
-            return;
-        }
-
-        intervalRef.current = setInterval(() => {
-            const now = Date.now();
-            const elapsed = Math.floor((now - startTimeRef.current) / 1000);
-            const remaining = Math.max(0, targetDurationSeconds - elapsed);
-
-            // Check if completed
-            if (remaining <= 0) {
-                setState(prev => ({
-                    ...prev,
-                    phase: "complete",
-                    elapsedTime: targetDurationSeconds,
-                    remainingTime: 0,
-                    isActive: false,
-                    currentCycle: totalCycles,
-                }));
-                triggerHaptic();
-                return;
-            }
-
-            // Calculate current cycle and phase
-            const currentCycle = Math.floor(elapsed / cycleDuration) + 1;
-            const timeInCycle = elapsed % cycleDuration;
-            const newPhase = getPhaseFromCycleTime(timeInCycle);
-
-            // Calculate phase progress
-            let phaseStartInCycle = 0;
-            if (newPhase === "inhale_hold") phaseStartInCycle = technique.inhale_duration;
-            else if (newPhase === "exhale") phaseStartInCycle = technique.inhale_duration + technique.inhale_hold_duration;
-            else if (newPhase === "exhale_hold") phaseStartInCycle = technique.inhale_duration + technique.inhale_hold_duration + technique.exhale_duration;
-
-            const timeInPhase = timeInCycle - phaseStartInCycle;
-            const phaseDuration = phaseDurations[newPhase];
-            const phaseProgress = phaseDuration > 0 ? (timeInPhase / phaseDuration) * 100 : 100;
-
-            setState(prev => {
-                // Trigger haptic on phase change
-                if (prev.phase !== newPhase && newPhase !== "ready") {
-                    triggerHaptic();
-                }
-
-                return {
-                    ...prev,
-                    phase: newPhase,
-                    currentCycle: Math.min(currentCycle, totalCycles),
-                    totalCycles,
-                    elapsedTime: elapsed,
-                    remainingTime: remaining,
-                    phaseProgress,
-                };
-            });
-        }, 100);
-
-        return () => {
-            if (intervalRef.current) {
-                clearInterval(intervalRef.current);
-            }
-        };
-    }, [
-        state.isActive,
-        state.isPaused,
-        targetDurationSeconds,
-        cycleDuration,
+    const {
+        state,
         totalCycles,
-        getPhaseFromCycleTime,
         phaseDurations,
-        technique,
-        triggerHaptic,
-    ]);
-
-    // Start session
-    const handleStart = () => {
-        startTimeRef.current = Date.now();
-        phaseStartTimeRef.current = Date.now();
-        setState(prev => ({
-            ...prev,
-            phase: "inhale",
-            currentCycle: 1,
-            totalCycles,
-            elapsedTime: 0,
-            remainingTime: targetDurationSeconds,
-            phaseProgress: 0,
-            isActive: true,
-            isPaused: false,
-        }));
-        triggerHaptic();
-    };
-
-    // Pause/resume
-    const handlePause = () => {
-        setState(prev => ({ ...prev, isPaused: true }));
-    };
-
-    const handleResume = () => {
-        // Adjust start time to account for pause
-        const pausedDuration = state.elapsedTime * 1000;
-        startTimeRef.current = Date.now() - pausedDuration;
-        setState(prev => ({ ...prev, isPaused: false }));
-    };
-
-    // Stop and complete
-    const handleStop = () => {
-        const completedPercentage = Math.round((state.elapsedTime / targetDurationSeconds) * 100);
-        onComplete({
-            durationSeconds: state.elapsedTime,
-            cyclesCompleted: state.currentCycle > 0 ? state.currentCycle - 1 : 0,
-            completed: completedPercentage >= 95, // Must complete at least 95% of the session
-            completedPercentage,
-        });
-    };
-
-    // Reset
-    const handleReset = () => {
-        setState({
-            phase: "ready",
-            currentCycle: 0,
-            totalCycles: 0,
-            elapsedTime: 0,
-            remainingTime: targetDurationSeconds,
-            phaseProgress: 0,
-            isActive: false,
-            isPaused: false,
-        });
-    };
-
-    // Animation scale based on phase
-    const getAnimationScale = () => {
-        switch (state.phase) {
-            case "inhale":
-                return 1 + (state.phaseProgress / 100) * 0.3;
-            case "inhale_hold":
-                return 1.3;
-            case "exhale":
-                return 1.3 - (state.phaseProgress / 100) * 0.3;
-            case "exhale_hold":
-                return 1;
-            default:
-                return 1;
-        }
-    };
-
-    const scale = getAnimationScale();
+        scale,
+        handleStart,
+        handlePause,
+        handleResume,
+        handleStop,
+        handleReset,
+    } = useSessionPlayer({ technique, targetDurationSeconds, hapticFeedback });
 
     return (
         <div className="flex flex-col items-center justify-center min-h-125 p-6">
@@ -323,7 +127,7 @@ export function SessionPlayer({
                             Jeda
                         </button>
                         <button
-                            onClick={handleStop}
+                            onClick={() => onComplete(handleStop())}
                             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-destructive/10 text-destructive font-medium hover:bg-destructive/20 transition-colors"
                         >
                             <Square className="w-5 h-5" />
@@ -342,7 +146,7 @@ export function SessionPlayer({
                             Lanjut
                         </button>
                         <button
-                            onClick={handleStop}
+                            onClick={() => onComplete(handleStop())}
                             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-destructive/10 text-destructive font-medium hover:bg-destructive/20 transition-colors"
                         >
                             <Square className="w-5 h-5" />

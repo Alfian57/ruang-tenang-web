@@ -28,7 +28,7 @@ export function Navbar({ variant = "default" }: NavbarProps) {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/logo-full.png"
+            src="/logo-full.webp"
             alt="Ruang Tenang"
             width={120}
             height={40}
