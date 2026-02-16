@@ -7,6 +7,7 @@ import { useJournalStore } from "@/store/journalStore";
 import { Journal } from "@/types";
 import { toast } from "sonner";
 import { moderationService } from "@/services/api";
+import { useDebounce } from "@/hooks/use-debounce";
 
 
 
@@ -64,8 +65,25 @@ export function useJournalPage() {
 
     // Derived state from URL
 
+    // Derived state from URL
     const activeTab = (searchParams.get("tab") || "journals") as "journals" | "analytics" | "settings";
-    const localSearchQuery = searchParams.get("search") || "";
+    const urlSearchQuery = searchParams.get("search") || "";
+
+    // Local state for search input
+    const [searchTerm, setSearchTerm] = useState(urlSearchQuery);
+    const debouncedSearch = useDebounce(searchTerm, 500);
+
+    // Sync state with URL when URL changes (e.g. navigation)
+    useEffect(() => {
+        setSearchTerm(urlSearchQuery);
+    }, [urlSearchQuery]);
+
+    // Update URL when debounced value changes
+    useEffect(() => {
+        if (debouncedSearch !== urlSearchQuery) {
+            updateUrlParam({ search: debouncedSearch || null });
+        }
+    }, [debouncedSearch, updateUrlParam, urlSearchQuery]);
 
     // Filter state from URL
     const filterMoodId = searchParams.get("mood") ? parseInt(searchParams.get("mood")!) : null;
@@ -81,14 +99,12 @@ export function useJournalPage() {
     const [showFilters, setShowFilters] = useState(false);
     const [showDisclaimer, setShowDisclaimer] = useState(false);
 
-
-
     const setActiveTab = (tab: "journals" | "analytics" | "settings") => {
         updateUrlParam({ tab: tab === "journals" ? null : tab });
     };
 
     const setLocalSearchQuery = (query: string) => {
-        updateUrlParam({ search: query || null });
+        setSearchTerm(query);
     };
 
     useEffect(() => {
@@ -148,15 +164,20 @@ export function useJournalPage() {
         }
     }, [error, clearError]);
 
-    // Search with debounce
+    // Search trigger (listen to URL changes via urlSearchQuery)
     useEffect(() => {
-        const timer = setTimeout(() => {
-            if (token && localSearchQuery.trim()) {
-                searchJournals(token, localSearchQuery);
-            }
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [localSearchQuery, token, searchJournals]);
+        if (token && urlSearchQuery.trim()) {
+            searchJournals(token, urlSearchQuery);
+        } else if (token && !urlSearchQuery.trim() && searchResults.length > 0) {
+            // Clear search results if query is empty
+             loadJournals(token, 1, 10, {
+                moodId: filterMoodId,
+                startDate: filterStartDate,
+                endDate: filterEndDate,
+                tags: filterTags
+            });
+        }
+    }, [urlSearchQuery, token, searchJournals, loadJournals, filterMoodId, filterStartDate, filterEndDate, filterTags, searchResults.length]);
 
     // Handlers
 
@@ -249,7 +270,7 @@ export function useJournalPage() {
         showFilters,
         showDisclaimer,
         activeTab,
-        localSearchQuery,
+        localSearchQuery: searchTerm,
         filterMoodId,
         filterStartDate,
         filterEndDate,

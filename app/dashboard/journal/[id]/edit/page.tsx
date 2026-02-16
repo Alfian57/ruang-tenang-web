@@ -109,7 +109,6 @@ export default function EditJournalPage() {
                     initialIsPrivate={activeJournal.is_private}
                     initialShareWithAI={activeJournal.share_with_ai}
                     onSave={handleUpdate}
-                    onCancel={() => router.push(`/dashboard/journal/${id}`)}
                     isSaving={isSaving}
                     defaultShareWithAI={settings?.default_share_with_ai}
                 />

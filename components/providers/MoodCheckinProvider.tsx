@@ -19,20 +19,14 @@ export function MoodCheckinProvider() {
     if (!token || hasChecked) return;
 
     try {
-      console.log("MoodCheckin Debug: Checking today's mood...");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response = await moodService.checkToday(token) as any;
-      console.log("MoodCheckin Debug: API Response", response);
       const data = response?.data;
 
       if (data && !data.has_checked) {
-        console.log("MoodCheckin Debug: User hasn't checked in today. Showing modal.");
         setShowModal(true);
-      } else {
-        console.log("MoodCheckin Debug: User has already checked in or data is missing.", data);
       }
     } catch (error) {
-      console.error("Failed to check today's mood:", error);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const errMsg = (error as any)?.message || "Unknown error";
       toast.error(`Gagal memuat status mood: ${errMsg}`);
@@ -64,7 +58,6 @@ export function MoodCheckinProvider() {
         toast.error("Gagal mencatat mood");
       }
     } catch (error) {
-      console.error("Failed to record mood:", error);
       toast.error("Gagal mencatat mood");
     } finally {
       setIsSubmitting(false);

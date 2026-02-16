@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 import { adminService, uploadService } from "@/services/api";
 import { httpClient } from "@/services/http/client";
 import { SongCategory, Song } from "@/types";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export interface SongWithCategory extends Omit<Song, 'category'> {
   category?: { id: number; name: string };
@@ -18,11 +19,19 @@ export function useAdminSongs() {
   const pathname = usePathname();
 
   // URL state
+  // URL state
   const activeTab = searchParams.get("tab") || "songs";
-  const searchSong = searchParams.get("search") || "";
-  const searchCategory = searchParams.get("categorySearch") || "";
+  const urlSearchSong = searchParams.get("search") || "";
+  const urlSearchCategory = searchParams.get("categorySearch") || "";
   const selectedCategoryIdParam = searchParams.get("category");
   const selectedCategoryId: number | "all" = selectedCategoryIdParam === null ? "all" : selectedCategoryIdParam === "all" ? "all" : parseInt(selectedCategoryIdParam, 10);
+
+  // Local state
+  const [songSearchTerm, setSongSearchTerm] = useState(urlSearchSong);
+  const [categorySearchTerm, setCategorySearchTerm] = useState(urlSearchCategory);
+
+  const debouncedSongSearch = useDebounce(songSearchTerm, 500);
+  const debouncedCategorySearch = useDebounce(categorySearchTerm, 500);
 
   const updateUrl = useCallback((updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -33,10 +42,37 @@ export function useAdminSongs() {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [searchParams, router, pathname]);
 
-  const setSearchSong = (value: string) => updateUrl({ search: value || null });
-  const setSearchCategory = (value: string) => updateUrl({ categorySearch: value || null });
+  // Sync state from URL
+  useEffect(() => {
+    setSongSearchTerm(urlSearchSong);
+  }, [urlSearchSong]);
+
+  useEffect(() => {
+    setCategorySearchTerm(urlSearchCategory);
+  }, [urlSearchCategory]);
+
+  // Update URL from debounced state
+  useEffect(() => {
+    if (debouncedSongSearch !== urlSearchSong) {
+      updateUrl({ search: debouncedSongSearch || null });
+    }
+  }, [debouncedSongSearch, updateUrl, urlSearchSong]);
+
+  useEffect(() => {
+    if (debouncedCategorySearch !== urlSearchCategory) {
+      updateUrl({ categorySearch: debouncedCategorySearch || null });
+    }
+  }, [debouncedCategorySearch, updateUrl, urlSearchCategory]);
+
+  const setSearchSong = (value: string) => setSongSearchTerm(value);
+  const setSearchCategory = (value: string) => setCategorySearchTerm(value);
   const setSelectedCategoryId = (value: number | "all") => updateUrl({ category: value === "all" ? null : value.toString() });
   const setActiveTab = (value: string) => updateUrl({ tab: value === "songs" ? null : value });
+
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
 
   const [categories, setCategories] = useState<SongCategory[]>([]);
   const [songs, setSongs] = useState<SongWithCategory[]>([]);
@@ -53,6 +89,11 @@ export function useAdminSongs() {
   const [errorDialog, setErrorDialog] = useState({ open: false, title: "", message: "" });
   const audioInputRef = useRef<HTMLInputElement>(null);
 
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSongSearch, debouncedCategorySearch, selectedCategoryId]);
+
   const loadCategories = useCallback(async () => {
     try {
       const data = await httpClient.get<{ data?: SongCategory[] }>("/song-categories");
@@ -66,12 +107,18 @@ export function useAdminSongs() {
     if (!token) return;
     try {
       const categoryId = selectedCategoryId === "all" ? undefined : selectedCategoryId;
-      const response = await adminService.getSongs(token, { category_id: categoryId });
+      const response = await adminService.getSongs(token, {
+        category_id: categoryId,
+        search: urlSearchSong || undefined,
+        page,
+        limit,
+      });
       setSongs((response.data || []) as SongWithCategory[]);
+      setTotalPages(response.meta?.total_pages || 1);
     } catch (error) {
       console.error("Failed to load songs:", error);
     }
-  }, [token, selectedCategoryId]);
+  }, [token, selectedCategoryId, urlSearchSong, page, limit]);
 
   useEffect(() => {
     loadCategories();
@@ -192,8 +239,8 @@ export function useAdminSongs() {
     user,
     token,
     activeTab,
-    searchSong,
-    searchCategory,
+    searchSong: songSearchTerm,
+    searchCategory: categorySearchTerm,
     selectedCategoryId,
     categories,
     songs,
@@ -227,6 +274,9 @@ export function useAdminSongs() {
     handleAudioUpload,
     saveSong,
     openSongDialog,
-    handleDeleteSong
+    handleDeleteSong,
+    page,
+    totalPages,
+    setPage
   };
 }

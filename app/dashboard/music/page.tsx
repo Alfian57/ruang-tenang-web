@@ -9,16 +9,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   PlaylistDialog,
-  PlaylistDetail,
-  AddSongsDialog,
   CategoryDetailView,
   BrowseTab,
   ExploreTab,
   PlaylistsTab
 } from "./_components";
 import { useMusic } from "./_hooks/useMusic";
+import { useRouter } from "next/navigation";
 
 export default function MusicPage() {
+  const router = useRouter(); // Helper to navigate
   const {
     // State
     activeTab,
@@ -30,10 +30,8 @@ export default function MusicPage() {
     playlists,
     publicPlaylists,
     adminPlaylists,
-    selectedPlaylist,
     selectedCategory,
     isPlaylistDialogOpen,
-    isAddSongsDialogOpen,
     editingPlaylist,
     playlistsLoading,
     publicPlaylistsLoading,
@@ -45,56 +43,29 @@ export default function MusicPage() {
     // Actions - Setters
     setActiveTab,
     setSearch,
-    setViewMode,
-    setSelectedCategoryId,
+    resetView,
     setIsPlaylistDialogOpen,
-    setIsAddSongsDialogOpen,
     setEditingPlaylist,
     setShowDeletePlaylistDialog,
     setDeletePlaylistId,
-    setSelectedPlaylist,
-    setSongs,
 
     // Actions - Handlers
     loadSongs,
     handlePlaySong,
-    handlePlaylistClick,
-    handlePublicPlaylistClick,
     handlePlaylistEdit,
     handlePlaylistDeleteClick,
     handlePlaylistDelete,
     handlePlaylistSave,
-    handleAddSongs,
-    handleRemoveSong,
-    handleReorderSongs,
 
     // Player State
     currentSong,
     isPlaying,
   } = useMusic();
 
-  // If viewing a playlist detail
-  if (selectedPlaylist) {
-    return (
-      <div className="container mx-auto px-4 py-6 max-w-6xl pb-32">
-        <PlaylistDetail
-          playlist={selectedPlaylist}
-          onBack={() => setSelectedPlaylist(null)}
-          onReorder={handleReorderSongs}
-          onRemoveItem={handleRemoveSong}
-          onAddSongs={() => setIsAddSongsDialogOpen(true)}
-        />
-
-        <AddSongsDialog
-          open={isAddSongsDialogOpen}
-          onOpenChange={setIsAddSongsDialogOpen}
-          playlist={selectedPlaylist}
-          onAddSongs={handleAddSongs}
-          existingSongIds={selectedPlaylist.items?.map(item => item.song_id) || []}
-        />
-      </div>
-    );
-  }
+  // Navigation handlers
+  const navigateToPlaylist = (playlist: { id: number }) => {
+    router.push(`/dashboard/music/playlist/${playlist.id}`);
+  };
 
   // Category detail view
   if (viewMode === "category" && selectedCategory) {
@@ -102,11 +73,7 @@ export default function MusicPage() {
       <CategoryDetailView
         category={selectedCategory}
         songs={songs}
-        onBack={() => {
-          setViewMode("browse");
-          setSelectedCategoryId(null);
-          setSongs([]);
-        }}
+        onBack={resetView}
         currentSong={currentSong}
         isPlaying={isPlaying}
         onPlay={handlePlaySong}
@@ -180,7 +147,7 @@ export default function MusicPage() {
               isLoading={publicPlaylistsLoading}
               adminPlaylists={adminPlaylists}
               publicPlaylists={publicPlaylists}
-              onPlaylistClick={handlePublicPlaylistClick}
+              onPlaylistClick={navigateToPlaylist}
             />
           </TabsContent>
 
@@ -193,7 +160,7 @@ export default function MusicPage() {
                 setEditingPlaylist(null);
                 setIsPlaylistDialogOpen(true);
               }}
-              onPlaylistClick={handlePlaylistClick}
+              onPlaylistClick={navigateToPlaylist}
               onEditClick={handlePlaylistEdit}
               onDeleteClick={handlePlaylistDeleteClick}
             />

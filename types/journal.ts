@@ -5,6 +5,7 @@ export interface Journal {
   user_id: number;
   title: string;
   content: string;
+  preview?: string;
   mood_id?: number;
   mood_label?: string;
   mood_emoji?: string;

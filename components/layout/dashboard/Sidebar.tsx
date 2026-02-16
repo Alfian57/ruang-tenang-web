@@ -131,7 +131,12 @@ export function Sidebar({
 
               {/* Group links */}
               {group.links.map((link) => {
-                const isActive = pathname === link.href || (link.href !== "/dashboard" && pathname.startsWith(link.href));
+                const isDashboardLink = link.href === "/dashboard" || link.href === "/dashboard/admin";
+                const isDashboardPath = pathname === "/dashboard" || pathname === "/dashboard/admin";
+
+                const isActive = isDashboardLink
+                  ? isDashboardPath
+                  : pathname === link.href || pathname.startsWith(`${link.href}/`);
 
                 return (
                   <Link

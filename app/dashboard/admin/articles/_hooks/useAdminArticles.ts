@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 import { adminService, moderationService, articleService } from "@/services/api";
 import { httpClient } from "@/services/http/client";
 import { ArticleCategory } from "@/types";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export interface AdminArticle {
   id: number;
@@ -27,10 +28,19 @@ export function useAdminArticles() {
   const pathname = usePathname();
 
   // URL state
+  // URL state
   const activeTab = searchParams.get("tab") || "articles";
-  const search = searchParams.get("search") || "";
+  const urlSearch = searchParams.get("search") || "";
   const statusFilter = searchParams.get("status") || "";
-  const categorySearch = searchParams.get("categorySearch") || "";
+  const urlCategorySearch = searchParams.get("categorySearch") || "";
+
+  // Local state
+  const [searchTerm, setSearchTerm] = useState(urlSearch);
+  const [categorySearchTerm, setCategorySearchTerm] = useState(urlCategorySearch);
+
+  // Debounced values
+  const debouncedSearch = useDebounce(searchTerm, 500);
+  const debouncedCategorySearch = useDebounce(categorySearchTerm, 500);
 
   const updateUrl = useCallback((updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -41,10 +51,42 @@ export function useAdminArticles() {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [searchParams, router, pathname]);
 
-  const setSearch = (value: string) => updateUrl({ search: value || null });
+  // Sync state from URL
+  useEffect(() => {
+    setSearchTerm(urlSearch);
+  }, [urlSearch]);
+
+  useEffect(() => {
+    setCategorySearchTerm(urlCategorySearch);
+  }, [urlCategorySearch]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, statusFilter, debouncedCategorySearch]);
+
+  // Update URL from debounced state
+  useEffect(() => {
+    if (debouncedSearch !== urlSearch) {
+      updateUrl({ search: debouncedSearch || null });
+    }
+  }, [debouncedSearch, updateUrl, urlSearch]);
+
+  useEffect(() => {
+    if (debouncedCategorySearch !== urlCategorySearch) {
+      updateUrl({ categorySearch: debouncedCategorySearch || null });
+    }
+  }, [debouncedCategorySearch, updateUrl, urlCategorySearch]);
+
+  const setSearch = (value: string) => setSearchTerm(value);
   const setStatusFilter = (value: string) => updateUrl({ status: value || null });
-  const setCategorySearch = (value: string) => updateUrl({ categorySearch: value || null });
+  const setCategorySearch = (value: string) => setCategorySearchTerm(value);
   const setActiveTab = (value: string) => updateUrl({ tab: value === "articles" ? null : value });
+
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Articles state
   const [articles, setArticles] = useState<AdminArticle[]>([]);
@@ -70,17 +112,24 @@ export function useAdminArticles() {
     setIsLoading(true);
     try {
       const [articlesRes, categoriesRes] = await Promise.all([
-        adminService.getArticles(token, { status: statusFilter || undefined }),
+        adminService.getArticles(token, {
+          status: statusFilter || undefined,
+          search: urlSearch || undefined, // Use URL value (debounced)
+          page,
+          limit,
+        }),
         articleService.getCategories(),
       ]);
-      setArticles((articlesRes.data as unknown as AdminArticle[]) || []); // Explicit cast as service types might vary slightly
+      
+      setArticles(articlesRes.data || []);
+      setTotalPages(articlesRes.meta?.total_pages || 1);
       setCategories(categoriesRes.data || []);
     } catch (error) {
       console.error("Failed to load data:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [token, statusFilter]);
+  }, [token, statusFilter, urlSearch, page, limit]);
 
   useEffect(() => {
     loadData();
@@ -227,9 +276,9 @@ export function useAdminArticles() {
     user,
     token,
     activeTab,
-    search,
+    search: searchTerm,
     statusFilter,
-    categorySearch,
+    categorySearch: categorySearchTerm,
     articles,
     categories,
     isLoading,
@@ -266,6 +315,9 @@ export function useAdminArticles() {
     handleReject,
     openCategoryDialog,
     saveCategory,
-    handleDeleteCategory
+    handleDeleteCategory,
+    page,
+    totalPages,
+    setPage
   };
 }

@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { moderationService } from "@/services/api";
 import type { UserReport } from "@/types/moderation";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export function useModerationReports() {
   const { token } = useAuthStore();
@@ -13,10 +14,15 @@ export function useModerationReports() {
   const pathname = usePathname();
 
   // URL state
+  // URL state
   const statusFilter = searchParams.get("status") || "pending";
   const typeFilter = searchParams.get("type") || "all";
-  const searchQuery = searchParams.get("search") || "";
+  const urlSearchQuery = searchParams.get("search") || "";
   const page = parseInt(searchParams.get("page") || "1", 10);
+
+  // Local state
+  const [searchTerm, setSearchTerm] = useState(urlSearchQuery);
+  const debouncedSearch = useDebounce(searchTerm, 500);
 
   const updateUrl = useCallback((updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -27,9 +33,21 @@ export function useModerationReports() {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [searchParams, router, pathname]);
 
+  // Sync state from URL
+  useEffect(() => {
+    setSearchTerm(urlSearchQuery);
+  }, [urlSearchQuery]);
+
+  // Update URL from debounced state
+  useEffect(() => {
+    if (debouncedSearch !== urlSearchQuery) {
+      updateUrl({ search: debouncedSearch || null });
+    }
+  }, [debouncedSearch, updateUrl, urlSearchQuery]);
+
   const setStatusFilter = (value: string) => updateUrl({ status: value === "pending" ? null : value, page: null });
   const setTypeFilter = (value: string) => updateUrl({ type: value === "all" ? null : value, page: null });
-  const setSearchQuery = (value: string) => updateUrl({ search: value || null });
+  const setSearchQuery = (value: string) => setSearchTerm(value);
   const setPage = (value: number) => updateUrl({ page: value > 1 ? value.toString() : null });
 
   const [reports, setReports] = useState<UserReport[]>([]);
@@ -63,15 +81,15 @@ export function useModerationReports() {
   }, [loadReports]);
 
   const filteredReports = reports.filter((report) =>
-    (report.content_title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      report.reporter_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      report.reported_user_name?.toLowerCase().includes(searchQuery.toLowerCase()))
+    (report.content_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.reporter_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.reported_user_name?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return {
     statusFilter,
     typeFilter,
-    searchQuery,
+    searchQuery: searchTerm,
     page,
     reports: filteredReports,
     isLoading,

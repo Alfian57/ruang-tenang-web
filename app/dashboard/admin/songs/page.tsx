@@ -15,6 +15,7 @@ import {
   SongDeleteModal,
   ErrorDialog
 } from "./_components";
+import { Pagination } from "@/components/ui/pagination";
 
 export default function AdminSongsPage() {
   const {
@@ -56,7 +57,10 @@ export default function AdminSongsPage() {
     handleAudioUpload,
     saveSong,
     openSongDialog,
-    handleDeleteSong
+    handleDeleteSong,
+    page,
+    totalPages,
+    setPage
   } = useAdminSongs();
 
   if (user?.role !== "admin") {
@@ -152,6 +156,12 @@ export default function AdminSongsPage() {
             search={searchSong}
             onEdit={openSongDialog}
             onDelete={setDeleteSongId}
+          />
+
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
           />
         </TabsContent>
       </Tabs>

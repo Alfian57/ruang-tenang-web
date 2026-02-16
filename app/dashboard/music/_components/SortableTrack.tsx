@@ -25,6 +25,7 @@ interface SortableTrackProps {
     item: PlaylistItem;
     isPlaying: boolean;
     isCurrentSong: boolean;
+    isOwner: boolean;
     onPlay: () => void;
     onRemove: () => void;
 }
@@ -33,6 +34,7 @@ export function SortableTrack({
     item,
     isPlaying,
     isCurrentSong,
+    isOwner,
     onPlay,
     onRemove,
 }: SortableTrackProps) {
@@ -43,7 +45,10 @@ export function SortableTrack({
         transform,
         transition,
         isDragging,
-    } = useSortable({ id: item.id });
+    } = useSortable({
+        id: item.id,
+        disabled: !isOwner,
+    });
 
     const style = {
         transform: CSS.Transform.toString(transform),
@@ -65,13 +70,15 @@ export function SortableTrack({
             )}
         >
             {/* Drag handle */}
-            <button
-                {...attributes}
-                {...listeners}
-                className="cursor-grab active:cursor-grabbing touch-none p-1"
-            >
-                <GripVertical className="w-4 h-4 text-gray-400" />
-            </button>
+            {isOwner && (
+                <button
+                    {...attributes}
+                    {...listeners}
+                    className="cursor-grab active:cursor-grabbing touch-none p-1"
+                >
+                    <GripVertical className="w-4 h-4 text-gray-400" />
+                </button>
+            )}
 
             {/* Thumbnail with play button */}
             <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
@@ -137,13 +144,15 @@ export function SortableTrack({
                         <Play className="w-4 h-4 mr-2" />
                         Putar
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                        className="text-red-600"
-                        onClick={onRemove}
-                    >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Hapus dari playlist
-                    </DropdownMenuItem>
+                    {isOwner && (
+                        <DropdownMenuItem
+                            className="text-red-600"
+                            onClick={onRemove}
+                        >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Hapus dari playlist
+                        </DropdownMenuItem>
+                    )}
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { storyService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import { StoryCategory, CreateStoryRequest } from "@/types";
+import { ApiError } from "@/services/http/types";
 import { toast } from "sonner";
 
 export function useNewStory() {
@@ -115,7 +116,11 @@ export function useNewStory() {
       }
     } catch (error: unknown) {
       console.error("Failed to submit story:", error);
-      toast.error("Gagal mengirim kisah");
+      if (error instanceof ApiError) {
+        toast.error(error.message);
+      } else {
+        toast.error("Gagal mengirim kisah");
+      }
     } finally {
       setSubmitting(false);
     }

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { forumService } from "@/services/api";
 import { Forum, ForumCategory } from "@/types/forum";
+import { useDebounce } from "@/hooks/use-debounce";
 import { useAuthStore } from "@/store/authStore";
 import { useBlockStore } from "@/store/blockStore";
 import { toast } from "sonner";
@@ -35,18 +36,27 @@ export function useForumPage() {
   }, [searchParams, router, pathname]);
 
   // Read from URL
-  const search = searchParams.get("search") || "";
+  const urlSearch = searchParams.get("search") || "";
   const selectedCategory = searchParams.get("category") ? parseInt(searchParams.get("category")!, 10) : undefined;
 
-  const setSearch = (value: string) => updateUrlParam("search", value || null);
-  const setSelectedCategory = (id: number | undefined) => updateUrlParam("category", id ? String(id) : null);
+  // Local state
+  const [searchTerm, setSearchTerm] = useState(urlSearch);
+  const debouncedSearch = useDebounce(searchTerm, 500);
 
-  // Debounce search from URL
-  const [debouncedSearch, setDebouncedSearch] = useState(search);
+  // Sync state from URL
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 500);
-    return () => clearTimeout(timer);
-  }, [search]);
+    setSearchTerm(urlSearch);
+  }, [urlSearch]);
+
+  // Update URL from debounced state
+  useEffect(() => {
+    if (debouncedSearch !== urlSearch) {
+      updateUrlParam("search", debouncedSearch || null);
+    }
+  }, [debouncedSearch, updateUrlParam, urlSearch]);
+
+  const setSearch = (value: string) => setSearchTerm(value);
+  const setSelectedCategory = (id: number | undefined) => updateUrlParam("category", id ? String(id) : null);
 
   const loadData = useCallback(async () => {
     if (!token) return;
@@ -108,7 +118,7 @@ export function useForumPage() {
     forums: visibleForums,
     categories,
     isLoading,
-    search,
+    search: searchTerm,
     selectedCategory,
     isCreateOpen,
     newTitle,

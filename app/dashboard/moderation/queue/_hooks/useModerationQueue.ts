@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { moderationService } from "@/services/api";
 import { ModerationQueueItem } from "@/types/moderation";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export function useModerationQueue() {
     const { token } = useAuthStore();
@@ -14,8 +15,12 @@ export function useModerationQueue() {
 
     // URL state
     const statusFilter = searchParams.get("status") || "pending";
-    const searchQuery = searchParams.get("search") || "";
+    const urlSearchQuery = searchParams.get("search") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
+
+    // Local state
+    const [searchTerm, setSearchTerm] = useState(urlSearchQuery);
+    const debouncedSearch = useDebounce(searchTerm, 500);
 
     const updateUrl = useCallback(
         (updates: Record<string, string | null>) => {
@@ -29,10 +34,21 @@ export function useModerationQueue() {
         [searchParams, router, pathname]
     );
 
+    // Sync state from URL
+    useEffect(() => {
+        setSearchTerm(urlSearchQuery);
+    }, [urlSearchQuery]);
+
+    // Update URL from debounced state
+    useEffect(() => {
+        if (debouncedSearch !== urlSearchQuery) {
+            updateUrl({ search: debouncedSearch || null });
+        }
+    }, [debouncedSearch, updateUrl, urlSearchQuery]);
+
     const setStatusFilter = (value: string) =>
         updateUrl({ status: value === "pending" ? null : value, page: null });
-    const setSearchQuery = (value: string) =>
-        updateUrl({ search: value || null });
+    const setSearchQuery = (value: string) => setSearchTerm(value);
     const setPage = (value: number) =>
         updateUrl({ page: value > 1 ? value.toString() : null });
 
@@ -70,8 +86,8 @@ export function useModerationQueue() {
 
     const filteredItems = items.filter(
         (item) =>
-            item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.author_name.toLowerCase().includes(searchQuery.toLowerCase())
+            item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.author_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return {
@@ -80,7 +96,7 @@ export function useModerationQueue() {
         totalPages,
         page,
         statusFilter,
-        searchQuery,
+        searchQuery: searchTerm,
         setPage,
         setStatusFilter,
         setSearchQuery,

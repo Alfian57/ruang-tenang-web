@@ -144,8 +144,23 @@ export function useAdminLevels() {
     setError("");
   };
 
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+
+  const totalPages = Math.ceil(levels.length / limit);
+  const paginatedLevels = levels.slice((page - 1) * limit, page * limit);
+
+  // Reset page if out of bounds (e.g. after delete)
+  useEffect(() => {
+    if (page > totalPages && totalPages > 0) {
+      setPage(totalPages);
+    }
+  }, [levels.length, page, totalPages]);
+
   return {
-    levels,
+    levels, // Full list for calculations
+    paginatedLevels, // Sliced list for display
     loading,
     saving,
     editingId,
@@ -163,5 +178,8 @@ export function useAdminLevels() {
     handleUpdate,
     handleDelete,
     cancelEdit,
+    page,
+    totalPages,
+    setPage,
   };
 }

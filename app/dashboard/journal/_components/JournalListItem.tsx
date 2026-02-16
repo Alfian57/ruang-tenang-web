@@ -37,7 +37,8 @@ export function JournalListItem({
     const router = useRouter();
 
     // Strip HTML and truncate content for preview
-    const contentPreview = (journal.content || "")
+    const rawContent = journal.preview || journal.content || "";
+    const contentPreview = rawContent
         .replace(/<[^>]*>/g, "")
         .slice(0, 150)
         .trim();

@@ -6,6 +6,7 @@ import { storyService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import { useBlockStore } from "@/store/blockStore";
 import { StoryCard, StoryCategory } from "@/types";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export function useStoriesPage() {
   const router = useRouter();
@@ -28,11 +29,26 @@ export function useStoriesPage() {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [searchParams, router, pathname]);
 
-  const searchQuery = searchParams.get("search") || "";
+  const urlSearchQuery = searchParams.get("search") || "";
   const selectedCategory = searchParams.get("category") || "all";
   const sortBy = (searchParams.get("sort") || "recent") as "recent" | "hearts" | "featured";
 
-  const setSearchQuery = (value: string) => updateUrlParam("search", value || null);
+  // Local state for input
+  const [searchTerm, setSearchTerm] = useState(urlSearchQuery);
+  const debouncedSearch = useDebounce(searchTerm, 500);
+
+  // Sync state with URL when URL changes
+  useEffect(() => {
+    setSearchTerm(urlSearchQuery);
+  }, [urlSearchQuery]);
+
+  // Update URL when debounced value changes
+  useEffect(() => {
+    if (debouncedSearch !== urlSearchQuery) {
+      updateUrlParam("search", debouncedSearch || null);
+    }
+  }, [debouncedSearch, updateUrlParam, urlSearchQuery]);
+
   const setSelectedCategory = (value: string) => updateUrlParam("category", value === "all" ? null : value);
   const setSortBy = (value: "recent" | "hearts" | "featured") => updateUrlParam("sort", value === "recent" ? null : value);
 
@@ -44,7 +60,7 @@ export function useStoriesPage() {
         limit: 12,
         sort_by: sortBy,
         category_id: selectedCategory !== "all" ? selectedCategory : undefined,
-        search: searchQuery.trim() || undefined,
+        search: urlSearchQuery.trim() || undefined, // Use URL value
       });
       if (response.data && Array.isArray(response.data)) {
         setStories(response.data);
@@ -57,7 +73,7 @@ export function useStoriesPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, sortBy, selectedCategory, searchQuery]);
+  }, [page, sortBy, selectedCategory, urlSearchQuery]);
 
   const loadFeaturedStories = useCallback(async () => {
     try {
@@ -104,10 +120,10 @@ export function useStoriesPage() {
     page,
     setPage,
     totalPages,
-    searchQuery,
+    searchQuery: searchTerm,
     selectedCategory,
     sortBy,
-    setSearchQuery,
+    setSearchQuery: setSearchTerm,
     setSelectedCategory,
     setSortBy,
   };

@@ -64,7 +64,6 @@ export default function CreateJournalPage() {
 
             <JournalEditor
                 onSave={handleCreate}
-                onCancel={() => router.push("/dashboard/journal")}
                 isSaving={isSaving}
                 defaultShareWithAI={settings?.default_share_with_ai}
                 onGeneratePrompt={handleGeneratePrompt}

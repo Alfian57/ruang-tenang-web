@@ -52,12 +52,12 @@ export function CompletionModal({
                         <div className="flex items-center justify-center gap-2 mb-2">
                             <span className="text-2xl">✅</span>
                             <span className="text-lg font-bold text-green-600 dark:text-green-400">
-                                Daily Task Selesai!
+                                Misi Harian Selesai!
                             </span>
                         </div>
                         <div className="text-sm text-muted-foreground">
                             <p>Klaim poin di menu Daily Tasks</p>
-                            <p className="mt-1 font-medium text-green-600">+{result.xp_earned} XP</p>
+                            {/* <p className="mt-1 font-medium text-green-600">+{result.xp_earned} XP</p> */}
                         </div>
                     </div>
                 ) : (

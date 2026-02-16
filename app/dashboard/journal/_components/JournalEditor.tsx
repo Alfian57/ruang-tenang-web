@@ -53,8 +53,6 @@ interface JournalEditorProps {
         share_with_ai: boolean;
     }) => Promise<void>;
     isSaving?: boolean;
-    onBack?: () => void;
-    onCancel?: () => void; // Added alias for onBack
     onGeneratePrompt?: () => Promise<void>; // Added
 }
 
@@ -69,12 +67,8 @@ export function JournalEditor({
     writingPrompt,
     onSave,
     isSaving = false,
-    onBack,
-    onCancel,
     onGeneratePrompt,
 }: JournalEditorProps) {
-    // Handle onBack/onCancel alias
-    const handleBack = onBack || onCancel;
 
     const {
         editor,
@@ -121,7 +115,6 @@ export function JournalEditor({
             <JournalEditorHeader
                 title={title}
                 setTitle={setTitle}
-                onBack={handleBack}
                 isSaving={isSaving}
             />
 

@@ -123,7 +123,7 @@ export function ArticleTable({
                                     </td>
                                     <td className="p-4">
                                         <div className="flex gap-1 justify-end">
-                                            {article.status === "draft" && (article.moderation_status === "pending" || !article.moderation_status) && (
+                                            {(article.moderation_status === "pending" || (article.status === "draft" && !article.moderation_status)) && (
                                                 <>
                                                     <Button
                                                         variant="ghost"

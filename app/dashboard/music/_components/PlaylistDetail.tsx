@@ -26,6 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Playlist, PlaylistItem, Song } from "@/types";
 import { useMusicPlayerStore } from "@/store/musicPlayerStore";
+import { useAuthStore } from "@/store/authStore";
 import { SortableTrack } from "./SortableTrack";
 import { PlaylistHeader } from "./PlaylistHeader";
 
@@ -56,6 +57,8 @@ export function PlaylistDetail({
         playSong,
         setIsPlaying,
     } = useMusicPlayerStore();
+    const { user } = useAuthStore();
+    const isOwner = user?.id === playlist.user_id;
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -182,10 +185,12 @@ export function PlaylistDetail({
                     <Shuffle className="w-4 h-4 mr-2" />
                     Acak
                 </Button>
-                <Button variant="outline" onClick={onAddSongs}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Tambah Lagu
-                </Button>
+                {isOwner && (
+                    <Button variant="outline" onClick={onAddSongs}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Tambah Lagu
+                    </Button>
+                )}
             </div>
 
             {/* Track list */}
@@ -193,10 +198,12 @@ export function PlaylistDetail({
                 <div className="text-center py-12 bg-white rounded-xl border border-dashed">
                     <ListMusic className="w-12 h-12 mx-auto text-gray-300 mb-3" />
                     <p className="text-gray-500 mb-4">Playlist ini masih kosong</p>
-                    <Button variant="outline" onClick={onAddSongs}>
-                        <Plus className="w-4 h-4 mr-2" />
-                        Tambah Lagu
-                    </Button>
+                    {isOwner && (
+                        <Button variant="outline" onClick={onAddSongs}>
+                            <Plus className="w-4 h-4 mr-2" />
+                            Tambah Lagu
+                        </Button>
+                    )}
                 </div>
             ) : (
                 <DndContext
@@ -216,6 +223,7 @@ export function PlaylistDetail({
                                         item={item}
                                         isPlaying={isPlaying}
                                         isCurrentSong={currentSong?.id === item.song?.id}
+                                        isOwner={isOwner}
                                         onPlay={() => handlePlaySong(index)}
                                         onRemove={() => handleRemoveItem(item.id)}
                                     />

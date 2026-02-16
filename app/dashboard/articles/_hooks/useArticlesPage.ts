@@ -6,6 +6,7 @@ import { articleService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import { useBlockStore } from "@/store/blockStore";
 import { Article, ArticleCategory } from "@/types";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export interface MyArticle {
   id: number;
@@ -30,9 +31,17 @@ export function useArticlesPage() {
 
   // URL state
   const activeTab = searchParams.get("tab") || "browse";
-  const search = searchParams.get("search") || "";
-  const mySearch = searchParams.get("mySearch") || "";
+  const urlSearch = searchParams.get("search") || "";
+  const urlMySearch = searchParams.get("mySearch") || "";
   const selectedCategory = searchParams.get("category") ? parseInt(searchParams.get("category")!, 10) : null;
+
+  // Local state for inputs
+  const [searchTerm, setSearchTerm] = useState(urlSearch);
+  const [mySearchTerm, setMySearchTerm] = useState(urlMySearch);
+
+  // Debounced values
+  const debouncedSearch = useDebounce(searchTerm, 500);
+  const debouncedMySearch = useDebounce(mySearchTerm, 500);
 
   const updateUrl = useCallback((updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -43,9 +52,29 @@ export function useArticlesPage() {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [searchParams, router, pathname]);
 
+  // Sync state with URL when URL changes (e.g. navigation)
+  useEffect(() => {
+    setSearchTerm(urlSearch);
+  }, [urlSearch]);
+
+  useEffect(() => {
+    setMySearchTerm(urlMySearch);
+  }, [urlMySearch]);
+
+  // Update URL when debounced values change
+  useEffect(() => {
+    if (debouncedSearch !== urlSearch) {
+      updateUrl({ search: debouncedSearch || null });
+    }
+  }, [debouncedSearch, updateUrl, urlSearch]);
+
+  useEffect(() => {
+    if (debouncedMySearch !== urlMySearch) {
+      updateUrl({ mySearch: debouncedMySearch || null });
+    }
+  }, [debouncedMySearch, updateUrl, urlMySearch]);
+
   const setActiveTab = (value: string) => updateUrl({ tab: value === "browse" ? null : value });
-  const setSearch = (value: string) => updateUrl({ search: value || null });
-  const setMySearch = (value: string) => updateUrl({ mySearch: value || null });
   const setSelectedCategory = (id: number | null) => updateUrl({ category: id ? String(id) : null });
 
   // Browse tab state
@@ -72,7 +101,7 @@ export function useArticlesPage() {
     try {
       const response = await articleService.getArticles({
         category_id: selectedCategory || undefined,
-        search: search || undefined,
+        search: urlSearch || undefined, // Use URL value (which matches debounced)
       }) as { data: Article[] };
       setPublishedArticles(response.data || []);
     } catch (error) {
@@ -80,7 +109,7 @@ export function useArticlesPage() {
     } finally {
       setIsBrowseLoading(false);
     }
-  }, [selectedCategory, search]);
+  }, [selectedCategory, urlSearch]);
 
   const loadMyArticles = useCallback(async () => {
     if (!token) return;
@@ -119,7 +148,7 @@ export function useArticlesPage() {
   };
 
   const filteredMyArticles = myArticles.filter(a =>
-    a.title.toLowerCase().includes(mySearch.toLowerCase())
+    a.title.toLowerCase().includes(urlMySearch.toLowerCase())
   );
 
   const filteredPublishedArticles = publishedArticles.filter((article) => !isBlocked(article.author?.id || article.user_id));
@@ -127,8 +156,8 @@ export function useArticlesPage() {
   return {
     user,
     activeTab,
-    search,
-    mySearch,
+    search: searchTerm,
+    mySearch: mySearchTerm,
     selectedCategory,
     categories,
     publishedArticles: filteredPublishedArticles,
@@ -137,8 +166,8 @@ export function useArticlesPage() {
     isMyLoading,
     deleteArticleId,
     setActiveTab,
-    setSearch,
-    setMySearch,
+    setSearch: setSearchTerm,
+    setMySearch: setMySearchTerm,
     setSelectedCategory,
     setDeleteArticleId,
     handleDelete,

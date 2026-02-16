@@ -42,15 +42,15 @@ export function JournalTagsInput({
             </div>
             <div className="flex gap-2">
                 <div className="relative flex-1">
-                    <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
-                        placeholder="Tambah tags (pisahkan dengan koma)..."
-                        className="pl-9"
+                        placeholder="Tambah tag..."
+                        className="pl-9 pr-12"
                         value={inputValue}
                         onChange={(e) => onInputChange(e.target.value)}
                         onKeyDown={onKeyDown}
                         disabled={disabled || tags.length >= 10}
                     />
+                    <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                 </div>
                 <Button
                     type="button"

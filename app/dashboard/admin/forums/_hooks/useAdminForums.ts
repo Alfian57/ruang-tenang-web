@@ -37,21 +37,36 @@ export function useAdminForums() {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [blockId, setBlockId] = useState<number | null>(null);
 
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+
   // Category State
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<ForumCategory | null>(null);
   const [categoryName, setCategoryName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [search, statusFilter]);
+
   const loadData = useCallback(async () => {
     if (!token) return;
     setIsLoading(true);
     try {
       const [forumsRes, categoriesRes] = await Promise.all([
-        forumService.getAll(token, 100, 0),
+        adminService.getForums(token, {
+          page,
+          limit,
+          search: search || undefined
+        }),
         adminService.getForumCategories(token)
       ]);
-      setForums(forumsRes.data);
+      setForums(forumsRes.data || []);
+      setTotalPages(forumsRes.meta?.total_pages || 1);
       setCategories(categoriesRes.data);
     } catch (error) {
       console.error("Failed to load data:", error);
@@ -59,7 +74,7 @@ export function useAdminForums() {
     } finally {
       setIsLoading(false);
     }
-  }, [token]);
+  }, [token, page, limit, search]);
 
   useEffect(() => {
     loadData();
@@ -126,11 +141,11 @@ export function useAdminForums() {
   };
 
   const filteredForums = forums.filter(f => {
-    const matchesSearch = f.title.toLowerCase().includes(search.toLowerCase());
+    // Only filter by status client-side as search is handled by API
     const matchesStatus = statusFilter === "all" || 
       (statusFilter === "flagged" && f.is_flagged) ||
       (statusFilter === "published" && !f.is_flagged);
-    return matchesSearch && matchesStatus;
+    return matchesStatus;
   });
 
   return {
@@ -159,5 +174,8 @@ export function useAdminForums() {
     handleSaveCategory,
     openCategoryModal,
     confirmToggleFlag,
+    page,
+    totalPages,
+    setPage,
   };
 }

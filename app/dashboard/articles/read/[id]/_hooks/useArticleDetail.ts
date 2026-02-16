@@ -47,7 +47,7 @@ export function useArticleDetail() {
     setIsLoading(true);
     try {
       const [articleRes, relatedRes] = await Promise.all([
-        articleService.getArticle(Number(id)),
+        articleService.getArticle(Number(id), token || undefined),
         articleService.getArticles({ limit: 6 }),
       ]);
       setArticle(articleRes.data);

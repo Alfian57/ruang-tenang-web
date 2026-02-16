@@ -3,9 +3,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { searchService, songService } from "@/services/api";
-import { SongCategory, Song, Playlist, PlaylistListItem } from "@/types";
+import { SongCategory, Song, PlaylistListItem } from "@/types";
 import { useMusicPlayerStore } from "@/store/musicPlayerStore";
 import { useAuthStore } from "@/store/authStore";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export function useMusic() {
   // URL state management
@@ -15,9 +16,13 @@ export function useMusic() {
   const { token } = useAuthStore();
 
   const activeTab = searchParams.get("tab") || "browse";
-  const search = searchParams.get("search") || "";
+  const urlSearch = searchParams.get("search") || "";
   const categoryIdParam = searchParams.get("categoryId");
   const viewMode = (searchParams.get("view") || "browse") as "browse" | "category";
+
+  // Local state
+  const [searchTerm, setSearchTerm] = useState(urlSearch);
+  const debouncedSearch = useDebounce(searchTerm, 500);
 
   const updateUrlParam = useCallback((key: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -26,8 +31,20 @@ export function useMusic() {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [searchParams, router, pathname]);
 
+  // Sync state from URL
+  useEffect(() => {
+    setSearchTerm(urlSearch);
+  }, [urlSearch]);
+
+  // Update URL from debounced state
+  useEffect(() => {
+    if (debouncedSearch !== urlSearch) {
+      updateUrlParam("search", debouncedSearch || null);
+    }
+  }, [debouncedSearch, updateUrlParam, urlSearch]);
+
   const setActiveTab = (tab: string) => updateUrlParam("tab", tab === "browse" ? null : tab);
-  const setSearch = (value: string) => updateUrlParam("search", value || null);
+  const setSearch = (value: string) => setSearchTerm(value);
   const setViewMode = (mode: "browse" | "category") => updateUrlParam("view", mode === "browse" ? null : mode);
   const setSelectedCategoryId = (id: number | null) => updateUrlParam("categoryId", id ? String(id) : null);
 
@@ -35,16 +52,13 @@ export function useMusic() {
   const [categories, setCategories] = useState<SongCategory[]>([]);
   const [songs, setSongs] = useState<Song[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-
+  
   // Playlist state
   const [playlists, setPlaylists] = useState<PlaylistListItem[]>([]);
   const [publicPlaylists, setPublicPlaylists] = useState<PlaylistListItem[]>([]);
   const [adminPlaylists, setAdminPlaylists] = useState<PlaylistListItem[]>([]);
-  const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
-  const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] = useState(false);
   const [editingPlaylist, setEditingPlaylist] = useState<PlaylistListItem | null>(null);
-  const [isAddSongsDialogOpen, setIsAddSongsDialogOpen] = useState(false);
+  const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] = useState(false);
   const [playlistsLoading, setPlaylistsLoading] = useState(false);
   const [publicPlaylistsLoading, setPublicPlaylistsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -64,12 +78,6 @@ export function useMusic() {
 
   // Derive selectedCategory
   const selectedCategory = categoryIdParam ? categories.find(c => c.id === parseInt(categoryIdParam, 10)) || null : null;
-
-  // Debounce search
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 500);
-    return () => clearTimeout(timer);
-  }, [search]);
 
   // Data Loading Functions
   const loadCategories = useCallback(async () => {
@@ -156,14 +164,26 @@ export function useMusic() {
 
   // Handlers
   const loadSongs = async (category: SongCategory) => {
-    setSelectedCategoryId(category.id);
-    setViewMode("category");
+    // Batch URL updates to avoid race conditions
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("categoryId", String(category.id));
+    params.set("view", "category");
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+
     try {
       const response = await songService.getSongsByCategory(category.id) as { data: Song[] };
       setSongs(response.data || []);
     } catch (error) {
       console.error("Failed to load songs:", error);
     }
+  };
+
+  const resetView = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("categoryId");
+    params.delete("view");
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    setSongs([]);
   };
 
   const handlePlaySong = (song: Song) => {
@@ -174,25 +194,7 @@ export function useMusic() {
     }
   };
 
-  const handlePlaylistClick = async (playlistItem: PlaylistListItem) => {
-    if (!token) return;
-    try {
-      const response = await songService.getPlaylist(token, playlistItem.id) as { data: Playlist };
-      setSelectedPlaylist(response.data);
-    } catch (error) {
-      console.error("Failed to load playlist:", error);
-    }
-  };
 
-  const handlePublicPlaylistClick = async (playlistItem: PlaylistListItem) => {
-    if (!token) return;
-    try {
-      const response = await songService.getPlaylist(token, playlistItem.id) as { data: Playlist };
-      setSelectedPlaylist(response.data);
-    } catch (error) {
-      console.error("Failed to load playlist:", error);
-    }
-  };
 
   const handlePlaylistEdit = (playlistItem: PlaylistListItem) => {
     setEditingPlaylist(playlistItem);
@@ -210,9 +212,7 @@ export function useMusic() {
     try {
       await songService.deletePlaylist(token, deletePlaylistId);
       loadPlaylists();
-      if (selectedPlaylist?.id === deletePlaylistId) {
-        setSelectedPlaylist(null);
-      }
+
       setShowDeletePlaylistDialog(false);
       setDeletePlaylistId(null);
     } catch (error) {
@@ -241,45 +241,12 @@ export function useMusic() {
     }
   };
 
-  const handleAddSongs = async (songIds: number[]) => {
-    if (!selectedPlaylist || !token) return;
-    try {
-      await songService.addSongsToPlaylist(token, selectedPlaylist.id, songIds);
-      const response = await songService.getPlaylist(token, selectedPlaylist.id) as { data: Playlist };
-      setSelectedPlaylist(response.data);
-      loadPlaylists();
-    } catch (error) {
-      console.error("Failed to add songs:", error);
-    }
-  };
 
-  const handleRemoveSong = async (itemId: number) => {
-    if (!selectedPlaylist || !token) return;
-    try {
-      await songService.removeItemFromPlaylist(token, selectedPlaylist.id, itemId);
-      const response = await songService.getPlaylist(token, selectedPlaylist.id) as { data: Playlist };
-      setSelectedPlaylist(response.data);
-      loadPlaylists();
-    } catch (error) {
-      console.error("Failed to remove song:", error);
-    }
-  };
-
-  const handleReorderSongs = async (itemIds: number[]) => {
-    if (!selectedPlaylist || !token) return;
-    try {
-      await songService.reorderPlaylistItems(token, selectedPlaylist.id, itemIds);
-      const response = await songService.getPlaylist(token, selectedPlaylist.id) as { data: Playlist };
-      setSelectedPlaylist(response.data);
-    } catch (error) {
-      console.error("Failed to reorder songs:", error);
-    }
-  };
 
   return {
     // State
     activeTab,
-    search,
+    search: searchTerm,
     viewMode,
     categories,
     songs,
@@ -287,10 +254,8 @@ export function useMusic() {
     playlists,
     publicPlaylists,
     adminPlaylists,
-    selectedPlaylist,
     selectedCategory,
     isPlaylistDialogOpen,
-    isAddSongsDialogOpen,
     editingPlaylist,
     playlistsLoading,
     publicPlaylistsLoading,
@@ -304,25 +269,19 @@ export function useMusic() {
     setViewMode,
     setSelectedCategoryId,
     setIsPlaylistDialogOpen,
-    setIsAddSongsDialogOpen,
     setEditingPlaylist,
     setShowDeletePlaylistDialog,
     setDeletePlaylistId,
-    setSelectedPlaylist,
     setSongs,
 
     // Actions - Handlers
     loadSongs,
+    resetView,
     handlePlaySong,
-    handlePlaylistClick,
-    handlePublicPlaylistClick,
     handlePlaylistEdit,
     handlePlaylistDeleteClick,
     handlePlaylistDelete,
     handlePlaylistSave,
-    handleAddSongs,
-    handleRemoveSong,
-    handleReorderSongs,
 
     // Player State
     currentSong,

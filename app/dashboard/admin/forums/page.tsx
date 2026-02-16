@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { formatDate } from "@/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAdminForums } from "./_hooks/useAdminForums";
+import { Pagination } from "@/components/ui/pagination";
 
 export default function AdminForumsPage() {
   const {
@@ -36,6 +37,9 @@ export default function AdminForumsPage() {
     handleSaveCategory,
     openCategoryModal,
     confirmToggleFlag,
+    page,
+    totalPages,
+    setPage,
   } = useAdminForums();
 
   if (user?.role !== "admin" && user?.role !== "moderator") {
@@ -79,7 +83,7 @@ export default function AdminForumsPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border overflow-hidden">
+            <div className="bg-white rounded-xl border overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
@@ -172,7 +176,13 @@ export default function AdminForumsPage() {
                 </tbody>
               </table>
             </div>
-          </div>
+            </div>
+            
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
         </TabsContent>
 
         <TabsContent value="categories" className="space-y-6">

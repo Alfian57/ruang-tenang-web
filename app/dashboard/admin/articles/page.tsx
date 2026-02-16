@@ -15,6 +15,7 @@ import {
   CategoryDeleteModal,
   CategoryCannotDeleteModal
 } from "./_components";
+import { Pagination } from "@/components/ui/pagination";
 
 export default function AdminArticlesPage() {
   const {
@@ -60,7 +61,10 @@ export default function AdminArticlesPage() {
     handleReject,
     openCategoryDialog,
     saveCategory,
-    handleDeleteCategory
+    handleDeleteCategory,
+    page,
+    totalPages,
+    setPage
   } = useAdminArticles();
 
   if (user?.role !== "admin" && user?.role !== "moderator") {
@@ -126,6 +130,13 @@ export default function AdminArticlesPage() {
             onEdit={openEditDialog}
             onBlock={setBlockId}
             onDelete={setDeleteId}
+          />
+
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            disabled={isLoading}
           />
         </TabsContent>
 

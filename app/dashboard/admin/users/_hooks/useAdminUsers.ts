@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 import { adminService } from "@/services/api";
 import { httpClient } from "@/services/http/client";
 import type { PaginatedResponse } from "@/services/http/types";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export interface UserData {
   id: number;
@@ -23,8 +24,13 @@ export function useAdminUsers() {
   const pathname = usePathname();
 
   // URL state
-  const search = searchParams.get("search") || "";
+  // URL state
+  const urlSearch = searchParams.get("search") || "";
   const page = parseInt(searchParams.get("page") || "1", 10);
+
+  // Local state
+  const [searchTerm, setSearchTerm] = useState(urlSearch);
+  const debouncedSearch = useDebounce(searchTerm, 500);
 
   const updateUrl = useCallback((updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -35,7 +41,19 @@ export function useAdminUsers() {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [searchParams, router, pathname]);
 
-  const setSearch = (value: string) => updateUrl({ search: value || null, page: null });
+  // Sync state from URL
+  useEffect(() => {
+    setSearchTerm(urlSearch);
+  }, [urlSearch]);
+
+  // Update URL from debounced state
+  useEffect(() => {
+    if (debouncedSearch !== urlSearch) {
+      updateUrl({ search: debouncedSearch || null, page: null });
+    }
+  }, [debouncedSearch, updateUrl, urlSearch]);
+
+  const setSearch = (value: string) => setSearchTerm(value);
   const setPage = (value: number) => updateUrl({ page: value > 1 ? value.toString() : null });
 
   const [users, setUsers] = useState<UserData[]>([]);
@@ -51,7 +69,7 @@ export function useAdminUsers() {
       const response = await httpClient.get<PaginatedResponse<UserData>>("/admin/users", {
         token,
         params: {
-          search: search || undefined,
+          search: urlSearch || undefined,
           page: page.toString(),
           limit: "10",
         },
@@ -63,7 +81,7 @@ export function useAdminUsers() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, page, search]);
+  }, [token, page, urlSearch]);
 
   useEffect(() => {
     loadUsers();
@@ -96,7 +114,7 @@ export function useAdminUsers() {
     isLoading,
     blockId,
     blockAction,
-    search,
+    search: searchTerm,
     page,
     setSearch,
     setPage,

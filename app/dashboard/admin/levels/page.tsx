@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 import { useAdminLevels } from "./_hooks/useAdminLevels";
+import { Pagination } from "@/components/ui/pagination";
 
 export default function LevelsManagementPage() {
   const {
@@ -26,6 +27,10 @@ export default function LevelsManagementPage() {
     handleUpdate,
     handleDelete,
     cancelEdit,
+    paginatedLevels,
+    page,
+    totalPages,
+    setPage,
   } = useAdminLevels();
 
   // Common emoji suggestions for badges
@@ -158,7 +163,7 @@ export default function LevelsManagementPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {levels.map((level) => (
+              {paginatedLevels.map((level) => (
                 <tr key={level.id} className="hover:bg-gray-50">
                   {editingId === level.id ? (
                     <>
@@ -272,6 +277,16 @@ export default function LevelsManagementPage() {
               )}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {!loading && levels.length > 0 && (
+        <div className="mt-4">
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
         </div>
       )}
 

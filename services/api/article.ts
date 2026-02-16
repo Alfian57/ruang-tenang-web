@@ -7,8 +7,9 @@ export const articleService = {
     return httpClient.get<PaginatedResponse<Article>>("/articles", { params: params as Record<string, string | number | boolean | undefined> });
   },
 
-  getArticle(id: number) {
-    return httpClient.get<ApiResponse<Article>>(`/articles/${id}`);
+  getArticle(id: number, token?: string) {
+    const config = token ? { token } : {};
+    return httpClient.get<ApiResponse<Article>>(`/articles/${id}`, config);
   },
 
   getCategories() {
