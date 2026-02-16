@@ -52,7 +52,7 @@ export function RecommendedArticlesWidget({ articles, isLoading }: RecommendedAr
       <CardContent className="flex-1 space-y-4 pt-2">
         {articles.length > 0 ? (
           articles.slice(0, 3).map((article) => (
-            <Link key={article.id} href={ROUTES.articleRead(article.id)} className="block group relative">
+            <Link key={article.id} href={ROUTES.articleRead(article.slug)} className="block group relative">
               <div className="flex gap-4 items-start p-3 rounded-2xl hover:bg-gray-50 transition-all duration-300 border border-transparent hover:border-gray-100">
                 <div className="w-24 h-24 rounded-xl overflow-hidden bg-gray-100 shrink-0 relative shadow-sm group-hover:shadow-md transition-shadow">
                    {article.thumbnail ? (

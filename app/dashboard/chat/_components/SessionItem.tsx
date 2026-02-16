@@ -27,10 +27,10 @@ interface SessionItemProps {
   folders?: ChatFolder[];
   compact?: boolean;
   onSelect: () => void;
-  onToggleFavorite: (e: React.MouseEvent, sessionId: number) => void;
-  onToggleTrash: (e: React.MouseEvent, sessionId: number) => void;
-  onDeletePermanent?: (e: React.MouseEvent, sessionId: number) => void;
-  onMoveToFolder?: (sessionId: number, folderId: number | null) => void;
+  onToggleFavorite: (e: React.MouseEvent, sessionId: string) => void;
+  onToggleTrash: (e: React.MouseEvent, sessionId: string) => void;
+  onDeletePermanent?: (e: React.MouseEvent, sessionId: string) => void;
+  onMoveToFolder?: (sessionId: string, folderId: number | null) => void;
 }
 
 export function SessionItem({
@@ -114,13 +114,13 @@ export function SessionItem({
           <DropdownMenuContent align="end" className="w-48">
             {isTrashView ? (
               <>
-                <DropdownMenuItem onClick={(e) => onToggleTrash(e, session.id)}>
+                <DropdownMenuItem onClick={(e) => onToggleTrash(e, session.uuid)}>
                   <Heart className="w-4 h-4 mr-2" />
                   Pulihkan
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-red-600 focus:text-red-600 focus:bg-red-50"
-                  onClick={(e) => onDeletePermanent?.(e, session.id)}
+                  onClick={(e) => onDeletePermanent?.(e, session.uuid)}
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
                   Hapus Permanen
@@ -128,7 +128,7 @@ export function SessionItem({
               </>
             ) : (
               <>
-                <DropdownMenuItem onClick={(e) => onToggleFavorite(e, session.id)}>
+                <DropdownMenuItem onClick={(e) => onToggleFavorite(e, session.uuid)}>
                   <Heart
                     className={cn(
                       "w-4 h-4 mr-2",
@@ -148,7 +148,7 @@ export function SessionItem({
                     <DropdownMenuSubContent>
                       <DropdownMenuItem onClick={(e) => {
                         e.stopPropagation();
-                        onMoveToFolder(session.id, null);
+                        onMoveToFolder(session.uuid, null);
                       }}>
                         <Folder className="w-4 h-4 mr-2 text-gray-400" />
                         Tanpa Folder
@@ -159,7 +159,7 @@ export function SessionItem({
                           key={folder.id}
                           onClick={(e) => {
                             e.stopPropagation();
-                            onMoveToFolder(session.id, folder.id);
+                            onMoveToFolder(session.uuid, folder.id);
                           }}
                         >
                           <Folder className="w-4 h-4 mr-2" style={{ color: folder.color }} />
@@ -173,7 +173,7 @@ export function SessionItem({
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="text-red-600 focus:text-red-600 focus:bg-red-50"
-                  onClick={(e) => onToggleTrash(e, session.id)}
+                  onClick={(e) => onToggleTrash(e, session.uuid)}
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
                   Pindahkan ke Sampah

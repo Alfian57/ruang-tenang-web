@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { adminService, forumService } from "@/services/api";
+import { adminService } from "@/services/api";
 import { Forum, ForumCategory } from "@/types/forum";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/authStore";

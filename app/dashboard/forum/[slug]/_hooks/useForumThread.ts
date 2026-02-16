@@ -25,13 +25,13 @@ export function useForumThread() {
   const [showDeleteForumDialog, setShowDeleteForumDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const id = parseInt(params.id as string);
+  const slug = params.slug as string;
   const isAdmin = user?.role === "admin";
 
   const fetchForum = useCallback(async () => {
     if (!token) return;
     try {
-      const response = await forumService.getById(token, id);
+      const response = await forumService.getBySlug(token, slug);
       if (response.data) {
         setForum(response.data);
         setIsLiked(!!response.data.is_liked);
@@ -41,33 +41,33 @@ export function useForumThread() {
       console.error(error);
       toast.error("Gagal memuat topik");
     }
-  }, [id, token]);
+  }, [slug, token]);
 
   const fetchPosts = useCallback(async () => {
     if (!token) return;
     try {
-      const response = await forumService.getPosts(token, id, 100);
+      const response = await forumService.getPosts(token, slug, 100);
       setPosts(response.data);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
     }
-  }, [id, token]);
+  }, [slug, token]);
 
   useEffect(() => {
-    if (id && token) {
+    if (slug && token) {
       fetchForum();
       fetchPosts();
     }
-  }, [id, token, fetchForum, fetchPosts]);
+  }, [slug, token, fetchForum, fetchPosts]);
 
   const handleReply = async () => {
     if (!replyContent.trim() || !token) return;
 
     setSubmitting(true);
     try {
-      await forumService.createPost(token, id, { content: replyContent });
+      await forumService.createPost(token, slug, { content: replyContent });
       setReplyContent("");
       fetchPosts();
       fetchForum(); // Update reply count if needed
@@ -101,7 +101,7 @@ export function useForumThread() {
     if (!token) return;
     setIsDeleting(true);
     try {
-      await forumService.delete(token, id);
+      await forumService.delete(token, slug);
       toast.success("Topik dihapus");
       router.push("/dashboard/forum");
     } catch (error) {
@@ -122,7 +122,7 @@ export function useForumThread() {
     setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
 
     try {
-      await forumService.toggleLike(token, id);
+      await forumService.toggleLike(token, slug);
     } catch (error) {
       console.error("Failed to toggle like:", error);
       // Revert on error

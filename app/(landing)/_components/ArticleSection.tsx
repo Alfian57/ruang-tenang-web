@@ -10,6 +10,7 @@ import type { PaginatedResponse } from "@/services/http/types";
 
 interface Article {
   id: number;
+  slug: string;
   title: string;
   thumbnail: string;
   content: string;
@@ -132,7 +133,7 @@ export function ArticleSection() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="lg:col-span-7"
             >
-              <Link href={`/articles/${featuredArticle.id}`}>
+              <Link href={`/articles/${featuredArticle.slug}`}>
                 <article className="group">
                   <div className="relative h-64 md:h-80 mb-6 rounded-2xl overflow-hidden">
                     <Image
@@ -174,7 +175,7 @@ export function ArticleSection() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: 0.1 * (index + 1) }}
                 >
-                  <Link href={`/articles/${article.id}`}>
+                  <Link href={`/articles/${article.slug}`}>
                     <article className="flex gap-4 group py-3 border-b border-gray-100 last:border-0">
                       <div className="relative w-20 h-20 shrink-0 rounded-xl overflow-hidden">
                         <Image

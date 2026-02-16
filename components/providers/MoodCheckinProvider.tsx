@@ -57,7 +57,7 @@ export function MoodCheckinProvider() {
       } else {
         toast.error("Gagal mencatat mood");
       }
-    } catch (error) {
+    } catch {
       toast.error("Gagal mencatat mood");
     } finally {
       setIsSubmitting(false);

@@ -17,15 +17,15 @@ export const journalService = {
     return httpClient.post<ApiResponse<Journal>>("/journals", data, { token });
   },
 
-  get(token: string, id: number) {
+  get(token: string, id: string) {
     return httpClient.get<ApiResponse<Journal>>(`/journals/${id}`, { token });
   },
 
-  update(token: string, id: number, data: { title?: string; content?: string; mood_id?: number; tags?: string[]; is_private?: boolean; share_with_ai?: boolean }) {
+  update(token: string, id: string, data: { title?: string; content?: string; mood_id?: number; tags?: string[]; is_private?: boolean; share_with_ai?: boolean }) {
     return httpClient.put<ApiResponse<Journal>>(`/journals/${id}`, data, { token });
   },
 
-  delete(token: string, id: number) {
+  delete(token: string, id: string) {
     return httpClient.delete<ApiResponse<null>>(`/journals/${id}`, { token });
   },
 
@@ -55,7 +55,7 @@ export const journalService = {
   },
 
   // AI Integration
-  toggleAIShare(token: string, journalId: number) {
+  toggleAIShare(token: string, journalId: string) {
     return httpClient.post<ApiResponse<Journal>>(`/journals/${journalId}/toggle-ai-share`, {}, { token });
   },
 

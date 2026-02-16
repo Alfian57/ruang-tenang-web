@@ -70,7 +70,7 @@ export function useChatPage() {
   } = useChatStore();
 
   const [newSessionDialog, setNewSessionDialog] = useState(false);
-  const [deleteSessionId, setDeleteSessionId] = useState<number | null>(null);
+  const [deleteSessionId, setDeleteSessionId] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -132,9 +132,8 @@ export function useChatPage() {
     }
     const urlSession = searchParams.get("session");
     if (urlSession && token) {
-      const sessionId = parseInt(urlSession, 10);
-      if (!isNaN(sessionId) && activeSession?.id !== sessionId) {
-        loadSession(token, sessionId);
+      if (activeSession?.uuid !== urlSession) {
+        loadSession(token, urlSession);
       }
     } else if (!urlSession && activeSession) {
       clearActiveSession();
@@ -151,12 +150,12 @@ export function useChatPage() {
   }, [filter, updateUrlParam]);
 
   useEffect(() => {
-    if (activeSession?.id) {
-      updateUrlParam("session", activeSession.id.toString());
+    if (activeSession?.uuid) {
+      updateUrlParam("session", activeSession.uuid);
     } else {
       updateUrlParam("session", null);
     }
-  }, [activeSession?.id, updateUrlParam]);
+  }, [activeSession?.uuid, updateUrlParam]);
 
   useEffect(() => {
     if (token) {
@@ -165,12 +164,12 @@ export function useChatPage() {
   }, [token, loadSuggestedPrompts]);
 
   useEffect(() => {
-    if (token && activeSession?.id) {
-      loadSummary(token, activeSession.id);
+    if (token && activeSession?.uuid) {
+      loadSummary(token, activeSession.uuid);
     }
-  }, [token, activeSession?.id, loadSummary]);
+  }, [token, activeSession?.uuid, loadSummary]);
 
-  const handleLoadSession = (sessionId: number) => {
+  const handleLoadSession = (sessionId: string) => {
     if (token) loadSession(token, sessionId);
   };
 
@@ -200,17 +199,17 @@ export function useChatPage() {
     if (token) toggleMessageLike(token, messageId, isLike);
   };
 
-  const handleToggleFavorite = (e: React.MouseEvent, sessionId: number) => {
+  const handleToggleFavorite = (e: React.MouseEvent, sessionId: string) => {
     e.stopPropagation();
     if (token) toggleFavorite(token, sessionId);
   };
 
-  const handleToggleTrash = (e: React.MouseEvent, sessionId: number) => {
+  const handleToggleTrash = (e: React.MouseEvent, sessionId: string) => {
     e.stopPropagation();
     if (token) toggleTrash(token, sessionId);
   };
 
-  const handleDeletePermanent = (e: React.MouseEvent, sessionId: number) => {
+  const handleDeletePermanent = (e: React.MouseEvent, sessionId: string) => {
     e.stopPropagation();
     setDeleteSessionId(sessionId);
     setShowDeleteModal(true);
@@ -240,7 +239,7 @@ export function useChatPage() {
     if (token) await deleteFolder(token, folderId);
   };
 
-  const handleMoveToFolder = async (sessionId: number, folderId: number | null) => {
+  const handleMoveToFolder = async (sessionId: string, folderId: number | null) => {
     if (token) await moveSessionToFolder(token, sessionId, folderId);
   };
 
@@ -250,13 +249,13 @@ export function useChatPage() {
 
   const handleExport = async (format: "pdf" | "txt") => {
     if (token && activeSession) {
-      await exportChat(token, activeSession.id, format);
+      await exportChat(token, activeSession.uuid, format);
     }
   };
 
   const handleGenerateSummary = async () => {
     if (token && activeSession) {
-      await generateSummary(token, activeSession.id);
+      await generateSummary(token, activeSession.uuid);
     }
   };
 

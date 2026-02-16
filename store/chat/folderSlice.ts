@@ -34,8 +34,11 @@ export const createFolderSlice: StateCreator<ChatStore, [], [], ChatFolderState 
   updateFolder: async (token: string, folderId: number, data: { name?: string; color?: string; icon?: string }) => {
     if (!token) return;
 
+    const folder = get().folders.find(f => f.id === folderId);
+    if (!folder) return;
+
     try {
-      await chatService.updateFolder(token, folderId, data);
+      await chatService.updateFolder(token, folder.uuid, data);
       await get().loadFolders(token);
     } catch (error) {
       console.error("ChatStore.updateFolder: failed", error);
@@ -45,8 +48,11 @@ export const createFolderSlice: StateCreator<ChatStore, [], [], ChatFolderState 
   deleteFolder: async (token: string, folderId: number) => {
     if (!token) return;
 
+    const folder = get().folders.find(f => f.id === folderId);
+    if (!folder) return;
+
     try {
-      await chatService.deleteFolder(token, folderId);
+      await chatService.deleteFolder(token, folder.uuid);
       
       const { activeFolderId } = get();
       if (activeFolderId === folderId) {
@@ -71,7 +77,7 @@ export const createFolderSlice: StateCreator<ChatStore, [], [], ChatFolderState 
     }
   },
 
-  moveSessionToFolder: async (token: string, sessionId: number, folderId: number | null) => {
+  moveSessionToFolder: async (token: string, sessionId: string, folderId: number | null) => {
     if (!token) return;
 
     try {
@@ -80,7 +86,7 @@ export const createFolderSlice: StateCreator<ChatStore, [], [], ChatFolderState 
       await get().loadFolders(token);
       
       const { activeSession } = get();
-      if (activeSession?.id === sessionId) {
+      if (activeSession?.uuid === sessionId) {
         set((state) => ({
           activeSession: state.activeSession
             ? { ...state.activeSession, folder_id: folderId ?? undefined }

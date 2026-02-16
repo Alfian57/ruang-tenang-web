@@ -68,13 +68,13 @@ export function MyArticleCard({ article, onDelete }: MyArticleCardProps) {
           )}
         </div>
         <div className="flex gap-2 shrink-0">
-          <Link href={ROUTES.articleRead(article.id)}>
+          <Link href={ROUTES.articleRead(article.slug)}>
             <Button variant="outline" size="icon" title="Lihat">
               <Eye className="w-4 h-4" />
             </Button>
           </Link>
           {article.status !== "blocked" && (
-            <Link href={ROUTES.articleDetail(article.id)}>
+            <Link href={ROUTES.articleDetail(article.slug)}>
               <Button variant="outline" size="icon" title="Edit">
                 <Edit className="w-4 h-4" />
               </Button>

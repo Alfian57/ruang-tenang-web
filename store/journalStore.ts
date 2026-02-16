@@ -58,7 +58,7 @@ interface JournalState {
 interface JournalActions {
   // CRUD Operations
   loadJournals: (token: string, page?: number, limit?: number, filters?: { tags?: string[], startDate?: string | null, endDate?: string | null, moodId?: number | null }) => Promise<void>;
-  loadJournal: (token: string, id: number) => Promise<void>;
+  loadJournal: (token: string, id: string) => Promise<void>;
   createJournal: (token: string, data: {
     title: string;
     content: string;
@@ -67,7 +67,7 @@ interface JournalActions {
     is_private?: boolean;
     share_with_ai?: boolean;
   }) => Promise<Journal | null>;
-  updateJournal: (token: string, id: number, data: {
+  updateJournal: (token: string, id: string, data: {
     title?: string;
     content?: string;
     mood_id?: number;
@@ -75,7 +75,7 @@ interface JournalActions {
     is_private?: boolean;
     share_with_ai?: boolean;
   }) => Promise<void>;
-  deleteJournal: (token: string, id: number) => Promise<void>;
+  deleteJournal: (token: string, id: string) => Promise<void>;
 
   // Search & Filter
   searchJournals: (token: string, query: string) => Promise<void>;
@@ -95,7 +95,7 @@ interface JournalActions {
   }) => Promise<void>;
 
   // AI Integration
-  toggleAIShare: (token: string, journalId: number) => Promise<void>;
+  toggleAIShare: (token: string, journalId: string) => Promise<void>;
   loadAIContext: (token: string) => Promise<void>;
   loadAIAccessLogs: (token: string) => Promise<void>;
 
@@ -179,7 +179,7 @@ export const useJournalStore = create<JournalState & JournalActions>((set, get) 
     }
   },
 
-  loadJournal: async (token: string, id: number) => {
+  loadJournal: async (token: string, id: string) => {
     set({ isLoading: true, error: null });
     try {
       const response = await journalService.get(token, id);
@@ -219,8 +219,8 @@ export const useJournalStore = create<JournalState & JournalActions>((set, get) 
       const response = await journalService.update(token, id, data);
       const updatedJournal = response.data;
       set((state) => ({
-        journals: state.journals.map((j) => (j.id === id ? updatedJournal : j)),
-        activeJournal: state.activeJournal?.id === id ? updatedJournal : state.activeJournal,
+        journals: state.journals.map((j) => (j.uuid === id ? updatedJournal : j)),
+        activeJournal: state.activeJournal?.uuid === id ? updatedJournal : state.activeJournal,
         isSaving: false,
       }));
     } catch (error) {
@@ -236,9 +236,9 @@ export const useJournalStore = create<JournalState & JournalActions>((set, get) 
     try {
       await journalService.delete(token, id);
       set((state) => ({
-        journals: state.journals.filter((j) => j.id !== id),
+        journals: state.journals.filter((j) => j.uuid !== id),
         totalJournals: state.totalJournals - 1,
-        activeJournal: state.activeJournal?.id === id ? null : state.activeJournal,
+        activeJournal: state.activeJournal?.uuid === id ? null : state.activeJournal,
         isLoading: false,
       }));
     } catch (error) {
@@ -321,10 +321,10 @@ export const useJournalStore = create<JournalState & JournalActions>((set, get) 
       const updatedJournal = response.data;
       set((state) => ({
         journals: state.journals.map((j) =>
-          j.id === journalId ? updatedJournal : j
+          j.uuid === journalId ? updatedJournal : j
         ),
         activeJournal:
-          state.activeJournal?.id === journalId
+          state.activeJournal?.uuid === journalId
             ? updatedJournal
             : state.activeJournal,
       }));

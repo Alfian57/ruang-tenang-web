@@ -41,25 +41,25 @@ export function useArticleDetail() {
   };
 
   const loadArticle = useCallback(async () => {
-    const id = params.id as string;
-    if (!id) return;
+    const slug = params.slug as string;
+    if (!slug) return;
 
     setIsLoading(true);
     try {
       const [articleRes, relatedRes] = await Promise.all([
-        articleService.getArticle(Number(id), token || undefined),
+        articleService.getArticle(slug, token || undefined),
         articleService.getArticles({ limit: 6 }),
       ]);
       setArticle(articleRes.data);
       setRelatedArticles(
-        (relatedRes.data || []).filter((a) => a.id !== Number(id)).slice(0, 5)
+        (relatedRes.data || []).filter((a) => a.slug !== slug).slice(0, 5)
       );
     } catch (error) {
       console.error("Failed to load article:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [params.id]);
+  }, [params.slug, token]);
 
   useEffect(() => {
     loadArticle();

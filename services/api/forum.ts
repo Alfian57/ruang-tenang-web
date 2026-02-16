@@ -16,28 +16,32 @@ export const forumService = {
     return httpClient.get<ApiResponse<Forum>>(`/forums/${id}`, { token });
   },
 
-  delete(token: string, id: number) {
+  getBySlug(token: string, slug: string) {
+    return httpClient.get<ApiResponse<Forum>>(`/forums/${slug}`, { token });
+  },
+
+  delete(token: string, id: string | number) {
     return httpClient.delete<ApiResponse<null>>(`/forums/${id}`, { token });
   },
 
-  toggleLike(token: string, id: number) {
+  toggleLike(token: string, id: string | number) {
     return httpClient.put<ApiResponse<Forum>>(`/forums/${id}/like`, undefined, { token });
   },
 
-  getAcceptedAnswer(token: string, id: number) {
+  getAcceptedAnswer(token: string, id: string | number) {
     return httpClient.get<ApiResponse<ForumPost>>(`/forums/${id}/accepted-answer`, { token });
   },
 
-  unmarkAcceptedAnswer(token: string, id: number) {
+  unmarkAcceptedAnswer(token: string, id: string | number) {
     return httpClient.delete<ApiResponse<null>>(`/forums/${id}/accepted-answer`, { token });
   },
 
   // Posts
-  createPost(token: string, forumId: number, data: { content: string }) {
+  createPost(token: string, forumId: string | number, data: { content: string }) {
     return httpClient.post<ApiResponse<ForumPost>>(`/forums/${forumId}/posts`, data, { token });
   },
 
-  getPosts(token: string, forumId: number, limit = 20, offset = 0) {
+  getPosts(token: string, forumId: string | number, limit = 20, offset = 0) {
     return httpClient.get<PaginatedResponse<ForumPost>>(`/forums/${forumId}/posts`, { token, params: { limit, offset } as Record<string, string | number | boolean | undefined> });
   },
 

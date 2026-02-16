@@ -7,7 +7,7 @@ export const articleService = {
     return httpClient.get<PaginatedResponse<Article>>("/articles", { params: params as Record<string, string | number | boolean | undefined> });
   },
 
-  getArticle(id: number, token?: string) {
+  getArticle(id: string, token?: string) {
     const config = token ? { token } : {};
     return httpClient.get<ApiResponse<Article>>(`/articles/${id}`, config);
   },
@@ -25,11 +25,11 @@ export const articleService = {
     return httpClient.post<ApiResponse<Article>>("/my-articles", data, { token });
   },
 
-  getArticleForUser(token: string, id: number) {
+  getArticleForUser(token: string, id: string) {
     return httpClient.get<ApiResponse<Article>>(`/my-articles/${id}`, { token });
   },
 
-  updateArticle(token: string, id: number, data: { title?: string; content?: string; thumbnail?: string; category_id?: number }) {
+  updateArticle(token: string, id: string, data: { title?: string; content?: string; thumbnail?: string; category_id?: number }) {
     return httpClient.put<ApiResponse<Article>>(`/my-articles/${id}`, data, { token });
   },
 

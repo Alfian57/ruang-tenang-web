@@ -9,7 +9,7 @@ import { Loader2 } from "lucide-react";
 export default function PlaylistPage() {
   const router = useRouter();
   const params = useParams();
-  const playlistId = params.playlistId as string;
+  const playlistUuid = params.uuid as string;
   const {
     playlist,
     isLoading,
@@ -18,7 +18,7 @@ export default function PlaylistPage() {
     handleAddSongs,
     handleRemoveSong,
     handleReorderSongs,
-  } = usePlaylist(playlistId);
+  } = usePlaylist(playlistUuid);
 
   // Additional state for editing that wasn't in the hook but needed for Dialog
   // We can just pass the playlist itself to the dialog if it's open

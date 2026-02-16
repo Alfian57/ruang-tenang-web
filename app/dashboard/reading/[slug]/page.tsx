@@ -3,42 +3,42 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
-import { Calendar, ArrowLeft, Tag } from "lucide-react";
+import { useParams } from "next/navigation";
+import { Calendar, ArrowLeft, Tag, Flag } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { articleService } from "@/services/api";
 import { Article } from "@/types";
 import { formatDate } from "@/utils";
+import { ReportModal } from "@/components/shared/moderation";
 
-export default function ArticleDetailPage() {
+export default function DashboardArticleDetailPage() {
   const params = useParams();
-  const router = useRouter();
   const [article, setArticle] = useState<Article | null>(null);
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const loadArticle = useCallback(async () => {
-    const id = params.id as string;
-    if (!id) return;
+    const slug = params.slug as string;
+    if (!slug) return;
 
     setIsLoading(true);
     try {
       const [articleRes, relatedRes] = await Promise.all([
-        articleService.getArticle(Number(id)),
+        articleService.getArticle(slug),
         articleService.getArticles({ limit: 6 }),
       ]);
       setArticle(articleRes.data);
       // Filter out current article from related
       setRelatedArticles(
-        (relatedRes.data || []).filter((a) => a.id !== Number(id)).slice(0, 5)
+        (relatedRes.data || []).filter((a) => a.slug !== slug).slice(0, 5)
       );
     } catch (error) {
       console.error("Failed to load article:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [params.id]);
+  }, [params.slug]);
 
   useEffect(() => {
     loadArticle();
@@ -46,19 +46,8 @@ export default function ArticleDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <header className="bg-white shadow-sm sticky top-0 z-10">
-          <div className="container mx-auto max-w-6xl px-4 py-4">
-            <div className="flex items-center gap-4">
-              <Link href="/articles" className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
-                <ArrowLeft className="w-5 h-5" />
-                <span className="hidden sm:inline">Kembali</span>
-              </Link>
-            </div>
-          </div>
-        </header>
-        <div className="container mx-auto max-w-6xl px-4 py-8">
-          <div className="animate-pulse space-y-4">
+      <div className="p-4 lg:p-6">
+          <div className="animate-pulse space-y-4 max-w-4xl mx-auto">
             <div className="h-8 bg-gray-200 rounded w-3/4" />
             <div className="h-4 bg-gray-200 rounded w-1/4" />
             <div className="h-64 bg-gray-200 rounded" />
@@ -68,63 +57,42 @@ export default function ArticleDetailPage() {
               <div className="h-4 bg-gray-200 rounded w-5/6" />
             </div>
           </div>
-        </div>
       </div>
     );
   }
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <header className="bg-white shadow-sm sticky top-0 z-10">
-          <div className="container mx-auto max-w-6xl px-4 py-4">
-            <div className="flex items-center gap-4">
-              <Link href="/articles" className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
-                <ArrowLeft className="w-5 h-5" />
-                <span className="hidden sm:inline">Kembali</span>
-              </Link>
-            </div>
-          </div>
-        </header>
-        <div className="container mx-auto max-w-6xl px-4 py-8 text-center">
-          <p className="text-gray-500">Artikel tidak ditemukan</p>
-          <Button variant="outline" onClick={() => router.back()} className="mt-4">
-            Kembali
-          </Button>
-        </div>
+      <div className="p-4 lg:p-6 text-center">
+        <p className="text-gray-500 mb-4">Artikel tidak ditemukan</p>
+        <Link href="/dashboard/articles">
+          <Button variant="outline">Kembali ke Artikel</Button>
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="container mx-auto max-w-6xl px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Link href="/articles" className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-              <span className="hidden sm:inline">Kembali ke Artikel</span>
-            </Link>
-          </div>
-        </div>
-      </header>
+    <div className="p-4 lg:p-6">
+      <div className="max-w-6xl mx-auto">
+        <Link href="/dashboard/articles" className="inline-flex items-center gap-2 text-gray-500 hover:text-primary mb-6 transition-colors">
+            <ArrowLeft className="w-4 h-4" />
+            <span>Kembali ke Artikel</span>
+        </Link>
 
-      <main className="container mx-auto max-w-6xl px-4 py-8">
         <div className="grid lg:grid-cols-12 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-8">
-            {/* Article Card */}
-            <Card className="bg-white p-6 lg:p-8">
+            <Card className="bg-white p-6 lg:p-8 border-none shadow-sm">
               {/* Header */}
               <div className="mb-6">
-                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
+                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 leading-tight">
                   {article.title}
                 </h1>
                 <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
                   <span className="flex items-center gap-1.5 text-primary font-medium bg-primary/10 px-3 py-1 rounded-full">
                     <Tag className="w-3.5 h-3.5" />
-                    {article.category?.name || "Mental Health"}
+                    {article.category?.name || "Kesehatan Mental"}
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Calendar className="w-4 h-4" />
@@ -135,7 +103,7 @@ export default function ArticleDetailPage() {
 
               {/* Thumbnail */}
               {article.thumbnail && (
-                <div className="mb-6 rounded-xl overflow-hidden">
+                <div className="mb-8 rounded-2xl overflow-hidden bg-gray-100">
                   <Image
                     src={article.thumbnail}
                     alt={article.title}
@@ -148,33 +116,47 @@ export default function ArticleDetailPage() {
 
               {/* Content */}
               <div
-                className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-primary"
+                className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-primary prose-img:rounded-xl"
                 dangerouslySetInnerHTML={{ __html: article.content }}
               />
+
+              <div className="mt-8 pt-6 border-t flex justify-end">
+                <ReportModal
+                  type="article"
+                  contentId={article.id}
+                  userId={article.user_id}
+                  trigger={
+                    <Button variant="ghost" size="sm" className="text-gray-500 hover:text-red-600 hover:bg-red-50">
+                      <Flag className="w-4 h-4 mr-2" />
+                      Laporkan Artikel
+                    </Button>
+                  }
+                />
+              </div>
             </Card>
           </div>
 
           {/* Sidebar - Related Articles */}
           <div className="lg:col-span-4">
             <div className="sticky top-24">
-              <h3 className="text-lg font-bold mb-4 text-gray-900">Artikel Terkait</h3>
+              <h3 className="text-lg font-bold mb-4 text-gray-900">Bacaan Lainnya</h3>
               <div className="space-y-4">
                 {relatedArticles.map((related) => (
                   <Link
                     key={related.id}
-                    href={`/articles/${related.id}`}
-                    className="block"
+                    href={`/dashboard/articles/read/${related.slug}`}
+                    className="block group"
                   >
-                    <Card className="overflow-hidden hover:shadow-md transition-shadow bg-white">
+                    <Card className="overflow-hidden hover:shadow-md transition-all bg-white border-none shadow-sm">
                       <div className="flex gap-3 p-3">
-                        <div className="w-20 h-16 rounded-lg overflow-hidden shrink-0 bg-gray-100">
+                        <div className="w-20 h-16 rounded-lg overflow-hidden shrink-0 bg-gray-100 relative">
                           {related.thumbnail ? (
                             <Image
                               src={related.thumbnail}
                               alt={related.title}
                               width={80}
                               height={64}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-2xl">
@@ -183,7 +165,7 @@ export default function ArticleDetailPage() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-sm line-clamp-2 mb-1 text-gray-900">
+                          <h4 className="font-medium text-sm line-clamp-2 mb-1 text-gray-900 group-hover:text-primary transition-colors">
                             {related.title}
                           </h4>
                           <p className="text-xs text-gray-500">
@@ -196,10 +178,9 @@ export default function ArticleDetailPage() {
                 ))}
               </div>
 
-              {/* Back to Articles */}
               <div className="mt-6">
-                <Link href="/articles">
-                  <Button variant="outline" className="w-full">
+                <Link href="/dashboard/articles">
+                  <Button variant="outline" className="w-full rounded-xl">
                     Lihat Semua Artikel
                   </Button>
                 </Link>
@@ -207,7 +188,7 @@ export default function ArticleDetailPage() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

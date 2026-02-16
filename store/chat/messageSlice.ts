@@ -30,7 +30,7 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
     set((state) => ({ messages: [...state.messages, optimisticMessage] }));
 
     try {
-      const response = (await chatService.sendMessage(token, activeSession.id, content)) as {
+      const response = (await chatService.sendMessage(token, activeSession.uuid, content)) as {
         data: { user_message: ChatMessage; ai_message: ChatMessage };
       };
 
@@ -70,7 +70,7 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
       const audioUrl = uploadRes.data.url;
 
       // Send message with audio type
-      const response = (await chatService.sendMessage(token, activeSession.id, audioUrl, "audio")) as {
+      const response = (await chatService.sendMessage(token, activeSession.uuid, audioUrl, "audio")) as {
         data: { user_message: ChatMessage; ai_message: ChatMessage };
       };
 

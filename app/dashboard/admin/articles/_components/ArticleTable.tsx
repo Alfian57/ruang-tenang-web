@@ -147,7 +147,7 @@ export function ArticleTable({
                                             )}
                                             {article.status !== "blocked" && article.status !== "draft" && (
                                                 <>
-                                                    <Link href={ROUTES.articleRead(article.id)}>
+                                                    <Link href={ROUTES.articleRead(article.slug)}>
                                                         <Button variant="ghost" size="icon" title="Lihat">
                                                             <Eye className="w-4 h-4" />
                                                         </Button>
@@ -163,7 +163,7 @@ export function ArticleTable({
                                                 </>
                                             )}
                                             {article.status === "draft" && (
-                                                <Link href={ROUTES.articleRead(article.id)}>
+                                                <Link href={ROUTES.articleRead(article.slug)}>
                                                     <Button variant="ghost" size="icon" title="Lihat">
                                                         <Eye className="w-4 h-4" />
                                                     </Button>

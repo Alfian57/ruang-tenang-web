@@ -30,11 +30,11 @@ export default function EditArticlePage() {
   });
 
   const loadData = useCallback(async () => {
-    if (!token || !params.id) return;
+    if (!token || !params.slug) return;
     setIsLoading(true);
     try {
       const [articleRes, categoriesRes] = await Promise.all([
-        articleService.getArticleForUser(token, Number(params.id)),
+        articleService.getArticleForUser(token, params.slug as string),
         articleService.getCategories(),
       ]);
 
@@ -55,7 +55,7 @@ export default function EditArticlePage() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, params.id]);
+  }, [token, params.slug]);
 
   useEffect(() => {
     loadData();
@@ -63,7 +63,7 @@ export default function EditArticlePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token || !params.id) return;
+    if (!token || !params.slug) return;
 
     if (!formData.title.trim() || !formData.content.trim()) {
       setError("Judul dan konten wajib diisi");
@@ -74,7 +74,7 @@ export default function EditArticlePage() {
     setError("");
 
     try {
-      await articleService.updateArticle(token, Number(params.id), {
+      await articleService.updateArticle(token, params.slug as string, {
         title: formData.title,
         content: formData.content,
         category_id: formData.category_id,

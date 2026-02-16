@@ -3,6 +3,7 @@ import type { User } from "./user";
 // Chat types
 export interface ChatFolder {
   id: number;
+  uuid: string;
   name: string;
   color: string;
   icon: string;
@@ -13,6 +14,7 @@ export interface ChatFolder {
 
 export interface ChatSession {
   id: number;
+  uuid: string;
   user_id: number;
   title: string;
   folder_id?: number;

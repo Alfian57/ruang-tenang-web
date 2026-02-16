@@ -14,16 +14,16 @@ interface ChatSidebarFolderListProps {
   sessionsByFolder: Record<string | number, ChatSession[]>;
   expandedFolders: Set<number>;
   activeFolderId: number | null;
-  activeSessionId: number | null;
+  activeSessionId: string | null;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
   onToggleExpand: (folderId: number) => void;
   onFolderSelect: (folderId: number) => void;
-  onSessionSelect: (sessionId: number) => void;
+  onSessionSelect: (sessionId: string) => void;
   onClose?: () => void;
-  onToggleFavorite: (e: React.MouseEvent, sessionId: number) => void;
-  onToggleTrash: (e: React.MouseEvent, sessionId: number) => void;
-  onMoveToFolder?: (sessionId: number, folderId: number | null) => void;
+  onToggleFavorite: (e: React.MouseEvent, sessionId: string) => void;
+  onToggleTrash: (e: React.MouseEvent, sessionId: string) => void;
+  onMoveToFolder?: (sessionId: string, folderId: number | null) => void;
   openEditFolder: (folder: ChatFolder) => void;
   onDeleteFolder?: (folderId: number) => void;
 }
@@ -128,11 +128,11 @@ export function ChatSidebarFolderList({
                       <SessionItem
                         key={session.id}
                         session={session}
-                        isActive={activeSessionId === session.id}
+                        isActive={activeSessionId === session.uuid}
                         isTrashView={false}
                         folders={folders}
                         onSelect={() => {
-                          onSessionSelect(session.id);
+                          onSessionSelect(session.uuid);
                           if (onClose) onClose();
                         }}
                         onToggleFavorite={onToggleFavorite}

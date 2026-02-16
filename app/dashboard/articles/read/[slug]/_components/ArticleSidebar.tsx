@@ -19,7 +19,7 @@ export function ArticleSidebar({ relatedArticles, backLink }: ArticleSidebarProp
             relatedArticles.map((related) => (
               <Link
                 key={related.id}
-                href={`/dashboard/articles/read/${related.id}`}
+                href={`/dashboard/articles/read/${related.slug}`}
                 className="block"
               >
                 <Card className="overflow-hidden hover:shadow-md transition-shadow bg-white">

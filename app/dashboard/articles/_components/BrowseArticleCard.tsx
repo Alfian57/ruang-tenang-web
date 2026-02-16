@@ -12,7 +12,7 @@ interface BrowseArticleCardProps {
 
 export function BrowseArticleCard({ article, isOwn }: BrowseArticleCardProps) {
   return (
-    <Link href={ROUTES.articleRead(article.id)}>
+    <Link href={ROUTES.articleRead(article.slug)}>
       <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 bg-white cursor-pointer group h-full flex flex-col">
         <div className="relative h-40 overflow-hidden bg-gray-100">
           {article.thumbnail ? (

@@ -24,7 +24,7 @@ export default function JournalDetailPage() {
     } = useJournalStore();
     
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const id = params.id ? parseInt(params.id as string) : null;
+    const uuid = params.uuid as string | undefined;
 
     useEffect(() => {
         if (!token && !isAuthenticated) {
@@ -32,13 +32,13 @@ export default function JournalDetailPage() {
             return;
         }
 
-        if (token && id) {
+        if (token && uuid) {
             // Check if we already have the correct journal in store
-            if (activeJournal?.id !== id) {
-                loadJournal(token, id);
+            if (activeJournal?.uuid !== uuid) {
+                loadJournal(token, uuid);
             }
         }
-    }, [token, isAuthenticated, id, loadJournal, activeJournal, router]);
+    }, [token, isAuthenticated, uuid, loadJournal, activeJournal, router]);
 
     // Clean up on unmount
     useEffect(() => {
@@ -46,15 +46,15 @@ export default function JournalDetailPage() {
     }, [setActiveJournal]);
 
     const handleDelete = async () => {
-        if (!token || !id) return;
-        await deleteJournal(token, id);
+        if (!token || !uuid) return;
+        await deleteJournal(token, uuid);
         toast.success("Jurnal berhasil dihapus");
         router.push("/dashboard/journal");
     };
 
     const handleToggleAIShare = async () => {
-        if (!token || !id) return;
-        await toggleAIShare(token, id);
+        if (!token || !uuid) return;
+        await toggleAIShare(token, uuid);
         toast.success("Status berbagi AI berhasil diubah");
     };
 
@@ -101,7 +101,7 @@ export default function JournalDetailPage() {
                     <JournalDetail
                         journal={activeJournal}
                         onBack={() => router.push("/dashboard/journal")}
-                        onEdit={() => router.push(`/dashboard/journal/${id}/edit`)}
+                        onEdit={() => router.push(`/dashboard/journal/${uuid}/edit`)}
                         onDelete={() => setShowDeleteModal(true)}
                         onToggleAIShare={handleToggleAIShare}
                     />

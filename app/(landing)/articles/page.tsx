@@ -146,7 +146,7 @@ function ArticlesContent() {
             ) : articles.length > 0 ? (
               <div className="space-y-4">
                 {articles.map((article) => (
-                  <Link key={article.id} href={`/articles/${article.id}`}>
+                  <Link key={article.id} href={`/articles/${article.slug}`}>
                     <Card className="overflow-hidden hover:shadow-md transition-shadow bg-white">
                       <div className="flex gap-4 p-4">
                         <div className="w-32 h-24 rounded-lg overflow-hidden shrink-0 bg-gray-100">
@@ -198,7 +198,7 @@ function ArticlesContent() {
                 {articles.slice(0, 5).map((article) => (
                   <Link
                     key={article.id}
-                    href={`/articles/${article.id}`}
+                    href={`/articles/${article.slug}`}
                     className="block"
                   >
                     <Card className="overflow-hidden hover:shadow-md transition-shadow bg-white">

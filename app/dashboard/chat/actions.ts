@@ -5,7 +5,7 @@ import { ChatSession, ChatMessage } from "@/types";
 
 interface CreateSessionResult {
   success: boolean;
-  session?: { id: number; title: string };
+  session?: { id: number; uuid: string; title: string };
   error?: string;
 }
 
@@ -18,7 +18,7 @@ export async function createChatSession(
 ): Promise<CreateSessionResult> {
   try {
     const response = (await chatService.createSession(token, title)) as {
-      data: { id: number; title: string };
+      data: { id: number; uuid: string; title: string };
     };
     return { success: true, session: response.data };
   } catch (error) {
@@ -39,7 +39,7 @@ interface SendMessageResult {
  */
 export async function sendTextMessage(
   token: string,
-  sessionId: number,
+  sessionId: string,
   content: string
 ): Promise<SendMessageResult> {
   try {
@@ -60,7 +60,7 @@ export async function sendTextMessage(
  */
 export async function sendAudioMessage(
   token: string,
-  sessionId: number,
+  sessionId: string,
   audioUrl: string
 ): Promise<SendMessageResult> {
   try {
@@ -84,7 +84,7 @@ interface ToggleResult {
 /**
  * Toggle favorite status for a chat session.
  */
-export async function toggleFavorite(token: string, sessionId: number): Promise<ToggleResult> {
+export async function toggleFavorite(token: string, sessionId: string): Promise<ToggleResult> {
   try {
     await chatService.toggleFavorite(token, sessionId);
     return { success: true };
@@ -97,7 +97,7 @@ export async function toggleFavorite(token: string, sessionId: number): Promise<
 /**
  * Toggle trash status for a chat session.
  */
-export async function toggleTrash(token: string, sessionId: number): Promise<ToggleResult> {
+export async function toggleTrash(token: string, sessionId: string): Promise<ToggleResult> {
   try {
     await chatService.toggleTrash(token, sessionId);
     return { success: true };
@@ -110,7 +110,7 @@ export async function toggleTrash(token: string, sessionId: number): Promise<Tog
 /**
  * Delete a chat session permanently.
  */
-export async function deleteChatSession(token: string, sessionId: number): Promise<ToggleResult> {
+export async function deleteChatSession(token: string, sessionId: string): Promise<ToggleResult> {
   try {
     await chatService.deleteSession(token, sessionId);
     return { success: true };
@@ -185,7 +185,7 @@ interface LoadSessionResult {
  */
 export async function loadChatSession(
   token: string,
-  sessionId: number
+  sessionId: string
 ): Promise<LoadSessionResult> {
   try {
     const response = (await chatService.getSession(token, sessionId)) as {

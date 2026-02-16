@@ -8,15 +8,15 @@ interface ChatSidebarSessionListProps {
   folders: ChatFolder[];
   filter: FilterType;
   activeFolderId: number | null;
-  activeSessionId: number | null;
+  activeSessionId: string | null;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
-  onSessionSelect: (sessionId: number) => void;
+  onSessionSelect: (sessionId: string) => void;
   onClose?: () => void;
-  onToggleFavorite: (e: React.MouseEvent, sessionId: number) => void;
-  onToggleTrash: (e: React.MouseEvent, sessionId: number) => void;
-  onDeletePermanent?: (e: React.MouseEvent, sessionId: number) => void;
-  onMoveToFolder?: (sessionId: number, folderId: number | null) => void;
+  onToggleFavorite: (e: React.MouseEvent, sessionId: string) => void;
+  onToggleTrash: (e: React.MouseEvent, sessionId: string) => void;
+  onDeletePermanent?: (e: React.MouseEvent, sessionId: string) => void;
+  onMoveToFolder?: (sessionId: string, folderId: number | null) => void;
 }
 
 export function ChatSidebarSessionList({
@@ -72,11 +72,11 @@ export function ChatSidebarSessionList({
             <SessionItem
               key={session.id}
               session={session}
-              isActive={activeSessionId === session.id}
+              isActive={activeSessionId === session.uuid}
               isTrashView={filter === "trash"}
               folders={folders}
               onSelect={() => {
-                onSessionSelect(session.id);
+                onSessionSelect(session.uuid);
                 if (onClose) onClose();
               }}
               onToggleFavorite={onToggleFavorite}

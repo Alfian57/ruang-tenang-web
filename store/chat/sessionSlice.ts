@@ -25,7 +25,7 @@ export const createSessionSlice: StateCreator<ChatStore, [], [], ChatSessionStat
     }
   },
 
-  loadSession: async (token: string, sessionId: number) => {
+  loadSession: async (token: string, sessionId: string) => {
     if (!token) return;
 
     set({ isLoading: true });
@@ -54,25 +54,25 @@ export const createSessionSlice: StateCreator<ChatStore, [], [], ChatSessionStat
       
       // Move to folder if specified
       if (folderId) {
-        await chatService.moveToFolder(token, response.data.id, folderId);
+        await chatService.moveToFolder(token, response.data.uuid, folderId);
       }
       
       // Reload sessions and select the new one
       await get().loadSessions(token);
-      await get().loadSession(token, response.data.id);
+      await get().loadSession(token, response.data.uuid);
     } catch (error) {
       console.error("ChatStore.createSession: failed", error);
     }
   },
 
-  deleteSession: async (token: string, sessionId: number) => {
+  deleteSession: async (token: string, sessionId: string) => {
     if (!token) return;
 
     try {
       await chatService.deleteSession(token, sessionId);
       
       const { activeSession } = get();
-      if (activeSession?.id === sessionId) {
+      if (activeSession?.uuid === sessionId) {
         set({ activeSession: null, messages: [] });
       }
       
@@ -82,7 +82,7 @@ export const createSessionSlice: StateCreator<ChatStore, [], [], ChatSessionStat
     }
   },
 
-  toggleFavorite: async (token: string, sessionId: number) => {
+  toggleFavorite: async (token: string, sessionId: string) => {
     if (!token) return;
 
     try {
@@ -90,7 +90,7 @@ export const createSessionSlice: StateCreator<ChatStore, [], [], ChatSessionStat
       await get().loadSessions(token);
 
       const { activeSession } = get();
-      if (activeSession?.id === sessionId) {
+      if (activeSession?.uuid === sessionId) {
         set((state) => ({
           activeSession: state.activeSession
             ? { ...state.activeSession, is_favorite: !state.activeSession.is_favorite }
@@ -102,7 +102,7 @@ export const createSessionSlice: StateCreator<ChatStore, [], [], ChatSessionStat
     }
   },
 
-  toggleTrash: async (token: string, sessionId: number) => {
+  toggleTrash: async (token: string, sessionId: string) => {
     if (!token) return;
 
     try {
@@ -110,7 +110,7 @@ export const createSessionSlice: StateCreator<ChatStore, [], [], ChatSessionStat
       await get().loadSessions(token);
 
       const { activeSession, filter } = get();
-      if (activeSession?.id === sessionId) {
+      if (activeSession?.uuid === sessionId) {
         if (filter !== "trash") {
           set({ activeSession: null, messages: [] });
         } else {

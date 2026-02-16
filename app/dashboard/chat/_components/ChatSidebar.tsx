@@ -14,21 +14,21 @@ export type { FilterType };
 
 interface ChatSidebarProps {
   sessions: ChatSession[];
-  activeSessionId: number | null;
+  activeSessionId: string | null;
   filter: FilterType;
   folders?: ChatFolder[];
   activeFolderId?: number | null;
   onFilterChange: (filter: FilterType) => void;
-  onSessionSelect: (sessionId: number) => void;
+  onSessionSelect: (sessionId: string) => void;
   onCreateSession: () => void;
-  onToggleFavorite: (e: React.MouseEvent, sessionId: number) => void;
-  onToggleTrash: (e: React.MouseEvent, sessionId: number) => void;
-  onDeletePermanent?: (e: React.MouseEvent, sessionId: number) => void;
+  onToggleFavorite: (e: React.MouseEvent, sessionId: string) => void;
+  onToggleTrash: (e: React.MouseEvent, sessionId: string) => void;
+  onDeletePermanent?: (e: React.MouseEvent, sessionId: string) => void;
   // Folder actions
   onCreateFolder?: (name: string, color?: string) => void;
   onUpdateFolder?: (folderId: number, data: { name?: string; color?: string }) => void;
   onDeleteFolder?: (folderId: number) => void;
-  onMoveToFolder?: (sessionId: number, folderId: number | null) => void;
+  onMoveToFolder?: (sessionId: string, folderId: number | null) => void;
   onFolderSelect?: (folderId: number | null) => void;
   isOpen?: boolean;
   onClose?: () => void;

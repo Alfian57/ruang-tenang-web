@@ -9,6 +9,7 @@ export interface ArticleCategory {
 
 export interface Article {
   id: number;
+  slug: string;
   title: string;
   status: string;
   thumbnail: string;

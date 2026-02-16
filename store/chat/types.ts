@@ -11,11 +11,11 @@ export interface ChatSessionState {
 
 export interface ChatSessionActions {
   loadSessions: (token: string) => Promise<void>;
-  loadSession: (token: string, sessionId: number) => Promise<void>;
+  loadSession: (token: string, sessionId: string) => Promise<void>;
   createSession: (token: string, title: string, folderId?: number) => Promise<void>;
-  deleteSession: (token: string, sessionId: number) => Promise<void>;
-  toggleFavorite: (token: string, sessionId: number) => Promise<void>;
-  toggleTrash: (token: string, sessionId: number) => Promise<void>;
+  deleteSession: (token: string, sessionId: string) => Promise<void>;
+  toggleFavorite: (token: string, sessionId: string) => Promise<void>;
+  toggleTrash: (token: string, sessionId: string) => Promise<void>;
   setFilter: (filter: FilterType) => void;
   reset: () => void;
   clearActiveSession: () => void;
@@ -45,7 +45,7 @@ export interface ChatFolderActions {
   updateFolder: (token: string, folderId: number, data: { name?: string; color?: string; icon?: string }) => Promise<void>;
   deleteFolder: (token: string, folderId: number) => Promise<void>;
   reorderFolders: (token: string, folderIds: number[]) => Promise<void>;
-  moveSessionToFolder: (token: string, sessionId: number, folderId: number | null) => Promise<void>;
+  moveSessionToFolder: (token: string, sessionId: string, folderId: number | null) => Promise<void>;
   setActiveFolderId: (folderId: number | null) => void;
 }
 
@@ -55,9 +55,9 @@ export interface ChatExportState {
 }
 
 export interface ChatExportActions {
-  exportChat: (token: string, sessionId: number, format: "pdf" | "txt", includePinned?: boolean) => Promise<ChatExportResponse | null>;
-  loadSummary: (token: string, sessionId: number) => Promise<void>;
-  generateSummary: (token: string, sessionId: number) => Promise<void>;
+  exportChat: (token: string, sessionId: string, format: "pdf" | "txt", includePinned?: boolean) => Promise<ChatExportResponse | null>;
+  loadSummary: (token: string, sessionId: string) => Promise<void>;
+  generateSummary: (token: string, sessionId: string) => Promise<void>;
 }
 
 export interface ChatPromptState {

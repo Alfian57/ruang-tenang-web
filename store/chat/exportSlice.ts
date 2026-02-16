@@ -8,7 +8,7 @@ export const createExportSlice: StateCreator<ChatStore, [], [], ChatExportState 
   currentSummary: null,
   isGeneratingSummary: false,
 
-  exportChat: async (token: string, sessionId: number, format: "pdf" | "txt", includePinned?: boolean) => {
+  exportChat: async (token: string, sessionId: string, format: "pdf" | "txt", includePinned?: boolean) => {
     if (!token) return null;
 
     try {
@@ -65,7 +65,7 @@ export const createExportSlice: StateCreator<ChatStore, [], [], ChatExportState 
     }
   },
 
-  loadSummary: async (token: string, sessionId: number) => {
+  loadSummary: async (token: string, sessionId: string) => {
     if (!token) return;
 
     try {
@@ -79,7 +79,7 @@ export const createExportSlice: StateCreator<ChatStore, [], [], ChatExportState 
     }
   },
 
-  generateSummary: async (token: string, sessionId: number) => {
+  generateSummary: async (token: string, sessionId: string) => {
     if (!token) return;
 
     set({ isGeneratingSummary: true });

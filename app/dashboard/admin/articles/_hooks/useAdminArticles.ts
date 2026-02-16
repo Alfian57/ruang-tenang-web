@@ -10,6 +10,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 
 export interface AdminArticle {
   id: number;
+  slug: string;
   title: string;
   thumbnail: string;
   category_id: number;

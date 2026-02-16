@@ -24,7 +24,7 @@ export default function EditJournalPage() {
         setActiveJournal
     } = useJournalStore();
     
-    const id = params.id ? parseInt(params.id as string) : null;
+    const uuid = params.uuid as string | undefined;
 
     useEffect(() => {
         if (!token && !isAuthenticated) {
@@ -32,13 +32,13 @@ export default function EditJournalPage() {
             return;
         }
 
-        if (token && id) {
-            // Load if not present or wrong ID
-            if (activeJournal?.id !== id) {
-                loadJournal(token, id);
+        if (token && uuid) {
+            // Load if not present or wrong UUID
+            if (activeJournal?.uuid !== uuid) {
+                loadJournal(token, uuid);
             }
         }
-    }, [token, isAuthenticated, id, loadJournal, activeJournal, router]);
+    }, [token, isAuthenticated, uuid, loadJournal, activeJournal, router]);
 
      // Clean up on unmount
      useEffect(() => {
@@ -53,10 +53,10 @@ export default function EditJournalPage() {
         is_private: boolean;
         share_with_ai: boolean;
     }) => {
-        if (!token || !id) return;
-        await updateJournal(token, id, data);
+        if (!token || !uuid) return;
+        await updateJournal(token, uuid, data);
         toast.success("Jurnal berhasil diperbarui!");
-        router.push(`/dashboard/journal/${id}`);
+        router.push(`/dashboard/journal/${uuid}`);
     };
 
     if (isLoading && !activeJournal) {
@@ -92,7 +92,7 @@ export default function EditJournalPage() {
         <div className="container mx-auto px-4 py-6 max-w-4xl">
             <div className="mb-6">
                 <Button variant="ghost" size="sm" asChild className="mb-4 pl-0 hover:pl-2 transition-all">
-                    <Link href={`/dashboard/journal/${id}`}>
+                    <Link href={`/dashboard/journal/${uuid}`}>
                         <ArrowLeft className="w-4 h-4 mr-2" />
                         Batal Edit
                     </Link>

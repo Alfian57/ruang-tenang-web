@@ -94,7 +94,7 @@ export default function ChatPage() {
       {/* Right Sidebar */}
       <ChatSidebar
         sessions={sessions}
-        activeSessionId={activeSession?.id ?? null}
+        activeSessionId={activeSession?.uuid ?? null}
         filter={filter}
         folders={folders}
         activeFolderId={activeFolderId}

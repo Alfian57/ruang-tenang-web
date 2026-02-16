@@ -42,8 +42,8 @@ export const ROUTES = {
   },
 
   // Dynamic Builders
-  articleDetail: (id: string | number) => `/dashboard/articles/${id}`,
-  articleRead: (id: string | number) => `/dashboard/articles/read/${id}`,
+  articleDetail: (slug: string) => `/dashboard/articles/${slug}`,
+  articleRead: (slug: string) => `/dashboard/articles/read/${slug}`,
   storyDetail: (id: string | number) => `/dashboard/stories/${id}`,
   forumDetail: (id: string | number) => `/dashboard/forum/${id}`,
   adminForumDetail: (id: string | number) => `/dashboard/admin/forums/${id}`,

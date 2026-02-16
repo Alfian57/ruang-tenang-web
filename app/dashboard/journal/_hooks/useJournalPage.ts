@@ -183,7 +183,7 @@ export function useJournalPage() {
 
     const handleDeleteJournal = async () => {
         if (!token || !journalToDelete) return;
-        await deleteJournal(token, journalToDelete.id);
+        await deleteJournal(token, journalToDelete.uuid);
         setShowDeleteModal(false);
         setJournalToDelete(null);
         toast.success("Jurnal berhasil dihapus");
@@ -196,7 +196,7 @@ export function useJournalPage() {
 
     const handleToggleAIShare = async (journal: Journal) => {
         if (!token) return;
-        await toggleAIShare(token, journal.id);
+        await toggleAIShare(token, journal.uuid);
         toast.success(
             journal.share_with_ai
                 ? "Jurnal disembunyikan dari AI"

@@ -34,7 +34,7 @@ export function ArticleContent({
               {article.title}
             </h1>
             {(isArticleAuthor || isAdmin || isModerator) && article.status !== "blocked" && (
-              <Link href={isArticleAuthor ? `/dashboard/articles/${article.id}` : "#"}>
+              <Link href={isArticleAuthor ? `/dashboard/articles/${article.slug}` : "#"}>
                 <Button variant="outline" size="sm" disabled={!isArticleAuthor && !isAdmin}>
                   <Edit className="w-4 h-4 mr-2" />
                   Edit
