@@ -99,8 +99,8 @@ export function useForumPage() {
 
       toast.success("Topik berhasil dibuat, mengalihkan...");
 
-      if (response.data && response.data.id) {
-        router.push(`/dashboard/forum/${response.data.id}`);
+      if (response.data && response.data.slug) {
+        router.push(`/dashboard/forum/${response.data.slug}`);
       } else {
         loadData();
       }

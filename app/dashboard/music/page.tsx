@@ -9,7 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   PlaylistDialog,
-  CategoryDetailView,
   BrowseTab,
   ExploreTab,
   PlaylistsTab
@@ -23,14 +22,12 @@ export default function MusicPage() {
     // State
     activeTab,
     search,
-    viewMode,
     categories,
     songs,
     isLoading,
     playlists,
     publicPlaylists,
     adminPlaylists,
-    selectedCategory,
     isPlaylistDialogOpen,
     editingPlaylist,
     playlistsLoading,
@@ -43,14 +40,12 @@ export default function MusicPage() {
     // Actions - Setters
     setActiveTab,
     setSearch,
-    resetView,
     setIsPlaylistDialogOpen,
     setEditingPlaylist,
     setShowDeletePlaylistDialog,
     setDeletePlaylistId,
 
     // Actions - Handlers
-    loadSongs,
     handlePlaySong,
     handlePlaylistEdit,
     handlePlaylistDeleteClick,
@@ -66,20 +61,6 @@ export default function MusicPage() {
   const navigateToPlaylist = (playlist: { id: number }) => {
     router.push(`/dashboard/music/playlist/${playlist.id}`);
   };
-
-  // Category detail view
-  if (viewMode === "category" && selectedCategory) {
-    return (
-      <CategoryDetailView
-        category={selectedCategory}
-        songs={songs}
-        onBack={resetView}
-        currentSong={currentSong}
-        isPlaying={isPlaying}
-        onPlay={handlePlaySong}
-      />
-    );
-  }
 
   return (
     <>
@@ -137,7 +118,7 @@ export default function MusicPage() {
               currentSong={currentSong}
               isPlaying={isPlaying}
               onPlay={handlePlaySong}
-              onCategoryClick={(category) => loadSongs(category)}
+              onCategoryClick={(category) => router.push(`/dashboard/music/categories/${category.id}`)}
             />
           </TabsContent>
 

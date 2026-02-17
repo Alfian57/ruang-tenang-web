@@ -162,7 +162,7 @@ export default function ForumPage() {
         ) : (
           forums.map((forum) => (
             <Link 
-              href={`/dashboard/forum/${forum.id}`} 
+              href={`/dashboard/forum/${forum.slug}`} 
               key={forum.id}
               className="block bg-white p-5 rounded-xl border hover:border-primary/50 hover:shadow-md transition-all group"
             >

@@ -154,7 +154,7 @@ export default function AdminForumsPage() {
                         </td>
                         <td className="p-4">
                           <div className="flex gap-1 justify-end">
-                            <Link href={`/dashboard/admin/forums/${forum.id}`}>
+                            <Link href={`/dashboard/admin/forums/${forum.slug}`}>
                               <Button variant="ghost" size="icon" title="Lihat">
                                 <ExternalLink className="w-4 h-4" />
                               </Button>

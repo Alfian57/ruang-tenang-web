@@ -64,7 +64,7 @@ export default function NewArticlePage() {
       });
       // Refresh user to update EXP
       await useAuthStore.getState().refreshUser();
-      router.push(ROUTES.ARTICLES);
+      router.push(`${ROUTES.ARTICLES}?tab=mine`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal membuat artikel");
     } finally {

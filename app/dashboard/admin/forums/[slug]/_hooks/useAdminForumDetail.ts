@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { useAuthStore } from "@/store/authStore";
 
 export function useAdminForumDetail() {
-  const params = useParams();
+  const { slug } = useParams();
   const router = useRouter();
   const { user, token } = useAuthStore();
   const [forum, setForum] = useState<Forum | null>(null);
@@ -25,12 +25,13 @@ export function useAdminForumDetail() {
   const [showDeleteForumDialog, setShowDeleteForumDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const id = parseInt(params.id as string);
+  // No longer parsing ID as int
+  // const id = parseInt(params.id as string);
 
   const fetchForum = useCallback(async () => {
-    if (!token) return;
+    if (!token || !slug) return;
     try {
-      const res = await forumService.getById(token, id);
+      const res = await forumService.getBySlug(token, slug as string);
       setForum(res.data);
       setIsLiked(!!res.data.is_liked);
       setLikesCount(res.data.likes_count || 0);
@@ -38,33 +39,43 @@ export function useAdminForumDetail() {
       console.error(error);
       toast.error("Gagal memuat topik");
     }
-  }, [id, token]);
+  }, [slug, token]);
 
   const fetchPosts = useCallback(async () => {
-    if (!token) return;
+    if (!token || !slug) return;
     try {
-      const response = await forumService.getPosts(token, id, 100);
+      // Use getPosts but we need forum ID. But the backend for getPosts uses forumId.
+      // Actually forumService.getPosts takes forumId (string | number).
+      // If we use slug, we might need a different endpoint or get ID first.
+      // Wait, forumService.getPosts calls /forums/${forumId}/posts.
+      // Does backend support slug there? Checking router.go...
+      // router.go: forum.GET("/:slug/posts", forumHandler.GetForumPosts)
+      // Yes! It supports slug!
+      const response = await forumService.getPosts(token, slug as string, 100);
       setPosts(response.data);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
     }
-  }, [id, token]);
+  }, [slug, token]);
 
   useEffect(() => {
-    if (id && token) {
+    if (slug && token) {
       fetchForum();
       fetchPosts();
     }
-  }, [id, token, fetchForum, fetchPosts]);
+  }, [slug, token, fetchForum, fetchPosts]);
 
   const handleReply = async () => {
-    if (!replyContent.trim() || !token) return;
+    if (!replyContent.trim() || !token || !slug) return;
 
     setSubmitting(true);
     try {
-      await forumService.createPost(token, id, { content: replyContent });
+      // forumService.createPost expects forumId. 
+      // Checking router.go: forum.POST("/:slug/posts", forumHandler.CreateForumPost)
+      // Yes, supports slug!
+      await forumService.createPost(token, slug as string, { content: replyContent });
       setReplyContent("");
       fetchPosts();
       fetchForum(); // Update reply count if needed
@@ -95,10 +106,12 @@ export function useAdminForumDetail() {
   };
 
   const handleDeleteForum = async () => {
-    if (!token) return;
+    if (!token || !slug) return;
     setIsDeleting(true);
     try {
-      await forumService.delete(token, id);
+      // route: forum.DELETE("/:slug", forumHandler.DeleteForum)
+      // Supports slug!
+      await forumService.delete(token, slug as string);
       toast.success("Topik dihapus");
       router.push("/dashboard/admin/forums");
     } catch (error) {
@@ -110,7 +123,7 @@ export function useAdminForumDetail() {
   };
 
   const handleToggleLike = async () => {
-    if (!token) return;
+    if (!token || !slug) return;
     // Optimistic update
     const previousLiked = isLiked;
     const previousCount = likesCount;
@@ -119,7 +132,9 @@ export function useAdminForumDetail() {
     setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
 
     try {
-      await forumService.toggleLike(token, id);
+      // route: forum.PUT("/:slug/like", forumHandler.ToggleLike)
+      // Supports slug!
+      await forumService.toggleLike(token, slug as string);
     } catch (error) {
       console.error("Failed to toggle like:", error);
       // Revert on error

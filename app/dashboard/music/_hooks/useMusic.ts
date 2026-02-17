@@ -7,6 +7,7 @@ import { SongCategory, Song, PlaylistListItem } from "@/types";
 import { useMusicPlayerStore } from "@/store/musicPlayerStore";
 import { useAuthStore } from "@/store/authStore";
 import { useDebounce } from "@/hooks/use-debounce";
+import { toast } from "sonner";
 
 export function useMusic() {
   // URL state management
@@ -17,8 +18,6 @@ export function useMusic() {
 
   const activeTab = searchParams.get("tab") || "browse";
   const urlSearch = searchParams.get("search") || "";
-  const categoryIdParam = searchParams.get("categoryId");
-  const viewMode = (searchParams.get("view") || "browse") as "browse" | "category";
 
   // Local state
   const [searchTerm, setSearchTerm] = useState(urlSearch);
@@ -45,8 +44,6 @@ export function useMusic() {
 
   const setActiveTab = (tab: string) => updateUrlParam("tab", tab === "browse" ? null : tab);
   const setSearch = (value: string) => setSearchTerm(value);
-  const setViewMode = (mode: "browse" | "category") => updateUrlParam("view", mode === "browse" ? null : mode);
-  const setSelectedCategoryId = (id: number | null) => updateUrlParam("categoryId", id ? String(id) : null);
 
   // Data state
   const [categories, setCategories] = useState<SongCategory[]>([]);
@@ -77,7 +74,6 @@ export function useMusic() {
   } = useMusicPlayerStore();
 
   // Derive selectedCategory
-  const selectedCategory = categoryIdParam ? categories.find(c => c.id === parseInt(categoryIdParam, 10)) || null : null;
 
   // Data Loading Functions
   const loadCategories = useCallback(async () => {
@@ -99,6 +95,7 @@ export function useMusic() {
       setPlaylists(response.data || []);
     } catch (error) {
       console.error("Failed to load playlists:", error);
+      toast.error("Gagal memuat playlist Anda");
     } finally {
       setPlaylistsLoading(false);
     }
@@ -113,6 +110,7 @@ export function useMusic() {
       setPublicPlaylists(allPublic.filter(p => !p.is_admin_playlist));
     } catch (error) {
       console.error("Failed to load public playlists:", error);
+      toast.error("Gagal memuat playlist publik");
     } finally {
       setPublicPlaylistsLoading(false);
     }
@@ -126,19 +124,6 @@ export function useMusic() {
   }, [loadCategories, loadPlaylists, loadPublicPlaylists]);
 
   // Load songs by category (URL effect)
-  useEffect(() => {
-    if (selectedCategory && viewMode === "category" && songs.length === 0) {
-      const doLoadSongs = async () => {
-        try {
-          const response = await songService.getSongsByCategory(selectedCategory.id) as { data: Song[] };
-          setSongs(response.data || []);
-        } catch (error) {
-          console.error("Failed to load songs:", error);
-        }
-      };
-      doLoadSongs();
-    }
-  }, [selectedCategory, viewMode, songs.length]);
 
   // Search effect
   useEffect(() => {
@@ -148,8 +133,6 @@ export function useMusic() {
         try {
           const response = await searchService.search(debouncedSearch);
           setSongs(response.data?.songs || []);
-          setSelectedCategoryId(null);
-          setViewMode("category");
         } catch (error) {
           console.error("Search failed:", error);
         } finally {
@@ -157,44 +140,19 @@ export function useMusic() {
         }
       };
       doSearch();
-    } else if (viewMode === "category" && !selectedCategory) {
-      setViewMode("browse");
     }
   }, [debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handlers
-  const loadSongs = async (category: SongCategory) => {
-    // Batch URL updates to avoid race conditions
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("categoryId", String(category.id));
-    params.set("view", "category");
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
 
-    try {
-      const response = await songService.getSongsByCategory(category.id) as { data: Song[] };
-      setSongs(response.data || []);
-    } catch (error) {
-      console.error("Failed to load songs:", error);
-    }
-  };
-
-  const resetView = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("categoryId");
-    params.delete("view");
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    setSongs([]);
-  };
 
   const handlePlaySong = (song: Song) => {
     if (currentSong?.id === song.id) {
       setIsPlaying(!isPlaying);
     } else {
-      playSong(song, songs, { type: "category", name: selectedCategory?.name || "Musik" });
+      playSong(song, songs, { type: "category", name: "Musik" });
     }
   };
-
-
 
   const handlePlaylistEdit = (playlistItem: PlaylistListItem) => {
     setEditingPlaylist(playlistItem);
@@ -241,20 +199,16 @@ export function useMusic() {
     }
   };
 
-
-
   return {
     // State
     activeTab,
     search: searchTerm,
-    viewMode,
     categories,
     songs,
     isLoading,
     playlists,
     publicPlaylists,
     adminPlaylists,
-    selectedCategory,
     isPlaylistDialogOpen,
     editingPlaylist,
     playlistsLoading,
@@ -266,8 +220,6 @@ export function useMusic() {
     // Actions - Setters
     setActiveTab,
     setSearch,
-    setViewMode,
-    setSelectedCategoryId,
     setIsPlaylistDialogOpen,
     setEditingPlaylist,
     setShowDeletePlaylistDialog,
@@ -275,8 +227,6 @@ export function useMusic() {
     setSongs,
 
     // Actions - Handlers
-    loadSongs,
-    resetView,
     handlePlaySong,
     handlePlaylistEdit,
     handlePlaylistDeleteClick,

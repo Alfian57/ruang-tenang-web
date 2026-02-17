@@ -29,6 +29,7 @@ export interface Forum {
   id: number;
   user_id: number;
   category_id?: number;
+  slug: string;
   title: string;
   content: string;
   created_at: string;
