@@ -1,10 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Plus, MessageSquare, Clock, User, Heart, Search } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { id } from "date-fns/locale";
+import { Plus, Search, MessageSquare } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useForumPage } from "./_hooks/useForumPage";
+import { ForumCard } from "@/components/shared/forum/ForumCard";
 
 export default function ForumPage() {
   const {
@@ -161,57 +159,7 @@ export default function ForumPage() {
            </div>
         ) : (
           forums.map((forum) => (
-            <Link 
-              href={`/dashboard/forum/${forum.slug}`} 
-              key={forum.id}
-              className="block bg-white p-5 rounded-xl border hover:border-primary/50 hover:shadow-md transition-all group"
-            >
-              <div className="flex flex-col gap-3">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      {forum.category ? (
-                        <span className="text-xs font-medium px-2 py-0.5 rounded bg-blue-50 text-blue-600">
-                          {forum.category.name}
-                        </span>
-                      ) : (
-                         <span className="text-xs font-medium px-2 py-0.5 rounded bg-gray-100 text-gray-600">
-                          Umum
-                        </span>
-                      )}
-                      <span className="text-xs text-gray-400">•</span>
-                      <span className="text-xs text-gray-500 flex items-center gap-1">
-                         <User className="w-3 h-3" />
-                         {forum.user?.name || "Anonymous"}
-                      </span>
-                    </div>
-                    <h3 className="font-semibold text-lg text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
-                      {forum.title}
-                    </h3>
-                  </div>
-                </div>
-                
-                <p className="text-gray-600 line-clamp-2 text-sm">{forum.content || "Tidak ada preview konten"}</p>
-                
-                <div className="flex items-center justify-between mt-2 pt-3 border-t border-gray-50">
-                   <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <div className="flex items-center gap-1.5">
-                        <MessageSquare className="w-4 h-4" />
-                        <span>{forum.replies_count || 0}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <Heart className="w-4 h-4" />
-                        <span>{forum.likes_count || 0}</span>
-                      </div>
-                   </div>
-                   
-                   <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                      <Clock className="w-3 h-3" />
-                      <span>{formatDistanceToNow(new Date(forum.created_at), { addSuffix: true, locale: id })}</span>
-                   </div>
-                </div>
-              </div>
-            </Link>
+            <ForumCard key={forum.id} forum={forum} className="bg-white" />
           ))
         )}
       </div>

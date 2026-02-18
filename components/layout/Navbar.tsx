@@ -50,22 +50,22 @@ export function Navbar({ variant = "default" }: NavbarProps) {
                   Beranda
                 </Link>
                 <Link
+                   href="/#features"
+                   className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
+                 >
+                   Fitur
+                 </Link>
+                 <Link
+                   href="/#gamification"
+                   className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
+                 >
+                   Gamifikasi
+                 </Link>
+                <Link
                   href="/#articles"
                   className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
                 >
                   Artikel
-                </Link>
-                <Link
-                  href="/#leaderboard"
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
-                >
-                  Peringkat
-                </Link>
-                <Link
-                  href="/#about"
-                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
-                >
-                  Tentang Kami
                 </Link>
               </div>
 
@@ -134,26 +134,26 @@ export function Navbar({ variant = "default" }: NavbarProps) {
           >
             Beranda
           </Link>
+           <Link
+             href="/#features"
+             className="block px-4 py-3 text-gray-600 font-medium rounded-xl hover:bg-primary/5 hover:text-primary transition-colors"
+             onClick={() => setMobileMenuOpen(false)}
+           >
+             Fitur
+           </Link>
+           <Link
+             href="/#gamification"
+             className="block px-4 py-3 text-gray-600 font-medium rounded-xl hover:bg-primary/5 hover:text-primary transition-colors"
+             onClick={() => setMobileMenuOpen(false)}
+           >
+             Gamifikasi
+           </Link>
           <Link
             href="/#articles"
             className="block px-4 py-3 text-gray-600 font-medium rounded-xl hover:bg-primary/5 hover:text-primary transition-colors"
             onClick={() => setMobileMenuOpen(false)}
           >
             Artikel
-          </Link>
-          <Link
-            href="/#leaderboard"
-            className="block px-4 py-3 text-gray-600 font-medium rounded-xl hover:bg-primary/5 hover:text-primary transition-colors"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Peringkat
-          </Link>
-          <Link
-            href="/#about"
-            className="block px-4 py-3 text-gray-600 font-medium rounded-xl hover:bg-primary/5 hover:text-primary transition-colors"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Tentang Kami
           </Link>
           <div className="pt-2 border-t">
             {isAuthenticated ? (

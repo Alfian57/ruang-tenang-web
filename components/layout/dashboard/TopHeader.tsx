@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { ChevronDown, Settings, KeyRound, LogOut, Ban } from "lucide-react";
 import { GlobalSearch } from "@/components/layout/dashboard";
+import { NotificationBell } from "@/components/layout/dashboard/NotificationBell";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -66,6 +67,9 @@ export function TopHeader({
             </div>
           </button>
         )}
+
+        {/* Notification Bell */}
+        {!isAdmin && <NotificationBell />}
 
         {/* Profile dropdown */}
         <DropdownMenu>

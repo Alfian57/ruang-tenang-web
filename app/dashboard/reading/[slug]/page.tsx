@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { articleService } from "@/services/api";
 import { Article } from "@/types";
 import { formatDate } from "@/utils";
+import { sanitizeHtml } from "@/utils/sanitize";
 import { ReportModal } from "@/components/shared/moderation";
 
 export default function DashboardArticleDetailPage() {
@@ -117,7 +118,7 @@ export default function DashboardArticleDetailPage() {
               {/* Content */}
               <div
                 className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-primary prose-img:rounded-xl"
-                dangerouslySetInnerHTML={{ __html: article.content }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.content) }}
               />
 
               <div className="mt-8 pt-6 border-t flex justify-end">

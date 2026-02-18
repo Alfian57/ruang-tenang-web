@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Shield, User, Ban, CheckCircle } from "lucide-react";
+import { Search, Shield, User, Ban, CheckCircle, BookX, BookOpen, MessageSquareOff, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -21,7 +21,9 @@ export default function AdminUsersPage() {
     setPage,
     setBlockId,
     openBlockDialog,
-    handleBlockAction
+    handleBlockAction,
+    handleJournalBlockToggle,
+    handleForumBlockToggle,
   } = useAdminUsers();
 
   if (user?.role !== "admin") {
@@ -168,6 +170,36 @@ export default function AdminUsersPage() {
                                 <Ban className="w-4 h-4" />
                               </Button>
                             )}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleJournalBlockToggle(u.id)}
+                              className={u.journal_blocked
+                                ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                                : "text-rose-500 hover:text-rose-600 hover:bg-rose-50"}
+                              title={u.journal_blocked ? "Buka Blokir Jurnal" : "Blokir Jurnal"}
+                            >
+                              {u.journal_blocked ? (
+                                <BookOpen className="w-4 h-4" />
+                              ) : (
+                                <BookX className="w-4 h-4" />
+                              )}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleForumBlockToggle(u.id)}
+                              className={u.is_forum_blocked
+                                ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                                : "text-violet-500 hover:text-violet-600 hover:bg-violet-50"}
+                              title={u.is_forum_blocked ? "Buka Blokir Forum" : "Blokir Forum"}
+                            >
+                              {u.is_forum_blocked ? (
+                                <MessageSquare className="w-4 h-4" />
+                              ) : (
+                                <MessageSquareOff className="w-4 h-4" />
+                              )}
+                            </Button>
                           </>
                         )}
                       </div>

@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/utils";
+import { sanitizeHtml } from "@/utils/sanitize";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { InspiringStory } from "@/types/gamification";
@@ -104,7 +105,7 @@ export function StoryContent({ story, heartLoading, onToggleHeart }: StoryConten
       {/* Content */}
       <div
         className="prose prose-lg max-w-none mb-8"
-        dangerouslySetInnerHTML={{ __html: story.content }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(story.content) }}
       />
 
       {/* Actions */}

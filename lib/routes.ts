@@ -27,6 +27,7 @@ export const ROUTES = {
   READING: "/dashboard/reading",
   CONSULTATION: "/dashboard/consultation",
   MOOD_TRACKER: "/dashboard/mood-tracker",
+  COMMUNITY: "/community",
 
   // Admin
   ADMIN: {

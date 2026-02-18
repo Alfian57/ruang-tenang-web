@@ -109,4 +109,9 @@ export const moderationService = {
   updateContentWarningPreference(token: string, preference: string) {
     return httpClient.put<ApiResponse<null>>("/user/content-warning-preference", { preference }, { token });
   },
+
+  // Appeals
+  submitAppeal(token: string, data: { reason: string; evidence?: string }) {
+    return httpClient.post<ApiResponse<null>>("/appeals", data, { token });
+  },
 };

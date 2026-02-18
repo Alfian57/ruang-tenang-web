@@ -14,6 +14,8 @@ export interface UserData {
   email: string;
   role: string;
   is_blocked: boolean;
+  journal_blocked?: boolean;
+  is_forum_blocked?: boolean;
   created_at: string;
 }
 
@@ -102,6 +104,26 @@ export function useAdminUsers() {
     }
   };
 
+  const handleJournalBlockToggle = async (userId: number) => {
+    if (!token) return;
+    try {
+      await adminService.toggleJournalBlock(token, userId);
+      loadUsers();
+    } catch (error) {
+      console.error("Failed to toggle journal block:", error);
+    }
+  };
+
+  const handleForumBlockToggle = async (userId: number) => {
+    if (!token) return;
+    try {
+      await adminService.toggleForumBlock(token, userId);
+      loadUsers();
+    } catch (error) {
+      console.error("Failed to toggle forum block:", error);
+    }
+  };
+
   const openBlockDialog = (userId: number, action: "block" | "unblock") => {
     setBlockId(userId);
     setBlockAction(action);
@@ -120,6 +142,8 @@ export function useAdminUsers() {
     setPage,
     setBlockId,
     openBlockDialog,
-    handleBlockAction
+    handleBlockAction,
+    handleJournalBlockToggle,
+    handleForumBlockToggle,
   };
 }

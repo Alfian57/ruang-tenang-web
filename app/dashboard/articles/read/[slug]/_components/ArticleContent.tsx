@@ -4,6 +4,7 @@ import { Calendar, Tag, Ban, Edit } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/utils";
+import { sanitizeHtml } from "@/utils/sanitize";
 import { Article } from "@/types";
 
 interface ArticleContentProps {
@@ -85,7 +86,7 @@ export function ArticleContent({
 
         <div
           className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-primary"
-          dangerouslySetInnerHTML={{ __html: article.content }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.content) }}
         />
       </Card>
     </div>

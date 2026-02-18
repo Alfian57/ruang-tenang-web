@@ -8,7 +8,7 @@ import { CategoryClient } from "./CategoryClient";
 import { Loader2 } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Music } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 import { ROUTES } from "@/lib/routes";
 
 export default function CategoryPage() {

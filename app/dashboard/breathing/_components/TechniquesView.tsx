@@ -14,6 +14,7 @@ interface TechniquesViewProps {
     selectedId?: string;
     onSelect: (technique: BreathingTechnique) => void;
     onFavoriteToggle: (technique: BreathingTechnique) => void;
+    onShowInfo?: (technique: BreathingTechnique) => void;
 }
 
 export function TechniquesView({
@@ -25,6 +26,7 @@ export function TechniquesView({
     selectedId,
     onSelect,
     onFavoriteToggle,
+    onShowInfo,
 }: TechniquesViewProps) {
     return (
         <div className="space-y-8">
@@ -94,6 +96,7 @@ export function TechniquesView({
                         selectedId={selectedId}
                         onSelect={onSelect}
                         onFavoriteToggle={onFavoriteToggle}
+                        onShowInfo={onShowInfo}
                         columns={2}
                     />
             </div>
@@ -107,6 +110,7 @@ export function TechniquesView({
                         selectedId={selectedId}
                         onSelect={onSelect}
                         onFavoriteToggle={onFavoriteToggle}
+                        onShowInfo={onShowInfo}
                         showActions
                         columns={2}
                     />

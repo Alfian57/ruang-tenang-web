@@ -56,6 +56,12 @@ export const memberGroups: NavGroup[] = [
       { href: ROUTES.STORIES, icon: Sparkles, label: "Kisah Inspiratif" },
     ],
   },
+  {
+    title: "Komunitas",
+    links: [
+      { href: ROUTES.COMMUNITY, icon: Trophy, label: "Community Stats" },
+    ],
+  },
 ];
 
 // Admin menu items (for admin only) — grouped

@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/utils";
+import { sanitizeHtml } from "@/utils/sanitize";
 import { InspiringStory } from "@/types";
 import {
     Heart,
@@ -174,7 +175,7 @@ export function StoryDetail({
             {showContent && (
                 <div
                     className="prose prose-lg max-w-none mb-8"
-                    dangerouslySetInnerHTML={{ __html: story.content }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(story.content) }}
                 />
             )}
 

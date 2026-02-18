@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { communityService } from "@/services/api";
+import { communityService, forumService } from "@/services/api";
 import { Navbar, Footer } from "@/components/layout";
 import { useAuthStore } from "@/store/authStore";
 import {
@@ -10,14 +10,17 @@ import {
     PersonalJourneyCard,
     HallOfFame,
     BadgeShowcase,
-    UserFeaturesOverview
+    UserFeaturesOverview,
+    XPVisualizationsSection,
 } from "@/components/shared/gamification";
+import { ForumCard } from "@/components/shared/forum/ForumCard";
 import {
     CommunityStats,
     PersonalJourney,
     LevelHallOfFameResponse,
     UserBadges,
-    UserFeatures
+    UserFeatures,
+    Forum
 } from "@/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -27,7 +30,9 @@ import {
     Sparkles,
     ChevronLeft,
     ChevronRight,
-    LogIn
+    LogIn,
+    BarChart3,
+    MessageSquare,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -37,6 +42,7 @@ export default function CommunityPage() {
     const [communityStats, setCommunityStats] = useState<CommunityStats | null>(null);
     const [personalJourney, setPersonalJourney] = useState<PersonalJourney | null>(null);
     const [hallOfFame, setHallOfFame] = useState<LevelHallOfFameResponse | null>(null);
+    const [latestForums, setLatestForums] = useState<Forum[]>([]);
     const [currentLevel, setCurrentLevel] = useState(1);
     const [userBadges, setUserBadges] = useState<UserBadges | null>(null);
     const [userFeatures, setUserFeatures] = useState<UserFeatures | null>(null);
@@ -49,6 +55,16 @@ export default function CommunityPage() {
                 // Fetch community stats (public)
                 const statsRes = await communityService.getStats();
                 setCommunityStats(statsRes.data);
+
+                // Fetch latest forums (public or with token)
+                // Use token if available, otherwise "public" (empty string or handle in service)
+                // Actually forumService.getAll expects token string. If no token, we might need a public endpoint
+                // or forumService handles empty token. Let's assume it accepts empty string for public listing if supported by backend
+                // Re-checking forum.ts: it passes token in headers. If token is empty, header might be empty.
+                // If backend requires token for listing, this might fail for public users.
+                // But Community page is public. Let's try passing token || ""
+                const forumsRes = await forumService.getAll(token || "", 4);
+                setLatestForums(forumsRes.data);
 
                 // Fetch authenticated user data
                 if (token) {
@@ -170,7 +186,7 @@ export default function CommunityPage() {
                                 transition={{ delay: 0.3 }}
                             >
                                 <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-12">
-                                    <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto mb-8">
+                                    <TabsList className="grid w-full grid-cols-5 max-w-2xl mx-auto mb-8">
                                         <TabsTrigger value="overview" className="flex items-center gap-2">
                                             <Star className="h-4 w-4" />
                                             <span className="hidden sm:inline">Overview</span>
@@ -178,6 +194,10 @@ export default function CommunityPage() {
                                         <TabsTrigger value="journey" className="flex items-center gap-2">
                                             <Users className="h-4 w-4" />
                                             <span className="hidden sm:inline">Perjalanan</span>
+                                        </TabsTrigger>
+                                        <TabsTrigger value="stats" className="flex items-center gap-2">
+                                            <BarChart3 className="h-4 w-4" />
+                                            <span className="hidden sm:inline">Statistik</span>
                                         </TabsTrigger>
                                         <TabsTrigger value="badges" className="flex items-center gap-2">
                                             <Trophy className="h-4 w-4" />
@@ -235,6 +255,11 @@ export default function CommunityPage() {
                                         )}
                                     </TabsContent>
 
+                                    {/* Stats Tab */}
+                                    <TabsContent value="stats">
+                                        <XPVisualizationsSection />
+                                    </TabsContent>
+
                                     {/* Badges Tab */}
                                     <TabsContent value="badges">
                                         {userBadges && <BadgeShowcase badges={userBadges} />}
@@ -251,6 +276,51 @@ export default function CommunityPage() {
                                 </Tabs>
                             </motion.div>
                         )}
+
+                        {/* Latest Discussions */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.35 }}
+                            className="mb-12"
+                        >
+                            <div className="flex items-center justify-between mb-6">
+                                <h2 className="text-xl font-semibold flex items-center gap-2">
+                                    <MessageSquare className="h-5 w-5 text-primary" />
+                                    Diskusi Terbaru
+                                </h2>
+                                <div className="flex gap-2">
+                                    <Link href="/dashboard/forum/create">
+                                        <Button variant="outline" size="sm">
+                                            Mulai Diskusi
+                                        </Button>
+                                    </Link>
+                                    <Link href="/dashboard/forum">
+                                        <Button variant="ghost" size="sm" className="gap-1">
+                                            Lihat Semua <ChevronRight className="h-4 w-4" />
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </div>
+                            
+                            <div className="grid md:grid-cols-2 gap-4">
+                                {latestForums.length > 0 ? (
+                                    latestForums.map((forum) => (
+                                        <ForumCard key={forum.id} forum={forum} className="h-full" />
+                                    ))
+                                ) : (
+                                    <div className="col-span-2 text-center py-8 bg-card rounded-xl border border-dashed">
+                                        <MessageSquare className="h-10 w-10 text-muted-foreground/50 mx-auto mb-3" />
+                                        <p className="text-muted-foreground">Belum ada diskusi terbaru.</p>
+                                        <Link href="/dashboard/forum/create" className="mt-2 inline-block">
+                                            <Button variant="link" className="text-primary">
+                                                Jadilah yang pertama!
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
 
                         {/* Public Hall of Fame (for non-authenticated users) */}
                         {!token && hallOfFame && (

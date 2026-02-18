@@ -13,3 +13,6 @@ export * from "./CompletionModal";
 export * from "./SettingsModal";
 export * from "./HistoryView";
 export * from "./TechniquesView";
+export * from "./BreathingTutorial";
+export * from "./TechniqueInfoModal";
+export * from "./BreathingFAQ";

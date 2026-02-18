@@ -28,9 +28,12 @@ export function HallOfFame({ data, className }: HallOfFameProps) {
             {/* Entries */}
             <div className="p-4 space-y-3">
                 {data.entries.length === 0 ? (
-                    <p className="text-center text-muted-foreground py-4">
-                        Belum ada anggota di level ini
-                    </p>
+                <div className="text-center py-8">
+                        <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <Crown className="h-6 w-6 text-muted-foreground/50" />
+                        </div>
+                        <p className="text-sm text-muted-foreground">Belum ada anggota di level ini</p>
+                    </div>
                 ) : (
                     data.entries.map((entry, index) => (
                         <HallOfFameEntryCard

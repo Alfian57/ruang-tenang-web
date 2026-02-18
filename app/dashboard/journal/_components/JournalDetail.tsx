@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
+import { sanitizeHtml } from "@/utils/sanitize";
 
 interface JournalDetailProps {
     journal: Journal;
@@ -162,7 +163,7 @@ export function JournalDetail({
                 {/* Journal Content */}
                 <div
                     className="prose prose-sm max-w-none"
-                    dangerouslySetInnerHTML={{ __html: journal.content }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(journal.content) }}
                 />
             </div>
         </div>

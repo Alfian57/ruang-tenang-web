@@ -7,6 +7,10 @@ import { Forum, ForumPost } from "@/types/forum";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/authStore";
 
+const SORT_STORAGE_KEY = "forum_sort_preference";
+
+type SortOption = "top" | "newest" | "oldest";
+
 export function useForumThread() {
   const params = useParams();
   const router = useRouter();
@@ -19,6 +23,14 @@ export function useForumThread() {
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
 
+  // Sort preference
+  const [sortOrder, setSortOrderState] = useState<SortOption>(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem(SORT_STORAGE_KEY) as SortOption) || "top";
+    }
+    return "top";
+  });
+
   // Delete confirmation states
   const [deletePostId, setDeletePostId] = useState<number | null>(null);
   const [showDeletePostDialog, setShowDeletePostDialog] = useState(false);
@@ -27,6 +39,13 @@ export function useForumThread() {
 
   const slug = params.slug as string;
   const isAdmin = user?.role === "admin";
+
+  const setSortOrder = useCallback((sort: SortOption) => {
+    setSortOrderState(sort);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(SORT_STORAGE_KEY, sort);
+    }
+  }, []);
 
   const fetchForum = useCallback(async () => {
     if (!token) return;
@@ -46,14 +65,14 @@ export function useForumThread() {
   const fetchPosts = useCallback(async () => {
     if (!token) return;
     try {
-      const response = await forumService.getPosts(token, slug, 100);
+      const response = await forumService.getPosts(token, slug, 100, 0, sortOrder);
       setPosts(response.data);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
     }
-  }, [slug, token]);
+  }, [slug, token, sortOrder]);
 
   useEffect(() => {
     if (slug && token) {
@@ -136,6 +155,7 @@ export function useForumThread() {
     if (!token) return;
     
     // Optimistic Update
+    const previousPosts = posts;
     const updatedPosts = posts.map(p => {
       if (p.id === post.id) {
         const isLiked = !p.is_liked;
@@ -153,6 +173,8 @@ export function useForumThread() {
       await forumService.upvotePost(token, post.id);
     } catch (error) {
       console.error(error);
+      // Rollback on error
+      setPosts(previousPosts);
       toast.error("Gagal melike balasan");
     }
   };
@@ -191,11 +213,13 @@ export function useForumThread() {
     submitting,
     isLiked,
     likesCount,
+    sortOrder,
     deletePostId,
     showDeletePostDialog,
     showDeleteForumDialog,
     isDeleting,
     setReplyContent,
+    setSortOrder,
     setDeletePostId,
     setShowDeletePostDialog,
     setShowDeleteForumDialog,

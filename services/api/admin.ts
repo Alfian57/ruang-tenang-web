@@ -133,4 +133,14 @@ export const adminService = {
   toggleForumFlag(token: string, id: number) {
     return httpClient.post<ApiResponse<Forum>>(`/admin/forums/${id}/toggle-flag`, {}, { token });
   },
+
+  // Journal Blocking
+  toggleJournalBlock(token: string, userId: number) {
+    return httpClient.put<ApiResponse<null>>(`/admin/users/${userId}/block-journal`, {}, { token });
+  },
+
+  // Forum Blocking
+  toggleForumBlock(token: string, userId: number) {
+    return httpClient.put<ApiResponse<null>>(`/admin/users/${userId}/block-forum`, {}, { token });
+  },
 };

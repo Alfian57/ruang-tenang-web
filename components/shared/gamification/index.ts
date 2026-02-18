@@ -13,3 +13,4 @@ export { LevelUpCelebration } from "./LevelUpCelebration";
 export { DailyTaskWidget } from "./DailyTaskWidget";
 export { DailyTaskFAB } from "./DailyTaskFAB";
 export { InspiringStoryWidget } from "./InspiringStoryWidget";
+export { XPVisualizationsSection } from "./XPVisualizationsSection";

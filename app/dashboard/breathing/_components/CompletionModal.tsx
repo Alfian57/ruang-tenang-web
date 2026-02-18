@@ -74,11 +74,32 @@ export function CompletionModal({
                     </div>
                 )}
 
-                {/* Streak Info - Only show if completed */}
+                {/* Streak Info + Milestone Celebration */}
                 {result.session.completed && (
-                    <div className="flex items-center justify-center gap-2 mb-6">
-                        <div className="text-2xl">🔥</div>
-                        <span className="text-lg font-semibold">{result.new_streak} Hari Streak</span>
+                    <div className="mb-6">
+                        {result.streak_milestone ? (
+                            <div className="p-4 rounded-xl bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-300 animate-pulse">
+                                <div className="text-3xl mb-2">🎉🔥🎉</div>
+                                <h4 className="text-lg font-bold text-orange-600">
+                                    {result.new_streak >= 30
+                                        ? "🏆 30 Hari Berturut-turut!"
+                                        : "⭐ 7 Hari Berturut-turut!"}
+                                </h4>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                    {result.new_streak >= 30
+                                        ? "Luar biasa! Kamu sudah berlatih selama sebulan penuh!"
+                                        : "Hebat! Kamu sudah berlatih seminggu berturut-turut!"}
+                                </p>
+                                <div className="mt-2 inline-flex items-center gap-1 bg-orange-500/20 text-orange-700 font-bold px-3 py-1 rounded-full text-sm">
+                                    +{result.streak_milestone_xp} XP Bonus
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-center gap-2">
+                                <div className="text-2xl">🔥</div>
+                                <span className="text-lg font-semibold">{result.new_streak} Hari Streak</span>
+                            </div>
+                        )}
                     </div>
                 )}
 

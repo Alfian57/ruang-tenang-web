@@ -12,6 +12,8 @@ import { MoodInsightWidget } from "./widgets/MoodInsightWidget";
 import { RecommendedArticlesWidget } from "./widgets/RecommendedArticlesWidget";
 import { ConsultationPromoWidget } from "./widgets/ConsultationPromoWidget";
 import { MusicPlayerWidget } from "./widgets/MusicPlayerWidget";
+import { StoryOfTheWeekWidget } from "./widgets/StoryOfTheWeekWidget";
+import { XPProgressWidget } from "./widgets/XPProgressWidget";
 
 export function MemberDashboard() {
   const {
@@ -78,6 +80,9 @@ export function MemberDashboard() {
 
         {/* Right Column: Widgets */}
         <div className="md:col-span-4 space-y-6">
+             {/* XP Progress Widget */}
+             <XPProgressWidget />
+
              {/* Recommended Articles */}
              <RecommendedArticlesWidget articles={recommendedArticles} isLoading={isLoadingWidgets} />
 
@@ -87,6 +92,9 @@ export function MemberDashboard() {
                     <BreathingWidget data={breathingWidgetData} />
                 </div>
             )}
+
+            {/* Story of the Week */}
+            <StoryOfTheWeekWidget />
 
             {/* Music Player Widget */}
             <MusicPlayerWidget categories={categories} />

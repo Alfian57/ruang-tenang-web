@@ -9,6 +9,7 @@ interface TechniqueGridProps {
     onFavoriteToggle?: (technique: BreathingTechnique) => void;
     onEdit?: (technique: BreathingTechnique) => void;
     onDelete?: (technique: BreathingTechnique) => void;
+    onShowInfo?: (technique: BreathingTechnique) => void;
     showActions?: boolean;
     compact?: boolean;
     columns?: 1 | 2 | 3 | 4;
@@ -21,6 +22,7 @@ export function TechniqueGrid({
     onFavoriteToggle,
     onEdit,
     onDelete,
+    onShowInfo,
     showActions = false,
     compact = false,
     columns = 2,
@@ -43,6 +45,7 @@ export function TechniqueGrid({
                     onFavoriteToggle={onFavoriteToggle ? () => onFavoriteToggle(technique) : undefined}
                     onEdit={onEdit ? () => onEdit(technique) : undefined}
                     onDelete={onDelete ? () => onDelete(technique) : undefined}
+                    onShowInfo={onShowInfo ? () => onShowInfo(technique) : undefined}
                     showActions={showActions}
                     compact={compact}
                 />

@@ -6,7 +6,7 @@ import { ForumDeleteDialogs } from "./_components/ForumDeleteDialogs";
 import { ForumPostDetail } from "./_components/ForumPostDetail";
 import { ForumReplyForm } from "./_components/ForumReplyForm";
 import { ForumReplyList } from "./_components/ForumReplyList";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, ArrowUpDown } from "lucide-react";
 
 export default function ForumTopicPage() {
     const {
@@ -32,6 +32,8 @@ export default function ForumTopicPage() {
         handleToggleLike,
         handleTogglePostLike,
         handleToggleBestAnswer,
+        sortOrder,
+        setSortOrder,
     } = useForumThread();
 
     if (loading) {
@@ -107,8 +109,20 @@ export default function ForumTopicPage() {
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-gray-200"></div>
                             </div>
-                            <div className="relative flex justify-center text-xs uppercase tracking-wider font-medium">
-                                <span className="bg-gray-50 px-3 text-gray-400">Balasan</span>
+                            <div className="relative flex justify-between items-center">
+                                <span className="bg-gray-50 pl-0 pr-3 text-xs uppercase tracking-wider font-medium text-gray-400">Balasan</span>
+                                <div className="bg-gray-50 pl-3 pr-0 flex items-center gap-1.5">
+                                    <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
+                                    <select
+                                        value={sortOrder}
+                                        onChange={(e) => setSortOrder(e.target.value as "top" | "newest" | "oldest")}
+                                        className="text-xs bg-transparent border-none outline-none text-gray-500 font-medium cursor-pointer"
+                                    >
+                                        <option value="top">Top</option>
+                                        <option value="newest">Terbaru</option>
+                                        <option value="oldest">Terlama</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 

@@ -35,20 +35,13 @@ function truncateText(text: string, maxLength: number): string {
   return text.substring(0, maxLength) + "...";
 }
 
-// Use dummy article images that exist in public folder
-const DUMMY_IMAGES = [
-  "/images/dummy-article-1.png",
-  "/images/dummy-article-2.png",
-  "/images/dummy-article-3.png",
-  "/images/dummy-article-4.png",
-  "/images/dummy-article-5.png",
-];
+const DEFAULT_IMAGE = "/images/dummy-article-1.png";
 
-function getArticleImage(thumbnail: string | undefined, index: number): string {
-  if (thumbnail && thumbnail.startsWith("/images/")) {
+function getArticleImage(thumbnail: string | undefined): string {
+  if (thumbnail && thumbnail.trim() !== "") {
     return thumbnail;
   }
-  return DUMMY_IMAGES[index % DUMMY_IMAGES.length];
+  return DEFAULT_IMAGE;
 }
 
 export function ArticleSection() {
@@ -137,7 +130,7 @@ export function ArticleSection() {
                 <article className="group">
                   <div className="relative h-64 md:h-80 mb-6 rounded-2xl overflow-hidden">
                     <Image
-                      src={getArticleImage(featuredArticle.thumbnail, 0)}
+                      src={getArticleImage(featuredArticle.thumbnail)}
                       alt={featuredArticle.title}
                       fill
                       sizes="(max-width: 1024px) 100vw, 60vw"
@@ -179,7 +172,7 @@ export function ArticleSection() {
                     <article className="flex gap-4 group py-3 border-b border-gray-100 last:border-0">
                       <div className="relative w-20 h-20 shrink-0 rounded-xl overflow-hidden">
                         <Image
-                          src={getArticleImage(article.thumbnail, index + 1)}
+                          src={getArticleImage(article.thumbnail)}
                           alt={article.title}
                           fill
                           sizes="80px"

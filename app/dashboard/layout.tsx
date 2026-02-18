@@ -2,7 +2,7 @@
 
 import { useEffect, useCallback, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { BlockedUsersModal } from "@/components/shared/moderation";
+import { BlockedUsersModal, AppealModal } from "@/components/shared/moderation";
 import { LogoutModal } from "@/components/ui/logout-modal";
 import { EditProfileModal } from "@/components/layout/dashboard";
 import { ChangePasswordModal } from "@/components/layout/dashboard";
@@ -44,6 +44,7 @@ function DashboardContent({
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   const [showBlockedUsersModal, setShowBlockedUsersModal] = useState(false);
   const [showExpHistoryModal, setShowExpHistoryModal] = useState(false);
+  const [showAppealModal, setShowAppealModal] = useState(false);
   const { token } = useAuthStore();
   const loadBlockedUsers = useBlockStore((s) => s.loadBlockedUsers);
 
@@ -87,6 +88,10 @@ function DashboardContent({
       <BlockedUsersModal
         isOpen={showBlockedUsersModal}
         onClose={() => setShowBlockedUsersModal(false)}
+      />
+      <AppealModal
+        isOpen={showAppealModal}
+        onClose={() => setShowAppealModal(false)}
       />
       {!isAdmin && (
         <ExpHistoryModal
@@ -139,6 +144,25 @@ function DashboardContent({
           onShowBlockedUsers={() => setShowBlockedUsersModal(true)}
           onShowExpHistory={() => setShowExpHistoryModal(true)}
         />
+
+        {/* Suspension/Ban Banner */}
+        {(user?.is_suspended || user?.is_banned) && (
+          <div className="bg-red-50 border-b border-red-200 px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-red-600 font-medium text-sm">
+                {user.is_banned
+                  ? "⛔ Akun Anda telah diblokir permanen."
+                  : `⚠️ Akun Anda sedang disuspend${user.suspension_end ? ` hingga ${new Date(user.suspension_end).toLocaleDateString("id-ID")}` : ""}.`}
+              </span>
+            </div>
+            <button
+              onClick={() => setShowAppealModal(true)}
+              className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline whitespace-nowrap"
+            >
+              Ajukan Banding
+            </button>
+          </div>
+        )}
 
         {/* Page Content */}
         <main className="flex-1 pt-16 lg:pt-0">

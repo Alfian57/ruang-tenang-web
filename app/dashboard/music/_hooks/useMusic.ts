@@ -141,7 +141,7 @@ export function useMusic() {
       };
       doSearch();
     }
-  }, [debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [debouncedSearch]);
 
   // Handlers
 

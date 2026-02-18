@@ -41,8 +41,8 @@ export const forumService = {
     return httpClient.post<ApiResponse<ForumPost>>(`/forums/${forumId}/posts`, data, { token });
   },
 
-  getPosts(token: string, forumId: string | number, limit = 20, offset = 0) {
-    return httpClient.get<PaginatedResponse<ForumPost>>(`/forums/${forumId}/posts`, { token, params: { limit, offset } as Record<string, string | number | boolean | undefined> });
+  getPosts(token: string, forumId: string | number, limit = 20, offset = 0, sort = "top") {
+    return httpClient.get<PaginatedResponse<ForumPost>>(`/forums/${forumId}/posts`, { token, params: { limit, offset, sort } as Record<string, string | number | boolean | undefined> });
   },
 
   deletePost(token: string, postId: number) {

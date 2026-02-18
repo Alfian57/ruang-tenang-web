@@ -13,6 +13,7 @@ import { History } from "lucide-react";
 import { ChatHeader } from "./ChatHeader";
 import { ChatSummaryPanel } from "./ChatSummaryPanel";
 import { JournalContextIndicator } from "./JournalContextIndicator";
+import { AIDisclaimerBanner } from "@/components/ui/ai-disclaimer-banner";
 
 export interface ChatMessagesAreaProps {
   activeSession: ChatSession | null;
@@ -92,49 +93,61 @@ export function ChatMessagesArea({
         onOpenMobileSidebar={onOpenMobileSidebar}
       />
 
-      {showSummary && (
-        <ChatSummaryPanel
-          summary={summary}
-          isGenerating={isGeneratingSummary || false}
-          onGenerate={onGenerateSummary || (() => {})}
-        />
-      )}
-
-      {journalAIAccessEnabled && (
-        <JournalContextIndicator journalSharedCount={journalSharedCount} />
-      )}
-
-      <div className="flex-1 overflow-y-auto p-4 lg:p-6 space-y-4">
-        {messages.length === 0 && suggestedPrompts && suggestedPrompts.length > 0 && (
-          <div className="mb-4">
-            <p className="text-sm text-gray-500 mb-3">Mulai percakapan dengan salah satu prompt berikut:</p>
-            <div className="flex flex-wrap gap-2">
-              {suggestedPrompts.slice(0, 4).map((prompt, i) => (
-                <button
-                  key={i}
-                  onClick={() => onSuggestedPromptClick?.(prompt.text)}
-                  className="px-3 py-2 text-sm bg-gray-100 hover:bg-primary/10 hover:text-primary rounded-lg transition-colors text-left"
-                >
-                  {prompt.text}
-                </button>
-              ))}
-            </div>
+      <div className="flex-1 flex flex-col overflow-hidden relative">
+        {/* Helper Components placed above scroll area */}
+        {showSummary && (
+          <div className="shrink-0 z-10 border-b">
+            <ChatSummaryPanel
+              summary={summary}
+              isGenerating={isGeneratingSummary || false}
+              onGenerate={onGenerateSummary || (() => {})}
+            />
           </div>
         )}
 
-        {messages.map((message) => (
-          <ChatMessageBubble
-            key={message.id}
-            message={message}
-            userName={userName}
-            onToggleLike={onToggleMessageLike}
-            onTogglePin={onToggleMessagePin}
-          />
-        ))}
+        <div className="shrink-0 z-10">
+           <AIDisclaimerBanner />
+        </div>
 
-        {isSending && <TypingIndicator isRecording={isRecording} />}
+        {journalAIAccessEnabled && (
+           <div className="shrink-0 z-10">
+             <JournalContextIndicator journalSharedCount={journalSharedCount} />
+           </div>
+        )}
+        
+        {/* Main Scroll Area */}
+        <div className="flex-1 overflow-y-auto p-4 lg:p-6 space-y-4">
+          {messages.length === 0 && suggestedPrompts && suggestedPrompts.length > 0 && (
+            <div className="mb-4">
+              <p className="text-sm text-gray-500 mb-3">Mulai percakapan dengan salah satu prompt berikut:</p>
+              <div className="flex flex-wrap gap-2">
+                {suggestedPrompts.slice(0, 4).map((prompt, i) => (
+                  <button
+                    key={i}
+                    onClick={() => onSuggestedPromptClick?.(prompt.text)}
+                    className="px-3 py-2 text-sm bg-gray-100 hover:bg-primary/10 hover:text-primary rounded-lg transition-colors text-left"
+                  >
+                    {prompt.text}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
-        <div ref={messagesEndRef} className="h-1" />
+          {messages.map((message) => (
+            <ChatMessageBubble
+              key={message.id}
+              message={message}
+              userName={userName}
+              onToggleLike={onToggleMessageLike}
+              onTogglePin={onToggleMessagePin}
+            />
+          ))}
+
+          {isSending && <TypingIndicator isRecording={isRecording} />}
+
+          <div ref={messagesEndRef} className="h-1" />
+        </div>
       </div>
 
       <ChatInput

@@ -14,10 +14,11 @@ import {
     BackgroundSoundId,
     BreathingCalendar,
     TechniqueUsageStats,
+    BreathingPreferences,
 } from "@/types/breathing";
 import { toast } from "sonner";
 
-export type ViewMode = "techniques" | "session" | "history" | "stats";
+export type ViewMode = "techniques" | "session" | "history" | "stats" | "faq";
 
 export function useBreathing() {
     const router = useRouter();
@@ -36,7 +37,7 @@ export function useBreathing() {
 
     // Read view from URL, default to "techniques"
     const urlView = searchParams.get("view") as ViewMode | null;
-    const viewMode: ViewMode = urlView && ["techniques", "session", "history", "stats"].includes(urlView) ? urlView : "techniques";
+    const viewMode: ViewMode = urlView && ["techniques", "session", "history", "stats", "faq"].includes(urlView) ? urlView : "techniques";
 
     const setViewMode = (mode: ViewMode) => {
         updateUrlParam("view", mode === "techniques" ? null : mode);
@@ -73,6 +74,12 @@ export function useBreathing() {
     const [showSettings, setShowSettings] = useState(false);
     const [showMoodSelector, setShowMoodSelector] = useState(false);
     const [showCompletionModal, setShowCompletionModal] = useState(false);
+    const [showTutorial, setShowTutorial] = useState(false);
+    const [showInfoModal, setShowInfoModal] = useState(false);
+    const [infoTechnique, setInfoTechnique] = useState<BreathingTechnique | null>(null);
+
+    // Preferences state
+    const [preferences, setPreferences] = useState<BreathingPreferences | null>(null);
 
     // Fetch initial data
     useEffect(() => {
@@ -105,6 +112,19 @@ export function useBreathing() {
                 // Fetch technique usage
                 const usageRes = await breathingService.getTechniqueUsage(token);
                 setTechniqueUsage(usageRes.data || []);
+
+                // Fetch preferences for tutorial/reminder state
+                try {
+                    const prefsRes = await breathingService.getPreferences(token);
+                    if (prefsRes.data) {
+                        setPreferences(prefsRes.data);
+                        if (!prefsRes.data.tutorial_completed) {
+                            setShowTutorial(true);
+                        }
+                    }
+                } catch {
+                    // Preferences fetch is non-critical
+                }
             } catch (error) {
                 console.error("Failed to fetch breathing data:", error);
                 toast.error("Gagal memuat data latihan pernapasan");
@@ -239,6 +259,72 @@ export function useBreathing() {
     const systemTechniques = techniques.filter(t => t.is_system);
     const customTechniques = techniques.filter(t => !t.is_system);
 
+    // Tutorial completion
+    const handleTutorialComplete = async () => {
+        setShowTutorial(false);
+        if (token) {
+            try {
+                await breathingService.updatePreferences(token, { tutorial_completed: true });
+            } catch {
+                // Non-critical
+            }
+        }
+    };
+
+    // Show technique info
+    const handleShowInfo = (technique: BreathingTechnique) => {
+        setInfoTechnique(technique);
+        setShowInfoModal(true);
+    };
+
+    const handleCloseInfo = () => {
+        setShowInfoModal(false);
+        setInfoTechnique(null);
+    };
+
+    const handleStartFromInfo = () => {
+        if (infoTechnique) {
+            handleCloseInfo();
+            handleSelectTechnique(infoTechnique);
+        }
+    };
+
+    // Replay tutorial
+    const handleReplayTutorial = () => {
+        setShowTutorial(true);
+    };
+
+    // Reminder settings
+    const handleReminderToggle = async (enabled: boolean) => {
+        if (!token) return;
+        setPreferences(prev => prev ? { ...prev, reminder_enabled: enabled } : prev);
+        try {
+            await breathingService.updatePreferences(token, { reminder_enabled: enabled });
+        } catch {
+            toast.error("Gagal menyimpan pengingat");
+        }
+    };
+
+    const handleReminderTimeChange = async (time: string) => {
+        if (!token) return;
+        setPreferences(prev => prev ? { ...prev, reminder_time: time } : prev);
+        try {
+            await breathingService.updatePreferences(token, { reminder_time: time });
+        } catch {
+            toast.error("Gagal menyimpan waktu pengingat");
+        }
+    };
+
+    const handleReminderDaysChange = async (days: string) => {
+        if (!token) return;
+        setPreferences(prev => prev ? { ...prev, reminder_days: days } : prev);
+        try {
+            await breathingService.updatePreferences(token, { reminder_days: days });
+        } catch {
+            toast.error("Gagal menyimpan hari pengingat");
+        }
+    };
+
     return {
         // View
         viewMode,
@@ -282,6 +368,10 @@ export function useBreathing() {
         showMoodSelector,
         setShowMoodSelector,
         showCompletionModal,
+        showTutorial,
+        showInfoModal,
+        infoTechnique,
+        preferences,
 
         // Handlers
         handleSelectTechnique,
@@ -289,5 +379,13 @@ export function useBreathing() {
         handleStartSession,
         handleCompleteSession,
         handleExitSession,
+        handleTutorialComplete,
+        handleShowInfo,
+        handleCloseInfo,
+        handleStartFromInfo,
+        handleReplayTutorial,
+        handleReminderToggle,
+        handleReminderTimeChange,
+        handleReminderDaysChange,
     };
 }

@@ -2,9 +2,12 @@ import { Navbar, Footer } from "@/components/layout";
 import {
   HeroSection,
   MarqueeSection,
+  FeaturesSection,
+  GamificationSection,
   ArticleSection,
+  StorySection,
+  CommunitySection,
   LeaderboardSection,
-  AboutSection,
   CTASection,
 } from "./_components";
 import { DailyTaskFAB } from "@/components/shared/gamification";
@@ -16,9 +19,12 @@ export default function Home() {
       <main>
         <HeroSection />
         <MarqueeSection />
+        <FeaturesSection />
+        <GamificationSection />
         <ArticleSection />
+        <StorySection />
+        <CommunitySection />
         <LeaderboardSection />
-        <AboutSection />
         <CTASection />
       </main>
       <Footer />

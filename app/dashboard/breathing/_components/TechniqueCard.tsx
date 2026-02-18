@@ -1,7 +1,7 @@
 "use client";
 
 import { BreathingTechnique, getTechniqueIcon, getDifficultyLabel, getCategoryLabel } from "@/types/breathing";
-import { Star, Clock, Play, Edit2, Trash2 } from "lucide-react";
+import { Star, Clock, Play, Edit2, Trash2, Info } from "lucide-react";
 import { cn } from "@/utils";
 
 interface TechniqueCardProps {
@@ -11,6 +11,7 @@ interface TechniqueCardProps {
     onFavoriteToggle?: () => void;
     onEdit?: () => void;
     onDelete?: () => void;
+    onShowInfo?: () => void;
     showActions?: boolean;
     compact?: boolean;
 }
@@ -22,6 +23,7 @@ export function TechniqueCard({
     onFavoriteToggle,
     onEdit,
     onDelete,
+    onShowInfo,
     showActions = false,
     compact = false,
 }: TechniqueCardProps) {
@@ -186,6 +188,18 @@ export function TechniqueCard({
 
                 {/* Actions */}
                 <div className="flex items-center gap-2 mt-4 pt-3 border-t border-muted">
+                    {onShowInfo && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onShowInfo();
+                            }}
+                            className="p-2 rounded-lg text-muted-foreground hover:bg-muted transition-colors"
+                            title="Info teknik"
+                        >
+                            <Info className="w-4 h-4" />
+                        </button>
+                    )}
                     {onSelect && (
                         <button
                             onClick={onSelect}

@@ -150,9 +150,15 @@ export function BadgeShowcase({ badges, className }: BadgeShowcaseProps) {
                     ))}
                 </div>
             ) : (
-                <p className="text-center text-muted-foreground py-8">
-                    Belum ada badge yang diraih. Terus beraktivitas untuk mendapatkan badge!
-                </p>
+                <div className="col-span-full flex flex-col items-center justify-center py-10 text-center">
+                    <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
+                        <Trophy className="h-8 w-8 text-yellow-500 opacity-50" />
+                    </div>
+                    <h3 className="text-lg font-medium text-foreground mb-1">Belum Ada Badge</h3>
+                    <p className="text-sm text-muted-foreground max-w-sm">
+                        Teruslah aktif di komunitas untuk membuka berbagai pencapaian menarik!
+                    </p>
+                </div>
             )}
         </div>
     );

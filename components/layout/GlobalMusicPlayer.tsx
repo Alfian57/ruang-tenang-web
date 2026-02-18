@@ -73,40 +73,28 @@ export function GlobalMusicPlayer() {
         };
     }, [setCurrentTime, setDuration, setIsPlaying, playNext]);
 
-    // Handle song change
+    // Handle song change (load source)
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio || !currentSong) return;
 
-        if (currentSong.file_path.startsWith("http")) {
-            audio.src = currentSong.file_path;
-        } else {
-            // Ensure we use the correct API URL
-            const apiUrl = env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api/v1";
-            // Remove /api/v1 if it exists in the path to avoid duplication
-            const baseUrl = apiUrl.replace("/api/v1", "");
-            audio.src = `${baseUrl}${currentSong.file_path}`;
+        // Construct source URL
+        let src = currentSong.file_path;
+        if (!src.startsWith("http")) {
+             const apiUrl = env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api/v1";
+             const baseUrl = apiUrl.replace("/api/v1", "");
+             src = `${baseUrl}${currentSong.file_path}`;
         }
-        audio.load();
-
-        // We check the store's isPlaying state when song changes
-        const store = useMusicPlayerStore.getState();
-        if (store.isPlaying) {
-            audio.play().catch(console.error);
+        
+        // Only reload if src actually changed to prevent loop
+        if (audio.src !== src) {
+            audio.src = src;
+            audio.load();
         }
+        
+        // If we were already playing, try to play the new song
+        // Note: This relies on the separate play/pause effect
     }, [currentSong]);
-
-    // Handle play/pause
-    useEffect(() => {
-        const audio = audioRef.current;
-        if (!audio || !currentSong) return;
-
-        if (isPlaying) {
-            audio.play().catch(console.error);
-        } else {
-            audio.pause();
-        }
-    }, [isPlaying, currentSong]);
 
     // Handle volume change
     useEffect(() => {
@@ -126,22 +114,69 @@ export function GlobalMusicPlayer() {
         setCurrentTime(newTime);
     }, [setCurrentTime]);
 
-    // Toggle play/pause
     const togglePlay = useCallback(() => {
         setIsPlaying(!isPlaying);
     }, [isPlaying, setIsPlaying]);
 
-    if (!isPlayerVisible || !currentSong) return (
-        <audio ref={audioRef} preload="metadata" />
-    );
+    // Media Session API Integration
+    useEffect(() => {
+        if (!("mediaSession" in navigator) || !currentSong) return;
+
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: currentSong.title,
+            artist: "Ruang Tenang",
+            album: "Ruang Tenang",
+            artwork: currentSong.thumbnail
+                ? [{ src: currentSong.thumbnail, sizes: "512x512", type: "image/jpeg" }]
+                : undefined,
+        });
+
+        navigator.mediaSession.setActionHandler("play", () => setIsPlaying(true));
+        navigator.mediaSession.setActionHandler("pause", () => setIsPlaying(false));
+        navigator.mediaSession.setActionHandler("previoustrack", () => playPrevious());
+        navigator.mediaSession.setActionHandler("nexttrack", () => playNext());
+        navigator.mediaSession.setActionHandler("seekto", (details) => {
+            if (details.seekTime && audioRef.current) {
+                audioRef.current.currentTime = details.seekTime;
+                setCurrentTime(details.seekTime);
+            }
+        });
+
+        return () => {
+             // Cleanup if needed, though usually overwriting handlers is enough
+        };
+    }, [currentSong, setIsPlaying, playPrevious, playNext, setCurrentTime]);
+
+    // Update Media Session playback state
+    useEffect(() => {
+        if (!("mediaSession" in navigator)) return;
+        navigator.mediaSession.playbackState = isPlaying ? "playing" : "paused";
+    }, [isPlaying]);
+
+    // Handle play/pause with Autoplay Policy
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (!audio || !currentSong) return;
+
+        if (isPlaying) {
+             const playPromise = audio.play();
+             if (playPromise !== undefined) {
+                 playPromise.catch((error) => {
+                     console.warn("Autoplay prevented:", error);
+                     // If autoplay is blocked, revert state to paused
+                     setIsPlaying(false);
+                 });
+             }
+        } else {
+            audio.pause();
+        }
+    }, [isPlaying, currentSong, setIsPlaying]);
 
     return (
         <>
-            {/* Hidden audio element */}
-            <audio ref={audioRef} preload="metadata" />
-
+            <audio ref={audioRef} />
             <AnimatePresence>
-                {isPlayerVisible && (
+                {isPlayerVisible && currentSong && (
                     <motion.div
                         initial={{ y: 100, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
@@ -164,7 +199,7 @@ export function GlobalMusicPlayer() {
                                 onToggleMinimize={toggleMinimize}
                             />
                         ) : (
-                            /* Full Player */
+                        /* Full Player */
                             <ExpandedPlayer
                                 currentSong={currentSong}
                                 playbackSourceName={playbackSource?.name}

@@ -331,3 +331,34 @@ export interface ModeratorActionQueryParams {
   page?: number;
   limit?: number;
 }
+
+// ========================
+// Appeal Types
+// ========================
+
+export type AppealStatus = "pending" | "approved" | "rejected";
+
+export interface Appeal {
+  id: number;
+  user_id: number;
+  user_name?: string;
+  user_email?: string;
+  reason: string;
+  evidence?: string;
+  status: AppealStatus;
+  reviewer_notes?: string;
+  reviewer_id?: number;
+  reviewer_name?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateAppealRequest {
+  reason: string;
+  evidence?: string;
+}
+
+export interface ReviewAppealRequest {
+  status: "approved" | "rejected";
+  notes?: string;
+}

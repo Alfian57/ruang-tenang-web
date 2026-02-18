@@ -6,6 +6,7 @@ export * from "./chat";
 export * from "./song";
 export * from "./mood";
 export * from "./journal";
+export * from "./notification";
 
 // Feature type re-exports
 export * from "./gamification";
