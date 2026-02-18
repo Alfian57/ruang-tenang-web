@@ -7,7 +7,7 @@ import { Navbar, Footer } from "@/components/layout";
 import { useAuthStore } from "@/store/authStore";
 import { StoryDetail, StoryCommentsList, StoryCommentInput } from "@/components/shared/stories";
 import { InspiringStory, StoryComment } from "@/types";
-import { Loader2, LogIn, MessageCircle } from "lucide-react";
+import { LogIn, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -29,8 +29,7 @@ export default function StoryDetailPage() {
         try {
             const response = await storyService.getStory(id, token || undefined);
             setStory(response.data);
-        } catch (err) {
-            console.error("Failed to fetch story:", err);
+        } catch {
             setError("Cerita tidak ditemukan");
         }
     }, [id, token]);
@@ -41,8 +40,8 @@ export default function StoryDetailPage() {
             setComments(response.data || []);
             setTotalCommentPages(response.meta?.total_pages || 1);
             setCommentPage(page);
-        } catch (err) {
-            console.error("Failed to fetch comments:", err);
+        } catch {
+            // silently ignore
         }
     }, [id, token]);
 
@@ -76,8 +75,8 @@ export default function StoryDetailPage() {
                     heart_count: story.heart_count + 1,
                 });
             }
-        } catch (err) {
-            console.error("Failed to toggle heart:", err);
+        } catch {
+            // silently ignore
         } finally {
             setHeartLoading(false);
         }
@@ -106,8 +105,8 @@ export default function StoryDetailPage() {
                 }
                 return c;
             }));
-        } catch (err) {
-            console.error("Failed to toggle comment heart:", err);
+        } catch {
+            // silently ignore
         }
     };
 
@@ -124,8 +123,8 @@ export default function StoryDetailPage() {
                     comment_count: story.comment_count + 1,
                 });
             }
-        } catch (err) {
-            console.error("Failed to submit comment:", err);
+        } catch {
+            // silently ignore
         } finally {
             setCommentLoading(false);
         }
@@ -135,8 +134,32 @@ export default function StoryDetailPage() {
         return (
             <div className="min-h-screen bg-background">
                 <Navbar variant="back" />
-                <div className="flex justify-center items-center py-40">
-                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                <div className="container mx-auto px-4 pt-32 pb-20">
+                    <div className="max-w-3xl mx-auto space-y-6">
+                        {/* Author skeleton */}
+                        <div className="flex items-center gap-3">
+                            <div className="h-12 w-12 rounded-full bg-gray-200 animate-pulse" />
+                            <div className="space-y-2">
+                                <div className="h-4 w-24 rounded bg-gray-200 animate-pulse" />
+                                <div className="h-3 w-16 rounded bg-gray-200 animate-pulse" />
+                            </div>
+                        </div>
+                        {/* Title skeleton */}
+                        <div className="h-8 w-3/4 rounded bg-gray-200 animate-pulse" />
+                        {/* Content skeleton */}
+                        <div className="space-y-3">
+                            <div className="h-4 w-full rounded bg-gray-200 animate-pulse" />
+                            <div className="h-4 w-full rounded bg-gray-200 animate-pulse" />
+                            <div className="h-4 w-5/6 rounded bg-gray-200 animate-pulse" />
+                            <div className="h-4 w-full rounded bg-gray-200 animate-pulse" />
+                            <div className="h-4 w-2/3 rounded bg-gray-200 animate-pulse" />
+                        </div>
+                        {/* Actions skeleton */}
+                        <div className="flex gap-4 pt-4">
+                            <div className="h-8 w-20 rounded-full bg-gray-200 animate-pulse" />
+                            <div className="h-8 w-20 rounded-full bg-gray-200 animate-pulse" />
+                        </div>
+                    </div>
                 </div>
             </div>
         );

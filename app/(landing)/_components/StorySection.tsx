@@ -39,16 +39,16 @@ export function StorySection() {
         const response = await storyService.getStories({ limit: 4 });
         // Map StoryCard to local Story interface
         const mappedStories: Story[] = (response.data || []).map((s: StoryCard) => ({
-             id: s.id,
-             title: s.title,
-             content: s.excerpt,
-             author_name: s.author?.name || "Anonim",
-             like_count: s.heart_count,
-             created_at: s.published_at || new Date().toISOString()
+          id: s.id,
+          title: s.title,
+          content: s.excerpt,
+          author_name: s.author?.name || "Anonim",
+          like_count: s.heart_count,
+          created_at: s.published_at || new Date().toISOString()
         }));
         setStories(mappedStories);
-      } catch (error) {
-        console.error("Failed to fetch stories:", error);
+      } catch {
+        // silently ignore
       } finally {
         setLoading(false);
       }

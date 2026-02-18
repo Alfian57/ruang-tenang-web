@@ -85,8 +85,8 @@ export function CommunitySection() {
       try {
         const response = await communityService.getStats();
         setStats(response.data);
-      } catch (error) {
-        console.error("Failed to fetch community stats:", error);
+      } catch {
+        // silently ignore
       }
     };
     fetchStats();
@@ -120,9 +120,9 @@ export function CommunitySection() {
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           {STAT_CONFIGS.map((config, index) => {
-             // Access property dynamically with type safety check if needed,
-             // but since we verified keys exist in CommunityStats, straightforward access works
-             // if we cast key to keyof CommunityStats
+            // Access property dynamically with type safety check if needed,
+            // but since we verified keys exist in CommunityStats, straightforward access works
+            // if we cast key to keyof CommunityStats
             const value = stats[config.key as keyof CommunityStats] as number || 0;
             return (
               <motion.div

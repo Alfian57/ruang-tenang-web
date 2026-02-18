@@ -17,8 +17,8 @@ export default function LeaderboardPage() {
       try {
         const response = await communityService.getLeaderboard(limit);
         setUsers(response.data || []);
-      } catch (error) {
-        console.error("Failed to fetch leaderboard:", error);
+      } catch {
+        // silently ignore
       } finally {
         setLoading(false);
       }
@@ -33,11 +33,11 @@ export default function LeaderboardPage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar variant="back" />
-      
+
       {/* Background Decorations */}
       <div className="absolute top-0 right-0 w-125 h-125 bg-red-100/50 rounded-full blur-[120px] -z-10 pointer-events-none" />
       <div className="absolute top-20 left-0 w-100 h-100 bg-orange-100/50 rounded-full blur-[100px] -z-10 pointer-events-none" />
-      
+
       <main className="pt-32 pb-20 container mx-auto px-4 z-10 relative">
         <div className="text-center mb-16">
           <motion.h1
@@ -58,9 +58,38 @@ export default function LeaderboardPage() {
         </div>
 
         {loading ? (
-           <div className="flex justify-center py-20">
-             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-           </div>
+          <div className="space-y-8">
+            {/* Podium skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto items-end">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className={`bg-white rounded-3xl p-6 flex flex-col items-center space-y-4 ${i === 2 ? "md:-translate-y-8" : ""}`}>
+                  <div className="w-20 h-20 rounded-2xl bg-gray-200 animate-pulse" />
+                  <div className="h-5 w-28 rounded bg-gray-200 animate-pulse" />
+                  <div className="h-4 w-20 rounded bg-gray-200 animate-pulse" />
+                  <div className="h-8 w-24 rounded-full bg-gray-200 animate-pulse" />
+                </div>
+              ))}
+            </div>
+            {/* List skeleton */}
+            <div className="bg-white rounded-3xl border overflow-hidden max-w-4xl mx-auto">
+              <div className="p-6 border-b bg-gray-50/50">
+                <div className="h-6 w-36 rounded bg-gray-200 animate-pulse" />
+              </div>
+              <div className="divide-y">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="p-4 md:p-6 flex items-center gap-4">
+                    <div className="w-8 h-5 rounded bg-gray-200 animate-pulse" />
+                    <div className="w-12 h-12 rounded-xl bg-gray-200 animate-pulse" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-28 rounded bg-gray-200 animate-pulse" />
+                      <div className="h-3 w-16 rounded bg-gray-200 animate-pulse" />
+                    </div>
+                    <div className="h-5 w-20 rounded bg-gray-200 animate-pulse" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         ) : (
           <>
             {/* Top 3 Podium */}
@@ -82,12 +111,12 @@ export default function LeaderboardPage() {
                   <div className="w-20 h-20 mt-4 bg-linear-to-br from-gray-200 to-gray-400 rounded-2xl mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition-transform duration-300">
                     {topThree[1].name.charAt(0).toUpperCase()}
                   </div>
-                  
+
                   <h3 className="text-xl font-bold text-gray-800 mb-1 truncate max-w-full text-center px-4 w-full">
                     {topThree[1].name}
                   </h3>
                   <p className="text-gray-500 font-medium mb-3">{topThree[1].role || topThree[1].badge_name}</p>
-                  
+
                   <div className="bg-gray-100 text-gray-600 px-4 py-1.5 rounded-full font-bold text-sm">
                     {topThree[1].exp.toLocaleString()} EXP
                   </div>
@@ -102,25 +131,25 @@ export default function LeaderboardPage() {
                   className="bg-white border-2 border-primary/10 rounded-3xl p-8 flex flex-col items-center relative transform md:-translate-y-8 order-1 md:order-2 shadow-2xl shadow-primary/10 z-10"
                 >
                   <div className="absolute -top-10">
-                     <div className="relative">
-                       <div className="absolute inset-0 bg-yellow-400 blur-xl opacity-50 rounded-full"></div>
-                       <Trophy size={56} className="text-yellow-400 relative z-10 drop-shadow-sm" />
-                     </div>
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-yellow-400 blur-xl opacity-50 rounded-full"></div>
+                      <Trophy size={56} className="text-yellow-400 relative z-10 drop-shadow-sm" />
+                    </div>
                   </div>
-                  
+
                   <div className="w-28 h-28 mt-6 bg-linear-to-br from-primary to-red-600 rounded-2xl mb-5 flex items-center justify-center text-4xl font-bold text-white shadow-xl shadow-primary/20 overflow-hidden transform -rotate-3 hover:rotate-0 transition-transform duration-300">
                     {topThree[0].name.charAt(0).toUpperCase()}
                   </div>
-                  
+
                   <h3 className="text-2xl font-bold text-gray-800 mb-1 truncate max-w-full text-center px-4 w-full">
                     {topThree[0].name}
                   </h3>
                   <p className="text-primary font-medium mb-4">{topThree[0].role || topThree[0].badge_name}</p>
-                  
+
                   <div className="bg-linear-to-r from-primary to-red-600 text-white px-6 py-2 rounded-full font-bold text-lg shadow-lg shadow-primary/20">
                     {topThree[0].exp.toLocaleString()} EXP
                   </div>
-                  
+
                   <div className="absolute top-4 right-4 animate-pulse">
                     <span className="text-yellow-400">✨</span>
                   </div>
@@ -144,12 +173,12 @@ export default function LeaderboardPage() {
                   <div className="w-20 h-20 mt-4 bg-linear-to-br from-amber-600 to-amber-800 rounded-2xl mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition-transform duration-300">
                     {topThree[2].name.charAt(0).toUpperCase()}
                   </div>
-                  
+
                   <h3 className="text-xl font-bold text-gray-800 mb-1 truncate max-w-full text-center px-4 w-full">
                     {topThree[2].name}
                   </h3>
                   <p className="text-gray-500 font-medium mb-3">{topThree[2].role || topThree[2].badge_name}</p>
-                  
+
                   <div className="bg-gray-100 text-gray-600 px-4 py-1.5 rounded-full font-bold text-sm">
                     {topThree[2].exp.toLocaleString()} EXP
                   </div>
@@ -160,41 +189,41 @@ export default function LeaderboardPage() {
             {/* List */}
             <div className="bg-white rounded-3xl border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden max-w-4xl mx-auto">
               <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-                 <h3 className="text-lg font-bold text-gray-800">Semua Peringkat</h3>
+                <h3 className="text-lg font-bold text-gray-800">Semua Peringkat</h3>
               </div>
-              
+
               <div className="divide-y divide-gray-100">
                 {restUsers.map((user, index) => (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    key={user.user_id} 
+                    key={user.user_id}
                     className="p-4 md:p-6 flex items-center hover:bg-gray-50 transition-colors group"
                   >
                     <div className="w-12 text-center font-bold text-gray-400 group-hover:text-primary transition-colors">
                       #{index + 4}
                     </div>
-                    
+
                     <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-lg font-bold text-primary mr-4 md:mr-6 group-hover:bg-primary/10 transition-colors">
-                       {user.name.charAt(0).toUpperCase()}
+                      {user.name.charAt(0).toUpperCase()}
                     </div>
-                    
+
                     <div className="flex-1 min-w-0 mr-4">
                       <h4 className="font-bold text-gray-800 truncate">{user.name}</h4>
                       <p className="text-sm text-gray-500 capitalize">{user.role || user.badge_name}</p>
                     </div>
-                    
+
                     <div className="font-bold text-gray-800 text-right whitespace-nowrap">
                       {user.exp.toLocaleString()} <span className="text-primary text-sm font-medium">EXP</span>
                     </div>
                   </motion.div>
                 ))}
-                
+
                 {restUsers.length === 0 && (
-                   <div className="p-12 text-center text-gray-500">
-                      Tidak ada pengguna lain untuk ditampilkan.
-                   </div>
+                  <div className="p-12 text-center text-gray-500">
+                    Tidak ada pengguna lain untuk ditampilkan.
+                  </div>
                 )}
               </div>
             </div>

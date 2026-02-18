@@ -130,8 +130,8 @@ function ResetPasswordForm() {
         )}
       </div>
 
-      <Button 
-        type="submit" 
+      <Button
+        type="submit"
         className="w-full h-12 bg-primary hover:bg-primary/90 text-white rounded-xl text-base font-semibold"
         disabled={isLoading}
       >
@@ -162,6 +162,7 @@ export default function ResetPasswordPage() {
                 width={180}
                 height={60}
                 className="object-contain"
+                style={{ height: "auto" }}
               />
             </Link>
             <h1 className="text-2xl font-bold mb-2">Buat Password Baru</h1>
@@ -177,7 +178,7 @@ export default function ResetPasswordPage() {
       </div>
 
       {/* Right Side */}
-      <AuthIllustration 
+      <AuthIllustration
         title="Mulai Lembaran Baru"
         description="Pastikan password baru Anda kuat dan unik untuk menjaga keamanan akun Anda."
         visual={
@@ -188,13 +189,13 @@ export default function ResetPasswordPage() {
         floatingElements={
           <>
             <FloatingIcon className="top-20 right-10" delay={0}>
-               <Sparkles className="w-8 h-8 text-yellow-300" />
+              <Sparkles className="w-8 h-8 text-yellow-300" />
             </FloatingIcon>
-            
+
             <FloatingIcon className="bottom-32 left-10" delay={1.5}>
               <ShieldCheck className="w-8 h-8 text-green-500" />
             </FloatingIcon>
-            
+
             <FloatingIcon className="top-1/2 right-0" delay={0.8}>
               <KeyRound className="w-8 h-8 text-blue-500" />
             </FloatingIcon>

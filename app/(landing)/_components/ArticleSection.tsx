@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { articleService } from "@/services/api";
-import { ArrowRight, BookOpen } from "lucide-react";
+import { ArrowRight, BookOpen, Calendar } from "lucide-react";
 import type { PaginatedResponse } from "@/services/http/types";
 
 interface Article {
@@ -31,16 +31,15 @@ function formatDate(dateString: string): string {
 }
 
 function truncateText(text: string, maxLength: number): string {
-  if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + "...";
+  const stripped = text.replace(/<[^>]*>/g, "");
+  if (stripped.length <= maxLength) return stripped;
+  return stripped.substring(0, maxLength) + "...";
 }
 
 const DEFAULT_IMAGE = "/images/dummy-article-1.png";
 
 function getArticleImage(thumbnail: string | undefined): string {
-  if (thumbnail && thumbnail.trim() !== "") {
-    return thumbnail;
-  }
+  if (thumbnail && thumbnail.trim() !== "") return thumbnail;
   return DEFAULT_IMAGE;
 }
 
@@ -51,10 +50,12 @@ export function ArticleSection() {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await articleService.getArticles({ limit: 6 }) as PaginatedResponse<Article>;
+        const response = (await articleService.getArticles({
+          limit: 6,
+        })) as PaginatedResponse<Article>;
         setArticles(response.data || []);
-      } catch (error) {
-        console.error("Failed to fetch articles:", error);
+      } catch {
+        // silently ignore
       } finally {
         setLoading(false);
       }
@@ -63,146 +64,99 @@ export function ArticleSection() {
     fetchArticles();
   }, []);
 
-  const featuredArticle = articles[0];
-  const sideArticles = articles.slice(1, 7);
-
-  if (loading) {
-    return (
-      <section id="articles" className="py-20 px-4 bg-white">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl font-bold mb-8">Article</h2>
-          <div className="animate-pulse">
-            <div className="h-96 bg-gray-200 rounded-2xl" />
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (articles.length === 0) {
-    return (
-      <section id="articles" className="py-20 px-4 bg-white">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl font-bold mb-8">Artikel</h2>
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-gray-200 rounded-3xl bg-gray-50"
-          >
-            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-6 text-primary shadow-sm">
-               <BookOpen size={40} />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">Belum ada artikel</h3>
-            <p className="text-gray-500 max-w-md mx-auto mb-8">
-              Kami sedang menyiapkan artikel-artikel menarik untuk Anda. Kembali lagi nanti ya!
-            </p>
-          </motion.div>
-        </div>
-      </section>
-    );
-  }
+  if (loading) return null;
+  if (articles.length === 0) return null;
 
   return (
-    <section id="articles" className="py-20 px-4 bg-white">
-      <div className="container mx-auto max-w-6xl">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
+    <section id="articles" className="py-24 px-4 bg-white relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-50 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
+
+      <div className="container mx-auto max-w-6xl relative z-10">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-3xl md:text-4xl font-bold mb-10"
+          className="text-center mb-14"
         >
-          Article
-        </motion.h2>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-full text-emerald-600 font-medium text-sm mb-6">
+            <BookOpen className="w-4 h-4" />
+            Artikel Kesehatan Mental
+          </div>
+          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
+            Wawasan untuk{" "}
+            <span className="text-primary">Kesejahteraan</span>
+          </h2>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
+            Artikel pilihan seputar kesehatan mental, tips mengelola stres, dan
+            panduan untuk hidup lebih seimbang.
+          </p>
+        </motion.div>
 
-        <div className="grid lg:grid-cols-12 gap-8">
-          {/* Featured Article - Left Side */}
-          {featuredArticle && (
+        {/* Article Cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+          {articles.map((article, index) => (
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              key={article.id}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="lg:col-span-7"
+              transition={{ delay: index * 0.1 }}
             >
-              <Link href={`/articles/${featuredArticle.slug}`}>
-                <article className="group">
-                  <div className="relative h-64 md:h-80 mb-6 rounded-2xl overflow-hidden">
+              <Link href={`/articles/${article.slug}`}>
+                <div className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
+                  {/* Thumbnail */}
+                  <div className="relative h-48 overflow-hidden">
                     <Image
-                      src={getArticleImage(featuredArticle.thumbnail)}
-                      alt={featuredArticle.title}
+                      src={getArticleImage(article.thumbnail)}
+                      alt={article.title}
                       fill
-                      sizes="(max-width: 1024px) 100vw, 60vw"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      priority={index === 0}
                     />
+                    {article.category && (
+                      <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-primary text-xs font-medium px-3 py-1 rounded-full">
+                        {article.category.name}
+                      </span>
+                    )}
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-gray-500 mb-3">
-                    <span className="font-medium text-primary">Mental Health</span>
-                    <span>•</span>
-                    <span>{formatDate(featuredArticle.created_at)}</span>
+
+                  {/* Content */}
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="font-bold text-gray-900 text-lg mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                      {article.title}
+                    </h3>
+                    <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-2 flex-1">
+                      {truncateText(article.content || "", 120)}
+                    </p>
+                    <div className="flex items-center gap-2 text-xs text-gray-400">
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>{formatDate(article.created_at)}</span>
+                    </div>
                   </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 group-hover:text-primary transition-colors">
-                    {featuredArticle.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed mb-4">
-                    {truncateText((featuredArticle.content || "").replace(/<[^>]*>/g, ""), 250)}
-                  </p>
-                </article>
+                </div>
               </Link>
             </motion.div>
-          )}
-
-          {/* Side Articles - Right Side */}
-          <div className="lg:col-span-5">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-semibold text-gray-700">Artikel Terkait</h3>
-            </div>
-
-            <div className="space-y-4">
-              {sideArticles.map((article, index) => (
-                <motion.div
-                  key={article.id}
-                  initial={{ opacity: 0, x: 30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: 0.1 * (index + 1) }}
-                >
-                  <Link href={`/articles/${article.slug}`}>
-                    <article className="flex gap-4 group py-3 border-b border-gray-100 last:border-0">
-                      <div className="relative w-20 h-20 shrink-0 rounded-xl overflow-hidden">
-                        <Image
-                          src={getArticleImage(article.thumbnail)}
-                          alt={article.title}
-                          fill
-                          sizes="80px"
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-gray-800 text-sm line-clamp-2 mb-1 group-hover:text-primary transition-colors">
-                          {article.title}
-                        </h4>
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
-                          <span className="text-primary">Kategori</span>
-                          <span>•</span>
-                          <span>{article.category?.name || "Umum"}</span>
-                        </div>
-                      </div>
-                    </article>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-
-            <Link
-              href="/articles"
-              className="inline-flex items-center gap-2 text-primary font-medium mt-6 hover:gap-3 transition-all"
-            >
-              Lihat Semua Artikel <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
+          ))}
         </div>
+
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <Link
+            href="/articles"
+            className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
+          >
+            <span>Lihat Semua Artikel</span>
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </motion.div>
       </div>
     </section>
   );

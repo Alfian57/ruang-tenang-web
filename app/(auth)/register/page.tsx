@@ -69,6 +69,7 @@ export default function RegisterPage() {
                 width={180}
                 height={60}
                 className="object-contain"
+                style={{ height: "auto" }}
               />
             </Link>
             <p className="text-gray-500">Buat akun baru untuk memulai</p>
@@ -160,8 +161,8 @@ export default function RegisterPage() {
             </div>
 
             {/* Submit Button */}
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full h-12 bg-primary hover:bg-primary/90 text-white rounded-xl text-base font-semibold"
               disabled={isLoading || success}
             >
@@ -187,7 +188,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Right Side - Illustration */}
-      <AuthIllustration 
+      <AuthIllustration
         title="RuangTenang"
         description="Bergabunglah dengan ribuan mahasiswa yang telah menemukan ketenangan dalam menghadapi tekanan akademik. Platform kami hadir untuk membantu Anda mengelola stres, memahami emosi, dan menemukan keseimbangan dalam hidup."
       />

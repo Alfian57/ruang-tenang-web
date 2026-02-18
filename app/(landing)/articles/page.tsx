@@ -27,6 +27,14 @@ function ArticlesContent() {
   const [categories, setCategories] = useState<ArticleCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
+
   const updateUrl = useCallback((updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(updates).forEach(([key, value]) => {
@@ -45,8 +53,8 @@ function ArticlesContent() {
     try {
       const response = await articleService.getCategories() as { data: ArticleCategory[] };
       setCategories(response.data || []);
-    } catch (error) {
-      console.error("Failed to load categories:", error);
+    } catch {
+      // silently ignore
     }
   }, []);
 
@@ -58,8 +66,8 @@ function ArticlesContent() {
         search: search || undefined,
       }) as { data: Article[] };
       setArticles(response.data || []);
-    } catch (error) {
-      console.error("Failed to load articles:", error);
+    } catch {
+      // silently ignore
     } finally {
       setIsLoading(false);
     }
@@ -79,10 +87,10 @@ function ArticlesContent() {
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="container mx-auto max-w-6xl px-4 py-4">
           <div className="flex items-center gap-4">
-            <Link href="/" className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
+            <button onClick={handleBack} className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
               <ArrowLeft className="w-5 h-5" />
               <span className="hidden sm:inline">Kembali</span>
-            </Link>
+            </button>
             <div className="h-6 w-px bg-gray-200" />
             <h1 className="text-xl font-bold text-gray-900">Artikel Kesehatan Mental</h1>
           </div>

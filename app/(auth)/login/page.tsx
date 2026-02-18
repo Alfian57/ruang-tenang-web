@@ -61,6 +61,7 @@ export default function LoginPage() {
                 width={180}
                 height={60}
                 className="object-contain"
+                style={{ height: "auto" }}
               />
             </Link>
             <p className="text-gray-500">Masukan detail Anda untuk Login</p>
@@ -126,8 +127,8 @@ export default function LoginPage() {
             </div>
 
             {/* Submit Button */}
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full h-12 bg-primary hover:bg-primary/90 text-white rounded-xl text-base font-semibold"
               disabled={isLoading}
             >
@@ -154,7 +155,7 @@ export default function LoginPage() {
 
       {/* Right Side - Illustration */}
       {/* Right Side - Illustration */}
-      <AuthIllustration 
+      <AuthIllustration
         title="RuangTenang"
         description="RuangTenang adalah platform konsultasi berbasis AI yang dirancang untuk membantu mahasiswa menghadapi tantangan kesehatan mental dalam dunia akademik. Melalui interaksi percakapan yang empatik, RuangTenang hadir sebagai teman virtual yang siap mendengarkan."
       />

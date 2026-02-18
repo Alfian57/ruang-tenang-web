@@ -59,11 +59,12 @@ export default function ForgotPasswordPage() {
                 width={180}
                 height={60}
                 className="object-contain"
+                style={{ height: "auto" }}
               />
             </Link>
             <h1 className="text-2xl font-bold mb-2">Lupa Password?</h1>
             <p className="text-gray-500">
-              {isSubmitted 
+              {isSubmitted
                 ? "Silakan cek email Anda untuk instruksi selanjutnya."
                 : "Masukkan email Anda untuk mereset password."}
             </p>
@@ -108,8 +109,8 @@ export default function ForgotPasswordPage() {
                 )}
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full h-12 bg-primary hover:bg-primary/90 text-white rounded-xl text-base font-semibold"
                 disabled={isLoading}
               >
@@ -135,7 +136,7 @@ export default function ForgotPasswordPage() {
       </div>
 
       {/* Right Side - Illustration */}
-      <AuthIllustration 
+      <AuthIllustration
         title="Keamanan Akun"
         description="Kami menjaga keamanan akun Anda dengan serius. Reset password Anda jika Anda merasa akun Anda tidak aman."
         visual={
@@ -146,13 +147,13 @@ export default function ForgotPasswordPage() {
         floatingElements={
           <>
             <FloatingIcon className="top-20 right-10" delay={0}>
-               <ShieldCheck className="w-8 h-8 text-green-500" />
+              <ShieldCheck className="w-8 h-8 text-green-500" />
             </FloatingIcon>
-            
+
             <FloatingIcon className="bottom-32 left-10" delay={1.5}>
               <KeyRound className="w-8 h-8 text-yellow-500" />
             </FloatingIcon>
-            
+
             <FloatingIcon className="top-1/2 right-0" delay={0.8}>
               <Lock className="w-8 h-8 text-blue-500" />
             </FloatingIcon>

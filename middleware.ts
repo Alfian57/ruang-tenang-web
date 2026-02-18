@@ -9,13 +9,16 @@ export function middleware(request: NextRequest) {
     const response = NextResponse.next();
 
     // Content Security Policy
+    // Extract origin from API URL so CSP allows all subpaths (e.g. /api/v1/articles)
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
+    const apiOrigin = new URL(apiUrl).origin;
     const csp = [
         "default-src 'self'",
         "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "font-src 'self' https://fonts.gstatic.com",
         "img-src 'self' data: blob: https:",
-        `connect-src 'self' ${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080"} https:`,
+        `connect-src 'self' ${apiOrigin} https:`,
         "media-src 'self' https:",
         "frame-ancestors 'none'",
     ].join("; ");

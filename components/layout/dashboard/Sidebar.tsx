@@ -55,7 +55,7 @@ export function Sidebar({
             {sidebarCollapsed ? (
               <Image src="/logo.webp" alt="Ruang Tenang" width={32} height={32} className="object-contain" />
             ) : (
-              <Image src="/logo-full.webp" alt="Ruang Tenang" width={0} height={0} sizes="100vw" className="h-8 w-auto object-contain" style={{ width: "auto" }} />
+              <Image src="/logo-full.webp" alt="Ruang Tenang" width={120} height={40} className="h-8 w-auto object-contain" style={{ width: "auto" }} />
             )}
           </Link>
           {!sidebarCollapsed && (

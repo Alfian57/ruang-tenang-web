@@ -19,6 +19,13 @@ export default function ArticleDetailPage() {
   const [relatedArticles, setRelatedArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/articles");
+    }
+  };
 
   const loadArticle = useCallback(async () => {
     const slug = params.slug as string;
@@ -35,8 +42,8 @@ export default function ArticleDetailPage() {
       setRelatedArticles(
         (relatedRes.data || []).filter((a) => a.slug !== slug).slice(0, 5)
       );
-    } catch (error) {
-      console.error("Failed to load article:", error);
+    } catch {
+      // silently ignore
     } finally {
       setIsLoading(false);
     }
@@ -52,10 +59,10 @@ export default function ArticleDetailPage() {
         <header className="bg-white shadow-sm sticky top-0 z-10">
           <div className="container mx-auto max-w-6xl px-4 py-4">
             <div className="flex items-center gap-4">
-              <Link href="/articles" className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
+              <button onClick={handleBack} className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
                 <ArrowLeft className="w-5 h-5" />
                 <span className="hidden sm:inline">Kembali</span>
-              </Link>
+              </button>
             </div>
           </div>
         </header>
@@ -81,16 +88,16 @@ export default function ArticleDetailPage() {
         <header className="bg-white shadow-sm sticky top-0 z-10">
           <div className="container mx-auto max-w-6xl px-4 py-4">
             <div className="flex items-center gap-4">
-              <Link href="/articles" className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
+              <button onClick={handleBack} className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
                 <ArrowLeft className="w-5 h-5" />
                 <span className="hidden sm:inline">Kembali</span>
-              </Link>
+              </button>
             </div>
           </div>
         </header>
         <div className="container mx-auto max-w-6xl px-4 py-8 text-center">
           <p className="text-gray-500">Artikel tidak ditemukan</p>
-          <Button variant="outline" onClick={() => router.back()} className="mt-4">
+          <Button variant="outline" onClick={handleBack} className="mt-4">
             Kembali
           </Button>
         </div>
@@ -104,10 +111,10 @@ export default function ArticleDetailPage() {
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="container mx-auto max-w-6xl px-4 py-4">
           <div className="flex items-center gap-4">
-            <Link href="/articles" className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
+            <button onClick={handleBack} className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
               <ArrowLeft className="w-5 h-5" />
               <span className="hidden sm:inline">Kembali ke Artikel</span>
-            </Link>
+            </button>
           </div>
         </div>
       </header>

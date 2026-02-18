@@ -38,8 +38,7 @@ export default function CreateStoryPage() {
 
                 setCategories(categoriesRes.data || []);
                 setMyStats(statsRes.data);
-            } catch (err) {
-                console.error("Failed to fetch data:", err);
+            } catch {
                 setError("Gagal memuat data");
             } finally {
                 setLoading(false);
@@ -58,8 +57,7 @@ export default function CreateStoryPage() {
         try {
             await storyService.create(token, data);
             router.push("/stories?success=created");
-        } catch (err) {
-            console.error("Failed to create story:", err);
+        } catch {
             setError("Gagal mengirim cerita. Silakan coba lagi.");
         } finally {
             setSubmitting(false);
@@ -74,8 +72,19 @@ export default function CreateStoryPage() {
         return (
             <div className="min-h-screen bg-background">
                 <Navbar variant="back" />
-                <div className="flex justify-center items-center py-40">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                <div className="container mx-auto px-4 pt-32 pb-20">
+                    <div className="max-w-2xl mx-auto space-y-6">
+                        <div className="h-8 w-48 rounded bg-gray-200 animate-pulse" />
+                        <div className="h-4 w-72 rounded bg-gray-200 animate-pulse" />
+                        <div className="rounded-xl border bg-card p-6 space-y-4">
+                            <div className="h-5 w-32 rounded bg-gray-200 animate-pulse" />
+                            <div className="h-10 w-full rounded bg-gray-200 animate-pulse" />
+                            <div className="h-5 w-32 rounded bg-gray-200 animate-pulse" />
+                            <div className="h-10 w-full rounded bg-gray-200 animate-pulse" />
+                            <div className="h-5 w-32 rounded bg-gray-200 animate-pulse" />
+                            <div className="h-40 w-full rounded bg-gray-200 animate-pulse" />
+                        </div>
+                    </div>
                 </div>
             </div>
         );

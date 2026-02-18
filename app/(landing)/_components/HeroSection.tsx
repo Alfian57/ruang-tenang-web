@@ -10,7 +10,7 @@ export function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden pt-24 pb-12">
       {/* Background - Pink gradient with decorative elements */}
-      <div 
+      <div
         className="absolute inset-0"
         style={{
           background: "linear-gradient(180deg, #FEF2F2 0%, #FECACA 50%, #FEF2F2 100%)",
@@ -46,8 +46,8 @@ export function HeroSection() {
             </h1>
 
             <p className="text-base md:text-lg text-gray-600 mb-8 max-w-lg leading-relaxed">
-              Platform kesehatan mental berbasis AI yang dirancang khusus untuk mahasiswa. 
-              Dari teman ngobrol yang empatik hingga fitur meditasi, semua ada dalam satu genggaman 
+              Platform kesehatan mental berbasis AI yang dirancang khusus untuk mahasiswa.
+              Dari teman ngobrol yang empatik hingga fitur meditasi, semua ada dalam satu genggaman
               untuk menjaga kesehatan emosionalmu.
             </p>
 
@@ -55,7 +55,7 @@ export function HeroSection() {
               <p className="text-sm text-gray-500">
                 *Platform ini membantu refleksi diri, bukan menggantikan layanan profesional.
               </p>
-              
+
               <Link href="/register">
                 <Button
                   size="lg"
@@ -84,7 +84,6 @@ export function HeroSection() {
                 height={600}
                 className="relative z-10 w-full h-auto drop-shadow-2xl"
                 style={{ height: "auto" }}
-                priority
               />
 
               {/* Floating elements */}
