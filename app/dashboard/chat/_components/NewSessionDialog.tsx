@@ -20,7 +20,7 @@ export interface NewSessionDialogProps {
   /** Callback when the open state changes */
   onOpenChange: (open: boolean) => void;
   /** Callback when a new session is created */
-  onCreateSession: (title: string) => void;
+  onCreateSession: (title: string) => Promise<void>;
 }
 
 /**
@@ -32,12 +32,19 @@ export function NewSessionDialog({
   onCreateSession,
 }: NewSessionDialogProps) {
   const [title, setTitle] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!title.trim()) return;
-    onCreateSession(title);
-    setTitle("");
-    onOpenChange(false);
+
+    setIsSubmitting(true);
+    try {
+      await onCreateSession(title);
+      setTitle("");
+      onOpenChange(false);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -60,9 +67,10 @@ export function NewSessionDialog({
             onChange={(e) => setTitle(e.target.value)}
             className="rounded-xl"
             autoFocus
+            disabled={isSubmitting}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && title.trim()) {
-                handleCreate();
+              if (e.key === "Enter" && title.trim() && !isSubmitting) {
+                void handleCreate();
               }
             }}
           />
@@ -72,15 +80,16 @@ export function NewSessionDialog({
             variant="outline"
             onClick={() => handleOpenChange(false)}
             className="rounded-xl"
+            disabled={isSubmitting}
           >
             Batal
           </Button>
           <Button
-            onClick={handleCreate}
-            disabled={!title.trim()}
+            onClick={() => void handleCreate()}
+            disabled={!title.trim() || isSubmitting}
             className="bg-primary hover:bg-primary/90 text-white rounded-xl"
           >
-            Mulai Chat
+            {isSubmitting ? "Membuat..." : "Mulai Chat"}
           </Button>
         </DialogFooter>
       </DialogContent>

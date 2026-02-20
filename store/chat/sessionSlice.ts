@@ -49,17 +49,36 @@ export const createSessionSlice: StateCreator<ChatStore, [], [], ChatSessionStat
 
     try {
       const response = (await chatService.createSession(token, title)) as {
-        data: ChatSession;
+        data: Partial<ChatSession> & { id?: number; uuid?: string };
       };
-      
-      // Move to folder if specified
-      if (folderId) {
-        await chatService.moveToFolder(token, response.data.uuid, folderId);
-      }
-      
-      // Reload sessions and select the new one
+
+      const createdSessionId = response.data?.id;
+      let createdSessionUUID = response.data?.uuid;
+
       await get().loadSessions(token);
-      await get().loadSession(token, response.data.uuid);
+
+      if (!createdSessionUUID) {
+        const { sessions } = get();
+        const createdSession =
+          (typeof createdSessionId === "number"
+            ? sessions.find((session) => session.id === createdSessionId)
+            : undefined) ??
+          sessions.find((session) => session.title === title.trim());
+
+        createdSessionUUID = createdSession?.uuid;
+      }
+
+      if (!createdSessionUUID) {
+        console.error("ChatStore.createSession: session UUID not found after creation");
+        return;
+      }
+
+      if (folderId) {
+        await chatService.moveToFolder(token, createdSessionUUID, folderId);
+        await get().loadSessions(token);
+      }
+
+      await get().loadSession(token, createdSessionUUID);
     } catch (error) {
       console.error("ChatStore.createSession: failed", error);
     }

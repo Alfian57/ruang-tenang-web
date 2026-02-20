@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, Settings, KeyRound, LogOut } from "lucide-react";
+import { Menu, X, Settings, KeyRound, LogOut, Trophy, Crown, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -42,34 +42,9 @@ export function MobileHeader({
     <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b z-50 flex items-center justify-between px-4">
       <Link href="/dashboard" className="flex items-center gap-2">
         <Image src="/logo.webp" alt="Ruang Tenang" width={32} height={32} className="object-contain" />
-        <span className="text-lg font-bold text-gray-800">Ruang Tenang</span>
+        <span className="text-base sm:text-lg font-bold text-gray-800">Ruang Tenang</span>
       </Link>
       <div className="flex items-center gap-1 sm:gap-2">
-        {/* Mobile Level/EXP Badge */}
-        {!isAdmin && (
-          <button
-            onClick={onShowExpHistory}
-            className="flex items-center gap-1 bg-linear-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-full px-2 py-1 shadow-sm hover:shadow-md hover:border-yellow-300 transition-all cursor-pointer"
-            title="Lihat riwayat EXP"
-          >
-            <span className="text-sm">{user?.badge_icon || "🌱"}</span>
-            <span className="text-[10px] font-semibold text-yellow-600">Lv {user?.level || 1}</span>
-            <span className="text-[10px] text-yellow-300">•</span>
-            <span className="text-[10px] font-bold text-yellow-700">{user?.exp || 0}</span>
-          </button>
-        )}
-        {isAdmin && (
-          <div className="flex items-center gap-1 bg-linear-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-full px-2 py-1 shadow-sm">
-            <span className="text-sm">👑</span>
-            <span className="text-[10px] font-semibold text-purple-600">Admin</span>
-          </div>
-        )}
-        {isModerator && (
-          <div className="flex items-center gap-1 bg-linear-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-full px-2 py-1 shadow-sm">
-            <span className="text-sm">🛡️</span>
-            <span className="text-[10px] font-semibold text-blue-600">Moderator</span>
-          </div>
-        )}
         {/* Mobile Avatar Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -89,6 +64,27 @@ export function MobileHeader({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {!isAdmin && (
+              <DropdownMenuItem onClick={onShowExpHistory} className="cursor-pointer">
+                <Trophy className="mr-2 h-4 w-4 text-yellow-600" />
+                <span>
+                  Lv {user?.level || 1} • {user?.exp || 0} EXP
+                </span>
+              </DropdownMenuItem>
+            )}
+            {isAdmin && (
+              <DropdownMenuItem disabled>
+                <Crown className="mr-2 h-4 w-4 text-purple-600" />
+                <span>Admin</span>
+              </DropdownMenuItem>
+            )}
+            {isModerator && (
+              <DropdownMenuItem disabled>
+                <Shield className="mr-2 h-4 w-4 text-blue-600" />
+                <span>Moderator</span>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onEditProfile} className="cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />
