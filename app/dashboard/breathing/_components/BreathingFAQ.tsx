@@ -11,7 +11,7 @@ const FAQ_ITEMS = [
     },
     {
         question: "Berapa lama sebaiknya saya berlatih?",
-        answer: "Mulailah dengan 2-5 menit per sesi, lalu secara bertahap naikkan ke 10-15 menit. Konsistensi lebih penting daripada durasi — berlatih 5 menit setiap hari lebih baik dari 30 menit sekali seminggu.",
+        answer: "Mulailah dengan 2-5 menit per sesi, lalu secara bertahap naikkan ke 10-15 menit. Konsistensi lebih penting daripada durasi - berlatih 5 menit setiap hari lebih baik dari 30 menit sekali seminggu.",
     },
     {
         question: "Teknik mana yang cocok untuk pemula?",

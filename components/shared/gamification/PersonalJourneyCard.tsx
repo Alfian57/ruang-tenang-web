@@ -10,10 +10,18 @@ interface PersonalJourneyCardProps {
 }
 
 export function PersonalJourneyCard({ journey, className }: PersonalJourneyCardProps) {
+    const currentExp = Number(journey.current_exp ?? 0);
+    const expProgress = Number(journey.exp_progress ?? 0);
+    const expToNextLevel = Number(journey.exp_to_next_level ?? 0);
+    const weeklyExp = Number(journey.weekly_exp ?? 0);
+    const unlockedFeatures = Number(journey.unlocked_features ?? 0);
+    const totalFeatures = Number(journey.total_features ?? 0);
+    const levelProgressDenominator = expToNextLevel + expProgress;
     const progressPercent = Math.min(
-        (journey.exp_progress / (journey.exp_to_next_level + journey.exp_progress)) * 100,
+        levelProgressDenominator > 0 ? (expProgress / levelProgressDenominator) * 100 : 0,
         100
     );
+    const unlockedFeaturePercent = totalFeatures > 0 ? (unlockedFeatures / totalFeatures) * 100 : 0;
 
     return (
         <div className={cn("bg-card rounded-xl border shadow-sm p-6", className)}>
@@ -43,7 +51,7 @@ export function PersonalJourneyCard({ journey, className }: PersonalJourneyCardP
             <div className="mb-6">
                 <div className="flex justify-between text-sm mb-2">
                     <span className="text-muted-foreground">Progress Level</span>
-                    <span className="font-medium">{journey.current_exp.toLocaleString()} EXP</span>
+                    <span className="font-medium">{currentExp.toLocaleString()} EXP</span>
                 </div>
                 <div className="h-3 bg-muted rounded-full overflow-hidden">
                     <div
@@ -55,7 +63,7 @@ export function PersonalJourneyCard({ journey, className }: PersonalJourneyCardP
                     />
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                    {journey.exp_to_next_level.toLocaleString()} EXP lagi ke level berikutnya
+                    {expToNextLevel.toLocaleString()} EXP lagi ke level berikutnya
                 </p>
             </div>
 
@@ -76,7 +84,7 @@ export function PersonalJourneyCard({ journey, className }: PersonalJourneyCardP
                 <StatItem
                     icon={TrendingUp}
                     label="EXP Minggu Ini"
-                    value={`+${journey.weekly_exp.toLocaleString()}`}
+                    value={`+${weeklyExp.toLocaleString()}`}
                     color="text-green-500"
                 />
                 <StatItem
@@ -95,14 +103,14 @@ export function PersonalJourneyCard({ journey, className }: PersonalJourneyCardP
                         Fitur Terbuka
                     </span>
                     <span className="font-medium">
-                        {journey.unlocked_features}/{journey.total_features}
+                        {unlockedFeatures}/{totalFeatures}
                     </span>
                 </div>
                 <div className="h-2 bg-muted rounded-full overflow-hidden mt-2">
                     <div
                         className="h-full bg-primary rounded-full transition-all"
                         style={{
-                            width: `${(journey.unlocked_features / journey.total_features) * 100}%`
+                            width: `${unlockedFeaturePercent}%`
                         }}
                     />
                 </div>

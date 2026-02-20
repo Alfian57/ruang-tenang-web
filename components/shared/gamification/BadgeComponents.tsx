@@ -122,6 +122,9 @@ interface BadgeShowcaseProps {
 }
 
 export function BadgeShowcase({ badges, className }: BadgeShowcaseProps) {
+    const categoryStats = Array.isArray(badges.category_stats) ? badges.category_stats : [];
+    const earnedBadges = Array.isArray(badges.earned_badges) ? badges.earned_badges : [];
+
     return (
         <div className={cn("bg-card rounded-xl border shadow-sm p-6", className)}>
             {/* Header */}
@@ -131,21 +134,21 @@ export function BadgeShowcase({ badges, className }: BadgeShowcaseProps) {
                     <h3 className="font-semibold">Badge Collection</h3>
                 </div>
                 <span className="text-sm text-muted-foreground">
-                    {badges.total_earned}/{badges.total_available} diraih
+                    {Number(badges.total_earned ?? 0)}/{Number(badges.total_available ?? 0)} diraih
                 </span>
             </div>
 
             {/* Category Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                {badges.category_stats.map((stat) => (
+                {categoryStats.map((stat) => (
                     <CategoryStatCard key={stat.category} stat={stat} />
                 ))}
             </div>
 
             {/* Earned Badges */}
-            {badges.earned_badges.length > 0 ? (
+            {earnedBadges.length > 0 ? (
                 <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
-                    {badges.earned_badges.map((badge) => (
+                    {earnedBadges.map((badge) => (
                         <BadgeCard key={badge.id} badge={badge} size="sm" />
                     ))}
                 </div>

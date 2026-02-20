@@ -72,7 +72,7 @@ function XPPerDayChart({ data }: { data: DailyXP[] }) {
                 <h3 className="font-semibold text-foreground">XP Per Hari</h3>
                 <span className="text-xs text-muted-foreground ml-auto">30 hari terakhir</span>
             </div>
-            <div className="space-y-1.5 max-h-[400px] overflow-y-auto pr-1">
+            <div className="space-y-1.5 max-h-100 overflow-y-auto pr-1">
                 {data.map((day) => (
                     <div key={day.date} className="flex items-center gap-2 group">
                         <span className="text-[10px] text-muted-foreground w-12 shrink-0 text-right font-mono">
@@ -83,7 +83,7 @@ function XPPerDayChart({ data }: { data: DailyXP[] }) {
                         </span>
                         <div className="flex-1 h-5 bg-muted/50 rounded-full overflow-hidden">
                             <div
-                                className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full transition-all duration-500 group-hover:from-violet-400 group-hover:to-indigo-400"
+                                className="h-full bg-linear-to-r from-violet-500 to-indigo-500 rounded-full transition-all duration-500 group-hover:from-violet-400 group-hover:to-indigo-400"
                                 style={{ width: `${Math.max((day.total / maxXP) * 100, day.total > 0 ? 2 : 0)}%` }}
                             />
                         </div>
@@ -155,7 +155,7 @@ function XPByActivityChart({ data }: { data: ActivityXP[] }) {
             </div>
 
             {/* Legend */}
-            <div className="space-y-2 max-h-[250px] overflow-y-auto">
+            <div className="space-y-2 max-h-62.5 overflow-y-auto">
                 {sorted.map((item, i) => {
                     const pct = totalXP > 0 ? ((item.total / totalXP) * 100).toFixed(1) : "0";
                     return (
@@ -303,7 +303,7 @@ function CalendarHeatmap({ data }: { data: HeatmapDay[] }) {
                     {/* Day labels */}
                     <div className="flex flex-col gap-0.5 mr-1">
                         {dayLabels.map((label, i) => (
-                            <div key={i} className="h-[14px] w-6 flex items-center justify-end pr-1">
+                            <div key={i} className="h-3.5 w-6 flex items-center justify-end pr-1">
                                 <span className="text-[9px] text-muted-foreground">{label}</span>
                             </div>
                         ))}
@@ -319,9 +319,8 @@ function CalendarHeatmap({ data }: { data: HeatmapDay[] }) {
                                 return (
                                     <div
                                         key={day}
-                                        className={`w-[14px] h-[14px] rounded-sm transition-colors ${
-                                            isFuture ? "bg-transparent" : getIntensity(xp)
-                                        } ${isToday ? "ring-1 ring-foreground/30" : ""}`}
+                                        className={`w-3.5 h-3.5 rounded-sm transition-colors ${isFuture ? "bg-transparent" : getIntensity(xp)
+                                            } ${isToday ? "ring-1 ring-foreground/30" : ""}`}
                                         title={`${day}: ${xp} XP`}
                                     />
                                 );
@@ -334,11 +333,11 @@ function CalendarHeatmap({ data }: { data: HeatmapDay[] }) {
             {/* Legend */}
             <div className="flex items-center justify-end gap-1 mt-3">
                 <span className="text-[10px] text-muted-foreground mr-1">Sedikit</span>
-                <div className="w-[12px] h-[12px] rounded-sm bg-muted/40" />
-                <div className="w-[12px] h-[12px] rounded-sm bg-violet-200" />
-                <div className="w-[12px] h-[12px] rounded-sm bg-violet-300" />
-                <div className="w-[12px] h-[12px] rounded-sm bg-violet-400" />
-                <div className="w-[12px] h-[12px] rounded-sm bg-violet-500" />
+                <div className="w-3 h-3 rounded-sm bg-muted/40" />
+                <div className="w-3 h-3 rounded-sm bg-violet-200" />
+                <div className="w-3 h-3 rounded-sm bg-violet-300" />
+                <div className="w-3 h-3 rounded-sm bg-violet-400" />
+                <div className="w-3 h-3 rounded-sm bg-violet-500" />
                 <span className="text-[10px] text-muted-foreground ml-1">Banyak</span>
             </div>
         </div>
@@ -359,36 +358,22 @@ export function XPVisualizationsSection() {
 
         const fetchData = async () => {
             try {
-                // Fetch last 90 days of exp history (all pages)
+                // Fetch last 90 days of exp history (single page to avoid excessive requests)
                 const endDate = new Date().toISOString().split("T")[0];
                 const start = new Date();
                 start.setDate(start.getDate() - 90);
                 const startDate = start.toISOString().split("T")[0];
 
-                const allHistory: ExpHistory[] = [];
-                let page = 1;
-                let hasMore = true;
+                const res = await communityService.getExpHistory(token, {
+                    page: 1,
+                    limit: 100,
+                    start_date: startDate,
+                    end_date: endDate,
+                });
 
-                while (hasMore) {
-                    const res = await communityService.getExpHistory(token, {
-                        page,
-                        limit: 100,
-                        start_date: startDate,
-                        end_date: endDate,
-                    });
-                    if (res.data && res.data.length > 0) {
-                        allHistory.push(...res.data);
-                        const totalPages = res.meta?.total_pages || 1;
-                        hasMore = page < totalPages;
-                        page++;
-                    } else {
-                        hasMore = false;
-                    }
-                }
-
-                setExpHistory(allHistory);
-            } catch (error) {
-                console.error("Failed to fetch XP data:", error);
+                setExpHistory(Array.isArray(res.data) ? res.data : []);
+            } catch {
+                setExpHistory([]);
             } finally {
                 setIsLoading(false);
             }

@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { articleService } from "@/services/api";
 import { ArrowRight, BookOpen, Calendar } from "lucide-react";
 import type { PaginatedResponse } from "@/services/http/types";
+import { getHtmlExcerpt } from "@/utils";
 
 interface Article {
   id: number;
@@ -14,6 +15,7 @@ interface Article {
   title: string;
   thumbnail: string;
   content: string;
+  excerpt?: string;
   created_at: string;
   category?: {
     id: number;
@@ -28,12 +30,6 @@ function formatDate(dateString: string): string {
     month: "long",
     year: "numeric",
   });
-}
-
-function truncateText(text: string, maxLength: number): string {
-  const stripped = text.replace(/<[^>]*>/g, "");
-  if (stripped.length <= maxLength) return stripped;
-  return stripped.substring(0, maxLength) + "...";
 }
 
 const DEFAULT_IMAGE = "/images/dummy-article-1.png";
@@ -129,7 +125,7 @@ export function ArticleSection() {
                       {article.title}
                     </h3>
                     <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-2 flex-1">
-                      {truncateText(article.content || "", 120)}
+                      {getHtmlExcerpt(article.excerpt || article.content || "", 120)}
                     </p>
                     <div className="flex items-center gap-2 text-xs text-gray-400">
                       <Calendar className="w-3.5 h-3.5" />

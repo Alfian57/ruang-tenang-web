@@ -20,7 +20,7 @@ const TUTORIAL_STEPS = [
         icon: <Play className="w-12 h-12 text-green-500" />,
         title: "Memulai Sesi",
         description: "Pilih teknik, atur durasi, lalu ikuti petunjuk visual dan suara.",
-        tips: ["Duduk dengan nyaman dan tutup mata jika memungkinkan", "Ikuti lingkaran animasi — tarik napas saat membesar, hembuskan saat mengecil", "Gunakan mood selector untuk melacak perasaanmu sebelum dan sesudah"],
+        tips: ["Duduk dengan nyaman dan tutup mata jika memungkinkan", "Ikuti lingkaran animasi - tarik napas saat membesar, hembuskan saat mengecil", "Gunakan mood selector untuk melacak perasaanmu sebelum dan sesudah"],
     },
     {
         icon: <BarChart3 className="w-12 h-12 text-purple-500" />,
@@ -32,7 +32,7 @@ const TUTORIAL_STEPS = [
         icon: <Heart className="w-12 h-12 text-red-500" />,
         title: "Tips Penting",
         description: "Keselamatan dan kenyamananmu yang utama.",
-        tips: ["Hentikan jika merasa pusing atau tidak nyaman", "Jangan memaksakan diri — pilih durasi yang nyaman", "Naikkan durasi secara bertahap saat merasa siap"],
+        tips: ["Hentikan jika merasa pusing atau tidak nyaman", "Jangan memaksakan diri - pilih durasi yang nyaman", "Naikkan durasi secara bertahap saat merasa siap"],
     },
 ];
 

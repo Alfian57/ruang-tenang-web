@@ -104,7 +104,11 @@ interface UserFeaturesOverviewProps {
 }
 
 export function UserFeaturesOverview({ features, className }: UserFeaturesOverviewProps) {
-    const progress = (features.total_unlocked / features.total_features) * 100;
+    const unlockedFeatures = Array.isArray(features.unlocked_features) ? features.unlocked_features : [];
+    const lockedFeatures = Array.isArray(features.locked_features) ? features.locked_features : [];
+    const totalUnlocked = Number(features.total_unlocked ?? unlockedFeatures.length);
+    const totalFeatures = Number(features.total_features ?? unlockedFeatures.length + lockedFeatures.length);
+    const progress = totalFeatures > 0 ? (totalUnlocked / totalFeatures) * 100 : 0;
 
     return (
         <div className={cn("bg-card rounded-xl border shadow-sm p-6", className)}>
@@ -115,7 +119,7 @@ export function UserFeaturesOverview({ features, className }: UserFeaturesOvervi
                     <h3 className="font-semibold">Fitur Terbuka</h3>
                 </div>
                 <span className="text-sm text-muted-foreground">
-                    Level {features.current_level}
+                    Level {Number(features.current_level ?? 1)}
                 </span>
             </div>
 
@@ -124,7 +128,7 @@ export function UserFeaturesOverview({ features, className }: UserFeaturesOvervi
                 <div className="flex justify-between text-sm mb-2">
                     <span className="text-muted-foreground">Progress Pembukaan Fitur</span>
                     <span className="font-medium">
-                        {features.total_unlocked}/{features.total_features}
+                        {totalUnlocked}/{totalFeatures}
                     </span>
                 </div>
                 <div className="h-3 bg-muted rounded-full overflow-hidden">
@@ -139,23 +143,23 @@ export function UserFeaturesOverview({ features, className }: UserFeaturesOvervi
             <div className="space-y-4">
                 <h4 className="text-sm font-medium flex items-center gap-2">
                     <Unlock className="h-4 w-4 text-green-500" />
-                    Fitur Terbuka ({features.unlocked_features.length})
+                    Fitur Terbuka ({unlockedFeatures.length})
                 </h4>
                 <div className="grid gap-3">
-                    {features.unlocked_features.slice(0, 4).map((feature) => (
+                    {unlockedFeatures.slice(0, 4).map((feature) => (
                         <FeatureCard key={feature.id} feature={feature} />
                     ))}
                 </div>
 
                 {/* Locked Features Preview */}
-                {features.locked_features.length > 0 && (
+                {lockedFeatures.length > 0 && (
                     <>
                         <h4 className="text-sm font-medium flex items-center gap-2 mt-6">
                             <Lock className="h-4 w-4 text-muted-foreground" />
-                            Segera Terbuka ({features.locked_features.length})
+                            Segera Terbuka ({lockedFeatures.length})
                         </h4>
                         <div className="grid gap-3">
-                            {features.locked_features.slice(0, 2).map((feature) => (
+                            {lockedFeatures.slice(0, 2).map((feature) => (
                                 <FeatureCard
                                     key={feature.id}
                                     feature={feature}

@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
+import { env } from "./config/env";
 
 // Parse API URL for dynamic configuration
-const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api/v1";
+const apiUrl = env.NEXT_PUBLIC_API_BASE_URL;
 const apiBaseUrl = apiUrl.replace(/\/api\/v1$/, ""); // Remove /api/v1 suffix
 
 // Parse the URL to get components

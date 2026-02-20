@@ -24,12 +24,7 @@ interface CommunityData {
   handleLevelChange: (newLevel: number) => void;
 }
 
-interface UseCommunityDataOptions {
-  includePersonal?: boolean;
-}
-
-export function useCommunityData(options: UseCommunityDataOptions = {}): CommunityData {
-  const { includePersonal = true } = options;
+export function useCommunityData(): CommunityData {
   const { token } = useAuthStore();
   const [communityStats, setCommunityStats] = useState<CommunityStats | null>(null);
   const [personalJourney, setPersonalJourney] = useState<PersonalJourney | null>(null);
@@ -49,7 +44,7 @@ export function useCommunityData(options: UseCommunityDataOptions = {}): Communi
         const forumsRes = await forumService.getAll(token || "", 4);
         setLatestForums(forumsRes.data);
 
-        if (includePersonal && token) {
+        if (token) {
           const [journeyRes, badgesRes, featuresRes] = await Promise.all([
             communityService.getPersonalJourney(token).catch(() => null),
             communityService.getUserBadges(token).catch(() => null),
@@ -62,10 +57,6 @@ export function useCommunityData(options: UseCommunityDataOptions = {}): Communi
           }
           if (badgesRes?.data) setUserBadges(badgesRes.data);
           if (featuresRes?.data) setUserFeatures(featuresRes.data);
-        } else {
-          setPersonalJourney(null);
-          setUserBadges(null);
-          setUserFeatures(null);
         }
 
         const hofRes = await communityService.getLevelHallOfFame(currentLevel);
@@ -78,7 +69,7 @@ export function useCommunityData(options: UseCommunityDataOptions = {}): Communi
     };
 
     fetchData();
-  }, [token, currentLevel, includePersonal]);
+  }, [token, currentLevel]);
 
   const handleLevelChange = async (newLevel: number) => {
     if (newLevel < 1 || newLevel > 10) return;

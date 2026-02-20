@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { X, Calendar, Filter, ChevronLeft, ChevronRight, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { communityService } from "@/services/api";
-import { ExpHistory, ExpHistoryResponse, LevelConfig } from "@/types";
+import { ExpHistory, LevelConfig } from "@/types";
 
 interface ExpHistoryModalProps {
   isOpen: boolean;
@@ -44,6 +44,13 @@ export function ExpHistoryModal({
   const [nextLevel, setNextLevel] = useState<LevelConfig | null>(null);
 
   const fetchHistory = useCallback(async () => {
+    if (!token) {
+      setHistory([]);
+      setTotalPages(1);
+      setTotal(0);
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await communityService.getExpHistory(token, {
@@ -52,27 +59,32 @@ export function ExpHistoryModal({
         end_date: endDate || undefined,
         page,
         limit: 10,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      }) as any;
-      
-      const data = response.data as ExpHistoryResponse;
-      setHistory(data.data || []);
-      setTotalPages(data.total_pages || 1);
-      setTotal(data.total || 0);
-    } catch (error) {
-      console.error("Failed to fetch EXP history:", error);
+      });
+
+      const items = Array.isArray(response.data) ? response.data : [];
+      setHistory(items);
+      setTotalPages(response.meta?.total_pages || 1);
+      setTotal(response.meta?.total_items || items.length);
+    } catch {
+      setHistory([]);
+      setTotalPages(1);
+      setTotal(0);
     } finally {
       setLoading(false);
     }
   }, [token, page, selectedActivityType, startDate, endDate]);
 
   const fetchActivityTypes = useCallback(async () => {
+    if (!token) {
+      setActivityTypes([]);
+      return;
+    }
+
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const response = await communityService.getActivityTypes(token) as any;
-      setActivityTypes(response.data || []);
-    } catch (error) {
-      console.error("Failed to fetch activity types:", error);
+      const response = await communityService.getActivityTypes(token);
+      setActivityTypes(Array.isArray(response.data) ? response.data : []);
+    } catch {
+      setActivityTypes([]);
     }
   }, [token]);
 
@@ -82,7 +94,7 @@ export function ExpHistoryModal({
       const response = await communityService.getLevelConfigs() as any;
       const configs = response.data as LevelConfig[];
       setLevelConfigs(configs);
-      
+
       // Find next level
       const next = configs.find((c: LevelConfig) => c.level > currentLevel);
       setNextLevel(next || null);
@@ -93,11 +105,10 @@ export function ExpHistoryModal({
 
   useEffect(() => {
     if (isOpen) {
-      fetchHistory();
       fetchActivityTypes();
       fetchLevelConfigs();
     }
-  }, [isOpen, fetchHistory, fetchActivityTypes, fetchLevelConfigs]);
+  }, [isOpen, fetchActivityTypes, fetchLevelConfigs]);
 
   useEffect(() => {
     if (isOpen) {
@@ -112,7 +123,7 @@ export function ExpHistoryModal({
     setPage(1);
   };
 
-  const progressToNextLevel = nextLevel 
+  const progressToNextLevel = nextLevel
     ? Math.min(100, ((currentExp - (levelConfigs.find(c => c.level === currentLevel)?.min_exp || 0)) / (nextLevel.min_exp - (levelConfigs.find(c => c.level === currentLevel)?.min_exp || 0))) * 100)
     : 100;
 
@@ -121,11 +132,11 @@ export function ExpHistoryModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
       <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden mx-4">
         {/* Header */}
@@ -136,7 +147,7 @@ export function ExpHistoryModal({
           >
             <X className="w-5 h-5" />
           </button>
-          
+
           <div className="flex items-center gap-4">
             <div className="text-5xl">{badgeIcon}</div>
             <div>
@@ -144,14 +155,14 @@ export function ExpHistoryModal({
               <p className="text-yellow-100">Level {currentLevel}</p>
             </div>
           </div>
-          
+
           <div className="mt-4">
             <div className="flex justify-between text-sm mb-1">
               <span>{currentExp} EXP</span>
               {nextLevel && <span>{nextLevel.min_exp} EXP</span>}
             </div>
             <div className="h-3 bg-white/30 rounded-full overflow-hidden">
-              <div 
+              <div
                 className="h-full bg-white rounded-full transition-all duration-500"
                 style={{ width: `${progressToNextLevel}%` }}
               />

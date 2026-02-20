@@ -1,37 +1,68 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Navbar, Footer } from "@/components/layout";
 import { useAuthStore } from "@/store/authStore";
 import { CommunityStatsCard } from "@/components/shared/gamification";
 import { Users, LogIn } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/lib/routes";
 import { useCommunityData } from "./_hooks/useCommunityData";
 import {
   CommunitySkeleton,
-  CommunityAuthContent,
   LatestDiscussions,
   PublicHallOfFame,
 } from "./_components";
 
 export default function CommunityPage() {
+  const router = useRouter();
   const { token } = useAuthStore();
+  const [backHref, setBackHref] = useState<string>(ROUTES.HOME);
+  const [backLabel, setBackLabel] = useState("Kembali ke Beranda");
   const {
     communityStats,
-    personalJourney,
     hallOfFame,
     latestForums,
     currentLevel,
-    userBadges,
-    userFeatures,
     loading,
     handleLevelChange,
-  } = useCommunityData();
+  } = useCommunityData({ includePersonal: false });
+
+  useEffect(() => {
+    if (token) {
+      router.replace(ROUTES.DASHBOARD_COMMUNITY);
+    }
+  }, [token, router]);
+
+  useEffect(() => {
+    const previousPath = sessionStorage.getItem("rt_previous_path") ?? "";
+
+    if (previousPath.startsWith(ROUTES.DASHBOARD)) {
+      setBackHref(ROUTES.DASHBOARD);
+      setBackLabel("Kembali ke Dashboard");
+      return;
+    }
+
+    if (previousPath === ROUTES.HOME) {
+      setBackHref(ROUTES.HOME);
+      setBackLabel("Kembali ke Beranda");
+      return;
+    }
+
+    setBackHref(ROUTES.HOME);
+    setBackLabel("Kembali ke Beranda");
+  }, []);
+
+  if (token) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar variant="back" />
+      <Navbar variant="back" backHref={backHref} backLabel={backLabel} />
 
       {/* Background Decorations */}
       <div className="absolute top-0 right-0 w-125 h-125 bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
@@ -78,44 +109,29 @@ export default function CommunityPage() {
               </motion.div>
             )}
 
-            {/* Login Prompt for non-authenticated users */}
-            {!token && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="bg-card rounded-xl border p-8 text-center mb-12"
-              >
-                <LogIn className="h-12 w-12 text-primary mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">
-                  Masuk untuk Melihat Perjalananmu
-                </h3>
-                <p className="text-muted-foreground mb-6">
-                  Dapatkan akses ke statistik personal, badge, dan fitur eksklusif!
-                </p>
-                <Link href="/login">
-                  <Button size="lg">Masuk Sekarang</Button>
-                </Link>
-              </motion.div>
-            )}
-
-            {/* Authenticated User Content */}
-            {token && (
-              <CommunityAuthContent
-                personalJourney={personalJourney}
-                hallOfFame={hallOfFame}
-                userBadges={userBadges}
-                userFeatures={userFeatures}
-                currentLevel={currentLevel}
-                onLevelChange={handleLevelChange}
-              />
-            )}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="bg-card rounded-xl border p-8 text-center mb-12"
+            >
+              <LogIn className="h-12 w-12 text-primary mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">
+                Masuk untuk Melihat Perjalananmu
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                Dapatkan akses ke statistik personal, badge, dan fitur eksklusif!
+              </p>
+              <Link href={ROUTES.LOGIN}>
+                <Button size="lg">Masuk Sekarang</Button>
+              </Link>
+            </motion.div>
 
             {/* Latest Discussions */}
             <LatestDiscussions forums={latestForums} />
 
-            {/* Public Hall of Fame (for non-authenticated users) */}
-            {!token && hallOfFame && (
+            {/* Public Hall of Fame */}
+            {hallOfFame && (
               <PublicHallOfFame
                 hallOfFame={hallOfFame}
                 currentLevel={currentLevel}

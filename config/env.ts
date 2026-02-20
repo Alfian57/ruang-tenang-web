@@ -2,7 +2,7 @@ import { z } from "zod";
 
 /**
  * Validated environment variables.
- * Uses Zod to parse and validate env on boot — fail fast on misconfiguration.
+ * Uses Zod to parse and validate env on boot - fail fast on misconfiguration.
  *
  * Usage: import { env } from "@/config/env";
  *        env.NEXT_PUBLIC_API_BASE_URL

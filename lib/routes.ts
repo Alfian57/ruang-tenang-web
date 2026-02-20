@@ -12,6 +12,7 @@ export const ROUTES = {
 
   // Dashboard - General
   DASHBOARD: "/dashboard",
+  DASHBOARD_COMMUNITY: "/dashboard/community",
   PROFILE: "/dashboard/profile",
   SETTINGS: "/dashboard/settings",
   

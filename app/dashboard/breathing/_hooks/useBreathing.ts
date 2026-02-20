@@ -20,6 +20,8 @@ import { toast } from "sonner";
 
 export type ViewMode = "techniques" | "session" | "history" | "stats" | "faq";
 
+const BREATHING_TUTORIAL_SEEN_KEY = "rt_breathing_tutorial_seen";
+
 export function useBreathing() {
     const router = useRouter();
     const { token } = useAuthStore();
@@ -91,43 +93,60 @@ export function useBreathing() {
         const fetchData = async () => {
             try {
                 setIsLoading(true);
+                const hasSeenTutorial = localStorage.getItem(BREATHING_TUTORIAL_SEEN_KEY) === "1";
+                let shouldShowTutorial = !hasSeenTutorial;
 
-                const [techniquesRes, favoritesRes, statsRes, recommendationsRes] = await Promise.all([
+                const [techniquesRes, favoritesRes, statsRes, recommendationsRes] = await Promise.allSettled([
                     breathingService.getTechniques(token),
                     breathingService.getFavorites(token),
                     breathingService.getStats(token),
                     breathingService.getRecommendations(token),
                 ]);
 
-                setTechniques(techniquesRes.data || []);
-                setFavorites(favoritesRes.data || []);
-                setStats(statsRes.data || null);
-                setRecommendations(recommendationsRes.data || null);
+                setTechniques(techniquesRes.status === "fulfilled" ? techniquesRes.value.data || [] : []);
+                setFavorites(favoritesRes.status === "fulfilled" ? favoritesRes.value.data || [] : []);
+                setStats(statsRes.status === "fulfilled" ? statsRes.value.data || null : null);
+                setRecommendations(recommendationsRes.status === "fulfilled" ? recommendationsRes.value.data || null : null);
 
                 // Fetch calendar for current month
-                const now = new Date();
-                const calendarRes = await breathingService.getCalendar(token, now.getFullYear(), now.getMonth() + 1);
-                setCalendar(calendarRes.data || null);
+                try {
+                    const now = new Date();
+                    const calendarRes = await breathingService.getCalendar(token, now.getFullYear(), now.getMonth() + 1);
+                    setCalendar(calendarRes.data || null);
+                } catch {
+                    setCalendar(null);
+                }
 
                 // Fetch technique usage
-                const usageRes = await breathingService.getTechniqueUsage(token);
-                setTechniqueUsage(usageRes.data || []);
+                try {
+                    const usageRes = await breathingService.getTechniqueUsage(token);
+                    setTechniqueUsage(usageRes.data || []);
+                } catch {
+                    setTechniqueUsage([]);
+                }
 
                 // Fetch preferences for tutorial/reminder state
                 try {
                     const prefsRes = await breathingService.getPreferences(token);
                     if (prefsRes.data) {
                         setPreferences(prefsRes.data);
-                        if (!prefsRes.data.tutorial_completed) {
-                            setShowTutorial(true);
+                        if (prefsRes.data.tutorial_completed) {
+                            shouldShowTutorial = false;
+                        }
+                        if (!prefsRes.data.tutorial_completed && !hasSeenTutorial) {
+                            shouldShowTutorial = true;
                         }
                     }
                 } catch {
                     // Preferences fetch is non-critical
                 }
+
+                if (shouldShowTutorial) {
+                    localStorage.setItem(BREATHING_TUTORIAL_SEEN_KEY, "1");
+                    setShowTutorial(true);
+                }
             } catch (error) {
                 console.error("Failed to fetch breathing data:", error);
-                toast.error("Gagal memuat data latihan pernapasan");
             } finally {
                 setIsLoading(false);
             }
@@ -262,6 +281,7 @@ export function useBreathing() {
     // Tutorial completion
     const handleTutorialComplete = async () => {
         setShowTutorial(false);
+        localStorage.setItem(BREATHING_TUTORIAL_SEEN_KEY, "1");
         if (token) {
             try {
                 await breathingService.updatePreferences(token, { tutorial_completed: true });
@@ -291,6 +311,7 @@ export function useBreathing() {
 
     // Replay tutorial
     const handleReplayTutorial = () => {
+        localStorage.setItem(BREATHING_TUTORIAL_SEEN_KEY, "1");
         setShowTutorial(true);
     };
 

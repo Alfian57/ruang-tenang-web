@@ -8,9 +8,12 @@ import Image from "next/image";
 interface HallOfFameProps {
     data: LevelHallOfFameResponse;
     className?: string;
+    hideTierName?: boolean;
 }
 
-export function HallOfFame({ data, className }: HallOfFameProps) {
+export function HallOfFame({ data, className, hideTierName = false }: HallOfFameProps) {
+    const entries = Array.isArray(data?.entries) ? data.entries : [];
+
     return (
         <div className={cn("bg-card rounded-xl border shadow-sm", className)}>
             {/* Header */}
@@ -22,20 +25,20 @@ export function HallOfFame({ data, className }: HallOfFameProps) {
                     <Crown className="h-5 w-5" />
                     <h3 className="font-semibold">Hall of Fame - Level {data.level}</h3>
                 </div>
-                <p className="text-sm opacity-90">{data.tier_name}</p>
+                {!hideTierName && <p className="text-sm opacity-90">{data.tier_name}</p>}
             </div>
 
             {/* Entries */}
             <div className="p-4 space-y-3">
-                {data.entries.length === 0 ? (
-                <div className="text-center py-8">
+                {entries.length === 0 ? (
+                    <div className="text-center py-8">
                         <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3">
                             <Crown className="h-6 w-6 text-muted-foreground/50" />
                         </div>
                         <p className="text-sm text-muted-foreground">Belum ada anggota di level ini</p>
                     </div>
                 ) : (
-                    data.entries.map((entry, index) => (
+                    entries.map((entry, index) => (
                         <HallOfFameEntryCard
                             key={entry.user_id}
                             entry={entry}
@@ -56,6 +59,10 @@ interface HallOfFameEntryCardProps {
 }
 
 function HallOfFameEntryCard({ entry, rank, tierColor }: HallOfFameEntryCardProps) {
+    const earnedBadges = Array.isArray(entry.badges_earned) ? entry.badges_earned : [];
+    const exp = Number(entry.exp ?? 0);
+    const currentStreak = Number(entry.current_streak ?? 0);
+
     const getRankIcon = () => {
         switch (rank) {
             case 1:
@@ -94,26 +101,26 @@ function HallOfFameEntryCard({ entry, rank, tierColor }: HallOfFameEntryCardProp
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                         <Star className="h-3 w-3 text-yellow-500" />
-                        {entry.exp.toLocaleString()} EXP
+                        {exp.toLocaleString()} EXP
                     </span>
                     <span className="flex items-center gap-1">
                         <Flame className="h-3 w-3 text-orange-500" />
-                        {entry.current_streak} hari
+                        {currentStreak} hari
                     </span>
                 </div>
             </div>
 
             {/* Badges */}
-            {entry.badges_earned.length > 0 && (
+            {earnedBadges.length > 0 && (
                 <div className="flex -space-x-1">
-                    {entry.badges_earned.slice(0, 3).map((badge, i) => (
+                    {earnedBadges.slice(0, 3).map((badge, i) => (
                         <span key={i} className="text-lg" title={badge}>
                             {badge}
                         </span>
                     ))}
-                    {entry.badges_earned.length > 3 && (
+                    {earnedBadges.length > 3 && (
                         <span className="text-xs text-muted-foreground ml-1">
-                            +{entry.badges_earned.length - 3}
+                            +{earnedBadges.length - 3}
                         </span>
                     )}
                 </div>

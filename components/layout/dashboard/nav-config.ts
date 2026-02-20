@@ -32,7 +32,7 @@ export const memberHighlightLink: NavLink = {
   href: ROUTES.CHAT, icon: MessageSquare, label: "Teman Cerita AI", highlight: true,
 };
 
-// Member menu items (for regular users) — grouped
+// Member menu items (for regular users) - grouped
 export const memberGroups: NavGroup[] = [
   {
     title: "Utama",
@@ -59,12 +59,12 @@ export const memberGroups: NavGroup[] = [
   {
     title: "Komunitas",
     links: [
-      { href: ROUTES.COMMUNITY, icon: Trophy, label: "Community Stats" },
+      { href: ROUTES.DASHBOARD_COMMUNITY, icon: Trophy, label: "Community Stats" },
     ],
   },
 ];
 
-// Admin menu items (for admin only) — grouped
+// Admin menu items (for admin only) - grouped
 export const adminGroups: NavGroup[] = [
   {
     title: "Utama",

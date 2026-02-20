@@ -52,7 +52,7 @@ export function useStoriesData(): StoriesData {
           if (statsRes?.data) setMyStats(statsRes.data);
         }
       } catch {
-        // Silently handle — UI will show empty states
+        // Silently handle - UI will show empty states
       }
     };
 

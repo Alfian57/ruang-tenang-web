@@ -3,6 +3,7 @@
 import React, { Component, ReactNode } from "react";
 import { AlertTriangle, RefreshCw, Home, ArrowLeft } from "lucide-react";
 import { Button } from "./button";
+import { env } from "@/config/env";
 
 interface ErrorBoundaryProps {
     children: ReactNode;
@@ -36,7 +37,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         this.setState({ errorInfo });
 
         // Log error to console in development
-        if (process.env.NODE_ENV === "development") {
+        if (env.NODE_ENV === "development") {
             console.error("Error caught by ErrorBoundary:", error, errorInfo);
         }
 
@@ -85,7 +86,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                         Silakan coba lagi atau kembali ke halaman sebelumnya.
                     </p>
 
-                    {process.env.NODE_ENV === "development" && this.state.error && (
+                    {env.NODE_ENV === "development" && this.state.error && (
                         <details className="mb-6 max-w-lg text-left">
                             <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
                                 Detail Error (Development Only)
@@ -181,7 +182,7 @@ export function ErrorFallback({
             <AlertTriangle className="mb-4 h-10 w-10 text-destructive" aria-hidden="true" />
             <h3 className="mb-2 text-lg font-semibold">{title}</h3>
             <p className="mb-4 text-sm text-muted-foreground">{message}</p>
-            {process.env.NODE_ENV === "development" && error && (
+            {env.NODE_ENV === "development" && error && (
                 <p className="mb-4 text-xs text-muted-foreground">{error.message}</p>
             )}
             {resetError && (

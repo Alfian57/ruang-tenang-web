@@ -5,11 +5,12 @@ import type { ApiResponse } from "@/services/http/types";
 import { authService } from "@/services/api";
 import Cookies from "js-cookie";
 import { STORAGE_KEYS } from "@/constants";
+import { env } from "@/config/env";
 
 // Cookie configuration
 const COOKIE_OPTIONS = {
   expires: 30, // 30 days (token validity controls actual session)
-  secure: process.env.NODE_ENV === "production",
+  secure: env.NODE_ENV === "production",
   sameSite: "lax" as const,
 };
 
@@ -102,7 +103,7 @@ export const useAuthStore = create<AuthState>()(
           const response = await authService.getProfile(token);
           set({ user: response.data });
         } catch {
-          // Token expired or invalid — silently logout
+          // Token expired or invalid - silently logout
           get().logout();
         }
       },
@@ -125,7 +126,7 @@ export const useAuthStore = create<AuthState>()(
       }),
       onRehydrateStorage: () => (state, error) => {
         if (error) {
-          // Silently handle rehydration errors — state will be reset
+          // Silently handle rehydration errors - state will be reset
         }
         // Always mark as hydrated, even if there's no stored state
         if (state) {

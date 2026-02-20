@@ -10,7 +10,6 @@ import {
   LeaderboardSection,
   CTASection,
 } from "./_components";
-import { DailyTaskFAB } from "@/components/shared/gamification";
 
 export default function Home() {
   return (
@@ -28,7 +27,6 @@ export default function Home() {
         <CTASection />
       </main>
       <Footer />
-      <DailyTaskFAB />
     </div>
   );
 }

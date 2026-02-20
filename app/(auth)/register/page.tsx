@@ -31,7 +31,6 @@ export default function RegisterPage() {
   const router = useRouter();
   const { register: registerUser, isLoading } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   const {
     register,
@@ -45,10 +44,7 @@ export default function RegisterPage() {
     setError(null);
     try {
       await registerUser(data.name, data.email, data.password, data.confirmPassword);
-      setSuccess(true);
-      setTimeout(() => {
-        router.push(ROUTES.LOGIN);
-      }, 2000);
+      router.push(`${ROUTES.LOGIN}?registered=1`);
     } catch (error) {
       const err = error as Error;
       setError(err.message || "Registrasi gagal. Silakan coba lagi.");
@@ -79,12 +75,6 @@ export default function RegisterPage() {
             {error && (
               <div className="p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm">
                 {error}
-              </div>
-            )}
-
-            {success && (
-              <div className="p-4 rounded-xl bg-green-50 border border-green-100 text-green-600 text-sm">
-                Registrasi berhasil! Mengalihkan ke halaman login...
               </div>
             )}
 
@@ -164,7 +154,7 @@ export default function RegisterPage() {
             <Button
               type="submit"
               className="w-full h-12 bg-primary hover:bg-primary/90 text-white rounded-xl text-base font-semibold"
-              disabled={isLoading || success}
+              disabled={isLoading}
             >
               {isLoading ? (
                 <>

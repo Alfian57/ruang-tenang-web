@@ -86,7 +86,7 @@ export function CTASection() {
 
           <p className="text-gray-600 mb-10 max-w-xl mx-auto text-lg leading-relaxed">
             Ruang Tenang-mu sudah siap. Mulai perjalanan merawat kesehatan
-            mentalmu — gratis, aman, dan tanpa dihakimi.
+            mentalmu - gratis, aman, dan tanpa dihakimi.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

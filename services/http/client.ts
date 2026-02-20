@@ -3,6 +3,8 @@ import { ApiError, type RequestOptions } from "./types";
 import { toast } from "sonner";
 
 const DEFAULT_TIMEOUT = 30_000; // 30 seconds
+const RATE_LIMIT_TOAST_COOLDOWN_MS = 5000;
+let lastRateLimitToastAt = 0;
 
 /**
  * Centralized HTTP client wrapper.
@@ -45,7 +47,7 @@ class HttpClient {
   }
 
   /**
-   * Core request method — all convenience methods delegate here.
+  * Core request method - all convenience methods delegate here.
    */
   async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     const { token, timeout = DEFAULT_TIMEOUT, body, params, ...fetchOptions } =
@@ -92,9 +94,13 @@ class HttpClient {
 
         // Show toast for rate limiting
         if (apiError.isRateLimited) {
-          toast.error(
-            "Terlalu banyak permintaan. Silakan coba lagi beberapa saat lagi."
-          );
+          const now = Date.now();
+          if (now - lastRateLimitToastAt > RATE_LIMIT_TOAST_COOLDOWN_MS) {
+            toast.error(
+              "Terlalu banyak permintaan. Silakan coba lagi beberapa saat lagi."
+            );
+            lastRateLimitToastAt = now;
+          }
         }
 
         throw apiError;
@@ -120,7 +126,7 @@ class HttpClient {
       // Handle network errors
       if (error instanceof TypeError) {
         throw new ApiError({
-          message: "Network error — periksa koneksi internet Anda",
+          message: "Network error - periksa koneksi internet Anda",
           code: "NETWORK_ERROR",
           status: 0,
         });

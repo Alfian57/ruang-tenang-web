@@ -3,6 +3,7 @@ import type { ApiResponse, PaginatedResponse } from "@/services/http/types";
 import type {
   LevelConfig,
   ExpHistory,
+  ExpHistoryResponse,
   CommunityStats,
   HallOfFameEntry,
   HallOfFameCategoryInfo,
@@ -128,8 +129,26 @@ export const communityService = {
   },
 
   // EXP History
-  getExpHistory(token: string, params?: { page?: number; limit?: number; activity_type?: string; start_date?: string; end_date?: string }) {
-    return httpClient.get<PaginatedResponse<ExpHistory>>("/exp-history", { token, params: params as Record<string, string | number | boolean | undefined> });
+  async getExpHistory(token: string, params?: { page?: number; limit?: number; activity_type?: string; start_date?: string; end_date?: string }) {
+    const response = await httpClient.get<ApiResponse<ExpHistoryResponse>>("/exp-history", {
+      token,
+      params: params as Record<string, string | number | boolean | undefined>,
+    });
+
+    const payload = response.data ?? { data: [], total: 0, page: 1, limit: 10, total_pages: 1 };
+
+    return {
+      data: Array.isArray(payload.data) ? payload.data : [],
+      meta: {
+        page: payload.page ?? 1,
+        limit: payload.limit ?? 10,
+        total_items: payload.total ?? 0,
+        total_pages: payload.total_pages ?? 1,
+        has_next: (payload.page ?? 1) < (payload.total_pages ?? 1),
+        has_prev: (payload.page ?? 1) > 1,
+      },
+      requestId: response.requestId,
+    } as PaginatedResponse<ExpHistory>;
   },
 
   getActivityTypes(token: string) {

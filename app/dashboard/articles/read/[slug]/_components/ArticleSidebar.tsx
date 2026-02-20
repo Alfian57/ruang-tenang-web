@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Article } from "@/types";
+import { getHtmlExcerpt } from "@/utils";
 
 interface ArticleSidebarProps {
   relatedArticles: Article[];
@@ -20,17 +21,17 @@ export function ArticleSidebar({ relatedArticles, backLink }: ArticleSidebarProp
               <Link
                 key={related.id}
                 href={`/dashboard/articles/read/${related.slug}`}
-                className="block"
+                className="block group"
               >
-                <Card className="overflow-hidden hover:shadow-md transition-shadow bg-white">
-                  <div className="flex gap-3 p-3">
-                    <div className="w-20 h-16 rounded-lg overflow-hidden shrink-0 bg-gray-100">
+                <Card className="overflow-hidden border-gray-100 group-hover:shadow-md transition-all bg-white">
+                  <div className="flex gap-3 p-4 items-start">
+                    <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-gray-100">
                       {related.thumbnail ? (
                         <Image
                           src={related.thumbnail}
                           alt={related.title}
                           width={80}
-                          height={64}
+                          height={80}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -39,13 +40,18 @@ export function ArticleSidebar({ relatedArticles, backLink }: ArticleSidebarProp
                         </div>
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm line-clamp-2 mb-1 text-gray-900">
+                    <div className="flex-1 min-w-0 pt-0.5">
+                      <h4 className="font-semibold text-sm line-clamp-2 text-gray-900 group-hover:text-primary transition-colors">
                         {related.title}
                       </h4>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 mt-1">
                         {related.category?.name || "Umum"}
                       </p>
+                      {getHtmlExcerpt(related.excerpt || related.content || "", 56) && (
+                        <p className="text-xs text-gray-400 mt-1 line-clamp-1 leading-relaxed">
+                          {getHtmlExcerpt(related.excerpt || related.content || "", 56)}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </Card>

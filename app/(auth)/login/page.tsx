@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/authStore";
 import { AuthIllustration } from "@/components/shared/auth/AuthIllustration";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
   email: z.string().email("Email tidak valid"),
@@ -23,10 +24,29 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  const REGISTERED_TOAST_KEY = "registered-login-toast-shown";
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login, isLoading } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
   const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    const isRegistered = searchParams.get("registered") === "1";
+
+    if (!isRegistered) {
+      sessionStorage.removeItem(REGISTERED_TOAST_KEY);
+      return;
+    }
+
+    const hasShownToast = sessionStorage.getItem(REGISTERED_TOAST_KEY) === "1";
+    if (!hasShownToast) {
+      sessionStorage.setItem(REGISTERED_TOAST_KEY, "1");
+      toast.success("Registrasi berhasil! Silakan login.");
+    }
+
+    router.replace(ROUTES.LOGIN);
+  }, [searchParams, router]);
 
   const {
     register,

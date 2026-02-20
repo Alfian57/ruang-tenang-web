@@ -10,7 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { articleService } from "@/services/api";
 import { Article, ArticleCategory } from "@/types";
-import { formatDate } from "@/utils";
+import { formatDate, getHtmlExcerpt } from "@/utils";
 
 import { Suspense } from "react";
 
@@ -176,6 +176,9 @@ function ArticlesContent() {
                           <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2">
                             {article.title}
                           </h3>
+                          <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                            {getHtmlExcerpt(article.excerpt || article.content || "", 120)}
+                          </p>
                           <div className="flex items-center gap-3 text-xs text-gray-400">
                             <span className="text-primary">{article.category?.name}</span>
                             <span>•</span>
@@ -207,32 +210,37 @@ function ArticlesContent() {
                   <Link
                     key={article.id}
                     href={`/articles/${article.slug}`}
-                    className="block"
+                    className="block group"
                   >
-                    <Card className="overflow-hidden hover:shadow-md transition-shadow bg-white">
-                      <div className="flex gap-3 p-3">
-                        <div className="w-16 h-14 rounded-lg overflow-hidden shrink-0 bg-gray-100">
+                    <Card className="overflow-hidden border-gray-100 group-hover:shadow-md transition-all bg-white">
+                      <div className="flex gap-3 p-4 items-start">
+                        <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-gray-100">
                           {article.thumbnail ? (
                             <Image
                               src={article.thumbnail}
                               alt={article.title}
-                              width={64}
-                              height={56}
+                              width={80}
+                              height={80}
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-xl">
+                            <div className="w-full h-full flex items-center justify-center text-2xl">
                               📄
                             </div>
                           )}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-sm line-clamp-2 text-gray-900">
+                        <div className="flex-1 min-w-0 pt-0.5">
+                          <h4 className="font-semibold text-sm line-clamp-2 text-gray-900 group-hover:text-primary transition-colors">
                             {article.title}
                           </h4>
                           <p className="text-xs text-gray-500 mt-1">
                             {article.category?.name || "Umum"}
                           </p>
+                          {getHtmlExcerpt(article.excerpt || article.content || "", 56) && (
+                            <p className="text-xs text-gray-400 mt-1 line-clamp-1 leading-relaxed">
+                              {getHtmlExcerpt(article.excerpt || article.content || "", 56)}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </Card>

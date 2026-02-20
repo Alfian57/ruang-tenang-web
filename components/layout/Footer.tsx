@@ -130,11 +130,11 @@ export function Footer() {
             © {new Date().getFullYear()} Ruang Tenang. All Rights Reserved.
           </p>
           <div className="flex items-center gap-6">
-            <Link href="/privacy" className="text-sm text-gray-500 hover:text-primary transition-colors">
-              Privacy Policy
+            <Link href="/privacy-policy" className="text-sm text-gray-500 hover:text-primary transition-colors">
+              Kebijakan Privasi
             </Link>
-            <Link href="/terms" className="text-sm text-gray-500 hover:text-primary transition-colors">
-              Terms of Services
+            <Link href="/terms-of-service" className="text-sm text-gray-500 hover:text-primary transition-colors">
+              Syarat Layanan
             </Link>
           </div>
         </div>

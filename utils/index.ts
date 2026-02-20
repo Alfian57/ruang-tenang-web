@@ -14,7 +14,7 @@ export { cn } from "@/lib/cn";
 export { formatDate, formatDateTime, formatRelativeTime } from "./date";
 
 // String manipulation
-export { truncate, capitalize, slugify } from "./string";
+export { truncate, capitalize, slugify, getHtmlExcerpt } from "./string";
 
 // Mood helpers
 export { getMoodEmoji, getMoodLabel, getMoodColor, getAllMoods } from "./mood";

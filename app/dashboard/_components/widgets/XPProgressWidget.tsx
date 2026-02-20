@@ -7,6 +7,9 @@ import { WeeklyProgress, PersonalJourney } from "@/types";
 import { TrendingUp, TrendingDown, Minus, Zap, Activity, Award } from "lucide-react";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 export function XPProgressWidget() {
     const { token } = useAuthStore();
@@ -36,24 +39,27 @@ export function XPProgressWidget() {
 
     if (isLoading) {
         return (
-            <div className="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-2xl p-5 border border-violet-100 animate-pulse">
-                <div className="h-4 w-24 bg-violet-200 rounded mb-4" />
-                <div className="h-8 w-32 bg-violet-200 rounded mb-3" />
-                <div className="h-2 w-full bg-violet-100 rounded-full mb-4" />
-                <div className="grid grid-cols-3 gap-2">
-                    {[1, 2, 3].map((i) => (
-                        <div key={i} className="h-16 bg-violet-100 rounded-lg" />
-                    ))}
-                </div>
-            </div>
+            <Card className="border-none shadow-sm flex flex-col">
+                <CardHeader>
+                    <div className="h-6 w-1/3 bg-gray-100 rounded animate-pulse" />
+                </CardHeader>
+                <CardContent className="flex-1">
+                    <div className="h-24 bg-gray-100 rounded-xl animate-pulse" />
+                </CardContent>
+            </Card>
         );
     }
 
     if (!journey) return null;
 
-    const progressPercent = Math.min(100, journey.exp_progress || 0);
-    const weeklyExp = weeklyProgress?.exp_earned || 0;
-    const monthlyExp = journey.monthly_exp || 0;
+    const currentExp = Number(journey.current_exp ?? 0);
+    const currentLevel = Number(journey.current_level ?? 1);
+    const expToNextLevel = Number(journey.exp_to_next_level ?? 0);
+    const expProgress = Number(journey.exp_progress ?? 0);
+    const weeklyExp = Number(weeklyProgress?.exp_earned ?? 0);
+    const monthlyExp = Number(journey.monthly_exp ?? 0);
+    const badgesEarned = Number(journey.badges_earned ?? 0);
+    const progressPercent = Math.min(100, Math.max(0, expProgress));
 
     // Determine trend
     const weeklyTrend = weeklyExp > 0 ? "up" : weeklyExp === 0 ? "neutral" : "down";
@@ -61,92 +67,69 @@ export function XPProgressWidget() {
     const trendColor = weeklyTrend === "up" ? "text-green-500" : weeklyTrend === "down" ? "text-red-500" : "text-gray-400";
 
     return (
-        <Link href={ROUTES.COMMUNITY} className="block">
-            <div className="bg-gradient-to-br from-violet-50 to-indigo-50 rounded-2xl p-5 border border-violet-100 hover:shadow-md transition-shadow">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                        <div className="p-1.5 bg-violet-100 rounded-lg">
-                            <Zap className="h-4 w-4 text-violet-600" />
-                        </div>
-                        <span className="text-xs font-semibold text-violet-700 uppercase tracking-wider">
-                            Perjalananmu
-                        </span>
-                    </div>
-                    <span
-                        className="text-xs font-bold px-2 py-0.5 rounded-full"
-                        style={{
-                            backgroundColor: journey.tier_color ? `${journey.tier_color}20` : "#f3f4f6",
-                            color: journey.tier_color || "#6b7280",
-                        }}
-                    >
-                        {journey.tier_name || `Level ${journey.current_level}`}
-                    </span>
-                </div>
+        <Card className="flex flex-col border border-gray-100 shadow-sm bg-linear-to-br from-white to-violet-50/40">
+            <CardHeader className="flex flex-row items-center justify-between px-4 pt-4 pb-1">
+                <CardTitle className="text-lg font-bold flex items-center gap-2 text-gray-800">
+                    <Zap className="w-5 h-5 text-violet-500" />
+                    Perjalananmu
+                </CardTitle>
+                <Link href={ROUTES.DASHBOARD_COMMUNITY}>
+                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-violet-600">
+                        Detail <ArrowRight className="w-3 h-3 ml-1" />
+                    </Button>
+                </Link>
+            </CardHeader>
 
-                {/* Level Progress */}
-                <div className="mb-4">
-                    <div className="flex items-baseline gap-2 mb-1.5">
-                        <span className="text-2xl font-bold text-gray-900">
-                            Level {journey.current_level}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                            {journey.current_exp?.toLocaleString()} XP
+            <CardContent className="flex-1 flex flex-col gap-3 px-4 pb-4 pt-2">
+                <div className="rounded-xl border border-violet-100 bg-white/70 p-3">
+                    <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-xl font-bold text-gray-900">Level {currentLevel}</span>
+                        <span
+                            className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                            style={{
+                                backgroundColor: journey.tier_color ? `${journey.tier_color}20` : "#f3f4f6",
+                                color: journey.tier_color || "#6b7280",
+                            }}
+                        >
+                            {journey.tier_name || `Level ${currentLevel}`}
                         </span>
                     </div>
+                    <p className="text-xs text-gray-500 mb-1.5">{currentExp.toLocaleString()} XP</p>
                     <div className="w-full h-2.5 bg-violet-100 rounded-full overflow-hidden">
                         <div
-                            className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full transition-all duration-500"
+                            className="h-full bg-linear-to-r from-violet-500 to-indigo-500 rounded-full transition-all duration-500"
                             style={{ width: `${progressPercent}%` }}
                         />
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                        {journey.exp_to_next_level?.toLocaleString()} XP lagi ke Level {journey.current_level + 1}
+                    <p className="text-[11px] text-gray-500 mt-1">
+                        {expToNextLevel.toLocaleString()} XP lagi ke Level {currentLevel + 1}
                     </p>
                 </div>
 
-                {/* Quick Stats */}
                 <div className="grid grid-cols-3 gap-2">
-                    <div className="bg-white/70 rounded-lg p-2.5 text-center">
+                    <div className="bg-white rounded-lg p-2 text-center border border-violet-100/60">
                         <div className="flex items-center justify-center gap-1 mb-0.5">
                             <TrendIcon className={`h-3.5 w-3.5 ${trendColor}`} />
                         </div>
-                        <p className="text-sm font-bold text-gray-900">{weeklyExp}</p>
+                        <p className="text-sm font-bold text-gray-900">{weeklyExp.toLocaleString()}</p>
                         <p className="text-[10px] text-gray-500">XP Minggu Ini</p>
                     </div>
-                    <div className="bg-white/70 rounded-lg p-2.5 text-center">
+                    <div className="bg-white rounded-lg p-2 text-center border border-violet-100/60">
                         <div className="flex items-center justify-center gap-1 mb-0.5">
                             <Activity className="h-3.5 w-3.5 text-blue-500" />
                         </div>
-                        <p className="text-sm font-bold text-gray-900">{monthlyExp}</p>
+                        <p className="text-sm font-bold text-gray-900">{monthlyExp.toLocaleString()}</p>
                         <p className="text-[10px] text-gray-500">XP Bulan Ini</p>
                     </div>
-                    <div className="bg-white/70 rounded-lg p-2.5 text-center">
+                    <div className="bg-white rounded-lg p-2 text-center border border-violet-100/60">
                         <div className="flex items-center justify-center gap-1 mb-0.5">
                             <Award className="h-3.5 w-3.5 text-amber-500" />
                         </div>
-                        <p className="text-sm font-bold text-gray-900">{journey.badges_earned}</p>
+                        <p className="text-sm font-bold text-gray-900">{badgesEarned}</p>
                         <p className="text-[10px] text-gray-500">Badge</p>
                     </div>
                 </div>
-
-                {/* Activity Breakdown (if available) */}
-                {weeklyProgress?.breakdown && weeklyProgress.breakdown.length > 0 && (
-                    <div className="mt-3 pt-3 border-t border-violet-100">
-                        <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-2">Aktivitas Minggu Ini</p>
-                        <div className="flex flex-wrap gap-1.5">
-                            {weeklyProgress.breakdown.slice(0, 4).map((item) => (
-                                <span
-                                    key={item.activity_type}
-                                    className="text-[10px] bg-white/80 text-gray-600 px-2 py-0.5 rounded-full border border-violet-100"
-                                >
-                                    {item.label}: {item.count}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                )}
-            </div>
-        </Link>
+            </CardContent>
+        </Card>
     );
 }

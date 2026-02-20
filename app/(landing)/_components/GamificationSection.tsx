@@ -19,7 +19,7 @@ const GAMIFICATION_FEATURES = [
     icon: Zap,
     title: "XP & Level Up",
     description:
-      "Kumpulkan XP dari setiap aktivitas — login, ngobrol, nulis jurnal, baca artikel. Naik level dan unlock reward!",
+      "Kumpulkan XP dari setiap aktivitas - login, ngobrol, nulis jurnal, baca artikel. Naik level dan unlock reward!",
     color: "text-yellow-500",
     bgColor: "bg-yellow-50",
     borderColor: "border-yellow-200",
@@ -28,7 +28,7 @@ const GAMIFICATION_FEATURES = [
     icon: CalendarCheck,
     title: "Daily Tasks",
     description:
-      "7 tugas harian yang mendorongmu merawat diri — mulai dari login, rekam mood, hingga menulis jurnal.",
+      "7 tugas harian yang mendorongmu merawat diri - mulai dari login, rekam mood, hingga menulis jurnal.",
     color: "text-blue-500",
     bgColor: "bg-blue-50",
     borderColor: "border-blue-200",
@@ -55,7 +55,7 @@ const GAMIFICATION_FEATURES = [
     icon: Award,
     title: "Badge Collection",
     description:
-      "Raih badge spesial untuk pencapaian unikmu — dari Newbie hingga Hall of Fame. Koleksi semuanya!",
+      "Raih badge spesial untuk pencapaian unikmu - dari Newbie hingga Hall of Fame. Koleksi semuanya!",
     color: "text-purple-500",
     bgColor: "bg-purple-50",
     borderColor: "border-purple-200",

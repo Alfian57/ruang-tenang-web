@@ -11,9 +11,11 @@ import { ArrowLeft } from "lucide-react";
 
 interface NavbarProps {
   variant?: "default" | "back";
+  backHref?: string;
+  backLabel?: string;
 }
 
-export function Navbar({ variant = "default" }: NavbarProps) {
+export function Navbar({ variant = "default", backHref = "/", backLabel = "Kembali ke Beranda" }: NavbarProps) {
   const { isAuthenticated } = useAuthStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -50,17 +52,17 @@ export function Navbar({ variant = "default" }: NavbarProps) {
                   Beranda
                 </Link>
                 <Link
-                   href="/#features"
-                   className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
-                 >
-                   Fitur
-                 </Link>
-                 <Link
-                   href="/#gamification"
-                   className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
-                 >
-                   Gamifikasi
-                 </Link>
+                  href="/#features"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
+                >
+                  Fitur
+                </Link>
+                <Link
+                  href="/#gamification"
+                  className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
+                >
+                  Gamifikasi
+                </Link>
                 <Link
                   href="/#articles"
                   className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
@@ -72,7 +74,7 @@ export function Navbar({ variant = "default" }: NavbarProps) {
               <div className="hidden md:flex items-center gap-2 ml-4">
                 {isAuthenticated ? (
                   <Link href="/dashboard">
-                    <Button 
+                    <Button
                       className="bg-primary hover:bg-primary/90 text-white rounded-full px-6"
                     >
                       Dashboard
@@ -80,8 +82,8 @@ export function Navbar({ variant = "default" }: NavbarProps) {
                   </Link>
                 ) : (
                   <Link href="/login">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="text-gray-700 hover:text-primary border-gray-200 hover:border-primary rounded-full px-6"
                     >
                       Masuk
@@ -91,13 +93,13 @@ export function Navbar({ variant = "default" }: NavbarProps) {
               </div>
             </>
           ) : (
-            <Link href="/">
-              <Button 
-                variant="ghost" 
+            <Link href={backHref}>
+              <Button
+                variant="ghost"
                 className="text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full gap-2"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Kembali ke Beranda
+                {backLabel}
               </Button>
             </Link>
           )}
@@ -134,20 +136,20 @@ export function Navbar({ variant = "default" }: NavbarProps) {
           >
             Beranda
           </Link>
-           <Link
-             href="/#features"
-             className="block px-4 py-3 text-gray-600 font-medium rounded-xl hover:bg-primary/5 hover:text-primary transition-colors"
-             onClick={() => setMobileMenuOpen(false)}
-           >
-             Fitur
-           </Link>
-           <Link
-             href="/#gamification"
-             className="block px-4 py-3 text-gray-600 font-medium rounded-xl hover:bg-primary/5 hover:text-primary transition-colors"
-             onClick={() => setMobileMenuOpen(false)}
-           >
-             Gamifikasi
-           </Link>
+          <Link
+            href="/#features"
+            className="block px-4 py-3 text-gray-600 font-medium rounded-xl hover:bg-primary/5 hover:text-primary transition-colors"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Fitur
+          </Link>
+          <Link
+            href="/#gamification"
+            className="block px-4 py-3 text-gray-600 font-medium rounded-xl hover:bg-primary/5 hover:text-primary transition-colors"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Gamifikasi
+          </Link>
           <Link
             href="/#articles"
             className="block px-4 py-3 text-gray-600 font-medium rounded-xl hover:bg-primary/5 hover:text-primary transition-colors"

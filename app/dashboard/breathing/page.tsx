@@ -22,6 +22,7 @@ import {
     Wind,
     HelpCircle,
     Moon,
+    BookOpen,
 } from "lucide-react";
 import { useBreathing } from "./_hooks/useBreathing";
 
@@ -89,7 +90,7 @@ export default function BreathingPage() {
         );
     }
 
-    // Handle bedtime mode — auto-select 4-7-8 relaxing technique
+    // Handle bedtime mode - auto-select 4-7-8 relaxing technique
     const handleBedtimeMode = () => {
         const relaxingTechnique = systemTechniques.find(t =>
             t.slug === "4-7-8-relaxing" || t.name.toLowerCase().includes("4-7-8")
@@ -139,6 +140,13 @@ export default function BreathingPage() {
                             title="Statistik"
                         >
                             <BarChart3 className="w-5 h-5" />
+                        </button>
+                        <button
+                            onClick={handleReplayTutorial}
+                            className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground"
+                            title="Tutorial"
+                        >
+                            <BookOpen className="w-5 h-5" />
                         </button>
                         <button
                             onClick={() => setViewMode("faq")}
@@ -210,7 +218,7 @@ export default function BreathingPage() {
                     {/* Bedtime Mode CTA */}
                     <button
                         onClick={handleBedtimeMode}
-                        className="w-full mb-6 p-4 rounded-xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-200/50 hover:border-indigo-300 transition-colors flex items-center gap-4 text-left"
+                        className="w-full mb-6 p-4 rounded-xl bg-linear-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-200/50 hover:border-indigo-300 transition-colors flex items-center gap-4 text-left"
                     >
                         <div className="w-12 h-12 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0">
                             <Moon className="w-6 h-6 text-indigo-500" />

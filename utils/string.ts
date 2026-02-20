@@ -29,3 +29,21 @@ export function slugify(str: string): string {
     .replace(/[\s_-]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
+
+/**
+ * Build a short excerpt from HTML content.
+ */
+export function getHtmlExcerpt(
+  html: string,
+  maxLength: number
+): string {
+  const plainText = (html || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!plainText) return "";
+  if (plainText.length <= maxLength) return plainText;
+
+  return plainText.substring(0, maxLength).trimEnd() + "....";
+}

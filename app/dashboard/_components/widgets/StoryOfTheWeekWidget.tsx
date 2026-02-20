@@ -20,7 +20,7 @@ export function StoryOfTheWeekWidget() {
                     setStory(res.data[0]);
                 }
             } catch {
-                // Silently fail — widget is non-critical
+                // Silently fail - widget is non-critical
             } finally {
                 setIsLoading(false);
             }

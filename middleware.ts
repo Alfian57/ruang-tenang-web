@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { env } from "./config/env";
 
 /**
  * Next.js middleware to set security headers on all responses.
@@ -10,7 +11,7 @@ export function middleware(request: NextRequest) {
 
     // Content Security Policy
     // Extract origin from API URL so CSP allows all subpaths (e.g. /api/v1/articles)
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
+    const apiUrl = env.NEXT_PUBLIC_API_BASE_URL;
     const apiOrigin = new URL(apiUrl).origin;
     const csp = [
         "default-src 'self'",
