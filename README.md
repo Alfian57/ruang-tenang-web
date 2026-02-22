@@ -1,5 +1,7 @@
 # Ruang Tenang Web
 
+[![Web Test Suite](https://github.com/Alfian57/ruang-tenang-web/actions/workflows/test.yml/badge.svg)](https://github.com/Alfian57/ruang-tenang-web/actions/workflows/test.yml)
+
 Frontend untuk aplikasi Ruang Tenang - Platform Kesehatan Mental.
 
 ## Tech Stack
@@ -80,4 +82,7 @@ npm run dev      # Development server
 npm run build    # Production build
 npm run start    # Production server
 npm run lint     # ESLint
+npm run test:component  # Component tests (Vitest)
+npm run test:unit       # Unit tests (Vitest)
+npm run test:e2e        # E2E critical flow (Playwright)
 ```

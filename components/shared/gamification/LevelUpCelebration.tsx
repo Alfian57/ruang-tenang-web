@@ -16,12 +16,22 @@ export function LevelUpCelebration({ celebration, onClose, className }: LevelUpC
     const [showFeatures, setShowFeatures] = useState(false);
 
     useEffect(() => {
+        if (typeof document === "undefined") return;
+
         // Simple confetti effect using CSS animation
         const duration = 3000;
         const end = Date.now() + duration;
+        let isMounted = true;
+        const timeoutIds: number[] = [];
+
+        const trackedTimeout = (callback: () => void, delay: number) => {
+            const id = window.setTimeout(callback, delay);
+            timeoutIds.push(id);
+            return id;
+        };
 
         const createConfetti = () => {
-            if (Date.now() > end) return;
+            if (!isMounted || Date.now() > end) return;
 
             // Create confetti particles
             for (let i = 0; i < 10; i++) {
@@ -40,10 +50,10 @@ export function LevelUpCelebration({ celebration, onClose, className }: LevelUpC
           transform: rotate(${Math.random() * 360}deg);
         `;
                 document.body.appendChild(confetti);
-                setTimeout(() => confetti.remove(), 3000);
+                trackedTimeout(() => confetti.remove(), 3000);
             }
 
-            setTimeout(createConfetti, 200);
+            trackedTimeout(createConfetti, 200);
         };
 
         // Add animation keyframes
@@ -60,7 +70,14 @@ export function LevelUpCelebration({ celebration, onClose, className }: LevelUpC
 
         createConfetti();
 
-        return () => style.remove();
+        return () => {
+            isMounted = false;
+            timeoutIds.forEach((id) => clearTimeout(id));
+            style.remove();
+            document.querySelectorAll(".confetti-particle").forEach((particle) => {
+                particle.remove();
+            });
+        };
     }, [celebration.tier_color]);
 
     if (showFeatures && celebration.newly_unlocked_features.length > 0) {

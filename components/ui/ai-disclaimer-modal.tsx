@@ -45,9 +45,7 @@ export function AIDisclaimerModal({
                         <DialogTitle className="text-xl">Disclaimer AI Chat</DialogTitle>
                     </div>
                     <DialogDescription className="text-left space-y-4 pt-2">
-                        <p className="text-base">
-                            Sebelum menggunakan fitur AI Chat, harap pahami hal-hal berikut:
-                        </p>
+                        Sebelum menggunakan fitur AI Chat, harap pahami hal-hal berikut:
                     </DialogDescription>
                 </DialogHeader>
 

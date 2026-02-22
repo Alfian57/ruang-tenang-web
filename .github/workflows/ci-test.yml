@@ -1,0 +1,64 @@
+name: Web Test Suite
+
+on:
+    pull_request:
+        branches: ["main"]
+    push:
+        branches: ["main"]
+    workflow_dispatch:
+
+concurrency:
+    group: web-tests-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    component-and-unit:
+        name: Component + Unit Coverage Gate
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Run coverage gate (component + unit)
+              run: npm run test:coverage
+
+            - name: Upload coverage html report
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: coverage-html
+                  path: coverage
+                  if-no-files-found: ignore
+
+    e2e-critical:
+        name: E2E Critical Flow
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Install Playwright browser
+              run: npx playwright install --with-deps chromium
+
+            - name: Run critical E2E tests
+              run: npm run test:e2e

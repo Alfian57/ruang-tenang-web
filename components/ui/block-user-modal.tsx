@@ -93,14 +93,14 @@ export function BlockUserModal({
                         </div>
                     </div>
 
-                    <DialogDescription className="text-sm">
-                        Setelah memblokir pengguna ini:
-                        <ul className="mt-2 space-y-1 list-disc list-inside text-muted-foreground">
+                    <div className="text-sm text-muted-foreground">
+                        <p>Setelah memblokir pengguna ini:</p>
+                        <ul className="mt-2 space-y-1 list-disc list-inside">
                             <li>Anda tidak akan melihat postingan mereka</li>
                             <li>Mereka tidak akan bisa melihat postingan Anda</li>
                             <li>Mereka tidak akan bisa menghubungi Anda</li>
                         </ul>
-                    </DialogDescription>
+                    </div>
 
                     {/* Optional Reason */}
                     <div className="space-y-2">
