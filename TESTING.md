@@ -12,13 +12,26 @@
 - `tests/unit/*` → utilitas pure function + schema validation
 - `tests/e2e/*` → alur user paling penting end-to-end
 
+## Konvensi Penamaan File
+
+- Gunakan **`.test.ts` / `.test.tsx`** untuk Vitest (`tests/components` dan `tests/unit`)
+- Gunakan **`.spec.ts`** untuk Playwright (`tests/e2e`)
+- Nama file harus deskriptif berdasarkan domain/perilaku, contoh:
+	- `validations-forum-chat.test.ts`
+	- `register-validation.spec.ts`
+- Hindari mencampur jenis test dalam satu folder (mis. E2E di `tests/unit`)
+
 ## Implementasi Saat Ini
 
-- Component test files: **7**
-- Unit test files: **2**
-- E2E test files: **1**
+- Component test files: **149** (**78.01%**)
+- Unit test files: **28** (**14.66%**)
+- E2E test files: **14** (**7.33%**)
 
-Distribusi file saat ini mendekati komposisi target dengan dominasi component test.
+Distribusi file saat ini **sudah sesuai target komposisi**:
+
+- Component: target 70% - 80% → saat ini 78.01%
+- Unit: target 10% - 15% → saat ini 14.66%
+- E2E: target 5% - 15% → saat ini 7.33%
 
 ## Menjalankan Test
 
