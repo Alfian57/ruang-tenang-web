@@ -18,7 +18,14 @@ find /app/.next -type f \( -name "*.js" -o -name "*.mjs" -o -name "*.json" -o -n
 
 # Standalone server bundle juga bisa menyimpan placeholder.
 if [ -f /app/server.js ]; then
-  sed -i "s|__NEXT_PUBLIC_API_BASE_URL__|${API_BASE_URL}|g" /app/server.js
+  SERVER_TMP="$(mktemp)"
+  sed "s|__NEXT_PUBLIC_API_BASE_URL__|${API_BASE_URL}|g" /app/server.js > "${SERVER_TMP}"
+  if [ -w /app/server.js ]; then
+    cat "${SERVER_TMP}" > /app/server.js
+  else
+    echo "⚠️  /app/server.js is not writable; skipping inline replacement."
+  fi
+  rm -f "${SERVER_TMP}"
 fi
 
 # Tambahkan placeholder lain jika ada
