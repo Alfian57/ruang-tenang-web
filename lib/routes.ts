@@ -29,6 +29,7 @@ export const ROUTES = {
   CONSULTATION: "/dashboard/consultation",
   MOOD_TRACKER: "/dashboard/mood-tracker",
   COMMUNITY: "/community",
+  REWARDS: "/dashboard/rewards",
 
   // Admin
   ADMIN: {
@@ -41,6 +42,7 @@ export const ROUTES = {
     MODERATION: "/dashboard/moderation",
     MODERATION_REPORTS: "/dashboard/moderation/reports",
     MODERATION_QUEUE: "/dashboard/moderation/queue",
+    REWARDS: "/dashboard/admin/rewards",
   },
 
   // Dynamic Builders

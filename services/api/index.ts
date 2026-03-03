@@ -17,3 +17,4 @@ export { searchService } from "./search";
 export { songService } from "./song";
 export { storyService } from "./story";
 export { uploadService } from "./upload";
+export { rewardService } from "./reward";

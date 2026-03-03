@@ -26,7 +26,9 @@ export function DailyTaskWidget({ tasks, onTaskClaimed, className }: DailyTaskWi
     try {
       const response = await communityService.claimTaskReward(token, task.id);
       if (response.data) {
-        toast.success(`Berhasil klaim! +${response.data.xp_earned} EXP`);
+        const parts = [`+${response.data.xp_earned} EXP`];
+        if (response.data.coin_earned) parts.push(`+${response.data.coin_earned} 🪙`);
+        toast.success(`Berhasil klaim! ${parts.join(" • ")}`);
         if (response.data.level_up) {
            toast.success("Level Up!", {
              description: "Selamat! Kamu naik level 🎉"
@@ -90,6 +92,11 @@ export function DailyTaskWidget({ tasks, onTaskClaimed, className }: DailyTaskWi
                     <span className="text-[10px] bg-yellow-50 text-yellow-700 px-1.5 py-0.5 rounded border border-yellow-200 font-medium">
                       +{task.xp_reward} XP
                     </span>
+                    {task.coin_reward > 0 && (
+                      <span className="text-[10px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200 font-medium">
+                        +{task.coin_reward} 🪙
+                      </span>
+                    )}
                     <span className="text-xs text-gray-500">
                       • {task.current_count}/{task.target_count}
                     </span>

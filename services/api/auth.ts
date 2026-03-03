@@ -11,6 +11,7 @@ const userSchema: z.ZodType<User, z.ZodTypeDef, unknown> = z
     avatar: z.string().optional(),
     role: z.enum(["admin", "moderator", "member"]).catch("member"),
     exp: z.number().catch(0),
+    gold_coins: z.number().catch(0),
     level: z.number().catch(1),
     badge_name: z.string().catch(""),
     badge_icon: z.string().catch(""),

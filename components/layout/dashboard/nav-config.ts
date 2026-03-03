@@ -10,6 +10,7 @@ import {
   BookOpen,
   Wind,
   Newspaper,
+  Gift,
   type LucideIcon,
 } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
@@ -60,6 +61,7 @@ export const memberGroups: NavGroup[] = [
     title: "Komunitas",
     links: [
       { href: ROUTES.DASHBOARD_COMMUNITY, icon: Trophy, label: "Community Stats" },
+      { href: ROUTES.REWARDS, icon: Gift, label: "Klaim Hadiah" },
     ],
   },
 ];
@@ -80,6 +82,7 @@ export const adminGroups: NavGroup[] = [
       { href: ROUTES.ADMIN.SONGS, icon: Music, label: "Musik" },
       { href: ROUTES.ADMIN.FORUMS, icon: MessageSquare, label: "Forum" },
       { href: ROUTES.ADMIN.LEVELS, icon: Trophy, label: "Level" },
+      { href: ROUTES.ADMIN.REWARDS, icon: Gift, label: "Hadiah" },
     ],
   },
   {

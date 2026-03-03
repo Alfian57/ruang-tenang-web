@@ -412,6 +412,7 @@ export interface DailyTask {
   task_name: string;
   task_description: string;
   xp_reward: number;
+  coin_reward: number;
   task_icon: string;
   target_count: number;
   current_count: number;
@@ -426,6 +427,7 @@ export interface ClaimTaskResponse {
   success: boolean;
   message: string;
   xp_earned: number;
+  coin_earned: number;
   new_total_exp: number;
   level_up: boolean;
 }
@@ -440,4 +442,48 @@ export interface LeaderboardEntry {
   badge_name: string;
   badge_icon: string;
   role?: string;
+}
+
+// ==========================================
+// Reward Types
+// ==========================================
+
+export interface Reward {
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+  coin_cost: number;
+  stock: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RewardClaim {
+  id: number;
+  user_id: number;
+  reward_id: number;
+  coin_spent: number;
+  claimed_at: string;
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+    avatar: string;
+  };
+  reward?: Reward;
+}
+
+export interface RewardClaimResult {
+  claim: RewardClaim;
+  remaining_coins: number;
+}
+
+export interface RewardClaimListResult {
+  claims: RewardClaim[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
 }

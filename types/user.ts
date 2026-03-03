@@ -6,6 +6,7 @@ export interface User {
   avatar?: string;
   role: "admin" | "moderator" | "member";
   exp: number;
+  gold_coins: number;
   level: number;
   badge_name: string;
   badge_icon: string;
