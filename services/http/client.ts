@@ -1,10 +1,31 @@
 import { env } from "@/config/env";
 import { ApiError, type RequestOptions } from "./types";
 import { toast } from "sonner";
+import { getUploadUrl } from "./upload-url";
 
 const DEFAULT_TIMEOUT = 30_000; // 30 seconds
 const RATE_LIMIT_TOAST_COOLDOWN_MS = 5000;
 let lastRateLimitToastAt = 0;
+
+function normalizeUploadsDeep<T>(value: T): T {
+  if (typeof value === "string") {
+    return (value.startsWith("/uploads/") ? getUploadUrl(value) : value) as T;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => normalizeUploadsDeep(item)) as T;
+  }
+
+  if (value && typeof value === "object") {
+    const result: Record<string, unknown> = {};
+    for (const [key, nested] of Object.entries(value as Record<string, unknown>)) {
+      result[key] = normalizeUploadsDeep(nested);
+    }
+    return result as T;
+  }
+
+  return value;
+}
 
 /**
  * Centralized HTTP client wrapper.
@@ -106,7 +127,7 @@ class HttpClient {
         throw apiError;
       }
 
-      return data as T;
+      return normalizeUploadsDeep(data as T);
     } catch (error) {
       clearTimeout(timeoutId);
 
@@ -168,7 +189,7 @@ class HttpClient {
       });
     }
 
-    return data as T;
+    return normalizeUploadsDeep(data as T);
   }
 
   // ==========================================
