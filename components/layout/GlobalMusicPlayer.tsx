@@ -1,5 +1,4 @@
 "use client";
-import { env } from "@/config/env";
 
 import { useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,6 +6,7 @@ import { useMusicPlayerStore } from "@/store/musicPlayerStore";
 import { cn } from "@/utils";
 import { MinimizedPlayer } from "./player/MinimizedPlayer";
 import { ExpandedPlayer } from "./player/ExpandedPlayer";
+import { getUploadUrl } from "@/services/http/upload-url";
 
 export function GlobalMusicPlayer() {
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -78,13 +78,8 @@ export function GlobalMusicPlayer() {
         const audio = audioRef.current;
         if (!audio || !currentSong) return;
 
-        // Construct source URL
-        let src = currentSong.file_path;
-        if (!src.startsWith("http")) {
-             const apiUrl = env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api/v1";
-             const baseUrl = apiUrl.replace("/api/v1", "");
-             src = `${baseUrl}${currentSong.file_path}`;
-        }
+        // Construct source URL from API base
+        const src = getUploadUrl(currentSong.file_path);
         
         // Only reload if src actually changed to prevent loop
         if (audio.src !== src) {

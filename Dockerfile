@@ -7,9 +7,11 @@ WORKDIR /app
 # BUILD ARGUMENTS untuk NEXT_PUBLIC_* env vars
 # Gunakan placeholder untuk runtime injection
 # ============================================
-ARG NEXT_PUBLIC_API_URL=__NEXT_PUBLIC_API_URL__
+ARG NEXT_PUBLIC_API_BASE_URL=__NEXT_PUBLIC_API_BASE_URL__
+ARG NEXT_PUBLIC_API_URL=__NEXT_PUBLIC_API_BASE_URL__
 
 # Convert ARG ke ENV agar terbaca oleh next build
+ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
 # Install dependencies based on the preferred package manager

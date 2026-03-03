@@ -8,13 +8,15 @@ import { z } from "zod";
  *        env.NEXT_PUBLIC_API_BASE_URL
  */
 
+const API_BASE_PLACEHOLDER = "__NEXT_PUBLIC_API_BASE_URL__";
+
 const envSchema = z.object({
   NEXT_PUBLIC_API_BASE_URL: z
     .string()
     .default("http://localhost:8080/api/v1")
     .transform((val) =>
-      val === "__NEXT_PUBLIC_API_BASE_URL__"
-        ? "http://localhost:8080/api/v1"
+      val === "__NEXT_PUBLIC_API_URL__"
+        ? API_BASE_PLACEHOLDER
         : val
     ),
   NODE_ENV: z
@@ -23,6 +25,7 @@ const envSchema = z.object({
 });
 
 export const env = envSchema.parse({
-  NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  NEXT_PUBLIC_API_BASE_URL:
+    process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.NEXT_PUBLIC_API_URL,
   NODE_ENV: process.env.NODE_ENV,
 });

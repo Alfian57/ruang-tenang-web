@@ -30,7 +30,7 @@ Frontend untuk aplikasi Ruang Tenang - Platform Kesehatan Mental.
 
 2. Buat file `.env.local`:
    ```
-   NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
+   NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api/v1
    ```
 
 3. Jalankan development server:

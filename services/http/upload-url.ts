@@ -20,13 +20,16 @@ export function getUploadUrl(path: string): string {
     uploadBaseUrl = uploadBaseUrl.slice(0, -1);
   }
 
-  // Ensure absolute URL
-  if (!uploadBaseUrl.startsWith("http")) {
-    uploadBaseUrl = "http://localhost:8080";
-  }
-
   // Ensure path starts with /
   const cleanPath = path.startsWith("/") ? path : `/${path}`;
+
+  // Ensure absolute URL
+  if (!uploadBaseUrl.startsWith("http")) {
+    if (typeof window !== "undefined") {
+      return `${window.location.origin}${cleanPath}`;
+    }
+    return cleanPath;
+  }
 
   return `${uploadBaseUrl}${cleanPath}`;
 }

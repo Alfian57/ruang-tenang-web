@@ -5,12 +5,12 @@ describe("getUploadUrl edge behavior", () => {
     expect(url).toContain("/uploads/a.png");
   });
 
-  it("uses localhost fallback when base url is non-http", async () => {
+  it("uses current origin fallback when base url is non-http", async () => {
     vi.resetModules();
     vi.stubEnv("NEXT_PUBLIC_API_BASE_URL", "api.local/api/v1");
     const mod = await import("@/services/http/upload-url");
     const url = mod.getUploadUrl("/uploads/b.png");
-    expect(url.startsWith("http://localhost:8080")).toBe(true);
+    expect(url).toBe(`${window.location.origin}/uploads/b.png`);
     vi.unstubAllEnvs();
   });
 });

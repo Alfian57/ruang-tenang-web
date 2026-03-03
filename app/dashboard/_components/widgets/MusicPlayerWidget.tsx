@@ -1,6 +1,5 @@
 "use client";
 
-import { env } from "@/config/env";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -10,6 +9,7 @@ import { SongCategory, Song } from "@/types";
 import { cn } from "@/utils";
 import { ArrowRight, ChevronDown, Music, Play, Pause } from "lucide-react";
 import { songService } from "@/services/api";
+import { getUploadUrl } from "@/services/http/upload-url";
 
 interface MusicPlayerWidgetProps {
   categories: SongCategory[];
@@ -117,7 +117,7 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
       {currentSong && (
         <audio
           ref={audioRef}
-          src={currentSong.file_path.startsWith("http") ? currentSong.file_path : `${env.NEXT_PUBLIC_API_BASE_URL?.replace("/api/v1", "") || "http://localhost:8080"}${currentSong.file_path}`}
+          src={getUploadUrl(currentSong.file_path)}
           preload="metadata"
         />
       )}
