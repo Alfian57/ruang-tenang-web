@@ -100,12 +100,22 @@ export const adminService = {
     return httpClient.get<ApiResponse<LevelConfig[]>>("/admin/levels", { token });
   },
 
-  createLevel(token: string, data: { level: number; min_exp: number; badge_name: string; badge_icon: string }) {
-    return httpClient.post<ApiResponse<LevelConfig>>("/admin/levels", data, { token });
+  createLevel(token: string, data: { level: number; min_exp: number; badge_name: string; badge_image: File }) {
+    const formData = new FormData();
+    formData.append("level", String(data.level));
+    formData.append("min_exp", String(data.min_exp));
+    formData.append("badge_name", data.badge_name);
+    formData.append("badge_image", data.badge_image);
+    return httpClient.upload<ApiResponse<LevelConfig>>("/admin/level-configs", formData, token);
   },
 
-  updateLevel(token: string, id: number, data: { level?: number; min_exp?: number; badge_name?: string; badge_icon?: string }) {
-    return httpClient.put<ApiResponse<LevelConfig>>(`/admin/levels/${id}`, data, { token });
+  updateLevel(token: string, id: number, data: { level?: number; min_exp?: number; badge_name?: string; badge_image?: File | null }) {
+    const formData = new FormData();
+    if (data.level !== undefined) formData.append("level", String(data.level));
+    if (data.min_exp !== undefined) formData.append("min_exp", String(data.min_exp));
+    if (data.badge_name) formData.append("badge_name", data.badge_name);
+    if (data.badge_image) formData.append("badge_image", data.badge_image);
+    return httpClient.upload<ApiResponse<LevelConfig>>("/admin/level-configs/" + id, formData, token, "PUT");
   },
 
   deleteLevel(token: string, id: number) {

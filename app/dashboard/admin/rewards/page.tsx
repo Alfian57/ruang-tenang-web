@@ -390,7 +390,7 @@ export default function AdminRewardsPage() {
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden">
                                 {reward.image ? (
-                                  <Image src={reward.image} alt={reward.name} fill className="object-cover" />
+                                  <Image src={reward.image} alt={reward.name} fill className="object-cover"  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                                 ) : (
                                   <Gift className="w-5 h-5 text-amber-400" />
                                 )}
@@ -496,7 +496,7 @@ export default function AdminRewardsPage() {
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0 relative overflow-hidden">
                             {claim.user?.avatar ? (
-                              <Image src={claim.user.avatar} alt={claim.user.name || "Avatar"} fill className="object-cover" />
+                              <Image src={claim.user.avatar} alt={claim.user.name || "Avatar"} fill className="object-cover"  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                             ) : (
                               <Users className="w-4 h-4 text-gray-400" />
                             )}

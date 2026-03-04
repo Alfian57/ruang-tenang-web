@@ -116,7 +116,7 @@ export function GlobalSearch() {
                       alt={article.title}
                       fill
                       className="object-cover"
-                    />
+                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
@@ -155,7 +155,7 @@ export function GlobalSearch() {
                       alt={song.title}
                       fill
                       className="object-cover"
-                    />
+                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-900 group-hover:text-primary transition-colors line-clamp-1">

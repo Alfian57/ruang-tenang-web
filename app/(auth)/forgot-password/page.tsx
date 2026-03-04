@@ -59,7 +59,7 @@ export default function ForgotPasswordPage() {
                 width={180}
                 height={60}
                 className="object-contain"
-                style={{ height: "auto" }}
+                style={{ width: "auto", height: "auto" }}
               />
             </Link>
             <h1 className="text-2xl font-bold mb-2">Lupa Password?</h1>

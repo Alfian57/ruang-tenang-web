@@ -149,7 +149,11 @@ export function ExpHistoryModal({
           </button>
 
           <div className="flex items-center gap-4">
-            <div className="text-5xl">{badgeIcon}</div>
+            {badgeIcon && (badgeIcon.startsWith("/") || badgeIcon.startsWith("http")) ? (
+              <img src={badgeIcon} alt={badgeName} className="w-12 h-12 object-contain" />
+            ) : (
+              <div className="text-5xl">{badgeIcon || "🌱"}</div>
+            )}
             <div>
               <h2 className="text-2xl font-bold">{badgeName}</h2>
               <p className="text-yellow-100">Level {currentLevel}</p>

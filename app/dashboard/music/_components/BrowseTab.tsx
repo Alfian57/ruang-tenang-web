@@ -75,7 +75,7 @@ export function BrowseTab({
                                     <CardContent className="p-3 flex items-center gap-3">
                                         <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden relative">
                                             {song.thumbnail ? (
-                                                <Image src={song.thumbnail} alt={song.title} fill className="object-cover" />
+                                                <Image src={song.thumbnail} alt={song.title} fill className="object-cover"  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                                             ) : (
                                                 <Music className="w-6 h-6 text-gray-400" />
                                             )}

@@ -54,11 +54,17 @@ export function TopHeader({
         ) : (
           <button
             onClick={onShowExpHistory}
-            className="hidden md:flex items-center mr-4 bg-linear-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-full px-4 py-1.5 shadow-sm hover:shadow-md hover:border-yellow-300 transition-all cursor-pointer"
+            className="hidden md:flex items-center mr-4 bg-linear-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-full pl-3 pr-4 py-1.5 shadow-sm hover:shadow-md hover:border-yellow-300 transition-all cursor-pointer overflow-hidden relative"
             title="Klik untuk melihat riwayat EXP"
           >
             <div className="flex items-center gap-2">
-              <span className="text-lg">{user?.badge_icon || "🌱"}</span>
+              {user?.badge_icon ? (
+                <div className="w-6 h-6 shrink-0 flex items-center justify-center ml-0.5">
+                  <img src={user.badge_icon} alt={user?.badge_name || "Badge"} className="w-full h-full object-contain" />
+                </div>
+              ) : (
+                <span className="text-lg ml-0.5">🌱</span>
+              )}
               <span className="text-xs flex items-center gap-3">
                 <span className="text-yellow-600 font-semibold whitespace-nowrap">Level {user?.level || 1}</span>
                 <span className="text-yellow-300">•</span>

@@ -91,7 +91,7 @@ export function ImageUpload({
               alt="Thumbnail"
               fill
               className="object-cover"
-            />
+             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
             <button
               type="button"
               onClick={(e) => {

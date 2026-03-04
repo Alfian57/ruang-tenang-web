@@ -162,7 +162,7 @@ export default function RewardsPage() {
                           alt={reward.name}
                           fill
                           className="object-cover"
-                        />
+                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                       ) : (
                         <Gift className="w-16 h-16 text-amber-300 group-hover:scale-110 transition-transform" />
                       )}
@@ -268,7 +268,7 @@ export default function RewardsPage() {
                           alt={claim.reward?.name || "Hadiah"}
                           fill
                           className="object-cover"
-                        />
+                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                       ) : (
                         <Gift className="w-6 h-6 text-amber-400" />
                       )}

@@ -128,7 +128,7 @@ export function EditProfileModal({ isOpen, onClose }: EditProfileModalProps) {
                   alt="Avatar" 
                   fill 
                   className="object-cover"
-                />
+                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-gray-400">
                   {user?.name?.charAt(0).toUpperCase()}

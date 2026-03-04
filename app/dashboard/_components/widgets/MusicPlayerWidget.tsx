@@ -160,7 +160,7 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
             >
               <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden relative shrink-0 shadow-sm group-hover:shadow-md transition-all">
                 {cat.thumbnail ? (
-                  <Image src={cat.thumbnail} alt="" fill className="object-cover" />
+                  <Image src={cat.thumbnail} alt="" fill className="object-cover"  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gray-200">
                     <Music className="w-4 h-4 text-gray-400" />

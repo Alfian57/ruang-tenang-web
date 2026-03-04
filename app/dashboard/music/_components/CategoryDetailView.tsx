@@ -51,7 +51,7 @@ export function CategoryDetailView({
                                         alt={category.name}
                                         fill
                                         className="object-cover"
-                                    />
+                                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20">
                                         <Music className="w-8 h-8 text-primary/60" />
@@ -105,7 +105,7 @@ export function CategoryDetailView({
                                     <div className="flex-1 min-w-0 flex items-center gap-4">
                                         <div className="w-10 h-10 rounded bg-gray-100 relative overflow-hidden shrink-0">
                                             {song.thumbnail ? (
-                                                <Image src={song.thumbnail} alt="" fill className="object-cover" />
+                                                <Image src={song.thumbnail} alt="" fill className="object-cover"  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center">
                                                     <Music className="w-4 h-4 text-gray-400" />

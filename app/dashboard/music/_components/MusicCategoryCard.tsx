@@ -58,7 +58,7 @@ export function MusicCategoryCard({
               alt={category.name}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-110"
-              onError={() => setImageError(true)}
+              onError={() = sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"> setImageError(true)}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
           </>

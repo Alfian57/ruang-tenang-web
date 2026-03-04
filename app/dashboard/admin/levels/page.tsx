@@ -1,6 +1,8 @@
 "use client";
 
-import { Plus, Pencil, Trash2, Loader2, Save, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, Save, X, ImageIcon } from "lucide-react";
+import Image from "next/image";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
@@ -33,8 +35,18 @@ export default function LevelsManagementPage() {
     setPage,
   } = useAdminLevels();
 
-  // Common emoji suggestions for badges
-  const badgeEmojis = ["🌱", "🌿", "📚", "🌳", "🏆", "💎", "⭐", "👑", "🔥", "💪", "🎯", "🚀"];
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setFormData({ ...formData, badge_image: file });
+  };
+
+  // Preview URL for selected file
+  const previewUrl = formData.badge_image
+    ? URL.createObjectURL(formData.badge_image)
+    : null;
 
   return (
     <div className="p-4 md:p-6 lg:p-8">
@@ -60,7 +72,7 @@ export default function LevelsManagementPage() {
                 level: (levels.length > 0 ? Math.max(...levels.map(l => l.level)) + 1 : 1),
                 min_exp: (levels.length > 0 ? Math.max(...levels.map(l => l.min_exp)) + 500 : 0),
                 badge_name: "",
-                badge_icon: "🌱",
+                badge_image: null,
               });
             }}
             className="gradient-primary text-white"
@@ -109,27 +121,29 @@ export default function LevelsManagementPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Icon Badge</label>
-              <div className="flex gap-2">
-                <Input
-                  type="text"
-                  placeholder=""
-                  value={formData.badge_icon}
-                  onChange={(e) => setFormData({ ...formData, badge_icon: e.target.value })}
-                  className="w-20"
+              <label className="block text-sm font-medium text-gray-700 mb-1">Gambar Badge</label>
+              <div className="flex items-center gap-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
                 />
-                <div className="flex flex-wrap gap-1">
-                  {badgeEmojis.slice(0, 6).map((emoji) => (
-                    <button
-                      key={emoji}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, badge_icon: emoji })}
-                      className={`w-8 h-8 rounded hover:bg-gray-100 ${formData.badge_icon === emoji ? 'bg-yellow-100 ring-2 ring-yellow-400' : ''}`}
-                    >
-                      {emoji}
-                    </button>
-                  ))}
-                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex-1"
+                >
+                  <ImageIcon className="w-4 h-4 mr-2" />
+                  {formData.badge_image ? formData.badge_image.name : "Pilih Gambar"}
+                </Button>
+                {previewUrl && (
+                  <div className="w-10 h-10 rounded-lg border overflow-hidden flex-shrink-0">
+                    <Image src={previewUrl} alt="Preview" width={40} height={40} className="object-cover w-full h-full" />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -158,7 +172,7 @@ export default function LevelsManagementPage() {
                 <th className="text-left p-4 text-sm font-medium text-gray-500">Level</th>
                 <th className="text-left p-4 text-sm font-medium text-gray-500">Min EXP</th>
                 <th className="text-left p-4 text-sm font-medium text-gray-500">Badge</th>
-                <th className="text-left p-4 text-sm font-medium text-gray-500">Icon</th>
+                <th className="text-left p-4 text-sm font-medium text-gray-500">Gambar</th>
                 <th className="text-right p-4 text-sm font-medium text-gray-500">Aksi</th>
               </tr>
             </thead>
@@ -194,23 +208,44 @@ export default function LevelsManagementPage() {
                         />
                       </td>
                       <td className="p-4">
-                        <div className="flex items-center gap-1">
-                          <Input
-                            type="text"
-                            value={formData.badge_icon}
-                            onChange={(e) => setFormData({ ...formData, badge_icon: e.target.value })}
-                            className="w-16"
+                        <div className="flex items-center gap-2">
+                          <input
+                            ref={editFileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="hidden"
                           />
-                          {badgeEmojis.slice(0, 4).map((emoji) => (
-                            <button
-                              key={emoji}
-                              type="button"
-                              onClick={() => setFormData({ ...formData, badge_icon: emoji })}
-                              className={`w-7 h-7 rounded text-sm hover:bg-gray-100 ${formData.badge_icon === emoji ? 'bg-yellow-100' : ''}`}
-                            >
-                              {emoji}
-                            </button>
-                          ))}
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => editFileInputRef.current?.click()}
+                          >
+                            <ImageIcon className="w-3 h-3 mr-1" />
+                            {formData.badge_image ? "Ganti" : "Ubah"}
+                          </Button>
+                          {formData.badge_image ? (
+                            <div className="w-8 h-8 rounded border overflow-hidden flex-shrink-0">
+                              <Image
+                                src={URL.createObjectURL(formData.badge_image)}
+                                alt="Preview"
+                                width={32}
+                                height={32}
+                                className="object-cover w-full h-full"
+                              />
+                            </div>
+                          ) : level.badge_icon ? (
+                            <div className="w-8 h-8 rounded border overflow-hidden flex-shrink-0">
+                              <Image
+                                src={level.badge_icon}
+                                alt={level.badge_name}
+                                width={32}
+                                height={32}
+                                className="object-cover w-full h-full"
+                              />
+                            </div>
+                          ) : null}
                         </div>
                       </td>
                       <td className="p-4 text-right">
@@ -238,7 +273,21 @@ export default function LevelsManagementPage() {
                         <span className="font-medium text-gray-800">{level.badge_name}</span>
                       </td>
                       <td className="p-4">
-                        <span className="text-2xl">{level.badge_icon}</span>
+                        {level.badge_icon ? (
+                          <div className="w-10 h-10 rounded-lg border overflow-hidden">
+                            <Image
+                              src={level.badge_icon}
+                              alt={level.badge_name}
+                              width={40}
+                              height={40}
+                              className="object-cover w-full h-full"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg border bg-gray-100 flex items-center justify-center">
+                            <ImageIcon className="w-5 h-5 text-gray-400" />
+                          </div>
+                        )}
                       </td>
                       <td className="p-4 text-right">
                         <div className="flex justify-end gap-2">
@@ -297,7 +346,7 @@ export default function LevelsManagementPage() {
           <li>• <strong>Level</strong>: Nomor level yang ditampilkan kepada user</li>
           <li>• <strong>Min EXP</strong>: Minimum EXP yang dibutuhkan untuk mencapai level ini</li>
           <li>• <strong>Badge</strong>: Nama badge yang ditampilkan di profil user</li>
-          <li>• <strong>Icon</strong>: Emoji yang merepresentasikan badge</li>
+          <li>• <strong>Gambar</strong>: Gambar badge yang merepresentasikan level</li>
         </ul>
       </div>
     </div>

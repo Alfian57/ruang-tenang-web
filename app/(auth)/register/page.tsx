@@ -65,7 +65,7 @@ export default function RegisterPage() {
                 width={180}
                 height={60}
                 className="object-contain"
-                style={{ height: "auto" }}
+                style={{ width: "auto", height: "auto" }}
               />
             </Link>
             <p className="text-gray-500">Buat akun baru untuk memulai</p>

@@ -24,9 +24,9 @@ export function middleware(request: NextRequest) {
         "script-src-elem 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "font-src 'self' https://fonts.gstatic.com",
-        "img-src 'self' data: blob: https:",
+        `img-src 'self' data: blob: https: http: ${apiOrigin}`,
         `connect-src 'self' ${apiOrigin} https:`,
-        "media-src 'self' https:",
+        `media-src 'self' https: http: ${apiOrigin}`,
         "frame-ancestors 'none'",
     ].join("; ");
 

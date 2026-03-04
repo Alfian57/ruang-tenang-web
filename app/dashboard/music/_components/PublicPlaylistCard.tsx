@@ -39,7 +39,7 @@ export function PublicPlaylistCard({
             alt={playlist.name}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
-          />
+           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
             <ListMusic className="w-16 h-16 text-purple-400" />
@@ -155,7 +155,7 @@ export function PublicPlaylistCardHorizontal({
             alt={playlist.name}
             fill
             className="object-cover"
-          />
+           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
             <ListMusic className="w-8 h-8 text-purple-400" />

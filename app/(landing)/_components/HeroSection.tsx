@@ -83,7 +83,7 @@ export function HeroSection() {
                 width={500}
                 height={600}
                 className="relative z-10 w-full h-auto drop-shadow-2xl"
-                style={{ height: "auto" }}
+                style={{ width: "auto", height: "auto" }}
               />
 
               {/* Floating elements */}

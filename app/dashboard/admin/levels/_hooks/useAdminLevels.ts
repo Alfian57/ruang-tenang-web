@@ -9,7 +9,7 @@ export interface LevelFormData {
   level: number;
   min_exp: number;
   badge_name: string;
-  badge_icon: string;
+  badge_image: File | null;
 }
 
 export function useAdminLevels() {
@@ -25,7 +25,7 @@ export function useAdminLevels() {
     level: 1,
     min_exp: 0,
     badge_name: "",
-    badge_icon: "",
+    badge_image: null,
   });
   const [error, setError] = useState("");
 
@@ -54,17 +54,27 @@ export function useAdminLevels() {
       return;
     }
 
-    if (!formData.badge_name || !formData.badge_icon) {
-      setError("Semua field harus diisi");
+    if (!formData.badge_name) {
+      setError("Nama badge harus diisi");
+      return;
+    }
+
+    if (!formData.badge_image) {
+      setError("Gambar badge harus dipilih");
       return;
     }
 
     setSaving(true);
     setError("");
     try {
-      await adminService.createLevel(token, formData);
+      await adminService.createLevel(token, {
+        level: formData.level,
+        min_exp: formData.min_exp,
+        badge_name: formData.badge_name,
+        badge_image: formData.badge_image,
+      });
       setShowAddForm(false);
-      setFormData({ level: 1, min_exp: 0, badge_name: "", badge_icon: "" });
+      setFormData({ level: 1, min_exp: 0, badge_name: "", badge_image: null });
       fetchLevels();
     } catch (error) {
       console.error("Failed to create level:", error);
@@ -80,7 +90,7 @@ export function useAdminLevels() {
       level: level.level,
       min_exp: level.min_exp,
       badge_name: level.badge_name,
-      badge_icon: level.badge_icon,
+      badge_image: null, // null means keep existing
     });
   };
 
@@ -94,17 +104,22 @@ export function useAdminLevels() {
       return;
     }
 
-    if (!formData.badge_name || !formData.badge_icon) {
-      setError("Semua field harus diisi");
+    if (!formData.badge_name) {
+      setError("Nama badge harus diisi");
       return;
     }
 
     setSaving(true);
     setError("");
     try {
-      await adminService.updateLevel(token, editingId, formData);
+      await adminService.updateLevel(token, editingId, {
+        level: formData.level,
+        min_exp: formData.min_exp,
+        badge_name: formData.badge_name,
+        badge_image: formData.badge_image, // null = keep existing
+      });
       setEditingId(null);
-      setFormData({ level: 1, min_exp: 0, badge_name: "", badge_icon: "" });
+      setFormData({ level: 1, min_exp: 0, badge_name: "", badge_image: null });
       fetchLevels();
     } catch (error) {
       console.error("Failed to update level:", error);
@@ -140,7 +155,7 @@ export function useAdminLevels() {
   const cancelEdit = () => {
     setEditingId(null);
     setShowAddForm(false);
-    setFormData({ level: 1, min_exp: 0, badge_name: "", badge_icon: "" });
+    setFormData({ level: 1, min_exp: 0, badge_name: "", badge_image: null });
     setError("");
   };
 

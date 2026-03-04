@@ -60,7 +60,7 @@ export function StoryDetail({
                         alt={story.title}
                         fill
                         className="object-cover"
-                    />
+                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                     {story.is_featured && (
                         <div className="absolute top-4 left-4 bg-yellow-500 text-white text-sm font-medium px-3 py-1 rounded-full flex items-center gap-1">
                             <Star className="h-4 w-4" />

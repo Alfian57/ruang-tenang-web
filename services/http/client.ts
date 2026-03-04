@@ -165,7 +165,8 @@ class HttpClient {
   async upload<T>(
     endpoint: string,
     formData: FormData,
-    token?: string
+    token?: string,
+    method: "POST" | "PUT" = "POST"
   ): Promise<T> {
     const headers: HeadersInit = {};
     if (token) {
@@ -173,7 +174,7 @@ class HttpClient {
     }
 
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      method: "POST",
+      method,
       headers,
       body: formData,
     });

@@ -61,7 +61,7 @@ export function RecommendedArticlesWidget({ articles, isLoading }: RecommendedAr
                        alt={article.title}
                        fill
                        className="object-cover group-hover:scale-110 transition-transform duration-500"
-                     />
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                    ) : (
                      <div className="w-full h-full flex items-center justify-center bg-primary/5 text-2xl">📄</div>
                    )}

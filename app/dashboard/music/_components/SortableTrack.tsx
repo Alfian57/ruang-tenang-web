@@ -88,7 +88,7 @@ export function SortableTrack({
                         alt={song.title}
                         fill
                         className="object-cover"
-                    />
+                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center">
                         <Music className="w-5 h-5 text-gray-400" />
