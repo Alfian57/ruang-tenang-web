@@ -64,7 +64,8 @@ export function PlaylistCard({
                             alt={playlist.name}
                             fill
                             className="object-cover"
-                            onError={() = sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"> setImgError(true)}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            onError={() => setImgError(true)}
                         />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center bg-purple-50">
