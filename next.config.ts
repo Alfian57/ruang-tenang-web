@@ -5,34 +5,16 @@ import { env } from "./config/env";
 const apiUrl = env.NEXT_PUBLIC_API_BASE_URL;
 const apiBaseUrl = apiUrl.replace(/\/api\/v1$/, ""); // Remove /api/v1 suffix
 
-// Parse the URL to get components
-const parseUrl = (url: string) => {
-  try {
-    const parsed = new URL(url);
-    return {
-      protocol: parsed.protocol.replace(":", "") as "http" | "https",
-      hostname: parsed.hostname,
-      port: parsed.port || "",
-    };
-  } catch {
-    return { protocol: "http" as const, hostname: "localhost", port: "8080" };
-  }
-};
-
-const apiParsed = parseUrl(apiBaseUrl);
-
 const nextConfig: NextConfig = {
   output: "standalone",
   images: {
     remotePatterns: [
       {
-        protocol: apiParsed.protocol,
-        hostname: apiParsed.hostname,
-        port: apiParsed.port,
-        pathname: "/**",
+        protocol: "https",
+        hostname: "**",
       },
       {
-        protocol: "https",
+        protocol: "http",
         hostname: "**",
       },
     ],
