@@ -21,6 +21,8 @@ export interface Song {
 // Playlist types
 export interface Playlist {
   id: number;
+  uuid?: string;
+  slug?: string;
   user_id: number;
   name: string;
   description: string;
@@ -50,6 +52,8 @@ export interface PlaylistItem {
 
 export interface PlaylistListItem {
   id: number;
+  uuid?: string;
+  slug?: string;
   name: string;
   description: string;
   thumbnail: string;

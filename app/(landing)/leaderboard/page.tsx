@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { communityService } from "@/services/api";
 import { Navbar, Footer } from "@/components/layout";
-import { Trophy, Medal } from "lucide-react";
+import { Trophy, Medal, Users } from "lucide-react";
 import { LeaderboardEntry } from "@/types";
 
 export default function LeaderboardPage() {
@@ -221,8 +221,10 @@ export default function LeaderboardPage() {
                 ))}
 
                 {restUsers.length === 0 && (
-                  <div className="p-12 text-center text-gray-500">
-                    Tidak ada pengguna lain untuk ditampilkan.
+                  <div className="text-center py-16">
+                    <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-500">Tidak ada pengguna lain</h3>
+                    <p className="text-gray-400 text-sm mt-1">Pengguna lain akan muncul di sini</p>
                   </div>
                 )}
               </div>

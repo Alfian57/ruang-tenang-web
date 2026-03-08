@@ -34,7 +34,7 @@ export function ExploreTab({
                         <Sparkles className="w-5 h-5 text-primary" />
                         <h2 className="font-semibold text-gray-900">Playlist Resmi</h2>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {adminPlaylists.map((playlist) => (
                             <PublicPlaylistCard
                                 key={playlist.id}
@@ -50,7 +50,7 @@ export function ExploreTab({
             <div className="space-y-4">
                 <h2 className="font-semibold text-gray-900">Playlist Komunitas</h2>
                 {publicPlaylists.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {publicPlaylists.map((playlist) => (
                             <PublicPlaylistCard
                                 key={playlist.id}
@@ -60,10 +60,10 @@ export function ExploreTab({
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-12 bg-white rounded-xl border border-dashed">
-                        <Compass className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                        <p className="text-gray-500 mb-1">Belum ada playlist publik</p>
-                        <p className="text-sm text-gray-400">
+                    <div className="text-center py-16">
+                        <Compass className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-500">Belum ada playlist publik</h3>
+                        <p className="text-gray-400 text-sm mt-1">
                             Jadilah yang pertama membagikan playlist-mu!
                         </p>
                     </div>

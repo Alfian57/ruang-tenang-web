@@ -2,7 +2,7 @@
 
 import { cn } from "@/utils";
 import { HallOfFameEntry, LevelHallOfFameResponse } from "@/types";
-import { Crown, Medal, Star, Flame } from "lucide-react";
+import { Crown, Medal, Star } from "lucide-react";
 import Image from "next/image";
 
 interface HallOfFameProps {
@@ -12,38 +12,36 @@ interface HallOfFameProps {
 }
 
 export function HallOfFame({ data, className, hideTierName = false }: HallOfFameProps) {
-    const entries = Array.isArray(data?.entries) ? data.entries : [];
+    const entries = Array.isArray(data?.featured_users) ? data.featured_users : [];
 
     return (
         <div className={cn("bg-card rounded-xl border shadow-sm", className)}>
             {/* Header */}
             <div
-                className="p-4 rounded-t-xl text-white"
-                style={{ backgroundColor: data.tier_color }}
+                className="p-4 rounded-t-xl text-white bg-gradient-to-r from-yellow-500 to-amber-600"
             >
                 <div className="flex items-center gap-2">
                     <Crown className="h-5 w-5" />
                     <h3 className="font-semibold">Hall of Fame - Level {data.level}</h3>
                 </div>
-                {!hideTierName && <p className="text-sm opacity-90">{data.tier_name}</p>}
+                {!hideTierName && data.total_members > 0 && (
+                    <p className="text-sm opacity-90">{data.total_members} anggota di level ini</p>
+                )}
             </div>
 
             {/* Entries */}
             <div className="p-4 space-y-3">
                 {entries.length === 0 ? (
-                    <div className="text-center py-8">
-                        <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <Crown className="h-6 w-6 text-muted-foreground/50" />
-                        </div>
-                        <p className="text-sm text-muted-foreground">Belum ada anggota di level ini</p>
+                    <div className="text-center py-16">
+                        <Crown className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-500">Belum ada anggota di level ini</h3>
                     </div>
                 ) : (
                     entries.map((entry, index) => (
                         <HallOfFameEntryCard
                             key={entry.user_id}
                             entry={entry}
-                            rank={index + 1}
-                            tierColor={data.tier_color}
+                            rank={entry.rank || index + 1}
                         />
                     ))
                 )}
@@ -55,13 +53,10 @@ export function HallOfFame({ data, className, hideTierName = false }: HallOfFame
 interface HallOfFameEntryCardProps {
     entry: HallOfFameEntry;
     rank: number;
-    tierColor: string;
 }
 
-function HallOfFameEntryCard({ entry, rank, tierColor }: HallOfFameEntryCardProps) {
-    const earnedBadges = Array.isArray(entry.badges_earned) ? entry.badges_earned : [];
-    const exp = Number(entry.exp ?? 0);
-    const currentStreak = Number(entry.current_streak ?? 0);
+function HallOfFameEntryCard({ entry, rank }: HallOfFameEntryCardProps) {
+    const monthlyXp = Number(entry.monthly_xp ?? 0);
 
     const getRankIcon = () => {
         switch (rank) {
@@ -84,47 +79,38 @@ function HallOfFameEntryCard({ entry, rank, tierColor }: HallOfFameEntryCardProp
             </div>
 
             {/* Avatar */}
-            <div className="relative">
-                <Image
-                    src={entry.avatar || "/images/default-avatar.png"}
-                    alt={entry.name}
-                    width={40}
-                    height={40}
-                    className="rounded-full object-cover"
-                    style={{ borderColor: tierColor, borderWidth: 2 }}
-                />
+            <div className="relative w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden" style={{ borderColor: entry.tier_color || "#8b5cf6", borderWidth: 2 }}>
+                {entry.avatar ? (
+                    <Image
+                        src={entry.avatar}
+                        alt={entry.user_name}
+                        width={40}
+                        height={40}
+                        className="rounded-full object-cover"
+                    />
+                ) : (
+                    <span className="text-primary font-bold text-sm">{entry.user_name?.charAt(0).toUpperCase()}</span>
+                )}
             </div>
 
             {/* Info */}
             <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{entry.name}</p>
+                <p className="font-medium truncate">{entry.user_name}</p>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                         <Star className="h-3 w-3 text-yellow-500" />
-                        {exp.toLocaleString()} EXP
+                        {monthlyXp.toLocaleString()} XP
                     </span>
-                    <span className="flex items-center gap-1">
-                        <Flame className="h-3 w-3 text-orange-500" />
-                        {currentStreak} hari
-                    </span>
-                </div>
-            </div>
-
-            {/* Badges */}
-            {earnedBadges.length > 0 && (
-                <div className="flex -space-x-1">
-                    {earnedBadges.slice(0, 3).map((badge, i) => (
-                        <span key={i} className="text-lg" title={badge}>
-                            {badge}
-                        </span>
-                    ))}
-                    {earnedBadges.length > 3 && (
-                        <span className="text-xs text-muted-foreground ml-1">
-                            +{earnedBadges.length - 3}
+                    {entry.tier_name && (
+                        <span
+                            className="px-1.5 py-0.5 rounded-full text-[10px] font-medium"
+                            style={{ backgroundColor: `${entry.tier_color}20`, color: entry.tier_color }}
+                        >
+                            {entry.tier_name}
                         </span>
                     )}
                 </div>
-            )}
+            </div>
         </div>
     );
 }

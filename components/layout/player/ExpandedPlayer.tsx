@@ -104,10 +104,10 @@ export function ExpandedPlayer({
                 </span>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="relative flex items-center gap-4">
                 {/* Song info */}
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="w-14 h-14 rounded-xl overflow-hidden bg-linear-to-br from-red-100 to-red-200 shrink-0">
+                <div className="flex items-center gap-3 min-w-0 md:max-w-[40%]">
+                    <div className="w-14 h-14 rounded-xl overflow-hidden theme-placeholder-bg shrink-0">
                         {currentSong.thumbnail ? (
                             <Image
                                 src={currentSong.thumbnail}
@@ -138,7 +138,7 @@ export function ExpandedPlayer({
                 </div>
 
                 {/* Controls */}
-                <div className="flex items-center gap-2">
+                <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
                     <Button
                         variant="ghost"
                         size="icon"
@@ -191,46 +191,48 @@ export function ExpandedPlayer({
                 </div>
 
                 {/* Volume & Actions */}
-                <div className="hidden md:flex items-center gap-3 w-40">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={onToggleMute}
-                    >
-                        {isMuted || volume === 0 ? (
-                            <VolumeX className="w-4 h-4 text-gray-400" />
-                        ) : (
-                            <Volume2 className="w-4 h-4 text-gray-400" />
-                        )}
-                    </Button>
-                    <Slider
-                        value={[isMuted ? 0 : volume * 100]}
-                        max={100}
-                        step={1}
-                        onValueChange={(value: number[]) => onVolumeChange(value[0] / 100)}
-                        className="flex-1"
-                    />
-                </div>
+                <div className="ml-auto flex items-center gap-3 pl-2">
+                    <div className="hidden md:flex items-center gap-3 w-40">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={onToggleMute}
+                        >
+                            {isMuted || volume === 0 ? (
+                                <VolumeX className="w-4 h-4 text-gray-400" />
+                            ) : (
+                                <Volume2 className="w-4 h-4 text-gray-400" />
+                            )}
+                        </Button>
+                        <Slider
+                            value={[isMuted ? 0 : volume * 100]}
+                            max={100}
+                            step={1}
+                            onValueChange={(value: number[]) => onVolumeChange(value[0] / 100)}
+                            className="flex-1"
+                        />
+                    </div>
 
-                {/* Minimize/Close buttons */}
-                <div className="flex items-center gap-1">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={onToggleMinimize}
-                    >
-                        <ChevronDown className="w-4 h-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-gray-400 hover:text-gray-600"
-                        onClick={onHidePlayer}
-                    >
-                        <X className="w-4 h-4" />
-                    </Button>
+                    {/* Minimize/Close buttons */}
+                    <div className="flex items-center gap-1">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={onToggleMinimize}
+                        >
+                            <ChevronDown className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-gray-400 hover:text-gray-600"
+                            onClick={onHidePlayer}
+                        >
+                            <X className="w-4 h-4" />
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>

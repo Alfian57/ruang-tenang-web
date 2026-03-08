@@ -42,7 +42,7 @@ export function BreathingWidget({ data }: BreathingWidgetProps) {
             {/* Stats Grid */}
             <div className="grid grid-cols-3 gap-3 mb-4">
                 <div className="text-center p-3 rounded-lg bg-muted/50">
-                    <div className="flex items-center justify-center gap-1 text-orange-500 mb-1">
+                    <div className="flex items-center justify-center gap-1 theme-accent-text mb-1">
                         <Flame className="w-4 h-4" />
                         <span className="text-xl font-bold">{data.current_streak}</span>
                     </div>

@@ -77,11 +77,11 @@ export function TechniqueCard({
                                 technique.is_favorite ? "text-yellow-400" : "text-muted-foreground hover:text-yellow-400"
                             )}
                         >
-                            <Star 
+                            <Star
                                 className={cn(
-                                    "w-4 h-4 shrink-0", 
+                                    "w-4 h-4 shrink-0",
                                     technique.is_favorite && "fill-current"
-                                )} 
+                                )}
                             />
                         </button>
                     ) : technique.is_favorite && (
@@ -165,13 +165,13 @@ export function TechniqueCard({
                 {/* Pattern and Duration */}
                 <div className="flex items-center gap-4 mb-3">
                     <div className="flex items-center gap-1.5 text-sm">
-                        <div
-                            className="w-6 h-6 rounded-md flex items-center justify-center font-mono text-xs"
-                            style={{ backgroundColor: `${technique.color}20`, color: technique.color }}
+                        <span
+                            className="font-mono text-sm leading-none whitespace-nowrap"
+                            style={{ color: technique.color }}
                         >
                             {pattern}
-                        </div>
-                        <span className="text-muted-foreground">pattern</span>
+                        </span>
+                        <span className="text-muted-foreground whitespace-nowrap">pattern</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                         <Clock className="w-4 h-4" />

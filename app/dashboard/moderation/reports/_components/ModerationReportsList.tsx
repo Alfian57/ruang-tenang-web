@@ -47,10 +47,10 @@ export function ModerationReportsList({
                         ))}
                     </div>
                 ) : reports.length === 0 ? (
-                    <div className="text-center py-12">
-                        <CheckCircle2 className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-                        <h3 className="text-lg font-medium mb-2">Tidak ada laporan</h3>
-                        <p className="text-muted-foreground">
+                    <div className="text-center py-16">
+                        <CheckCircle2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-500">Tidak ada laporan</h3>
+                        <p className="text-gray-400 text-sm mt-1">
                             {searchQuery
                                 ? "Tidak ada laporan yang cocok dengan pencarian"
                                 : "Tidak ada laporan yang menunggu penanganan"}

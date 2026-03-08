@@ -60,7 +60,7 @@ export function StoryDetail({
                         alt={story.title}
                         fill
                         className="object-cover"
-                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                     {story.is_featured && (
                         <div className="absolute top-4 left-4 bg-yellow-500 text-white text-sm font-medium px-3 py-1 rounded-full flex items-center gap-1">
                             <Star className="h-4 w-4" />
@@ -154,17 +154,18 @@ export function StoryDetail({
 
             {/* Trigger Warning */}
             {story.has_trigger_warning && !showContent && (
-                <div className="bg-orange-50 border border-orange-200 rounded-xl p-6 mb-8">
-                    <div className="flex items-center gap-2 text-orange-600 mb-4">
+                <div className="rounded-xl p-6 mb-8 border" style={{ backgroundColor: `var(--theme-accent-soft)`, borderColor: `var(--theme-accent-border)` }}>
+                    <div className="flex items-center gap-2 mb-4 theme-accent-text">
                         <AlertTriangle className="h-5 w-5" />
                         <span className="font-semibold">Peringatan Konten</span>
                     </div>
-                    <p className="text-orange-700 mb-4">
+                    <p className="mb-4 theme-accent-text-dark">
                         {story.trigger_warning_text || "Cerita ini mungkin mengandung konten yang sensitif."}
                     </p>
                     <button
                         onClick={() => setShowContent(true)}
-                        className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors"
+                        className="text-white px-4 py-2 rounded-lg transition-colors theme-accent-bg theme-accent-bg-hover"
+                        style={{ backgroundColor: `var(--theme-accent)` }}
                     >
                         Saya Mengerti, Tampilkan Cerita
                     </button>

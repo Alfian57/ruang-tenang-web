@@ -41,21 +41,21 @@ export default function StoryDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-white">
+      <div className="min-h-screen" style={{ background: `linear-gradient(to bottom, color-mix(in srgb, var(--theme-accent-soft) 50%, transparent), white)` }}>
         <div className="bg-white border-b sticky top-0 z-10">
-          <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="p-4 lg:p-6 flex items-center justify-between">
             <div className="h-10 w-20 rounded-lg bg-gray-200 animate-pulse" />
             <div className="flex gap-2"><div className="h-10 w-10 rounded-lg bg-gray-200 animate-pulse" /><div className="h-10 w-10 rounded-lg bg-gray-200 animate-pulse" /></div>
           </div>
         </div>
-        <div className="container mx-auto px-4 py-8 max-w-4xl space-y-8">
+        <div className="p-4 lg:p-6 space-y-8">
           <div className="rounded-2xl aspect-video bg-gray-200 animate-pulse" />
           <div className="space-y-4">
             <div className="h-10 w-3/4 rounded bg-gray-200 animate-pulse" />
             <div className="flex items-center gap-4"><div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" /><div className="h-4 w-20 rounded bg-gray-200 animate-pulse" /><div className="h-4 w-28 rounded bg-gray-200 animate-pulse" /></div>
           </div>
-          <div className="flex gap-2">{[1,2,3].map(i => <div key={i} className="h-6 w-20 rounded-full bg-gray-200 animate-pulse" />)}</div>
-          <div className="space-y-3">{[1,2,3,4,5,6].map(i => <div key={i} className="h-5 rounded bg-gray-200 animate-pulse" style={{width: `${85 + (i % 3) * 5}%`}} />)}</div>
+          <div className="flex gap-2">{[1, 2, 3].map(i => <div key={i} className="h-6 w-20 rounded-full bg-gray-200 animate-pulse" />)}</div>
+          <div className="space-y-3">{[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-5 rounded bg-gray-200 animate-pulse" style={{ width: `${85 + (i % 3) * 5}%` }} />)}</div>
         </div>
       </div>
     );
@@ -76,7 +76,7 @@ export default function StoryDetailPage() {
     <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-white">
       {/* Header */}
       <div className="bg-white border-b sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
+        <div className="p-4 lg:p-6">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
@@ -122,7 +122,7 @@ export default function StoryDetailPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="p-4 lg:p-6">
         {/* Trigger Warning Overlay */}
         {story.has_trigger_warning && !showContent && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-8 text-center mb-8">

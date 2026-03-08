@@ -40,8 +40,8 @@ export function JournalStatsCards({ analytics }: JournalStatsCardsProps) {
             <Card>
                 <CardContent className="p-4">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-orange-100 rounded-lg">
-                            <Flame className="w-5 h-5 text-orange-600" />
+                        <div className="p-2 theme-accent-light-bg rounded-lg">
+                            <Flame className="w-5 h-5 theme-accent-text" />
                         </div>
                         <div>
                             <p className="text-sm text-gray-500">Streak Menulis</p>

@@ -32,6 +32,8 @@ interface CommunityAuthContentProps {
     userBadges: UserBadges | null;
     userFeatures: UserFeatures | null;
     currentLevel: number;
+    maxLevel: number;
+    isLevelChanging: boolean;
     onLevelChange: (level: number) => void;
 }
 
@@ -41,6 +43,8 @@ export function CommunityAuthContent({
     userBadges,
     userFeatures,
     currentLevel,
+    maxLevel,
+    isLevelChanging,
     onLevelChange,
 }: CommunityAuthContentProps) {
     const [activeTab, setActiveTab] = useState("overview");
@@ -87,6 +91,8 @@ export function CommunityAuthContent({
                                     </h3>
                                     <LevelNavigator
                                         currentLevel={currentLevel}
+                                        maxLevel={maxLevel}
+                                        isLevelChanging={isLevelChanging}
                                         onLevelChange={onLevelChange}
                                     />
                                 </div>
@@ -126,16 +132,20 @@ export function CommunityAuthContent({
 
 function LevelNavigator({
     currentLevel,
+    maxLevel,
+    isLevelChanging,
     onLevelChange,
 }: {
     currentLevel: number;
+    maxLevel: number;
+    isLevelChanging: boolean;
     onLevelChange: (level: number) => void;
 }) {
     return (
         <div className="flex items-center gap-2">
             <button
                 onClick={() => onLevelChange(currentLevel - 1)}
-                disabled={currentLevel <= 1}
+                disabled={isLevelChanging || currentLevel <= 1}
                 className="p-1 rounded hover:bg-muted disabled:opacity-50"
             >
                 <ChevronLeft className="h-5 w-5" />
@@ -143,7 +153,7 @@ function LevelNavigator({
             <span className="text-sm">Level {currentLevel}</span>
             <button
                 onClick={() => onLevelChange(currentLevel + 1)}
-                disabled={currentLevel >= 10}
+                disabled={isLevelChanging || currentLevel >= maxLevel}
                 className="p-1 rounded hover:bg-muted disabled:opacity-50"
             >
                 <ChevronRight className="h-5 w-5" />

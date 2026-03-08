@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Pencil, Trash2, Loader2, Save, X, ImageIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, Save, X, ImageIcon, Star } from "lucide-react";
 import Image from "next/image";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -49,7 +49,7 @@ export default function LevelsManagementPage() {
     : null;
 
   return (
-    <div className="p-4 md:p-6 lg:p-8">
+    <div className="p-4 lg:p-6">
       <DeleteConfirmationModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
@@ -319,8 +319,10 @@ export default function LevelsManagementPage() {
               ))}
               {levels.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-gray-500">
-                    Belum ada konfigurasi level. Klik &quot;Tambah Level&quot; untuk memulai.
+                  <td colSpan={5} className="py-16 text-center">
+                    <Star className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-500">Belum ada konfigurasi level</h3>
+                    <p className="text-gray-400 text-sm mt-1">Klik &quot;Tambah Level&quot; untuk memulai</p>
                   </td>
                 </tr>
               )}

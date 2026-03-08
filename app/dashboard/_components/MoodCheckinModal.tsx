@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { MOOD_ASSETS, MOOD_ORDER } from "./mood-config";
 
 interface MoodCheckinModalProps {
   isOpen: boolean;
@@ -16,19 +17,12 @@ interface MoodCheckinModalProps {
   isSubmitting: boolean;
 }
 
-const moodEmojis: { type: MoodType; label: string; active: string; inactive: string }[] = [
-  { type: "happy", label: "Bahagia", active: "/images/1-happy-active.png", inactive: "/images/1-smile.png" },
-  { type: "neutral", label: "Netral", active: "/images/2-netral-active.png", inactive: "/images/2-netral.png" },
-  { type: "sad", label: "Sedih", active: "/images/5-sad-active.png", inactive: "/images/5-sad.png" },
-  { type: "disappointed", label: "Kecewa", active: "/images/4-disappointed-active.png", inactive: "/images/4-disappointed.png" },
-  { type: "angry", label: "Marah", active: "/images/3-angry-active.png", inactive: "/images/3-angry.png" },
-  { type: "crying", label: "Menangis", active: "/images/6-cry-active.png", inactive: "/images/6-cry.png" },
-];
+const moodOptions = MOOD_ORDER.map((type) => ({ type, ...MOOD_ASSETS[type] }));
 
 export function MoodCheckinModal({ isOpen, onMoodSelected, isSubmitting }: MoodCheckinModalProps) {
   return (
-    <Dialog open={isOpen} onOpenChange={() => {}}>
-      <DialogContent 
+    <Dialog open={isOpen} onOpenChange={() => { }}>
+      <DialogContent
         className="[&>button]:hidden sm:max-w-md bg-white rounded-2xl p-0 overflow-hidden border-0 shadow-xl gap-0"
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
@@ -51,18 +45,18 @@ export function MoodCheckinModal({ isOpen, onMoodSelected, isSubmitting }: MoodC
         {/* Mood Selection Grid */}
         <div className="p-5">
           <div className="grid grid-cols-3 gap-3">
-            {moodEmojis.map((m) => (
+            {moodOptions.map((m) => (
               <button
                 key={m.type}
                 onClick={() => onMoodSelected(m.type)}
                 disabled={isSubmitting}
-                className="group flex flex-col items-center justify-center p-4 rounded-xl bg-gray-50 hover:bg-red-50 transition-all duration-200 mood-btn border border-transparent hover:border-red-200 hover:shadow-md"
+                className="group flex flex-col items-center justify-center p-4 rounded-xl bg-gray-50 hover:bg-primary/5 transition-all duration-200 mood-btn border border-transparent hover:border-primary/20 hover:shadow-md"
               >
                 <div className="w-12 h-12 relative mb-2">
                   {/* Show colored (active) emotes by default */}
-                  <Image 
-                    src={m.active} 
-                    alt={m.label} 
+                  <Image
+                    src={m.active}
+                    alt={m.label}
                     fill
                     sizes="48px"
                     className="object-contain"
@@ -74,7 +68,7 @@ export function MoodCheckinModal({ isOpen, onMoodSelected, isSubmitting }: MoodC
               </button>
             ))}
           </div>
-          
+
           <p className="text-xs text-center text-gray-400 mt-4">
             Rekomendasi konten akan disesuaikan dengan mood-mu ✨
           </p>

@@ -10,7 +10,7 @@ import type { MyArticle } from "../_hooks/useArticlesPage";
 
 interface MyArticleCardProps {
   article: MyArticle;
-  onDelete: (id: number) => void;
+  onDelete: (identifier: string) => void;
 }
 
 export function MyArticleCard({ article, onDelete }: MyArticleCardProps) {
@@ -84,7 +84,7 @@ export function MyArticleCard({ article, onDelete }: MyArticleCardProps) {
             variant="outline"
             size="icon"
             className="text-red-500"
-            onClick={() => onDelete(article.id)}
+            onClick={() => onDelete(article.slug || String(article.id))}
             title="Hapus"
           >
             <Trash2 className="w-4 h-4" />

@@ -2,16 +2,18 @@
 
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
-import { Gift, Coins, Loader2, ShoppingBag, History, Package, AlertCircle } from "lucide-react";
+import { Gift, Loader2, ShoppingBag, History, Package, AlertCircle, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CoinIcon } from "@/components/shared/CoinIcon";
 import { cn } from "@/utils";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/authStore";
 import { rewardService } from "@/services/api";
+import { getUploadUrl } from "@/services/http/upload-url";
 import type { Reward, RewardClaim } from "@/types";
 
 export default function RewardsPage() {
-  const { token, user } = useAuthStore();
+  const { token, user, refreshUser } = useAuthStore();
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [claims, setClaims] = useState<RewardClaim[]>([]);
   const [balance, setBalance] = useState<number>(0);
@@ -19,19 +21,22 @@ export default function RewardsPage() {
   const [claimingId, setClaimingId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<"rewards" | "history">("rewards");
   const [confirmRewardId, setConfirmRewardId] = useState<number | null>(null);
+  const [ownedThemes, setOwnedThemes] = useState<string[]>(["default"]);
 
   const fetchData = useCallback(async () => {
     if (!token) return;
     setLoading(true);
     try {
-      const [rewardsRes, balanceRes, claimsRes] = await Promise.all([
+      const [rewardsRes, balanceRes, claimsRes, themesRes] = await Promise.all([
         rewardService.getAvailableRewards(token),
         rewardService.getCoinBalance(token),
         rewardService.getMyClaims(token, { page: 1, page_size: 50 }),
+        rewardService.getOwnedThemes(token),
       ]);
       if (rewardsRes.data) setRewards(rewardsRes.data);
       if (balanceRes.data) setBalance(balanceRes.data.gold_coins);
       if (claimsRes.data) setClaims(claimsRes.data.claims || []);
+      if (themesRes.data) setOwnedThemes(themesRes.data.owned_themes || ["default"]);
     } catch {
       // silently fail
     } finally {
@@ -58,10 +63,11 @@ export default function RewardsPage() {
       const res = await rewardService.claimReward(token, reward.id);
       if (res.data) {
         toast.success(`Berhasil mengklaim "${reward.name}"!`, {
-          description: `Sisa koin: ${res.data.remaining_coins} 🪙`,
+          description: `Sisa koin: ${res.data.remaining_coins}`,
         });
         setBalance(res.data.remaining_coins);
         fetchData();
+        refreshUser();
       }
     } catch {
       toast.error("Gagal mengklaim hadiah");
@@ -79,7 +85,7 @@ export default function RewardsPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 max-w-6xl mx-auto">
+    <div className="p-4 lg:p-6">
       {/* Header with coin balance */}
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -90,12 +96,12 @@ export default function RewardsPage() {
             </h1>
             <p className="text-gray-500 mt-1">Tukarkan koin emas kamu dengan hadiah menarik</p>
           </div>
-          <div className="bg-gradient-to-r from-amber-400 to-yellow-500 text-white rounded-2xl px-6 py-3 shadow-lg flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-xl">
-              🪙
+          <div className="bg-gradient-to-r from-amber-400 to-yellow-500 text-white rounded-xl px-4 py-2 shadow-md ring-1 ring-amber-300/50 inline-flex items-center gap-2.5">
+            <div className="w-8 h-8 bg-white/35 rounded-full ring-1 ring-white/60 shadow-[inset_0_1px_1px_rgba(255,255,255,0.65),0_1px_4px_rgba(0,0,0,0.12)] flex items-center justify-center shrink-0">
+              <CoinIcon className="h-5 w-5" />
             </div>
-            <div>
-              <p className="text-xs font-medium text-white/80">Saldo Koin</p>
+            <div className="leading-tight">
+              <p className="text-[11px] font-semibold text-white/85 tracking-wide">Saldo Koin</p>
               <p className="text-2xl font-bold">{balance.toLocaleString()}</p>
             </div>
           </div>
@@ -145,6 +151,9 @@ export default function RewardsPage() {
                 const canAfford = balance >= reward.coin_cost;
                 const isOutOfStock = reward.stock === 0;
                 const isConfirming = confirmRewardId === reward.id;
+                const isThemeOwned = reward.reward_type === "theme" && reward.reward_value
+                  ? ownedThemes.includes(reward.reward_value)
+                  : false;
 
                 return (
                   <div
@@ -158,11 +167,11 @@ export default function RewardsPage() {
                     <div className="h-40 bg-gradient-to-br from-amber-50 to-yellow-50 flex items-center justify-center relative overflow-hidden">
                       {reward.image ? (
                         <Image
-                          src={reward.image}
+                          src={reward.image.startsWith("http") ? reward.image : getUploadUrl(reward.image)}
                           alt={reward.name}
                           fill
                           className="object-cover"
-                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                       ) : (
                         <Gift className="w-16 h-16 text-amber-300 group-hover:scale-110 transition-transform" />
                       )}
@@ -187,11 +196,16 @@ export default function RewardsPage() {
 
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-lg">🪙</span>
+                          <CoinIcon className="h-5 w-5" />
                           <span className="font-bold text-amber-700">{reward.coin_cost}</span>
                         </div>
 
-                        {isConfirming ? (
+                        {isThemeOwned ? (
+                          <span className="flex items-center gap-1.5 text-xs h-8 px-3 rounded-md bg-green-50 text-green-600 font-medium">
+                            <CheckCircle className="w-3.5 h-3.5" />
+                            Sudah Dimiliki
+                          </span>
+                        ) : isConfirming ? (
                           <div className="flex gap-2">
                             <Button
                               size="sm"
@@ -226,7 +240,7 @@ export default function RewardsPage() {
                                 : "bg-gray-100 text-gray-400 cursor-not-allowed"
                             )}
                           >
-                            <Coins className="w-3.5 h-3.5" />
+                            <CoinIcon className="h-3.5 w-3.5" />
                             {isOutOfStock ? "Habis" : !canAfford ? "Koin Kurang" : "Tukar"}
                           </Button>
                         )}
@@ -264,11 +278,11 @@ export default function RewardsPage() {
                     <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center shrink-0 relative overflow-hidden">
                       {claim.reward?.image ? (
                         <Image
-                          src={claim.reward.image}
+                          src={claim.reward.image.startsWith("http") ? claim.reward.image : getUploadUrl(claim.reward.image)}
                           alt={claim.reward?.name || "Hadiah"}
                           fill
                           className="object-cover"
-                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                          sizes="48px" />
                       ) : (
                         <Gift className="w-6 h-6 text-amber-400" />
                       )}
@@ -287,7 +301,7 @@ export default function RewardsPage() {
                     </div>
                     <div className="flex items-center gap-1 text-sm font-medium text-amber-700 shrink-0">
                       <span>-{claim.coin_spent}</span>
-                      <span>🪙</span>
+                      <CoinIcon className="h-4 w-4" />
                     </div>
                   </div>
                 ))}
@@ -299,7 +313,10 @@ export default function RewardsPage() {
 
       {/* Info Box */}
       <div className="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-4">
-        <h4 className="font-semibold text-amber-800 mb-2">🪙 Cara Mendapatkan Koin Emas</h4>
+        <h4 className="font-semibold text-amber-800 mb-2 flex items-center gap-2">
+          <CoinIcon className="h-5 w-5" />
+          Cara Mendapatkan Koin Emas
+        </h4>
         <ul className="text-sm text-amber-700 space-y-1">
           <li>• Selesaikan <strong>misi harian</strong> untuk mendapatkan koin emas</li>
           <li>• Login setiap hari: <strong>+1 koin</strong></li>

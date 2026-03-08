@@ -42,7 +42,7 @@ export function CategoryTable({
                                 <tr key={cat.id} className="hover:bg-gray-50">
                                     <td className="p-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 rounded-lg overflow-hidden bg-linear-to-br from-red-100 to-red-200 shrink-0 flex items-center justify-center">
+                                            <div className="w-12 h-12 rounded-lg overflow-hidden theme-placeholder-bg shrink-0 flex items-center justify-center">
                                                 {cat.thumbnail ? (
                                                     <Image src={getUploadUrl(cat.thumbnail)} alt={cat.name} width={48} height={48} className="w-full h-full object-cover" />
                                                 ) : (

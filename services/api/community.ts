@@ -10,6 +10,7 @@ import type {
   LevelHallOfFameResponse,
   PersonalJourney,
   WeeklyProgress,
+  AllTimeStats,
   LevelUpCelebration,
   FeatureUnlock,
   Badge,
@@ -53,7 +54,7 @@ export const communityService = {
   },
 
   getAllTimeStats(token: string) {
-    return httpClient.get<ApiResponse<PersonalJourney>>("/community/my-stats", { token });
+    return httpClient.get<ApiResponse<AllTimeStats>>("/community/my-stats", { token });
   },
 
   getLevelUpCelebration(token: string, level: number) {

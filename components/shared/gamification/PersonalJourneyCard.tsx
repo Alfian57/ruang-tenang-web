@@ -2,7 +2,7 @@
 
 import { cn } from "@/utils";
 import { PersonalJourney } from "@/types";
-import { Flame, Calendar, Target, Star, TrendingUp } from "lucide-react";
+import { Flame, Target, Star, TrendingUp, Activity } from "lucide-react";
 
 interface PersonalJourneyCardProps {
     journey: PersonalJourney;
@@ -11,17 +11,9 @@ interface PersonalJourneyCardProps {
 
 export function PersonalJourneyCard({ journey, className }: PersonalJourneyCardProps) {
     const currentExp = Number(journey.current_exp ?? 0);
-    const expProgress = Number(journey.exp_progress ?? 0);
+    const progressPercent = Math.min(100, Math.max(0, Number(journey.progress_percent ?? 0)));
     const expToNextLevel = Number(journey.exp_to_next_level ?? 0);
-    const weeklyExp = Number(journey.weekly_exp ?? 0);
-    const unlockedFeatures = Number(journey.unlocked_features ?? 0);
-    const totalFeatures = Number(journey.total_features ?? 0);
-    const levelProgressDenominator = expToNextLevel + expProgress;
-    const progressPercent = Math.min(
-        levelProgressDenominator > 0 ? (expProgress / levelProgressDenominator) * 100 : 0,
-        100
-    );
-    const unlockedFeaturePercent = totalFeatures > 0 ? (unlockedFeatures / totalFeatures) * 100 : 0;
+    const monthlyXp = Number(journey.monthly_xp ?? 0);
 
     return (
         <div className={cn("bg-card rounded-xl border shadow-sm p-6", className)}>
@@ -34,7 +26,9 @@ export function PersonalJourneyCard({ journey, className }: PersonalJourneyCardP
                     {journey.current_level}
                 </div>
                 <div>
-                    <h3 className="text-lg font-semibold">{journey.name}</h3>
+                    <h3 className="text-lg font-semibold">
+                        {journey.badge_icon} {journey.badge_name}
+                    </h3>
                     <p
                         className="text-sm font-medium"
                         style={{ color: journey.tier_color }}
@@ -73,7 +67,7 @@ export function PersonalJourneyCard({ journey, className }: PersonalJourneyCardP
                     icon={Flame}
                     label="Streak Saat Ini"
                     value={`${journey.current_streak} hari`}
-                    color="text-orange-500"
+                    color="theme-accent-text"
                 />
                 <StatItem
                     icon={Target}
@@ -83,36 +77,28 @@ export function PersonalJourneyCard({ journey, className }: PersonalJourneyCardP
                 />
                 <StatItem
                     icon={TrendingUp}
-                    label="EXP Minggu Ini"
-                    value={`+${weeklyExp.toLocaleString()}`}
+                    label="EXP Bulan Ini"
+                    value={`+${monthlyXp.toLocaleString()}`}
                     color="text-green-500"
                 />
                 <StatItem
                     icon={Star}
                     label="Badge Diraih"
-                    value={`${journey.badges_earned} badge`}
+                    value={`${journey.new_badges_count ?? 0} badge`}
                     color="text-yellow-500"
                 />
             </div>
 
-            {/* Features Progress */}
+            {/* Activity Summary */}
             <div className="mt-6 pt-6 border-t">
                 <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground flex items-center gap-2">
-                        <Calendar className="h-4 w-4" />
-                        Fitur Terbuka
+                        <Activity className="h-4 w-4" />
+                        Total Aktivitas
                     </span>
                     <span className="font-medium">
-                        {unlockedFeatures}/{totalFeatures}
+                        {Number(journey.total_activities ?? 0).toLocaleString()}
                     </span>
-                </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden mt-2">
-                    <div
-                        className="h-full bg-primary rounded-full transition-all"
-                        style={{
-                            width: `${unlockedFeaturePercent}%`
-                        }}
-                    />
                 </div>
             </div>
         </div>

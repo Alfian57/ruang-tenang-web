@@ -9,6 +9,7 @@ import {
   Loader2,
   Flag,
   MoreVertical,
+  MessageCircle,
 } from "lucide-react";
 import { ReportModal, BlockUserButton } from "@/components/shared/moderation";
 import {
@@ -91,8 +92,10 @@ export function StoryComments({
           <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
         </div>
       ) : comments.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          Belum ada komentar. Jadilah yang pertama!
+        <div className="text-center py-16">
+          <MessageCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-500">Belum ada komentar</h3>
+          <p className="text-gray-400 text-sm mt-1">Jadilah yang pertama!</p>
         </div>
       ) : (
         <div className="space-y-4">

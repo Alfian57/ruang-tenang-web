@@ -14,17 +14,17 @@ export default function EditJournalPage() {
     const params = useParams();
     const router = useRouter();
     const { token, isAuthenticated } = useAuthStore();
-    const { 
-        loadJournal, 
-        activeJournal, 
-        isLoading, 
-        updateJournal, 
-        isSaving, 
+    const {
+        loadJournal,
+        activeJournal,
+        isLoading,
+        updateJournal,
+        isSaving,
         settings,
         setActiveJournal
     } = useJournalStore();
-    
-    const uuid = params.uuid as string | undefined;
+
+    const identifier = params.uuid as string | undefined;
 
     useEffect(() => {
         if (!token && !isAuthenticated) {
@@ -32,16 +32,20 @@ export default function EditJournalPage() {
             return;
         }
 
-        if (token && uuid) {
-            // Load if not present or wrong UUID
-            if (activeJournal?.uuid !== uuid) {
-                loadJournal(token, uuid);
+        if (token && identifier) {
+            const activeMatchesIdentifier =
+                activeJournal?.uuid === identifier ||
+                activeJournal?.slug === identifier ||
+                String(activeJournal?.id) === identifier;
+
+            if (!activeMatchesIdentifier) {
+                loadJournal(token, identifier);
             }
         }
-    }, [token, isAuthenticated, uuid, loadJournal, activeJournal, router]);
+    }, [token, isAuthenticated, identifier, loadJournal, activeJournal, router]);
 
-     // Clean up on unmount
-     useEffect(() => {
+    // Clean up on unmount
+    useEffect(() => {
         return () => setActiveJournal(null);
     }, [setActiveJournal]);
 
@@ -53,22 +57,22 @@ export default function EditJournalPage() {
         is_private: boolean;
         share_with_ai: boolean;
     }) => {
-        if (!token || !uuid) return;
-        await updateJournal(token, uuid, data);
+        if (!token || !identifier) return;
+        await updateJournal(token, identifier, data);
         toast.success("Jurnal berhasil diperbarui!");
-        router.push(`/dashboard/journal/${uuid}`);
+        router.push(`/dashboard/journal/${identifier}`);
     };
 
     if (isLoading && !activeJournal) {
         return (
-            <div className="container mx-auto px-4 py-6 max-w-4xl">
+            <div className="p-4 lg:p-6">
                 <div className="mb-6">
                     <div className="flex items-center gap-2 mb-4"><div className="h-4 w-4 rounded bg-gray-200 animate-pulse" /><div className="h-4 w-20 rounded bg-gray-200 animate-pulse" /></div>
                     <div className="h-7 w-28 rounded bg-gray-200 animate-pulse" />
                 </div>
                 <div className="bg-white rounded-2xl border shadow-sm p-6 space-y-6">
                     <div className="space-y-2"><div className="h-4 w-12 rounded bg-gray-200 animate-pulse" /><div className="h-10 w-full rounded-lg bg-gray-200 animate-pulse" /></div>
-                    <div className="space-y-2"><div className="h-4 w-24 rounded bg-gray-200 animate-pulse" /><div className="flex gap-3">{[1,2,3,4,5].map(i => <div key={i} className="h-12 w-12 rounded-full bg-gray-200 animate-pulse" />)}</div></div>
+                    <div className="space-y-2"><div className="h-4 w-24 rounded bg-gray-200 animate-pulse" /><div className="flex gap-3">{[1, 2, 3, 4, 5].map(i => <div key={i} className="h-12 w-12 rounded-full bg-gray-200 animate-pulse" />)}</div></div>
                     <div className="space-y-2"><div className="h-4 w-14 rounded bg-gray-200 animate-pulse" /><div className="h-48 w-full rounded-lg bg-gray-200 animate-pulse" /></div>
                     <div className="space-y-2"><div className="h-4 w-10 rounded bg-gray-200 animate-pulse" /><div className="h-10 w-full rounded-lg bg-gray-200 animate-pulse" /></div>
                     <div className="flex gap-3 justify-end pt-4 border-t"><div className="h-10 w-20 rounded-lg bg-gray-200 animate-pulse" /><div className="h-10 w-28 rounded-lg bg-gray-200 animate-pulse" /></div>
@@ -79,7 +83,7 @@ export default function EditJournalPage() {
 
     if (!activeJournal && !isLoading) {
         return (
-            <div className="container mx-auto px-4 py-12 text-center">
+            <div className="p-4 lg:p-6 text-center">
                 <h2 className="text-xl font-semibold mb-4">Jurnal tidak ditemukan</h2>
                 <Button asChild>
                     <Link href="/dashboard/journal">Kembali ke Daftar</Link>
@@ -89,10 +93,10 @@ export default function EditJournalPage() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-6 max-w-4xl">
+        <div className="p-4 lg:p-6">
             <div className="mb-6">
                 <Button variant="ghost" size="sm" asChild className="mb-4 pl-0 hover:pl-2 transition-all">
-                    <Link href={`/dashboard/journal/${uuid}`}>
+                    <Link href={`/dashboard/journal/${identifier}`}>
                         <ArrowLeft className="w-4 h-4 mr-2" />
                         Batal Edit
                     </Link>

@@ -27,6 +27,14 @@ export const rewardService = {
     return httpClient.get<ApiResponse<{ gold_coins: number }>>("/rewards/balance", { token });
   },
 
+  getOwnedThemes(token: string) {
+    return httpClient.get<ApiResponse<{ owned_themes: string[]; active_theme: string }>>("/rewards/themes", { token });
+  },
+
+  activateTheme(token: string, theme: string) {
+    return httpClient.put<ApiResponse<{ message: string }>>("/rewards/themes/activate", { theme }, { token });
+  },
+
   // Admin endpoints
   adminGetAllRewards(token: string) {
     return httpClient.get<ApiResponse<Reward[]>>("/admin/rewards", { token });

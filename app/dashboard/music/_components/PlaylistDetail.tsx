@@ -195,11 +195,12 @@ export function PlaylistDetail({
 
             {/* Track list */}
             {items.length === 0 ? (
-                <div className="text-center py-12 bg-white rounded-xl border border-dashed">
-                    <ListMusic className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-                    <p className="text-gray-500 mb-4">Playlist ini masih kosong</p>
+                <div className="text-center py-16">
+                    <ListMusic className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-500">Playlist ini masih kosong</h3>
+                    <p className="text-gray-400 text-sm mt-1">Tambahkan lagu ke playlist ini</p>
                     {isOwner && (
-                        <Button variant="outline" onClick={onAddSongs}>
+                        <Button variant="outline" onClick={onAddSongs} className="mt-4">
                             <Plus className="w-4 h-4 mr-2" />
                             Tambah Lagu
                         </Button>

@@ -16,6 +16,7 @@ export interface User {
   is_suspended?: boolean;
   suspension_end?: string;
   is_banned?: boolean;
+  profile_theme?: string;
   created_at: string;
 }
 

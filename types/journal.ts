@@ -3,6 +3,7 @@
 export interface Journal {
   id: number;
   uuid: string;
+  slug?: string;
   user_id: number;
   title: string;
   content: string;

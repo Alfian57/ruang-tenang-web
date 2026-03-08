@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { communityService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import { WeeklyProgress, PersonalJourney } from "@/types";
-import { TrendingUp, TrendingDown, Minus, Zap, Activity, Award } from "lucide-react";
+import { TrendingUp, TrendingDown, Zap, Activity, Award } from "lucide-react";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -55,16 +55,16 @@ export function XPProgressWidget() {
     const currentExp = Number(journey.current_exp ?? 0);
     const currentLevel = Number(journey.current_level ?? 1);
     const expToNextLevel = Number(journey.exp_to_next_level ?? 0);
-    const expProgress = Number(journey.exp_progress ?? 0);
-    const weeklyExp = Number(weeklyProgress?.exp_earned ?? 0);
-    const monthlyExp = Number(journey.monthly_exp ?? 0);
-    const badgesEarned = Number(journey.badges_earned ?? 0);
-    const progressPercent = Math.min(100, Math.max(0, expProgress));
+    const weeklyExp = Number(weeklyProgress?.this_week?.xp_earned ?? 0);
+    const monthlyExp = Number(journey.monthly_xp ?? 0);
+    const badgesEarned = Number(journey.new_badges_count ?? 0);
+    const progressPercent = Math.min(100, Math.max(0, Number(journey.progress_percent ?? 0)));
 
-    // Determine trend
-    const weeklyTrend = weeklyExp > 0 ? "up" : weeklyExp === 0 ? "neutral" : "down";
-    const TrendIcon = weeklyTrend === "up" ? TrendingUp : weeklyTrend === "down" ? TrendingDown : Minus;
-    const trendColor = weeklyTrend === "up" ? "text-green-500" : weeklyTrend === "down" ? "text-red-500" : "text-gray-400";
+    // Determine trend from weekly change
+    const xpChange = Number(weeklyProgress?.xp_change ?? 0);
+    const weeklyTrend = xpChange > 0 ? "up" : xpChange < 0 ? "down" : "neutral";
+    const TrendIcon = weeklyTrend === "up" ? TrendingUp : weeklyTrend === "down" ? TrendingDown : Zap;
+    const trendColor = weeklyTrend === "up" ? "text-green-500" : weeklyTrend === "down" ? "text-red-500" : "text-violet-400";
 
     return (
         <Card className="flex flex-col border border-gray-100 shadow-sm bg-linear-to-br from-white to-violet-50/40">

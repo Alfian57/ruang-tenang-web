@@ -116,8 +116,8 @@ export default function AdminForumTopicPage() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="flex items-center gap-1 bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
-                   <ShieldAlert className="w-3 h-3" />
-                   ADMIN MODE
+                  <ShieldAlert className="w-3 h-3" />
+                  ADMIN MODE
                 </span>
                 {forum.category && (
                   <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 uppercase tracking-wide">
@@ -138,21 +138,21 @@ export default function AdminForumTopicPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
-                    onClick={() => setShowDeleteForumDialog(true)}
-                  >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Hapus Topik (Admin)
-                  </DropdownMenuItem>
-                  
-                  {user && user.id !== forum.user_id && (
-                    <BlockUserButton
-                      userId={forum.user_id}
-                      userName={forum.user?.name || "User"}
-                      className="w-full justify-start text-sm font-normal px-2 py-1.5 h-auto text-red-600 hover:text-red-600 hover:bg-red-50"
-                    />
-                  )}
+                <DropdownMenuItem
+                  className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+                  onClick={() => setShowDeleteForumDialog(true)}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Hapus Topik (Admin)
+                </DropdownMenuItem>
+
+                {user && user.id !== forum.user_id && (
+                  <BlockUserButton
+                    userId={forum.user_id}
+                    userName={forum.user?.name || "User"}
+                    className="w-full justify-start text-sm font-normal px-2 py-1.5 h-auto text-red-600 hover:text-red-600 hover:bg-red-50"
+                  />
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -175,7 +175,7 @@ export default function AdminForumTopicPage() {
                 </div>
               </div>
             )}
-            
+
             {/* Main Topic Content */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border">
               <div className="flex items-center justify-between mb-4">
@@ -195,18 +195,18 @@ export default function AdminForumTopicPage() {
               </div>
 
               <div className="flex items-center gap-4 mt-6 pt-4 border-t">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className={cn(
-                      "gap-2 hover:bg-red-50 hover:text-red-500 transition-colors",
-                      isLiked && "text-red-500 bg-red-50"
-                    )}
-                    onClick={handleToggleLike}
-                  >
-                    <Heart className={cn("w-4 h-4", isLiked && "fill-current")} />
-                    <span>{likesCount} Suka</span>
-                  </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "gap-2 hover:bg-red-50 hover:text-red-500 transition-colors",
+                    isLiked && "text-red-500 bg-red-50"
+                  )}
+                  onClick={handleToggleLike}
+                >
+                  <Heart className={cn("w-4 h-4", isLiked && "fill-current")} />
+                  <span>{likesCount} Suka</span>
+                </Button>
                 <div className="flex items-center gap-2 text-sm text-gray-500 px-3 py-2">
                   <MessageSquare className="w-4 h-4" />
                   <span>{posts.length} Balasan</span>
@@ -259,11 +259,11 @@ export default function AdminForumTopicPage() {
                     post.is_best_answer ? "bg-green-50 border-green-200" : "bg-white"
                   )}>
                     {post.is_best_answer && (
-                       <div className="absolute -top-3 -right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm flex items-center gap-1">
-                         <CheckCircle2 className="w-3 h-3" /> BEST ANSWER
-                       </div>
+                      <div className="absolute -top-3 -right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> BEST ANSWER
+                      </div>
                     )}
-                    
+
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className={cn("text-sm font-semibold", post.is_best_answer ? "text-green-800" : "text-gray-900")}>
@@ -273,73 +273,71 @@ export default function AdminForumTopicPage() {
                         <span className="text-xs text-gray-400">{formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: idLocale })}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                           <Button 
-                             variant="ghost" 
-                             size="sm" 
-                             className="h-6 px-2 text-[10px] text-gray-400 hover:text-green-600 hover:bg-green-50"
-                             onClick={() => handleToggleBestAnswer(post)}
-                             title="Tandai sebagai Jawaban Terbaik"
-                           >
-                              <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-                              Best Answer
-                           </Button>
-                         
-                         <DropdownMenu>
-                           <DropdownMenuTrigger asChild>
-                             <Button variant="ghost" size="sm" className="h-6 w-6 p-0 rounded-full">
-                               <MoreVertical className="w-3 h-3 text-gray-400" />
-                             </Button>
-                           </DropdownMenuTrigger>
-                           <DropdownMenuContent align="end">
-                                <DropdownMenuItem 
-                                  onClick={() => {
-                                    setDeletePostId(post.id);
-                                    setShowDeletePostDialog(true);
-                                  }}
-                                  className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
-                                >
-                                  <Trash2 className="w-4 h-4 mr-2" />
-                                  Hapus Balasan (Admin)
-                                </DropdownMenuItem>
-                             
-                              {user && user.id !== post.user_id && (
-                                  <BlockUserButton
-                                    userId={post.user_id}
-                                    userName={post.user?.name || "User"}
-                                    className="w-full justify-start text-sm font-normal px-2 py-1.5 h-auto text-red-600 hover:text-red-600 hover:bg-red-50"
-                                  />
-                              )}
-                           </DropdownMenuContent>
-                         </DropdownMenu>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 px-2 text-[10px] text-gray-400 hover:text-green-600 hover:bg-green-50"
+                          onClick={() => handleToggleBestAnswer(post)}
+                          title="Tandai sebagai Jawaban Terbaik"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+                          Best Answer
+                        </Button>
+
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0 rounded-full">
+                              <MoreVertical className="w-3 h-3 text-gray-400" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setDeletePostId(post.id);
+                                setShowDeletePostDialog(true);
+                              }}
+                              className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Hapus Balasan (Admin)
+                            </DropdownMenuItem>
+
+                            {user && user.id !== post.user_id && (
+                              <BlockUserButton
+                                userId={post.user_id}
+                                userName={post.user?.name || "User"}
+                                className="w-full justify-start text-sm font-normal px-2 py-1.5 h-auto text-red-600 hover:text-red-600 hover:bg-red-50"
+                              />
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
-                    
+
                     <p className={cn("text-sm whitespace-pre-wrap leading-relaxed mb-3", post.is_best_answer ? "text-green-900" : "text-gray-700")}>
                       {post.content}
                     </p>
 
                     <div className="flex items-center gap-3 border-t border-gray-100/50 pt-2">
-                          <button 
-                            onClick={() => handleTogglePostLike(post)}
-                            className={cn(
-                              "flex items-center gap-1.5 text-xs font-medium transition-colors p-1 rounded",
-                              post.is_liked ? "text-red-500 bg-red-50" : "text-gray-500 hover:text-red-500 hover:bg-red-50"
-                            )}
-                          >
-                            <Heart className={cn("w-3.5 h-3.5", post.is_liked && "fill-current")} />
-                            {post.likes_count || 0}
-                          </button>
+                      <button
+                        onClick={() => handleTogglePostLike(post)}
+                        className={cn(
+                          "flex items-center gap-1.5 text-xs font-medium transition-colors p-1 rounded",
+                          post.is_liked ? "text-red-500 bg-red-50" : "text-gray-500 hover:text-red-500 hover:bg-red-50"
+                        )}
+                      >
+                        <Heart className={cn("w-3.5 h-3.5", post.is_liked && "fill-current")} />
+                        {post.likes_count || 0}
+                      </button>
                     </div>
                   </div>
                 </div>
               ))}
 
               {posts.length === 0 && (
-                <div className="text-center py-12 bg-white rounded-xl border border-dashed">
-                  <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-300">
-                    <MessageSquare className="w-6 h-6" />
-                  </div>
-                  <p className="text-gray-500 text-sm">Belum ada balasan.</p>
+                <div className="text-center py-16">
+                  <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-500">Belum ada balasan</h3>
                 </div>
               )}
             </div>

@@ -1,10 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { UserMood, MoodType } from "@/types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/utils";
 import { parseApiDate } from "@/utils/date";
+import { MOOD_ASSETS, MOOD_ORDER } from "../mood-config";
 import {
   Dialog,
   DialogContent,
@@ -15,15 +17,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-const moodEmojis: Record<MoodType, string> = {
-  happy: "😊",
-  neutral: "😐",
-  angry: "😠",
-  disappointed: "😞",
-  sad: "😢",
-  crying: "😭",
-};
-
 const moodColors: Record<MoodType, { bg: string; ring: string }> = {
   happy: { bg: "bg-emerald-50", ring: "ring-emerald-200" },
   neutral: { bg: "bg-amber-50", ring: "ring-amber-200" },
@@ -31,15 +24,6 @@ const moodColors: Record<MoodType, { bg: string; ring: string }> = {
   disappointed: { bg: "bg-orange-50", ring: "ring-orange-200" },
   sad: { bg: "bg-sky-50", ring: "ring-sky-200" },
   crying: { bg: "bg-violet-50", ring: "ring-violet-200" },
-};
-
-const moodLabels: Record<MoodType, string> = {
-  happy: "Bahagia",
-  neutral: "Netral",
-  angry: "Marah",
-  disappointed: "Kecewa",
-  sad: "Sedih",
-  crying: "Menangis",
 };
 
 interface MoodCalendarProps {
@@ -110,42 +94,42 @@ export function MoodCalendar({ moods }: MoodCalendarProps) {
   );
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-3 sm:p-4">
       {/* Header */}
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between mb-3">
         <div>
-          <h3 className="font-bold text-lg text-gray-800">Kalender Mood</h3>
-          <p className="text-sm text-gray-500">
+          <h3 className="font-bold text-base sm:text-lg text-gray-800">Kalender Mood</h3>
+          <p className="text-xs sm:text-sm text-gray-500">
             {totalMoodsThisMonth > 0
               ? `${totalMoodsThisMonth} mood dicatat bulan ini`
               : "Jejak emosimu bulan ini"}
           </p>
         </div>
-        <div className="flex items-center gap-1 bg-gray-50 rounded-full px-1 py-1 border border-gray-100">
+        <div className="flex items-center gap-1 bg-gray-50 rounded-full px-1 py-1 border border-gray-100 shrink-0">
           <button
             onClick={prevMonth}
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm transition-all text-gray-500"
+            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm transition-all text-gray-500"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-3.5 h-3.5" />
           </button>
-          <span className="text-sm font-semibold px-2 sm:px-3 text-center text-gray-700 capitalize whitespace-nowrap">
+          <span className="text-xs sm:text-sm font-semibold px-1.5 sm:px-2.5 text-center text-gray-700 capitalize whitespace-nowrap">
             {currentMonthName} {currentYear}
           </span>
           <button
             onClick={nextMonth}
-            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm transition-all text-gray-500"
+            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm transition-all text-gray-500"
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
       {/* Day Headers */}
-      <div className="grid grid-cols-7 mb-2">
+      <div className="grid grid-cols-7 mb-1.5">
         {["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"].map((d) => (
           <div
             key={d}
-            className="text-center text-xs font-semibold text-gray-400 uppercase tracking-wider py-2"
+            className="text-center text-[10px] sm:text-xs font-semibold text-gray-400 uppercase tracking-wider py-1"
           >
             {d}
           </div>
@@ -153,9 +137,9 @@ export function MoodCalendar({ moods }: MoodCalendarProps) {
       </div>
 
       {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
+      <div className="grid grid-cols-7 gap-1">
         {emptyDays.map((_, i) => (
-          <div key={`empty-${i}`} className="aspect-square" />
+          <div key={`empty-${i}`} className="h-12 sm:h-14" />
         ))}
         {calendarDays.map((day) => {
           const mood = getDayMood(day);
@@ -171,25 +155,31 @@ export function MoodCalendar({ moods }: MoodCalendarProps) {
               onClick={() => mood && setSelectedMood(mood)}
               disabled={!mood}
               className={cn(
-                "aspect-square rounded-xl flex flex-col items-center justify-center transition-all duration-200 relative group",
+                "h-12 sm:h-14 rounded-lg flex flex-col items-center justify-center transition-all duration-200 relative group border",
                 mood
                   ? `${moodColors[mood.mood].bg} ring-1 ${moodColors[mood.mood].ring} hover:ring-2 hover:shadow-sm cursor-pointer`
                   : isPast
-                    ? "bg-gray-50/50 text-gray-300"
-                    : "bg-transparent text-gray-400",
+                    ? "bg-white border-dashed border-gray-200 text-gray-400"
+                    : "bg-gray-50/40 border-gray-100 text-gray-400",
                 isToday &&
-                  !mood &&
-                  "bg-primary/5 text-primary font-bold ring-2 ring-primary/20",
+                !mood &&
+                "bg-primary/5 text-primary font-bold ring-1 ring-primary/30 border-primary/30",
                 isToday &&
-                  mood &&
-                  "ring-2 ring-primary/50 shadow-sm"
+                mood &&
+                "ring-2 ring-primary/50 shadow-sm"
               )}
             >
               {mood ? (
                 <>
-                  <span className="text-base sm:text-lg leading-none">
-                    {moodEmojis[mood.mood]}
-                  </span>
+                  <div className="relative w-5 h-5 sm:w-6 sm:h-6">
+                    <Image
+                      src={MOOD_ASSETS[mood.mood].active}
+                      alt={MOOD_ASSETS[mood.mood].label}
+                      fill
+                      sizes="24px"
+                      className="object-contain"
+                    />
+                  </div>
                   <span className="text-[9px] sm:text-[10px] font-medium text-gray-500 mt-0.5 leading-none">
                     {day}
                   </span>
@@ -210,15 +200,23 @@ export function MoodCalendar({ moods }: MoodCalendarProps) {
       </div>
 
       {/* Legend */}
-      <div className="mt-5 pt-4 border-t border-gray-100">
-        <div className="flex flex-wrap gap-x-4 gap-y-2 justify-center">
-          {Object.entries(moodEmojis).map(([type, emoji]) => (
+      <div className="mt-3 pt-3 border-t border-gray-100">
+        <div className="flex flex-wrap gap-x-3 gap-y-1.5 justify-center">
+          {MOOD_ORDER.map((type) => (
             <div key={type} className="flex items-center gap-1.5">
-              <span className="text-sm">{emoji}</span>
-              <span className="text-xs text-gray-500 capitalize">
-                {moodLabels[type as MoodType]}
-                {moodCounts[type as MoodType]
-                  ? ` (${moodCounts[type as MoodType]})`
+              <div className="relative w-4 h-4">
+                <Image
+                  src={MOOD_ASSETS[type].active}
+                  alt={MOOD_ASSETS[type].label}
+                  fill
+                  sizes="16px"
+                  className="object-contain"
+                />
+              </div>
+              <span className="text-[11px] text-gray-500 capitalize">
+                {MOOD_ASSETS[type].label}
+                {moodCounts[type]
+                  ? ` (${moodCounts[type]})`
                   : ""}
               </span>
             </div>
@@ -245,14 +243,22 @@ export function MoodCalendar({ moods }: MoodCalendarProps) {
             <div className="flex flex-col items-center py-6 animate-in fade-in zoom-in duration-300">
               <div
                 className={cn(
-                  "w-24 h-24 rounded-full flex items-center justify-center text-6xl mb-4 shadow-lg",
+                  "w-24 h-24 rounded-full flex items-center justify-center mb-4 shadow-lg",
                   moodColors[selectedMood.mood].bg
                 )}
               >
-                {moodEmojis[selectedMood.mood]}
+                <div className="relative w-14 h-14">
+                  <Image
+                    src={MOOD_ASSETS[selectedMood.mood].active}
+                    alt={MOOD_ASSETS[selectedMood.mood].label}
+                    fill
+                    sizes="56px"
+                    className="object-contain"
+                  />
+                </div>
               </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-1 capitalize">
-                {moodLabels[selectedMood.mood]}
+                {MOOD_ASSETS[selectedMood.mood].label}
               </h2>
               <p className="text-sm text-gray-500 mb-6 font-medium">
                 {parseApiDate(selectedMood.created_at).toLocaleDateString("id-ID", {

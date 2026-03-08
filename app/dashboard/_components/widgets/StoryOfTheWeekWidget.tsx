@@ -7,7 +7,10 @@ import { BookOpen, Heart, MessageCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 
+import { useTheme } from "@/hooks/useTheme";
+
 export function StoryOfTheWeekWidget() {
+    const { exclusivity } = useTheme();
     const [story, setStory] = useState<StoryCard | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -30,11 +33,11 @@ export function StoryOfTheWeekWidget() {
 
     if (isLoading) {
         return (
-            <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-100 animate-pulse">
-                <div className="h-4 w-32 bg-amber-200 rounded mb-3" />
-                <div className="h-5 w-48 bg-amber-200 rounded mb-2" />
-                <div className="h-3 w-full bg-amber-100 rounded mb-1" />
-                <div className="h-3 w-3/4 bg-amber-100 rounded" />
+            <div className="theme-story-bg rounded-2xl p-5 border theme-story-border animate-pulse">
+                <div className="h-4 w-32 rounded mb-3" style={{ backgroundColor: `var(--theme-story-border)` }} />
+                <div className="h-5 w-48 rounded mb-2" style={{ backgroundColor: `var(--theme-story-border)` }} />
+                <div className="h-3 w-full rounded mb-1" style={{ backgroundColor: `var(--theme-story-icon-bg)` }} />
+                <div className="h-3 w-3/4 rounded" style={{ backgroundColor: `var(--theme-story-icon-bg)` }} />
             </div>
         );
     }
@@ -42,18 +45,18 @@ export function StoryOfTheWeekWidget() {
     if (!story) return null;
 
     return (
-        <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-100 hover:shadow-md transition-shadow">
+        <div className="theme-story-bg rounded-2xl p-5 border theme-story-border hover:shadow-md transition-shadow">
             <div className="flex items-center gap-2 mb-3">
-                <div className="p-1.5 bg-amber-100 rounded-lg">
-                    <BookOpen className="h-4 w-4 text-amber-600" />
+                <div className="p-1.5 rounded-lg" style={{ backgroundColor: `var(--theme-story-icon-bg)` }}>
+                    <BookOpen className="h-4 w-4" style={{ color: `var(--theme-story-icon)` }} />
                 </div>
-                <span className="text-xs font-semibold text-amber-700 uppercase tracking-wider">
-                    Kisah Minggu Ini
+                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: `var(--theme-story-heading)` }}>
+                    {exclusivity.storyLabel}
                 </span>
             </div>
 
             <Link href={ROUTES.storyDetail(story.id)} className="group">
-                <h3 className="font-semibold text-gray-900 group-hover:text-amber-700 transition-colors line-clamp-2 mb-2">
+                <h3 className="font-semibold text-gray-900 transition-colors line-clamp-2 mb-2" style={{ ['--hover-color' as string]: `var(--theme-story-heading)` }}>
                     {story.title}
                 </h3>
                 <p className="text-sm text-gray-600 line-clamp-2 mb-3">
@@ -79,7 +82,8 @@ export function StoryOfTheWeekWidget() {
                 </div>
                 <Link
                     href={ROUTES.STORIES}
-                    className="text-xs text-amber-600 hover:text-amber-700 flex items-center gap-1 font-medium"
+                    className="text-xs flex items-center gap-1 font-medium"
+                    style={{ color: `var(--theme-story-link)` }}
                 >
                     Selengkapnya
                     <ArrowRight className="h-3 w-3" />

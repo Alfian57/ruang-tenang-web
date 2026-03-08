@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Search } from "lucide-react";
+import { Search, BookOpen } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -127,7 +127,7 @@ export default function DashboardReadingPage() {
       ) : articles.length > 0 ? (
         <div className="grid gap-4">
           {articles.map((article) => (
-            <Link key={article.id} href={`/dashboard/articles/read/${article.id}`}>
+            <Link key={article.id} href={`/dashboard/articles/read/${article.slug || article.id}`}>
               <Card className="overflow-hidden hover:shadow-md transition-shadow bg-white cursor-pointer group">
                 <div className="flex gap-4 p-4">
                   <div className="w-32 h-24 rounded-lg overflow-hidden shrink-0 bg-gray-100">
@@ -161,10 +161,10 @@ export default function DashboardReadingPage() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 bg-white rounded-xl border border-dashed">
-          <span className="text-4xl mb-4 block">📚</span>
-          <h3 className="font-semibold mb-2">Tidak ada artikel</h3>
-          <p className="text-gray-500 text-sm">
+        <div className="text-center py-16">
+          <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-500">Tidak ada artikel</h3>
+          <p className="text-gray-400 text-sm mt-1">
             {search ? "Coba kata kunci lain" : "Artikel akan segera tersedia"}
           </p>
         </div>

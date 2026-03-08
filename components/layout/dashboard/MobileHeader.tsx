@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Menu, X, Settings, KeyRound, LogOut, Trophy, Crown, Shield } from "lucide-react";
+import { ThemeSwitcher } from "@/components/layout/dashboard";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -39,12 +40,15 @@ export function MobileHeader({
   onShowExpHistory,
 }: MobileHeaderProps) {
   return (
-    <header className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b z-50 flex items-center justify-between px-4">
+    <header className="header-themed lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b z-50 flex items-center justify-between px-4">
       <Link href="/dashboard" className="flex items-center gap-2">
         <Image src="/logo.webp" alt="Ruang Tenang" width={32} height={32} className="object-contain" />
         <span className="text-base sm:text-lg font-bold text-gray-800">Ruang Tenang</span>
       </Link>
       <div className="flex items-center gap-1 sm:gap-2">
+        {/* Theme Switcher */}
+        {!isAdmin && !isModerator && <ThemeSwitcher />}
+
         {/* Mobile Avatar Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

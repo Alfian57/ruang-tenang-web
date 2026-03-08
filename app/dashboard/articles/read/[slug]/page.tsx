@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, FileText } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -88,10 +88,10 @@ export default function DashboardArticleDetailPage() {
           </Button>
           <span className="text-gray-500">Kembali</span>
         </div>
-        <div className="text-center py-12">
-          <span className="text-4xl mb-4 block">📄</span>
-          <h3 className="font-semibold mb-2">Artikel tidak ditemukan</h3>
-          <p className="text-gray-500 text-sm mb-4">
+        <div className="text-center py-16">
+          <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-500">Artikel tidak ditemukan</h3>
+          <p className="text-gray-400 text-sm mt-1 mb-4">
             Artikel yang Anda cari mungkin sudah dihapus atau tidak tersedia
           </p>
           <Button variant="outline" onClick={() => router.back()}>

@@ -3,7 +3,7 @@ export default function NewStoryLoading() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
+        <div className="p-4 lg:p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="h-4 w-4 rounded bg-gray-200 animate-pulse" />
@@ -14,7 +14,7 @@ export default function NewStoryLoading() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8 max-w-3xl">
+      <div className="p-4 lg:p-6">
         {/* Title & Description */}
         <div className="mb-8 space-y-2">
           <div className="h-7 w-48 rounded bg-gray-200 animate-pulse" />
@@ -90,11 +90,11 @@ export default function NewStoryLoading() {
           </div>
 
           {/* Guidelines */}
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 space-y-2">
-            <div className="h-5 w-40 rounded bg-amber-200 animate-pulse" />
+          <div className="theme-accent-soft-bg border theme-accent-border-soft rounded-lg p-4 space-y-2">
+            <div className="h-5 w-40 rounded theme-accent-light-bg animate-pulse" />
             <div className="space-y-1">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="h-3 w-3/4 rounded bg-amber-200 animate-pulse" />
+                <div key={i} className="h-3 w-3/4 rounded theme-accent-light-bg animate-pulse" />
               ))}
             </div>
           </div>

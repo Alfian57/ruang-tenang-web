@@ -9,12 +9,12 @@ export function StatsOverview({ stats }: StatsOverviewProps) {
     return (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {/* Current Streak */}
-            <div className="p-4 rounded-xl bg-linear-to-br from-orange-500/10 to-red-500/10 border border-orange-200/50">
+            <div className="p-4 rounded-xl theme-streak-bg border theme-streak-border">
                 <div className="flex items-center gap-2 mb-2">
-                    <Flame className="w-5 h-5 text-orange-500" />
-                    <span className="text-sm font-medium text-orange-700">Streak</span>
+                    <Flame className="w-5 h-5 theme-accent-text" />
+                    <span className="text-sm font-medium theme-accent-text-heading">Streak</span>
                 </div>
-                <div className="text-3xl font-bold text-orange-600">
+                <div className="text-3xl font-bold" style={{ color: `var(--theme-accent)` }}>
                     {stats.streak_info.current_streak}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">

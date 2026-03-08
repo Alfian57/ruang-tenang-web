@@ -102,7 +102,7 @@ export function JournalEditor({
         defaultShareWithAI,
         writingPrompt,
         onSave: async (data) => {
-             await onSave(data);
+            await onSave(data);
         },
     });
 
@@ -111,7 +111,7 @@ export function JournalEditor({
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-6">
+        <div className="w-full">
             <JournalEditorHeader
                 title={title}
                 setTitle={setTitle}
@@ -121,8 +121,8 @@ export function JournalEditor({
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-4">
                     <div className="min-h-[500px] border rounded-lg bg-white shadow-sm flex flex-col">
-                        <JournalToolbar 
-                            editor={editor} 
+                        <JournalToolbar
+                            editor={editor}
                             onGeneratePrompt={onGeneratePrompt ? () => onGeneratePrompt() : undefined}
                         />
                         <EditorContent
@@ -231,8 +231,8 @@ export function JournalEditor({
                         </div>
 
                         <div className="border-t pt-4">
-                             <Label className="text-sm text-gray-500 mb-2 block">Tags</Label>
-                             <JournalTagsInput
+                            <Label className="text-sm text-gray-500 mb-2 block">Tags</Label>
+                            <JournalTagsInput
                                 tags={tags}
                                 inputValue={tagInput}
                                 onInputChange={setTagInput}
@@ -240,19 +240,19 @@ export function JournalEditor({
                                 onRemoveTag={handleRemoveTag}
                                 onKeyDown={handleKeyDown}
                                 disabled={isSaving}
-                             />
+                            />
                         </div>
                     </div>
 
                     {writingPrompt && (
                         <div className="bg-purple-50 p-4 rounded-lg border border-purple-100">
-                             <h4 className="font-medium text-purple-900 mb-2 text-sm flex items-center gap-2">
+                            <h4 className="font-medium text-purple-900 mb-2 text-sm flex items-center gap-2">
                                 <span className="text-lg">💡</span>
                                 Ide Menulis
-                             </h4>
-                             <p className="text-sm text-purple-800 italic">
+                            </h4>
+                            <p className="text-sm text-purple-800 italic">
                                 &quot;{writingPrompt}&quot;
-                             </p>
+                            </p>
                         </div>
                     )}
                 </div>

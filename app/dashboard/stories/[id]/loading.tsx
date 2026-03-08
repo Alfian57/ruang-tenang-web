@@ -1,9 +1,9 @@
 export default function StoryDetailLoading() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-white">
+    <div className="min-h-screen" style={{ background: `linear-gradient(to bottom, color-mix(in srgb, var(--theme-accent-soft) 50%, transparent), white)` }}>
       {/* Header */}
       <div className="bg-white border-b sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
+        <div className="p-4 lg:p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="h-4 w-4 rounded bg-gray-200 animate-pulse" />
@@ -17,13 +17,13 @@ export default function StoryDetailLoading() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="p-4 lg:p-6">
         {/* Cover Image */}
         <div className="rounded-2xl overflow-hidden mb-8 aspect-video bg-gray-200 animate-pulse" />
 
         {/* Title & Meta */}
         <div className="mb-8 space-y-4">
-          <div className="h-6 w-24 rounded-full bg-amber-200 animate-pulse" />
+          <div className="h-6 w-24 rounded-full theme-accent-light-bg animate-pulse" />
           <div className="h-10 w-3/4 rounded bg-gray-200 animate-pulse" />
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">

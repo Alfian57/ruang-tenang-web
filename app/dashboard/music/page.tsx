@@ -36,7 +36,7 @@ export default function MusicPage() {
     showDeletePlaylistDialog,
     isDeleting,
     debouncedSearch,
-    
+
     // Actions - Setters
     setActiveTab,
     setSearch,
@@ -58,8 +58,10 @@ export default function MusicPage() {
   } = useMusic();
 
   // Navigation handlers
-  const navigateToPlaylist = (playlist: { id: number }) => {
-    router.push(`/dashboard/music/playlist/${playlist.id}`);
+  const navigateToPlaylist = (playlist: { id?: number; slug?: string; uuid?: string }) => {
+    const identifier = playlist.slug || playlist.uuid || playlist.id;
+    if (!identifier) return;
+    router.push(`/dashboard/music/playlist/${identifier}`);
   };
 
   return (
@@ -80,7 +82,7 @@ export default function MusicPage() {
         isLoading={isDeleting}
       />
 
-      <div className="container mx-auto px-4 py-6 max-w-6xl pb-32">
+      <div className="p-4 lg:p-6 pb-32">
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold">Musik Relaksasi</h1>
@@ -118,7 +120,7 @@ export default function MusicPage() {
               currentSong={currentSong}
               isPlaying={isPlaying}
               onPlay={handlePlaySong}
-              onCategoryClick={(category) => router.push(`/dashboard/music/categories/${category.id}`)}
+              onCategoryClick={(category) => router.push(`/dashboard/music/categories/${category.slug || category.id}`)}
             />
           </TabsContent>
 

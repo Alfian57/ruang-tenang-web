@@ -4,12 +4,12 @@ import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  Users, 
-  FileText, 
-  MessageCircle, 
-  Music, 
-  Heart, 
+import {
+  Users,
+  FileText,
+  MessageCircle,
+  Music,
+  Heart,
   TrendingUp,
   TrendingDown,
   Activity,
@@ -34,7 +34,7 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="p-4 lg:p-6">
       {/* Header */}
       <div className="mb-8">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm mb-4">
@@ -213,13 +213,11 @@ export default function AdminDashboardPage() {
               <CardContent>
                 <div className="space-y-4">
                   {stats.recent_users.map((recentUser) => (
-                    <div key={recentUser.id} className={`flex items-center justify-between p-3 rounded-lg ${
-                      recentUser.is_blocked ? 'bg-red-50 border border-red-100' : 'bg-muted/50'
-                    }`}>
+                    <div key={recentUser.id} className={`flex items-center justify-between p-3 rounded-lg ${recentUser.is_blocked ? 'bg-red-50 border border-red-100' : 'bg-muted/50'
+                      }`}>
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          recentUser.is_blocked ? 'bg-red-100' : 'bg-primary/10'
-                        }`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${recentUser.is_blocked ? 'bg-red-100' : 'bg-primary/10'
+                          }`}>
                           <span className={recentUser.is_blocked ? 'text-red-600 font-semibold' : 'text-primary font-semibold'}>
                             {recentUser.name.charAt(0).toUpperCase()}
                           </span>
@@ -235,9 +233,8 @@ export default function AdminDashboardPage() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          recentUser.role === 'admin' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
-                        }`}>
+                        <span className={`px-2 py-1 rounded-full text-xs ${recentUser.role === 'admin' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+                          }`}>
                           {recentUser.role}
                         </span>
                         <p className="text-xs text-muted-foreground mt-1">

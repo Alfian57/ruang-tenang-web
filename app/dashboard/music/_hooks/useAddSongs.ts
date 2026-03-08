@@ -52,7 +52,9 @@ export function useAddSongs({ open, onAddSongs, onOpenChange }: UseAddSongsProps
         }
 
         try {
-            const response = (await songService.getSongsByCategory(categoryId)) as {
+            const category = categories.find((c) => c.id === categoryId);
+            const categoryKey = category?.slug || categoryId;
+            const response = (await songService.getSongsByCategory(categoryKey)) as {
                 data: Song[];
             };
             setSongs(response.data || []);

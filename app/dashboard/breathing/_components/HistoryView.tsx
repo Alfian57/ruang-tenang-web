@@ -31,7 +31,7 @@ export function HistoryView({
     if (sessions.length === 0) {
         return (
             <EmptyState
-                icon={<History className="w-8 h-8 text-muted-foreground" />}
+                icon={<History className="w-16 h-16 text-gray-300" />}
                 title="Belum ada riwayat latihan"
                 description="Mulai sesi latihan pernapasan pertamamu dan riwayatnya akan muncul di sini."
                 action={{

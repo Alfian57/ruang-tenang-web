@@ -43,12 +43,12 @@ export default function StoriesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="px-4 lg:px-6 pt-4 lg:pt-6 pb-8">
+      <div className="p-4 lg:p-6">
         {/* Featured Stories */}
         {featuredStories.length > 0 && (
           <section className="mb-12">
             <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-500" />
+              <Sparkles className="w-5 h-5" style={{ color: `var(--theme-story-icon)` }} />
               Kisah Pilihan
             </h2>
             <div className="grid md:grid-cols-3 gap-6">
@@ -56,7 +56,7 @@ export default function StoriesPage() {
                 <Link
                   key={story.id}
                   href={`/dashboard/stories/${story.id}`}
-                  className="group relative bg-gradient-to-br from-amber-100 to-orange-50 rounded-2xl overflow-hidden border border-amber-200 hover:shadow-lg transition-all"
+                  className="group relative theme-story-bg rounded-2xl overflow-hidden border theme-story-border hover:shadow-lg transition-all"
                 >
                   {story.cover_image && (
                     <div className="h-40 overflow-hidden">
@@ -65,11 +65,11 @@ export default function StoriesPage() {
                         alt={story.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform"
-                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                     </div>
                   )}
                   <div className="p-4">
-                    <Badge className="bg-amber-500 text-white mb-2">Featured</Badge>
+                    <Badge className="text-white mb-2" style={{ backgroundColor: `var(--theme-story-icon)` }}>Featured</Badge>
                     <h3 className="font-bold text-lg mb-2 group-hover:text-amber-600 transition-colors line-clamp-2">
                       {story.title}
                     </h3>
@@ -147,16 +147,15 @@ export default function StoriesPage() {
           </div>
         ) : stories.length === 0 ? (
           <div className="text-center py-16">
-            <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Sparkles className="w-8 h-8 text-amber-500" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Belum ada kisah</h3>
-            <p className="text-gray-500 mb-4">
+            <Sparkles className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-500">Belum ada kisah</h3>
+            <p className="text-gray-400 text-sm mt-1">
               Jadilah yang pertama berbagi kisah inspiratif!
             </p>
             <Button
               onClick={() => router.push("/dashboard/stories/new")}
-              className="bg-amber-500 hover:bg-amber-600"
+              variant="outline"
+              className="mt-4"
             >
               Tulis Kisah
             </Button>
@@ -177,7 +176,7 @@ export default function StoriesPage() {
                         alt={story.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform"
-                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                     </div>
                   )}
                   <div className="p-4">

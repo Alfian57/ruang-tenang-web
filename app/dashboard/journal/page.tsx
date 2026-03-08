@@ -37,12 +37,12 @@ export default function JournalPage() {
     const {
         // Auth/Loading
         authLoading,
-        
+
         // State
         showFilters,
         activeTab,
         localSearchQuery,
-        
+
         // Store Data
         journals,
         totalJournals,
@@ -63,7 +63,7 @@ export default function JournalPage() {
         setShowFilters,
         setActiveTab,
         setLocalSearchQuery,
-        
+
         // Handlers
         handleUpdateSettings,
         handleExport,
@@ -87,7 +87,7 @@ export default function JournalPage() {
 
     // Main layout
     return (
-        <div className="container mx-auto px-4 py-6 max-w-6xl">
+        <div className="p-4 lg:p-6">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
@@ -184,7 +184,7 @@ export default function JournalPage() {
                         <div className="lg:col-span-2">
                             <JournalList
                                 journals={localSearchQuery ? searchResults : journals}
-                                activeJournalId={undefined} 
+                                activeJournalId={undefined}
                                 onToggleAIShare={handleToggleAIShare} // Still needed for list actions if any
                                 onDelete={handleDeleteClick}
                                 isLoading={isLoading || isSearching}

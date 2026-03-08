@@ -14,7 +14,7 @@ import { ROUTES } from "@/lib/routes";
 export default function CategoryPage() {
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
+  const categoryParam = params.id as string;
 
   const [category, setCategory] = useState<SongCategory | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
@@ -23,7 +23,7 @@ export default function CategoryPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!id) return;
+      if (!categoryParam) return;
 
       setIsLoading(true);
       setError("");
@@ -31,7 +31,9 @@ export default function CategoryPage() {
       try {
         // Fetch categories to find the current one (since API doesn't have getCategoryById)
         const categoriesRes = await songService.getCategories() as { data: SongCategory[] };
-        const foundCategory = categoriesRes.data?.find((c) => c.id === Number(id));
+        const foundCategory = categoriesRes.data?.find(
+          (c) => c.slug === categoryParam || String(c.id) === categoryParam
+        );
 
         if (!foundCategory) {
           setError("Kategori tidak ditemukan");
@@ -42,7 +44,8 @@ export default function CategoryPage() {
         setCategory(foundCategory);
 
         // Fetch songs for this category
-        const songsRes = await songService.getSongsByCategory(Number(id)) as { data: Song[] };
+        const categoryKey = foundCategory.slug || foundCategory.id;
+        const songsRes = await songService.getSongsByCategory(categoryKey) as { data: Song[] };
         setSongs(songsRes.data || []);
       } catch (err) {
         console.error("Failed to fetch category details:", err);
@@ -53,7 +56,7 @@ export default function CategoryPage() {
     };
 
     fetchData();
-  }, [id]);
+  }, [categoryParam]);
 
   if (isLoading) {
     return (
@@ -65,7 +68,7 @@ export default function CategoryPage() {
 
   if (error || !category) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="p-4 lg:p-6">
         <EmptyState
           icon={<Music className="w-12 h-12 text-gray-300" />}
           title="Kategori Tidak Ditemukan"

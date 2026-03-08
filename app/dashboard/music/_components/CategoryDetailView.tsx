@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, Music, Play, Pause, Plus } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/utils";
 import { Song, SongCategory } from "@/types";
 
@@ -25,7 +26,7 @@ export function CategoryDetailView({
     onPlay
 }: CategoryDetailViewProps) {
     return (
-        <div className="container mx-auto px-4 py-6 max-w-6xl pb-32">
+        <div className="p-4 lg:p-6 pb-32">
             <AnimatePresence mode="wait">
                 <motion.div
                     key="category-detail"
@@ -51,9 +52,9 @@ export function CategoryDetailView({
                                         alt={category.name}
                                         fill
                                         className="object-cover"
-                                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/20">
+                                    <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary/10 to-primary/20">
                                         <Music className="w-8 h-8 text-primary/60" />
                                     </div>
                                 )}
@@ -75,70 +76,85 @@ export function CategoryDetailView({
 
                     {/* Songs List */}
                     <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-                        <div className="border-b px-6 py-3 bg-gray-50/50 flex text-xs font-medium text-gray-400 uppercase tracking-wider">
-                            <div className="w-12 text-center">#</div>
-                            <div className="flex-1">Judul Lagu</div>
-                            <div className="w-24 text-right pr-4">Aksi</div>
-                        </div>
-
-                        <div className="divide-y divide-gray-100">
-                            {songs.map((song, index) => (
-                                <div
-                                    key={song.id}
-                                    className={cn(
-                                        "group flex items-center px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer",
-                                        currentSong?.id === song.id && "bg-primary/5 hover:bg-primary/10"
-                                    )}
-                                    onClick={() => onPlay(song)}
-                                >
-                                    <div className="w-10 text-center text-sm text-gray-400 font-medium group-hover:hidden">
-                                        {index + 1}
-                                    </div>
-                                    <div className="w-10 text-center hidden group-hover:flex justify-center">
-                                        {currentSong?.id === song.id && isPlaying ? (
-                                            <Pause className="w-4 h-4 text-primary fill-current" />
-                                        ) : (
-                                            <Play className="w-4 h-4 text-gray-600 fill-current" />
-                                        )}
-                                    </div>
-
-                                    <div className="flex-1 min-w-0 flex items-center gap-4">
-                                        <div className="w-10 h-10 rounded bg-gray-100 relative overflow-hidden shrink-0">
-                                            {song.thumbnail ? (
-                                                <Image src={song.thumbnail} alt="" fill className="object-cover"  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center">
-                                                    <Music className="w-4 h-4 text-gray-400" />
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div>
-                                            <p className={cn(
-                                                "font-medium text-sm truncate",
-                                                currentSong?.id === song.id ? "text-primary" : "text-gray-900"
-                                            )}>
-                                                {song.title}
-                                            </p>
-                                            <p className="text-xs text-gray-500">Ruang Tenang</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="w-24 flex justify-end pr-2">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="w-8 h-8 rounded-full text-gray-400 opacity-0 group-hover:opacity-100 hover:text-primary hover:bg-primary/10 transition-all"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                // Optional: Show modal to add to playlist
-                                            }}
-                                        >
-                                            <Plus className="w-4 h-4" />
-                                        </Button>
-                                    </div>
+                        {songs.length === 0 ? (
+                            <EmptyState
+                                className="py-14"
+                                icon={<Music className="w-12 h-12 text-gray-300" />}
+                                title="Belum ada lagu di kategori ini"
+                                description="Kategori ini masih kosong. Coba jelajahi kategori lain terlebih dahulu."
+                                action={{
+                                    label: "Kembali ke Musik",
+                                    onClick: onBack,
+                                }}
+                            />
+                        ) : (
+                            <>
+                                <div className="border-b px-6 py-3 bg-gray-50/50 flex text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                    <div className="w-12 text-center">#</div>
+                                    <div className="flex-1">Judul Lagu</div>
+                                    <div className="w-24 text-right pr-4">Aksi</div>
                                 </div>
-                            ))}
-                        </div>
+
+                                <div className="divide-y divide-gray-100">
+                                    {songs.map((song, index) => (
+                                        <div
+                                            key={song.id}
+                                            className={cn(
+                                                "group flex items-center px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer",
+                                                currentSong?.id === song.id && "bg-primary/5 hover:bg-primary/10"
+                                            )}
+                                            onClick={() => onPlay(song)}
+                                        >
+                                            <div className="w-10 text-center text-sm text-gray-400 font-medium group-hover:hidden">
+                                                {index + 1}
+                                            </div>
+                                            <div className="w-10 text-center hidden group-hover:flex justify-center">
+                                                {currentSong?.id === song.id && isPlaying ? (
+                                                    <Pause className="w-4 h-4 text-primary fill-current" />
+                                                ) : (
+                                                    <Play className="w-4 h-4 text-gray-600 fill-current" />
+                                                )}
+                                            </div>
+
+                                            <div className="flex-1 min-w-0 flex items-center gap-4">
+                                                <div className="w-10 h-10 rounded bg-gray-100 relative overflow-hidden shrink-0">
+                                                    {song.thumbnail ? (
+                                                        <Image src={song.thumbnail} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center">
+                                                            <Music className="w-4 h-4 text-gray-400" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <p className={cn(
+                                                        "font-medium text-sm truncate",
+                                                        currentSong?.id === song.id ? "text-primary" : "text-gray-900"
+                                                    )}>
+                                                        {song.title}
+                                                    </p>
+                                                    <p className="text-xs text-gray-500">Ruang Tenang</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="w-24 flex justify-end pr-2">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="w-8 h-8 rounded-full text-gray-400 opacity-0 group-hover:opacity-100 hover:text-primary hover:bg-primary/10 transition-all"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        // Optional: Show modal to add to playlist
+                                                    }}
+                                                >
+                                                    <Plus className="w-4 h-4" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
                     </div>
                 </motion.div>
             </AnimatePresence>

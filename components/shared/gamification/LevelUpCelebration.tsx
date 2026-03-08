@@ -80,10 +80,10 @@ export function LevelUpCelebration({ celebration, onClose, className }: LevelUpC
         };
     }, [celebration.tier_color]);
 
-    if (showFeatures && celebration.newly_unlocked_features.length > 0) {
+    if (showFeatures && (celebration.unlocked_features?.length ?? 0) > 0) {
         return (
             <FeatureUnlockCelebration
-                features={celebration.newly_unlocked_features}
+                features={celebration.unlocked_features}
                 levelName={celebration.tier_name}
                 onClose={onClose}
             />
@@ -120,7 +120,7 @@ export function LevelUpCelebration({ celebration, onClose, className }: LevelUpC
 
                 {/* Description */}
                 <p className="text-muted-foreground mb-4">
-                    {celebration.level_description}
+                    {celebration.badge_name ? `Badge: ${celebration.badge_name}` : ""}
                 </p>
 
                 {/* Celebration Message */}
@@ -130,19 +130,19 @@ export function LevelUpCelebration({ celebration, onClose, className }: LevelUpC
                         <span className="font-medium">Pesan Untukmu</span>
                         <Star className="h-5 w-5 text-yellow-500" />
                     </div>
-                    <p className="text-sm">{celebration.celebration_message}</p>
+                    <p className="text-sm">{celebration.congrats_message}</p>
                 </div>
 
                 {/* Buttons */}
                 <div className="space-y-3">
-                    {celebration.newly_unlocked_features.length > 0 ? (
+                    {(celebration.unlocked_features?.length ?? 0) > 0 ? (
                         <>
                             <button
                                 onClick={() => setShowFeatures(true)}
                                 className="w-full bg-primary text-primary-foreground rounded-lg py-3 font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
                             >
                                 <Sparkles className="h-5 w-5" />
-                                Lihat Fitur Baru ({celebration.newly_unlocked_features.length})
+                                Lihat Fitur Baru ({celebration.unlocked_features.length})
                             </button>
                             <button
                                 onClick={onClose}

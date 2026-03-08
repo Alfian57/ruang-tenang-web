@@ -5,6 +5,8 @@ import { getUploadUrl } from "./upload-url";
 
 const DEFAULT_TIMEOUT = 30_000; // 30 seconds
 const RATE_LIMIT_TOAST_COOLDOWN_MS = 5000;
+const MAX_RETRIES = 2;
+const RETRY_DELAY_MS = 1500;
 let lastRateLimitToastAt = 0;
 
 function normalizeUploadsDeep<T>(value: T): T {
@@ -71,6 +73,17 @@ class HttpClient {
   * Core request method - all convenience methods delegate here.
    */
   async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+    return this.requestWithRetry<T>(endpoint, options, 0);
+  }
+
+  /**
+   * Internal method that supports retry on rate limit (429).
+   */
+  private async requestWithRetry<T>(
+    endpoint: string,
+    options: RequestOptions,
+    attempt: number
+  ): Promise<T> {
     const { token, timeout = DEFAULT_TIMEOUT, body, params, ...fetchOptions } =
       options;
 
@@ -115,6 +128,13 @@ class HttpClient {
 
         // Show toast for rate limiting
         if (apiError.isRateLimited) {
+          // Retry with exponential backoff before showing error
+          if (attempt < MAX_RETRIES) {
+            const delay = RETRY_DELAY_MS * Math.pow(2, attempt);
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            return this.requestWithRetry<T>(endpoint, options, attempt + 1);
+          }
+
           const now = Date.now();
           if (now - lastRateLimitToastAt > RATE_LIMIT_TOAST_COOLDOWN_MS) {
             toast.error(

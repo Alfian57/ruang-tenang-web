@@ -33,8 +33,14 @@ export function SongTable({
                     <tbody className="divide-y">
                         {songs.length === 0 ? (
                             <tr>
-                                <td colSpan={3} className="p-8 text-center text-gray-500">
-                                    {search ? "Tidak ada lagu yang cocok" : "Belum ada lagu"}
+                                <td colSpan={3} className="py-16 text-center">
+                                    <Music className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                    <h3 className="text-lg font-medium text-gray-500">
+                                        {search ? "Tidak ada lagu yang cocok" : "Belum ada lagu"}
+                                    </h3>
+                                    <p className="text-gray-400 text-sm mt-1">
+                                        {search ? "Coba kata kunci lain" : "Klik \"Tambah Lagu\" untuk memulai"}
+                                    </p>
                                 </td>
                             </tr>
                         ) : (

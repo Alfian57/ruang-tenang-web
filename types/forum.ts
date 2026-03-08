@@ -12,7 +12,15 @@ export interface ForumPost {
   updated_at: string;
   user?: ForumUser;
   
-  // Interaction
+  // Voting fields from backend
+  upvotes_count?: number;
+  downvotes_count?: number;
+  has_user_voted?: boolean;
+  user_vote_type?: "upvote" | "downvote";
+  net_votes?: number;
+  is_accepted_answer?: boolean;
+
+  // Legacy aliases (kept for backward compatibility in UI components)
   likes_count?: number;
   is_liked?: boolean;
   is_best_answer?: boolean;
@@ -45,7 +53,8 @@ export interface Forum {
   replies_count?: number;
   likes_count?: number;
   is_liked?: boolean;
-  has_best_answer?: boolean; // Helpful to know if topic is resolved
+  has_accepted_answer?: boolean;
+  has_best_answer?: boolean; // Legacy alias
 }
 
 export interface CreateForumRequest {

@@ -40,12 +40,11 @@ export function ForumReplyList({
             ))}
 
             {posts.length === 0 && (
-                <div className="text-center py-12 bg-white rounded-xl border border-dashed">
-                    <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-300">
-                        <MessageSquare className="w-6 h-6" />
-                    </div>
-                    <p className="text-gray-500 text-sm">
-                        Belum ada balasan. Jadilah yang pertama!
+                <div className="text-center py-16">
+                    <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-500">Belum ada balasan</h3>
+                    <p className="text-gray-400 text-sm mt-1">
+                        Jadilah yang pertama!
                     </p>
                 </div>
             )}

@@ -78,9 +78,9 @@ export function CompletionModal({
                 {result.session.completed && (
                     <div className="mb-6">
                         {result.streak_milestone ? (
-                            <div className="p-4 rounded-xl bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-300 animate-pulse">
+                            <div className="p-4 rounded-xl theme-streak-bg border theme-streak-border animate-pulse">
                                 <div className="text-3xl mb-2">🎉🔥🎉</div>
-                                <h4 className="text-lg font-bold text-orange-600">
+                                <h4 className="text-lg font-bold theme-accent-text">
                                     {result.new_streak >= 30
                                         ? "🏆 30 Hari Berturut-turut!"
                                         : "⭐ 7 Hari Berturut-turut!"}
@@ -90,7 +90,7 @@ export function CompletionModal({
                                         ? "Luar biasa! Kamu sudah berlatih selama sebulan penuh!"
                                         : "Hebat! Kamu sudah berlatih seminggu berturut-turut!"}
                                 </p>
-                                <div className="mt-2 inline-flex items-center gap-1 bg-orange-500/20 text-orange-700 font-bold px-3 py-1 rounded-full text-sm">
+                                <div className="mt-2 inline-flex items-center gap-1 theme-accent-text-heading font-bold px-3 py-1 rounded-full text-sm" style={{ backgroundColor: `var(--theme-streak-from)` }}>
                                     +{result.streak_milestone_xp} XP Bonus
                                 </div>
                             </div>

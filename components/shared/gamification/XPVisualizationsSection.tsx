@@ -94,7 +94,7 @@ function XPPerDayChart({ data }: { data: DailyXP[] }) {
                 ))}
             </div>
             {data.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-8">Belum ada data XP</p>
+                <p className="text-sm text-gray-400 text-center py-8">Belum ada data XP</p>
             )}
         </div>
     );
@@ -182,7 +182,7 @@ function XPByActivityChart({ data }: { data: ActivityXP[] }) {
             </div>
 
             {data.length === 0 && (
-                <p className="text-sm text-muted-foreground text-center py-8">Belum ada data aktivitas</p>
+                <p className="text-sm text-gray-400 text-center py-8">Belum ada data aktivitas</p>
             )}
         </div>
     );
@@ -441,11 +441,11 @@ export function XPVisualizationsSection() {
     if (expHistory.length === 0) {
         return (
             <div className="text-center py-16">
-                <BarChart3 className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">
+                <BarChart3 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-500">
                     Belum Ada Data Statistik
                 </h3>
-                <p className="text-muted-foreground max-w-md mx-auto">
+                <p className="text-gray-400 text-sm mt-1 max-w-md mx-auto">
                     Mulai beraktivitas untuk melihat visualisasi XP kamu di sini.
                     Baca artikel, tulis jurnal, atau ikut berdiskusi di forum!
                 </p>

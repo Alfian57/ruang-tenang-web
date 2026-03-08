@@ -27,7 +27,9 @@ export default function CommunityPage() {
     hallOfFame,
     latestForums,
     currentLevel,
+    maxLevel,
     loading,
+    isLevelChanging,
     handleLevelChange,
   } = useCommunityData({ includePersonal: false });
 
@@ -135,6 +137,8 @@ export default function CommunityPage() {
               <PublicHallOfFame
                 hallOfFame={hallOfFame}
                 currentLevel={currentLevel}
+                maxLevel={maxLevel}
+                isLevelChanging={isLevelChanging}
                 onLevelChange={handleLevelChange}
               />
             )}

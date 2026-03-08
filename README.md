@@ -1,7 +1,5 @@
 # Ruang Tenang Web
 
-[![Web Test Suite](https://github.com/Alfian57/ruang-tenang-web/actions/workflows/test.yml/badge.svg)](https://github.com/Alfian57/ruang-tenang-web/actions/workflows/test.yml)
-
 Frontend untuk aplikasi Ruang Tenang - Platform Kesehatan Mental.
 
 ## Tech Stack
@@ -82,17 +80,4 @@ npm run dev      # Development server
 npm run build    # Production build
 npm run start    # Production server
 npm run lint     # ESLint
-npm run test:component  # Component tests (Vitest)
-npm run test:unit       # Unit tests (Vitest)
-npm run test:e2e        # E2E critical flow (Playwright)
 ```
-
-## PR Checklist (Testing)
-
-Sebelum membuat / merge PR, pastikan:
-
-- [ ] Test baru ditempatkan di folder yang benar: `tests/components`, `tests/unit`, atau `tests/e2e`
-- [ ] Penamaan file konsisten: `.test.ts/.test.tsx` (Vitest), `.spec.ts` (Playwright)
-- [ ] Perubahan logic non-UI diprioritaskan masuk `tests/unit`
-- [ ] Alur kritis user yang berubah punya coverage di `tests/e2e`
-- [ ] Menjalankan minimal command sesuai area perubahan (`npm run test:unit`, `npm run test:component`, atau `npm run test:e2e`)

@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Shield, User, Ban, CheckCircle, BookX, BookOpen, MessageSquareOff, MessageSquare } from "lucide-react";
+import { Search, Shield, User, Users, Ban, CheckCircle, BookX, BookOpen, MessageSquareOff, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -53,7 +53,7 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="p-4 md:p-6 lg:p-8">
+    <div className="p-4 lg:p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Kelola Pengguna</h1>
         <p className="text-gray-500">Lihat dan kelola semua pengguna terdaftar</p>
@@ -105,8 +105,14 @@ export default function AdminUsersPage() {
                 ))
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-gray-500">
-                    {search ? "Tidak ada pengguna yang cocok" : "Belum ada pengguna"}
+                  <td colSpan={6} className="py-16 text-center">
+                    <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-500">
+                      {search ? "Tidak ada pengguna yang cocok" : "Belum ada pengguna"}
+                    </h3>
+                    <p className="text-gray-400 text-sm mt-1">
+                      {search ? "Coba kata kunci lain" : "Pengguna akan muncul di sini"}
+                    </p>
                   </td>
                 </tr>
               ) : (
@@ -114,9 +120,8 @@ export default function AdminUsersPage() {
                   <tr key={u.id} className={`hover:bg-gray-50 ${u.is_blocked ? 'bg-red-50/50' : ''}`}>
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                          u.role === "admin" ? "bg-purple-100" : u.role === "moderator" ? "bg-blue-100" : u.is_blocked ? "bg-red-100" : "bg-gray-100"
-                        }`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${u.role === "admin" ? "bg-purple-100" : u.role === "moderator" ? "bg-blue-100" : u.is_blocked ? "bg-red-100" : "bg-gray-100"
+                          }`}>
                           {u.role === "admin" ? (
                             <Shield className="w-5 h-5 text-purple-600" />
                           ) : u.role === "moderator" ? (

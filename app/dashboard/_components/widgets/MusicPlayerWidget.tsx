@@ -34,12 +34,13 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
 
     if (!categorySongs[categoryId]) {
       try {
-        const response = await songService.getSongsByCategory(categoryId) as { data: Song[] };
-        if (response.data) {
-          setCategorySongs(prev => ({ ...prev, [categoryId]: response.data }));
-        }
+        const category = categories.find((c) => c.id === categoryId);
+        const categoryKey = category?.slug || categoryId;
+        const response = await songService.getSongsByCategory(categoryKey) as { data: Song[] };
+        setCategorySongs(prev => ({ ...prev, [categoryId]: response.data || [] }));
       } catch (error) {
         console.error("Failed to load songs:", error);
+        setCategorySongs(prev => ({ ...prev, [categoryId]: [] }));
       }
     }
   };
@@ -93,8 +94,8 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-[400px]">
-      <div className="p-4 bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+      <div className="p-4 bg-linear-to-br from-indigo-500 to-purple-600 text-white">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-white/20 rounded-lg">
@@ -148,7 +149,7 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-thin scrollbar-thumb-gray-200">
+      <div className="p-4 space-y-3 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200">
         {(categories || []).slice(0, 5).map((cat) => (
           <div key={cat.id} className="group">
             <button
@@ -160,7 +161,7 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
             >
               <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden relative shrink-0 shadow-sm group-hover:shadow-md transition-all">
                 {cat.thumbnail ? (
-                  <Image src={cat.thumbnail} alt="" fill className="object-cover"  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                  <Image src={cat.thumbnail} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gray-200">
                     <Music className="w-4 h-4 text-gray-400" />
@@ -204,8 +205,11 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
                     <span className="truncate">{song.title}</span>
                   </button>
                 ))}
-                {(!categorySongs[cat.id] || categorySongs[cat.id].length === 0) && (
+                {categorySongs[cat.id] === undefined && (
                   <p className="text-xs text-gray-400 py-2 pl-2">Memuat lagu...</p>
+                )}
+                {categorySongs[cat.id] !== undefined && categorySongs[cat.id].length === 0 && (
+                  <p className="text-xs text-gray-400 py-2 pl-2">Belum ada lagu di kategori ini</p>
                 )}
               </div>
             </div>

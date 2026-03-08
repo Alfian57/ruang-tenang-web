@@ -1,6 +1,6 @@
 "use client";
 
-import { Ban, CheckCircle, Eye, Edit, XCircle, Trash2 } from "lucide-react";
+import { Ban, CheckCircle, Eye, Edit, XCircle, Trash2, FileText } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
@@ -81,8 +81,14 @@ export function ArticleTable({
                             ))
                         ) : articles.length === 0 ? (
                             <tr>
-                                <td colSpan={6} className="p-8 text-center text-gray-500">
-                                    {search ? "Tidak ada artikel yang cocok" : "Belum ada artikel"}
+                                <td colSpan={6} className="py-16 text-center">
+                                    <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                    <h3 className="text-lg font-medium text-gray-500">
+                                        {search ? "Tidak ada artikel yang cocok" : "Belum ada artikel"}
+                                    </h3>
+                                    <p className="text-gray-400 text-sm mt-1">
+                                        {search ? "Coba kata kunci lain" : "Artikel akan segera tersedia"}
+                                    </p>
                                 </td>
                             </tr>
                         ) : (

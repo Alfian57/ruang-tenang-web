@@ -7,7 +7,7 @@ import { Playlist } from "@/types";
 import { useAuthStore } from "@/store/authStore";
 import { toast } from "sonner";
 
-export function usePlaylist(playlistId: string) {
+export function usePlaylist(playlistIdentifier: string) {
   const router = useRouter();
   const { token } = useAuthStore();
   
@@ -23,13 +23,7 @@ export function usePlaylist(playlistId: string) {
     if (!token) return;
     setIsLoading(true);
     try {
-      // Try to parse ID to integer, as API likely expects number
-      const id = parseInt(playlistId);
-      if (isNaN(id)) {
-        throw new Error("Invalid playlist ID");
-      }
-      
-      const response = await songService.getPlaylist(token, id) as { data: Playlist };
+      const response = await songService.getPlaylist(token, playlistIdentifier) as { data: Playlist };
       setPlaylist(response.data);
     } catch (error) {
       console.error("Failed to load playlist:", error);
@@ -38,7 +32,7 @@ export function usePlaylist(playlistId: string) {
     } finally {
       setIsLoading(false);
     }
-  }, [token, playlistId, router]);
+  }, [token, playlistIdentifier, router]);
 
   useEffect(() => {
     loadPlaylist();

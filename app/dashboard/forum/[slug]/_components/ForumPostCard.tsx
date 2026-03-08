@@ -35,21 +35,25 @@ export function ForumPostCard({
 
   onShowDeleteDialog,
 }: ForumPostCardProps) {
+  const isBestAnswer = post.is_accepted_answer ?? post.is_best_answer ?? false;
+  const isLiked = post.has_user_voted ?? post.is_liked ?? false;
+  const likeCount = post.upvotes_count ?? post.likes_count ?? 0;
+
   return (
-    <div className={cn("flex gap-3 group transition-all", post.is_best_answer && "translate-x-2")}>
+    <div className={cn("flex gap-3 group transition-all", isBestAnswer && "translate-x-2")}>
       <div className="shrink-0">
         <div className={cn(
           "w-8 h-8 rounded-full overflow-hidden relative flex items-center justify-center text-xs font-bold ring-2",
-          post.is_best_answer ? "bg-green-100 text-green-700 ring-green-500" : "bg-gray-200 text-gray-500 ring-transparent"
+          isBestAnswer ? "bg-green-100 text-green-700 ring-green-500" : "bg-gray-200 text-gray-500 ring-transparent"
         )}>
-          {post.is_best_answer ? <Trophy className="w-4 h-4" /> : (post.user?.name?.charAt(0).toUpperCase() || "U")}
+          {isBestAnswer ? <Trophy className="w-4 h-4" /> : (post.user?.name?.charAt(0).toUpperCase() || "U")}
         </div>
       </div>
       <div className={cn(
         "flex-1 p-4 rounded-2xl rounded-tl-none shadow-sm border transaction-colors relative",
-        post.is_best_answer ? "bg-green-50 border-green-200" : "bg-white"
+        isBestAnswer ? "bg-green-50 border-green-200" : "bg-white"
       )}>
-        {post.is_best_answer && (
+        {isBestAnswer && (
           <div className="absolute -top-3 -right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm flex items-center gap-1">
             <CheckCircle2 className="w-3 h-3" /> BEST ANSWER
           </div>
@@ -64,7 +68,7 @@ export function ForumPostCard({
             <span className="text-xs text-gray-400">{formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: idLocale })}</span>
           </div>
           <div className="flex items-center gap-2">
-            {isForumOwner && !post.is_best_answer && (
+            {isForumOwner && !isBestAnswer && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -118,7 +122,7 @@ export function ForumPostCard({
           </div>
         </div>
 
-        <p className={cn("text-sm whitespace-pre-wrap leading-relaxed mb-3", post.is_best_answer ? "text-green-900" : "text-gray-700")}>
+        <p className={cn("text-sm whitespace-pre-wrap leading-relaxed mb-3", isBestAnswer ? "text-green-900" : "text-gray-700")}>
           {post.content}
         </p>
 
@@ -128,16 +132,16 @@ export function ForumPostCard({
               onClick={() => onToggleLike(post)}
               className={cn(
                 "flex items-center gap-1.5 text-xs font-medium transition-colors p-1 rounded",
-                post.is_liked ? "text-red-500 bg-red-50" : "text-gray-500 hover:text-red-500 hover:bg-red-50"
+                isLiked ? "text-red-500 bg-red-50" : "text-gray-500 hover:text-red-500 hover:bg-red-50"
               )}
             >
-              <Heart className={cn("w-3.5 h-3.5", post.is_liked && "fill-current")} />
-              {post.likes_count || 0}
+              <Heart className={cn("w-3.5 h-3.5", isLiked && "fill-current")} />
+              {likeCount}
             </button>
           ) : (
             <div className="flex items-center gap-1.5 text-xs text-gray-400 p-1">
               <Heart className="w-3.5 h-3.5" />
-              {post.likes_count || 0}
+              {likeCount}
             </div>
           )}
         </div>

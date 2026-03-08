@@ -32,7 +32,7 @@ export function CategoryList({
                         className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
                         onClick={() => onToggleCategory(category.id)}
                     >
-                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-linear-to-br from-red-100 to-red-200 shrink-0">
+                        <div className="w-10 h-10 rounded-lg overflow-hidden theme-placeholder-bg shrink-0">
                             {category.thumbnail ? (
                                 <Image
                                     src={category.thumbnail}

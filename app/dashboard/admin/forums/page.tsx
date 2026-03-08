@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, ExternalLink, MessageSquare, Plus, Pencil, Trash2, AlertTriangle, Ban, CheckCircle } from "lucide-react";
+import { Search, ExternalLink, MessageSquare, Plus, Pencil, Trash2, AlertTriangle, Ban, CheckCircle, Tag } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,7 +47,7 @@ export default function AdminForumsPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 lg:p-8">
+    <div className="p-4 lg:p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Kelola Forum</h1>
         <p className="text-gray-500">Kelola topik diskusi dan kategori forum</p>
@@ -83,7 +83,7 @@ export default function AdminForumsPage() {
             </div>
           </div>
 
-            <div className="bg-white rounded-xl border overflow-hidden">
+          <div className="bg-white rounded-xl border overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
@@ -107,8 +107,14 @@ export default function AdminForumsPage() {
                     ))
                   ) : forums.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="p-8 text-center text-gray-500">
-                        {search ? "Tidak ada topik yang cocok" : "Belum ada topik forum"}
+                      <td colSpan={6} className="py-16 text-center">
+                        <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-500">
+                          {search ? "Tidak ada topik yang cocok" : "Belum ada topik forum"}
+                        </h3>
+                        <p className="text-gray-400 text-sm mt-1">
+                          {search ? "Coba kata kunci lain" : "Topik forum akan muncul di sini"}
+                        </p>
                       </td>
                     </tr>
                   ) : (
@@ -117,7 +123,7 @@ export default function AdminForumsPage() {
                         <td className="p-4">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0 text-blue-500">
-                               <MessageSquare className="w-5 h-5" />
+                              <MessageSquare className="w-5 h-5" />
                             </div>
                             <div>
                               <p className="font-medium text-gray-900 line-clamp-1">{forum.title}</p>
@@ -176,13 +182,13 @@ export default function AdminForumsPage() {
                 </tbody>
               </table>
             </div>
-            </div>
-            
-            <Pagination
-              currentPage={page}
-              totalPages={totalPages}
-              onPageChange={setPage}
-            />
+          </div>
+
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
         </TabsContent>
 
         <TabsContent value="categories" className="space-y-6">
@@ -193,48 +199,52 @@ export default function AdminForumsPage() {
           </div>
 
           <div className="bg-white rounded-xl border overflow-hidden">
-             <table className="w-full">
-                <thead className="bg-gray-50 border-b">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b">
+                <tr>
+                  <th className="text-left p-4 font-medium text-gray-600">Nama Kategori</th>
+                  <th className="text-left p-4 font-medium text-gray-600">Tanggal Dibuat</th>
+                  <th className="text-right p-4 font-medium text-gray-600">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {categories.length === 0 ? (
                   <tr>
-                    <th className="text-left p-4 font-medium text-gray-600">Nama Kategori</th>
-                    <th className="text-left p-4 font-medium text-gray-600">Tanggal Dibuat</th>
-                    <th className="text-right p-4 font-medium text-gray-600">Aksi</th>
+                    <td colSpan={3} className="py-16 text-center">
+                      <Tag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-500">Belum ada kategori</h3>
+                      <p className="text-gray-400 text-sm mt-1">Klik &quot;Tambah Kategori&quot; untuk memulai</p>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y">
-                   {categories.length === 0 ? (
-                      <tr>
-                        <td colSpan={3} className="p-8 text-center text-gray-500">Belum ada kategori</td>
-                      </tr>
-                   ) : (
-                     categories.map((cat) => (
-                        <tr key={cat.id} className="hover:bg-gray-50">
-                           <td className="p-4 font-medium">{cat.name}</td>
-                           <td className="p-4 text-gray-500 text-sm">{formatDate(cat.created_at)}</td>
-                           <td className="p-4">
-                              <div className="flex gap-1 justify-end">
-                                 <Button 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    onClick={() => openCategoryModal(cat)}
-                                 >
-                                    <Pencil className="w-4 h-4" />
-                                 </Button>
-                                 <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="text-red-500 hover:text-red-600"
-                                    onClick={() => setDeleteId(cat.id)}
-                                 >
-                                   <Trash2 className="w-4 h-4" />
-                                 </Button>
-                              </div>
-                           </td>
-                        </tr>
-                     ))
-                   )}
-                </tbody>
-             </table>
+                ) : (
+                  categories.map((cat) => (
+                    <tr key={cat.id} className="hover:bg-gray-50">
+                      <td className="p-4 font-medium">{cat.name}</td>
+                      <td className="p-4 text-gray-500 text-sm">{formatDate(cat.created_at)}</td>
+                      <td className="p-4">
+                        <div className="flex gap-1 justify-end">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => openCategoryModal(cat)}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-red-500 hover:text-red-600"
+                            onClick={() => setDeleteId(cat.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </TabsContent>
       </Tabs>
@@ -266,10 +276,10 @@ export default function AdminForumsPage() {
           <div className="py-4 space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Nama Kategori</label>
-              <Input 
-                 placeholder="Contoh: Diskusi Umum, Kesehatan Mental"
-                 value={categoryName}
-                 onChange={(e) => setCategoryName(e.target.value)}
+              <Input
+                placeholder="Contoh: Diskusi Umum, Kesehatan Mental"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
               />
             </div>
           </div>
@@ -292,19 +302,19 @@ export default function AdminForumsPage() {
           </DialogHeader>
           <div className="py-4 text-center">
             <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${allForums.find(f => f.id === blockId)?.is_flagged ? "bg-green-100" : "bg-red-100"}`}>
-               {allForums.find(f => f.id === blockId)?.is_flagged ? <CheckCircle className="w-8 h-8 text-green-600" /> : <Ban className="w-8 h-8 text-red-600" />}
+              {allForums.find(f => f.id === blockId)?.is_flagged ? <CheckCircle className="w-8 h-8 text-green-600" /> : <Ban className="w-8 h-8 text-red-600" />}
             </div>
             <p className="text-gray-600">
-               {allForums.find(f => f.id === blockId)?.is_flagged 
-                 ? "Forum ini akan dapat diakses kembali oleh pengguna lain." 
-                 : "Forum ini tidak akan dapat diakses oleh pengguna lain selain admin."}
+              {allForums.find(f => f.id === blockId)?.is_flagged
+                ? "Forum ini akan dapat diakses kembali oleh pengguna lain."
+                : "Forum ini tidak akan dapat diakses oleh pengguna lain selain admin."}
             </p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setBlockId(null)}>Batal</Button>
-            <Button 
-               className={allForums.find(f => f.id === blockId)?.is_flagged ? "bg-green-600 hover:bg-green-700 text-white" : "bg-red-600 hover:bg-red-700 text-white"} 
-               onClick={confirmToggleFlag}
+            <Button
+              className={allForums.find(f => f.id === blockId)?.is_flagged ? "bg-green-600 hover:bg-green-700 text-white" : "bg-red-600 hover:bg-red-700 text-white"}
+              onClick={confirmToggleFlag}
             >
               {allForums.find(f => f.id === blockId)?.is_flagged ? "Buka Blokir" : "Blokir"}
             </Button>

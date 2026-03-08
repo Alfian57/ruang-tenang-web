@@ -2,7 +2,7 @@
 
 import { cn } from "@/utils";
 import { StoryCard as StoryCardType } from "@/types";
-import { Heart, MessageCircle, Star, AlertTriangle, User } from "lucide-react";
+import { Heart, MessageCircle, Star, AlertTriangle, User, BookOpen } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -28,7 +28,7 @@ export function StoryCard({ story, className }: StoryCardProps) {
                             alt={story.title}
                             fill
                             className="object-cover group-hover:scale-105 transition-transform duration-300"
-                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary/20 to-primary/5">
                             <span className="text-4xl">📖</span>
@@ -45,7 +45,7 @@ export function StoryCard({ story, className }: StoryCardProps) {
 
                     {/* Trigger Warning */}
                     {story.has_trigger_warning && (
-                        <div className="absolute top-3 right-3 bg-orange-500 text-white text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
+                        <div className="absolute top-3 right-3 theme-accent-bg text-white text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
                             <AlertTriangle className="h-3 w-3" />
                             TW
                         </div>
@@ -136,10 +136,10 @@ interface StoryListProps {
 export function StoryList({ stories, className }: StoryListProps) {
     if (stories.length === 0) {
         return (
-            <div className="text-center py-12">
-                <span className="text-4xl mb-4 block">📖</span>
-                <h3 className="font-semibold mb-2">Belum Ada Cerita</h3>
-                <p className="text-muted-foreground">
+            <div className="text-center py-16">
+                <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-500">Belum Ada Cerita</h3>
+                <p className="text-gray-400 text-sm mt-1">
                     Jadilah yang pertama berbagi kisah inspiratif!
                 </p>
             </div>

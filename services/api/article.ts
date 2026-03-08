@@ -33,7 +33,7 @@ export const articleService = {
     return httpClient.put<ApiResponse<Article>>(`/my-articles/${id}`, data, { token });
   },
 
-  deleteArticle(token: string, id: number) {
-    return httpClient.delete<ApiResponse<null>>(`/my-articles/${id}`, { token });
+  deleteArticle(token: string, identifier: string | number) {
+    return httpClient.delete<ApiResponse<null>>(`/my-articles/${encodeURIComponent(String(identifier))}`, { token });
   },
 };

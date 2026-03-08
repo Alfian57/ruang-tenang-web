@@ -146,15 +146,20 @@ export function useAdminForumDetail() {
   
   const handleTogglePostLike = async (post: ForumPost) => {
     if (!token) return;
+    const currentlyLiked = post.has_user_voted ?? post.is_liked ?? false;
     
     // Optimistic Update
     const updatedPosts = posts.map(p => {
       if (p.id === post.id) {
-        const isLiked = !p.is_liked;
+        const current = p.has_user_voted ?? p.is_liked ?? false;
+        const next = !current;
+        const currentUpvotes = p.upvotes_count ?? p.likes_count ?? 0;
         return {
           ...p,
-          is_liked: isLiked,
-          likes_count: (p.likes_count || 0) + (isLiked ? 1 : -1)
+          has_user_voted: next,
+          is_liked: next,
+          upvotes_count: currentUpvotes + (next ? 1 : -1),
+          likes_count: currentUpvotes + (next ? 1 : -1)
         };
       }
       return p;
@@ -162,7 +167,11 @@ export function useAdminForumDetail() {
     setPosts(updatedPosts);
     
     try {
-      await forumService.upvotePost(token, post.id);
+      if (currentlyLiked) {
+        await forumService.removePostVote(token, post.id);
+      } else {
+        await forumService.upvotePost(token, post.id);
+      }
     } catch (error) {
       console.error(error);
       toast.error("Gagal melike balasan");
@@ -173,12 +182,12 @@ export function useAdminForumDetail() {
   const handleToggleBestAnswer = async (post: ForumPost) => {
     if (!token) return;
     
-    const isBest = !post.is_best_answer;
+    const isBest = !(post.is_accepted_answer ?? post.is_best_answer ?? false);
     
     // Optimistic Update
     const updatedPosts = posts.map(p => {
-      if (p.id === post.id) return { ...p, is_best_answer: isBest };
-      if (isBest) return { ...p, is_best_answer: false }; 
+      if (p.id === post.id) return { ...p, is_accepted_answer: isBest, is_best_answer: isBest };
+      if (isBest) return { ...p, is_accepted_answer: false, is_best_answer: false }; 
       return p;
     });
     setPosts(updatedPosts);

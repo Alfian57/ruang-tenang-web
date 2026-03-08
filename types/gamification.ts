@@ -3,36 +3,34 @@
 // ==========================================
 
 export interface CommunityStats {
-  total_users: number;
-  active_users_weekly: number;
-  active_users_monthly: number;
-  total_exp_earned: number;
-  exp_earned_this_week: number;
-  total_activities: number;
-  milestones_reached: number;
-  badges_earned: number;
-  stories_shared: number;
-  supportive_hearts_given: number;
-  calculated_at: string;
+  total_xp_earned: number;
+  active_members: number;
+  total_achievements: number;
+  growth_percentage: number;
+  new_members: number;
+  total_stories_published: number;
+  total_articles_published: number;
+  month: number;
+  year: number;
 }
 
 export interface HallOfFameEntry {
+  rank: number;
   user_id: number;
-  name: string;
+  user_name: string;
   avatar: string;
-  exp: number;
-  current_streak: number;
-  longest_streak: number;
-  total_activities: number;
-  badges_earned: string[];
-  joined_at: string;
+  monthly_xp: number;
+  message?: string;
+  tier_name: string;
+  tier_color: string;
 }
 
 export interface LevelHallOfFameResponse {
   level: number;
-  tier_name: string;
-  tier_color: string;
-  entries: HallOfFameEntry[];
+  month: number;
+  year: number;
+  featured_users: HallOfFameEntry[];
+  total_members: number;
 }
 
 export interface HallOfFameCategoryInfo {
@@ -44,27 +42,24 @@ export interface HallOfFameCategoryInfo {
 
 export interface PersonalJourney {
   user_id: number;
-  name: string;
-  avatar: string;
-  current_exp: number;
   current_level: number;
+  current_exp: number;
+  exp_to_next_level: number;
+  progress_percent: number;
   tier_name: string;
   tier_color: string;
-  exp_to_next_level: number;
-  exp_progress: number;
+  badge_name: string;
+  badge_icon: string;
+  monthly_xp: number;
+  monthly_activities: number;
+  new_badges_count: number;
   rank_in_level: number;
   total_in_level: number;
+  percentile: number;
   current_streak: number;
   longest_streak: number;
   total_activities: number;
-  unlocked_features: number;
-  total_features: number;
-  badges_earned: number;
-  weekly_exp: number;
-  weekly_activities: number;
-  monthly_exp: number;
-  monthly_activities: number;
-  joined_at: string;
+  member_since: string;
 }
 
 export interface ActivityBreakdownItem {
@@ -73,39 +68,50 @@ export interface ActivityBreakdownItem {
   label: string;
 }
 
-export interface WeeklyProgress {
-  week_start: string;
-  exp_earned: number;
+export interface ProgressStats {
+  xp_earned: number;
   activities_count: number;
-  breakdown: ActivityBreakdownItem[];
+  badges_earned: number;
+}
+
+export interface WeeklyProgress {
+  this_week: ProgressStats;
+  last_week: ProgressStats;
+  xp_change: number;
+  xp_change_percent: number;
+  streak_days: number;
+  most_productive_day: string;
 }
 
 export interface MonthlyProgress {
-  month: number;
-  year: number;
-  exp_earned: number;
-  activities_count: number;
-  breakdown: ActivityBreakdownItem[];
+  total_xp: number;
+  level_progress_percent: number;
+  badges_earned: number;
+  top_activity: string;
+  top_activity_count: number;
+  days_active: number;
 }
 
 export interface AllTimeStats {
-  total_exp: number;
-  total_activities: number;
+  member_since: string;
+  total_xp: number;
+  current_level: number;
+  total_badges: number;
   longest_streak: number;
-  current_streak: number;
-  badges_earned: number;
-  features_unlocked: number;
-  days_since_joined: number;
-  breakdown: ActivityBreakdownItem[];
+  total_activities: number;
+  stories_shared: number;
+  articles_written: number;
 }
 
 export interface LevelUpCelebration {
   new_level: number;
+  badge_name: string;
+  badge_icon: string;
   tier_name: string;
   tier_color: string;
-  level_description: string;
-  celebration_message: string;
-  newly_unlocked_features: FeatureUnlock[];
+  unlocked_features: FeatureUnlock[];
+  new_badges?: Badge[];
+  congrats_message: string;
 }
 
 // ==========================================
@@ -115,10 +121,13 @@ export interface LevelUpCelebration {
 export interface FeatureUnlock {
   id: string;
   feature_key: string;
-  name: string;
+  feature_name: string;
   description: string;
   icon: string;
+  required_level: number;
   category: string;
+  is_unlocked: boolean;
+  unlocked_at?: string;
 }
 
 export interface LockedFeature extends FeatureUnlock {
@@ -165,11 +174,14 @@ export interface FeatureCategoryInfo {
 export interface Badge {
   id: string;
   badge_key: string;
-  name: string;
+  badge_name: string;
   description: string;
   icon: string;
-  rarity: "common" | "uncommon" | "rare" | "epic" | "legendary";
-  category: "streak" | "activity" | "contribution" | "special" | "level";
+  category: string;
+  requirement_type: string;
+  requirement_value: number;
+  is_earned: boolean;
+  is_showcased: boolean;
   earned_at?: string;
 }
 
@@ -199,10 +211,11 @@ export interface BadgeCategoryStats {
 }
 
 export interface UserBadges {
-  total_earned: number;
-  total_available: number;
-  earned_badges: Badge[];
-  category_stats: BadgeCategoryStats[];
+  total_badges: number;
+  earned_badges: number;
+  showcased_badges: Badge[];
+  all_badges: Badge[];
+  badges_by_category: Record<string, Badge[]>;
 }
 
 export interface BadgeCategoryInfo {
@@ -456,6 +469,8 @@ export interface Reward {
   coin_cost: number;
   stock: number;
   is_active: boolean;
+  reward_type?: string;
+  reward_value?: string;
   created_at: string;
   updated_at: string;
 }

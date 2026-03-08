@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Gift,
   Plus,
@@ -15,14 +15,18 @@ import {
   Package,
   History,
   Users,
+  Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
+import { CoinIcon } from "@/components/shared/CoinIcon";
 import { cn } from "@/utils";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/authStore";
 import { rewardService } from "@/services/api";
+import { uploadService } from "@/services/api";
+import { getUploadUrl } from "@/services/http/upload-url";
 import type { Reward, RewardClaim } from "@/types";
 
 interface RewardFormData {
@@ -55,6 +59,26 @@ export default function AdminRewardsPage() {
   const [formData, setFormData] = useState<RewardFormData>(defaultForm);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [rewardToDelete, setRewardToDelete] = useState<Reward | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !token) return;
+    setUploading(true);
+    try {
+      const res = await uploadService.uploadImage(token, file);
+      if (res.data?.url) {
+        setFormData({ ...formData, image: res.data.url });
+        toast.success("Gambar berhasil diupload");
+      }
+    } catch {
+      toast.error("Gagal mengupload gambar");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   const fetchData = useCallback(async () => {
     if (!token) return;
@@ -157,7 +181,7 @@ export default function AdminRewardsPage() {
   };
 
   return (
-    <div className="p-4 md:p-6 lg:p-8">
+    <div className="p-4 lg:p-6">
       <DeleteConfirmationModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
@@ -253,13 +277,63 @@ export default function AdminRewardsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">URL Gambar</label>
-                  <Input
-                    type="text"
-                    placeholder="https://..."
-                    value={formData.image}
-                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Gambar Hadiah</label>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
                   />
+                  {formData.image ? (
+                    <div className="flex items-center gap-3">
+                      <div className="w-16 h-16 rounded-lg border overflow-hidden relative shrink-0">
+                        <Image
+                          src={formData.image.startsWith("http") ? formData.image : getUploadUrl(formData.image)}
+                          alt="Preview"
+                          fill
+                          className="object-cover"
+                          sizes="64px"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={uploading}
+                        >
+                          {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Ganti"}
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="text-red-500 hover:text-red-600"
+                          onClick={() => setFormData({ ...formData, image: "" })}
+                        >
+                          Hapus
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      className="w-full h-16 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center gap-2 text-sm text-gray-500 hover:border-amber-400 hover:text-amber-600 transition-colors"
+                    >
+                      {uploading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <>
+                          <Upload className="w-4 h-4" />
+                          Upload Gambar
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Stok (-1 = unlimited)</label>
@@ -330,6 +404,48 @@ export default function AdminRewardsPage() {
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                               />
+                              <div className="flex items-center gap-2">
+                                {formData.image && (
+                                  <div className="w-10 h-10 rounded-lg border overflow-hidden relative shrink-0">
+                                    <Image
+                                      src={formData.image.startsWith("http") ? formData.image : getUploadUrl(formData.image)}
+                                      alt="Preview"
+                                      fill
+                                      className="object-cover"
+                                      sizes="40px"
+                                    />
+                                  </div>
+                                )}
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleImageUpload}
+                                  className="hidden"
+                                  id="edit-image-input"
+                                />
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => document.getElementById("edit-image-input")?.click()}
+                                  disabled={uploading}
+                                  className="text-xs"
+                                >
+                                  {uploading ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <Upload className="w-3 h-3 mr-1" />}
+                                  {formData.image ? "Ganti" : "Upload"} Gambar
+                                </Button>
+                                {formData.image && (
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    className="text-xs text-red-500"
+                                    onClick={() => setFormData({ ...formData, image: "" })}
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </Button>
+                                )}
+                              </div>
                             </div>
                           </td>
                           <td className="p-4">
@@ -390,7 +506,7 @@ export default function AdminRewardsPage() {
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center shrink-0 relative overflow-hidden">
                                 {reward.image ? (
-                                  <Image src={reward.image} alt={reward.name} fill className="object-cover"  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                                  <Image src={reward.image.startsWith("http") ? reward.image : getUploadUrl(reward.image)} alt={reward.name} fill className="object-cover" sizes="40px" />
                                 ) : (
                                   <Gift className="w-5 h-5 text-amber-400" />
                                 )}
@@ -405,7 +521,7 @@ export default function AdminRewardsPage() {
                           </td>
                           <td className="p-4">
                             <span className="flex items-center gap-1 font-medium text-amber-700">
-                              🪙 {reward.coin_cost}
+                              <CoinIcon className="h-4 w-4" /> {reward.coin_cost}
                             </span>
                           </td>
                           <td className="p-4">
@@ -496,7 +612,7 @@ export default function AdminRewardsPage() {
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center shrink-0 relative overflow-hidden">
                             {claim.user?.avatar ? (
-                              <Image src={claim.user.avatar} alt={claim.user.name || "Avatar"} fill className="object-cover"  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                              <Image src={claim.user.avatar} alt={claim.user.name || "Avatar"} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                             ) : (
                               <Users className="w-4 h-4 text-gray-400" />
                             )}
@@ -512,7 +628,7 @@ export default function AdminRewardsPage() {
                       </td>
                       <td className="p-4">
                         <span className="flex items-center gap-1 text-sm font-medium text-amber-700">
-                          🪙 {claim.coin_spent}
+                          <CoinIcon className="h-4 w-4" /> {claim.coin_spent}
                         </span>
                       </td>
                       <td className="p-4">

@@ -1,6 +1,6 @@
 export default function CreateJournalLoading() {
   return (
-    <div className="container mx-auto px-4 py-6 max-w-4xl">
+    <div className="p-4 lg:p-6">
       {/* Back button */}
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-4">
@@ -29,10 +29,10 @@ export default function CreateJournalLoading() {
         </div>
 
         {/* Writing prompt */}
-        <div className="p-4 bg-amber-50 rounded-lg space-y-2">
-          <div className="h-4 w-28 rounded bg-amber-200 animate-pulse" />
-          <div className="h-3 w-full rounded bg-amber-200 animate-pulse" />
-          <div className="h-3 w-3/4 rounded bg-amber-200 animate-pulse" />
+        <div className="p-4 theme-accent-soft-bg rounded-lg space-y-2">
+          <div className="h-4 w-28 rounded theme-accent-light-bg animate-pulse" />
+          <div className="h-3 w-full rounded theme-accent-light-bg animate-pulse" />
+          <div className="h-3 w-3/4 rounded theme-accent-light-bg animate-pulse" />
         </div>
 
         {/* Content field */}

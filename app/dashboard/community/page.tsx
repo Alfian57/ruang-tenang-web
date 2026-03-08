@@ -15,13 +15,15 @@ export default function DashboardCommunityPage() {
         personalJourney,
         hallOfFame,
         currentLevel,
+        maxLevel,
         userBadges,
         loading,
+        isLevelChanging,
         handleLevelChange,
     } = useCommunityData();
 
     return (
-        <div className="min-h-screen bg-gray-50/50 p-6 lg:p-8 space-y-8">
+        <div className="min-h-screen bg-gray-50/50 p-4 lg:p-6 space-y-8">
             <div>
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Komunitas</h1>
                 <p className="text-gray-500 mt-1 text-lg">
@@ -53,6 +55,8 @@ export default function DashboardCommunityPage() {
                         hallOfFame={hallOfFame}
                         userBadges={userBadges}
                         currentLevel={currentLevel}
+                        maxLevel={maxLevel}
+                        isLevelChanging={isLevelChanging}
                         onLevelChange={handleLevelChange}
                     />
                 </>

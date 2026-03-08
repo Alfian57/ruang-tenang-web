@@ -32,8 +32,8 @@ export function MinimizedPlayer({
     onToggleMinimize,
 }: MinimizedPlayerProps) {
     return (
-        <div className="flex items-center justify-between px-4 py-2">
-            <div className="flex items-center gap-3 flex-1 min-w-0">
+        <div className="grid grid-cols-[1fr_auto_auto] items-center gap-3 px-4 py-2 md:grid-cols-[1fr_auto_1fr]">
+            <div className="flex items-center gap-3 min-w-0">
                 <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                     {currentSong.thumbnail ? (
                         <Image
@@ -59,7 +59,7 @@ export function MinimizedPlayer({
                 </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center gap-2">
                 <Button
                     variant="ghost"
                     size="icon"
@@ -87,6 +87,9 @@ export function MinimizedPlayer({
                 >
                     <SkipForward className="w-4 h-4" />
                 </Button>
+            </div>
+
+            <div className="flex justify-end">
                 <Button
                     variant="ghost"
                     size="icon"

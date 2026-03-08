@@ -30,7 +30,7 @@ export function FeatureCard({ feature, isLocked = false, levelsAway, className }
 
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                        <h4 className="font-medium truncate">{feature.name}</h4>
+                        <h4 className="font-medium truncate">{feature.feature_name}</h4>
                         {isLocked ? (
                             <Lock className="h-4 w-4 text-muted-foreground shrink-0" />
                         ) : (
@@ -215,7 +215,7 @@ export function FeatureUnlockCelebration({
                         >
                             <span className="text-2xl">{feature.icon || "✨"}</span>
                             <div className="text-left">
-                                <p className="font-medium">{feature.name}</p>
+                                <p className="font-medium">{feature.feature_name}</p>
                                 <p className="text-sm text-muted-foreground">{feature.description}</p>
                             </div>
                         </div>

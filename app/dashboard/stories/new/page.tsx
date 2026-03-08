@@ -56,7 +56,7 @@ export default function NewStoryPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
+        <div className="p-4 lg:p-6">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
@@ -78,7 +78,7 @@ export default function NewStoryPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8 max-w-3xl">
+      <div className="p-4 lg:p-6">
         <div className="mb-8">
           <h1 className="text-2xl font-bold mb-2">Tulis Kisah Inspiratif</h1>
           <p className="text-gray-600">

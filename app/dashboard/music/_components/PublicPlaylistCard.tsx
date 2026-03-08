@@ -32,17 +32,17 @@ export function PublicPlaylistCard({
       onClick={onClick}
     >
       {/* Thumbnail */}
-      <div className="relative aspect-square">
+      <div className="relative aspect-4/3">
         {playlist.thumbnail ? (
           <Image
             src={playlist.thumbnail}
             alt={playlist.name}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
-           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
-            <ListMusic className="w-16 h-16 text-purple-400" />
+          <div className="w-full h-full bg-linear-to-br from-purple-100 to-purple-200 flex items-center justify-center">
+            <ListMusic className="w-12 h-12 text-purple-400" />
           </div>
         )}
 
@@ -53,42 +53,42 @@ export function PublicPlaylistCard({
               e.stopPropagation();
               onPlay?.();
             }}
-            className="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center shadow-lg transform scale-0 group-hover:scale-100 transition-transform duration-200"
+            className="w-11 h-11 rounded-full bg-primary text-white flex items-center justify-center shadow-lg transform scale-0 group-hover:scale-100 transition-transform duration-200"
           >
-            <Play className="w-6 h-6 fill-white ml-1" />
+            <Play className="w-5 h-5 fill-white ml-0.5" />
           </button>
         </div>
 
         {/* Admin Badge */}
         {playlist.is_admin_playlist && (
-          <div className="absolute top-3 left-3">
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/90 backdrop-blur-sm text-white text-xs font-medium shadow-lg">
-              <BadgeCheck className="w-3.5 h-3.5" />
+          <div className="absolute top-2.5 left-2.5">
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-primary/90 backdrop-blur-sm text-white text-[11px] font-medium shadow-lg">
+              <BadgeCheck className="w-3 h-3" />
               <span>Ruang Tenang</span>
             </div>
           </div>
         )}
 
         {/* Song Count Badge */}
-        <div className="absolute bottom-3 right-3">
-          <div className="px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-sm text-white text-xs font-medium">
+        <div className="absolute bottom-2.5 right-2.5">
+          <div className="px-2 py-1 rounded-full bg-black/60 backdrop-blur-sm text-white text-[11px] font-medium">
             {playlist.item_count} lagu
           </div>
         </div>
       </div>
 
       {/* Info */}
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 truncate mb-1">
+      <div className="p-3.5">
+        <h3 className="font-semibold text-gray-900 truncate text-sm sm:text-base mb-1">
           {playlist.name}
         </h3>
-        
+
         {playlist.description ? (
-          <p className="text-sm text-gray-500 line-clamp-2 mb-3">
+          <p className="text-xs sm:text-sm text-gray-500 line-clamp-2 mb-2.5">
             {playlist.description}
           </p>
         ) : (
-          <div className="mb-3" />
+          <div className="mb-2.5" />
         )}
 
         {/* Author Info */}
@@ -155,9 +155,9 @@ export function PublicPlaylistCardHorizontal({
             alt={playlist.name}
             fill
             className="object-cover"
-           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
+          <div className="w-full h-full bg-linear-to-br from-purple-100 to-purple-200 flex items-center justify-center">
             <ListMusic className="w-8 h-8 text-purple-400" />
           </div>
         )}

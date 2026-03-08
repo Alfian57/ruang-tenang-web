@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { Search, ArrowLeft } from "lucide-react";
+import { Search, ArrowLeft, BookOpen } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -191,10 +191,10 @@ function ArticlesContent() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <span className="text-4xl mb-4 block">📚</span>
-                <h3 className="font-semibold mb-2">Tidak ada artikel</h3>
-                <p className="text-gray-500 text-sm">
+              <div className="text-center py-16">
+                <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-500">Tidak ada artikel</h3>
+                <p className="text-gray-400 text-sm mt-1">
                   {search ? "Coba kata kunci lain" : "Artikel akan segera tersedia"}
                 </p>
               </div>

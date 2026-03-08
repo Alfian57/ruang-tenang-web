@@ -107,7 +107,7 @@ export function GlobalSearch() {
               {results.articles.map((article) => (
                 <div
                   key={article.id}
-                  onClick={() => handleSelect(`/dashboard/articles/${article.id}`)}
+                  onClick={() => handleSelect(`/dashboard/articles/read/${article.slug || article.id}`)}
                   className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-md cursor-pointer group"
                 >
                   <div className="relative w-10 h-10 rounded-md overflow-hidden shrink-0 bg-gray-100">
@@ -116,7 +116,7 @@ export function GlobalSearch() {
                       alt={article.title}
                       fill
                       className="object-cover"
-                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
@@ -150,12 +150,12 @@ export function GlobalSearch() {
                   className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-md cursor-pointer group"
                 >
                   <div className="relative w-10 h-10 rounded-md overflow-hidden shrink-0 bg-gray-100">
-                     <Image
+                    <Image
                       src={getUploadUrl(song.thumbnail)}
                       alt={song.title}
                       fill
                       className="object-cover"
-                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
@@ -173,9 +173,9 @@ export function GlobalSearch() {
       )}
 
       {isOpen && query && !isLoading && (!results || (results.articles.length === 0 && results.songs.length === 0)) && (
-         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 z-50 p-4 text-center text-sm text-gray-500">
-           Tidak ada hasil ditemukan
-         </div>
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 z-50 p-4 text-center text-sm text-gray-500">
+          Tidak ada hasil ditemukan
+        </div>
       )}
     </div>
   );

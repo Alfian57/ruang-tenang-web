@@ -35,6 +35,7 @@ export function JournalListItem({
     onToggleAIShare,
 }: JournalListItemProps) {
     const router = useRouter();
+    const journalIdentifier = journal.slug || journal.uuid || String(journal.id);
 
     // Strip HTML and truncate content for preview
     const rawContent = journal.preview || journal.content || "";
@@ -51,7 +52,7 @@ export function JournalListItem({
                     ? "border-primary ring-2 ring-primary/20"
                     : "border-gray-200 hover:border-gray-300"
             )}
-            onClick={() => router.push(`/dashboard/journal/${journal.id}`)}
+            onClick={() => router.push(`/dashboard/journal/${journalIdentifier}`)}
         >
             <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
@@ -143,7 +144,7 @@ export function JournalListItem({
                         </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                        <DropdownMenuItem onClick={() => router.push(`/dashboard/journal/${journal.id}/edit`)}>
+                        <DropdownMenuItem onClick={() => router.push(`/dashboard/journal/${journalIdentifier}/edit`)}>
                             <Edit className="w-4 h-4 mr-2" />
                             Edit
                         </DropdownMenuItem>

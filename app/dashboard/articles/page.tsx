@@ -119,7 +119,7 @@ export default function ArticlesPage() {
             </div>
           ) : (
             <EmptyState
-              icon={<Search className="w-8 h-8 text-gray-300" />}
+              icon={<Search className="w-16 h-16 text-gray-300" />}
               title="Tidak ada artikel"
               description={search ? "Coba kata kunci lain atau filter berbeda" : "Artikel akan segera tersedia"}
               action={search ? { label: "Hapus Pencarian", onClick: () => setSearch("") } : undefined}
@@ -165,7 +165,7 @@ export default function ArticlesPage() {
             </div>
           ) : (
             <EmptyState
-              icon={<FileText className="w-8 h-8 text-gray-300" />}
+              icon={<FileText className="w-16 h-16 text-gray-300" />}
               title="Belum ada artikel"
               description={
                 mySearch

@@ -147,7 +147,8 @@ export function useAdminArticles() {
     if (!token) return;
     try {
       // Fetch full article content
-      const data = await httpClient.get<{ data: { title: string; content: string; category_id: number; thumbnail: string } }>(`/articles/${article.id}`, {
+      const articleIdentifier = article.slug || String(article.id);
+      const data = await httpClient.get<{ data: { title: string; content: string; category_id: number; thumbnail: string } }>(`/articles/${encodeURIComponent(articleIdentifier)}`, {
         token,
       });
       const fullArticle = data.data;

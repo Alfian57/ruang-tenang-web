@@ -86,7 +86,7 @@ export function useArticlesPage() {
   // My articles tab state
   const [myArticles, setMyArticles] = useState<MyArticle[]>([]);
   const [isMyLoading, setIsMyLoading] = useState(true);
-  const [deleteArticleId, setDeleteArticleId] = useState<number | null>(null);
+  const [deleteArticleId, setDeleteArticleId] = useState<string | null>(null);
 
   const loadCategories = useCallback(async () => {
     try {
@@ -137,10 +137,10 @@ export function useArticlesPage() {
     loadMyArticles();
   }, [loadMyArticles]);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (identifier: string) => {
     if (!token) return;
     try {
-      await articleService.deleteArticle(token, id);
+      await articleService.deleteArticle(token, identifier);
       setDeleteArticleId(null);
       loadMyArticles();
     } catch (error) {

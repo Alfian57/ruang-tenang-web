@@ -8,7 +8,11 @@ import { MinimizedPlayer } from "./player/MinimizedPlayer";
 import { ExpandedPlayer } from "./player/ExpandedPlayer";
 import { getUploadUrl } from "@/services/http/upload-url";
 
-export function GlobalMusicPlayer() {
+interface GlobalMusicPlayerProps {
+    sidebarCollapsed?: boolean;
+}
+
+export function GlobalMusicPlayer({ sidebarCollapsed = false }: GlobalMusicPlayerProps) {
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     const {
@@ -80,13 +84,13 @@ export function GlobalMusicPlayer() {
 
         // Construct source URL from API base
         const src = getUploadUrl(currentSong.file_path);
-        
+
         // Only reload if src actually changed to prevent loop
         if (audio.src !== src) {
             audio.src = src;
             audio.load();
         }
-        
+
         // If we were already playing, try to play the new song
         // Note: This relies on the separate play/pause effect
     }, [currentSong]);
@@ -138,7 +142,7 @@ export function GlobalMusicPlayer() {
         });
 
         return () => {
-             // Cleanup if needed, though usually overwriting handlers is enough
+            // Cleanup if needed, though usually overwriting handlers is enough
         };
     }, [currentSong, setIsPlaying, playPrevious, playNext, setCurrentTime]);
 
@@ -154,14 +158,14 @@ export function GlobalMusicPlayer() {
         if (!audio || !currentSong) return;
 
         if (isPlaying) {
-             const playPromise = audio.play();
-             if (playPromise !== undefined) {
-                 playPromise.catch((error) => {
-                     console.warn("Autoplay prevented:", error);
-                     // If autoplay is blocked, revert state to paused
-                     setIsPlaying(false);
-                 });
-             }
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch((error) => {
+                    console.warn("Autoplay prevented:", error);
+                    // If autoplay is blocked, revert state to paused
+                    setIsPlaying(false);
+                });
+            }
         } else {
             audio.pause();
         }
@@ -179,7 +183,8 @@ export function GlobalMusicPlayer() {
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
                         className={cn(
                             "fixed bottom-0 left-0 right-0 z-50 bg-white border-t shadow-lg",
-                            "lg:left-56" // Account for sidebar on desktop
+                            // Keep player aligned with dashboard content area, not under sidebar.
+                            sidebarCollapsed ? "lg:left-20" : "lg:left-60"
                         )}
                     >
                         {/* Minimized Player */}
@@ -194,7 +199,7 @@ export function GlobalMusicPlayer() {
                                 onToggleMinimize={toggleMinimize}
                             />
                         ) : (
-                        /* Full Player */
+                            /* Full Player */
                             <ExpandedPlayer
                                 currentSong={currentSong}
                                 playbackSourceName={playbackSource?.name}

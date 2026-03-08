@@ -74,11 +74,11 @@ export default function ProfilePage() {
     setPasswordError("");
     setPasswordSuccess(false);
     try {
-      await authService.updatePassword(token, { 
-          old_password: data.currentPassword, 
-          new_password: data.newPassword,
-          new_password_confirmation: data.confirmPassword
-        });
+      await authService.updatePassword(token, {
+        old_password: data.currentPassword,
+        new_password: data.newPassword,
+        new_password_confirmation: data.confirmPassword
+      });
       setPasswordSuccess(true);
       passwordForm.reset();
       setTimeout(() => setPasswordSuccess(false), 3000);
@@ -91,7 +91,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="p-6 lg:p-8 max-w-2xl">
+    <div className="p-4 lg:p-6">
       <div className="mb-8">
         <h1 className="text-2xl font-bold mb-2">Profil</h1>
         <p className="text-muted-foreground">

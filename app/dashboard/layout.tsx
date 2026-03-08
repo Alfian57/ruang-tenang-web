@@ -70,7 +70,12 @@ function DashboardContent({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={cn(
+      "min-h-screen",
+      user?.profile_theme && user.profile_theme !== "default"
+        ? `theme-${user.profile_theme} theme-bg`
+        : "bg-gray-50"
+    )}>
       {/* Modals */}
       <LogoutModal
         isOpen={showLogoutModal}
@@ -176,7 +181,7 @@ function DashboardContent({
         {!isAdmin && !isModerator && <DailyTaskFAB />}
 
         {/* Global Music Player */}
-        <GlobalMusicPlayer />
+        <GlobalMusicPlayer sidebarCollapsed={sidebarCollapsed} />
       </div>
     </div>
   );

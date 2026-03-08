@@ -12,7 +12,7 @@ export function AdminDashboard() {
   const { user, isModerator, stats, isLoading } = useAdminDashboard();
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="p-4 lg:p-6">
       {/* Header */}
       <div className="mb-8">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm mb-4">

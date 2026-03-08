@@ -1,5 +1,5 @@
 import { ChatFolder, ChatSession } from "@/types";
-import { ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronRight, ChevronDown, MessageCircle } from "lucide-react";
 import { SessionItem } from "./SessionItem";
 import { FilterType } from "./types";
 
@@ -42,10 +42,11 @@ export function ChatSidebarSessionList({
 
   if (sessions.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-400">
-        <p className="text-sm">
+      <div className="text-center py-8">
+        <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+        <h3 className="text-sm font-medium text-gray-500">
           {activeFolderId ? "Folder kosong" : "Belum ada percakapan"}
-        </p>
+        </h3>
       </div>
     );
   }

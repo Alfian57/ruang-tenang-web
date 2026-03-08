@@ -14,17 +14,17 @@ export default function JournalDetailPage() {
     const params = useParams();
     const router = useRouter();
     const { token, isAuthenticated } = useAuthStore();
-    const { 
-        loadJournal, 
-        activeJournal, 
-        isLoading, 
-        deleteJournal, 
+    const {
+        loadJournal,
+        activeJournal,
+        isLoading,
+        deleteJournal,
         toggleAIShare,
-        setActiveJournal 
+        setActiveJournal
     } = useJournalStore();
-    
+
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const uuid = params.uuid as string | undefined;
+    const identifier = params.uuid as string | undefined;
 
     useEffect(() => {
         if (!token && !isAuthenticated) {
@@ -32,13 +32,17 @@ export default function JournalDetailPage() {
             return;
         }
 
-        if (token && uuid) {
-            // Check if we already have the correct journal in store
-            if (activeJournal?.uuid !== uuid) {
-                loadJournal(token, uuid);
+        if (token && identifier) {
+            const activeMatchesIdentifier =
+                activeJournal?.uuid === identifier ||
+                activeJournal?.slug === identifier ||
+                String(activeJournal?.id) === identifier;
+
+            if (!activeMatchesIdentifier) {
+                loadJournal(token, identifier);
             }
         }
-    }, [token, isAuthenticated, uuid, loadJournal, activeJournal, router]);
+    }, [token, isAuthenticated, identifier, loadJournal, activeJournal, router]);
 
     // Clean up on unmount
     useEffect(() => {
@@ -46,21 +50,21 @@ export default function JournalDetailPage() {
     }, [setActiveJournal]);
 
     const handleDelete = async () => {
-        if (!token || !uuid) return;
-        await deleteJournal(token, uuid);
+        if (!token || !identifier) return;
+        await deleteJournal(token, identifier);
         toast.success("Jurnal berhasil dihapus");
         router.push("/dashboard/journal");
     };
 
     const handleToggleAIShare = async () => {
-        if (!token || !uuid) return;
-        await toggleAIShare(token, uuid);
+        if (!token || !identifier) return;
+        await toggleAIShare(token, identifier);
         toast.success("Status berbagi AI berhasil diubah");
     };
 
     if (isLoading && !activeJournal) {
         return (
-            <div className="container mx-auto px-4 py-6 max-w-4xl">
+            <div className="p-4 lg:p-6">
                 <div className="flex items-center gap-3 mb-6">
                     <div className="h-9 w-9 rounded-lg bg-gray-200 animate-pulse" />
                     <div className="h-5 w-32 rounded bg-gray-200 animate-pulse" />
@@ -72,7 +76,7 @@ export default function JournalDetailPage() {
                     </div>
                     <div className="flex gap-2"><div className="h-6 w-16 rounded-full bg-gray-200 animate-pulse" /><div className="h-6 w-20 rounded-full bg-gray-200 animate-pulse" /></div>
                     <div className="space-y-3 pt-4 border-t">
-                        {[1,2,3,4,5,6].map(i => <div key={i} className="h-4 rounded bg-gray-200 animate-pulse" style={{width: `${80 + (i % 3) * 7}%`}} />)}
+                        {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-4 rounded bg-gray-200 animate-pulse" style={{ width: `${80 + (i % 3) * 7}%` }} />)}
                     </div>
                     <div className="flex items-center justify-between pt-4 border-t">
                         <div className="h-4 w-28 rounded bg-gray-200 animate-pulse" />
@@ -85,7 +89,7 @@ export default function JournalDetailPage() {
 
     if (!activeJournal && !isLoading) {
         return (
-            <div className="container mx-auto px-4 py-12 text-center">
+            <div className="p-4 lg:p-6 text-center">
                 <h2 className="text-xl font-semibold mb-4">Jurnal tidak ditemukan</h2>
                 <Button asChild>
                     <Link href="/dashboard/journal">Kembali ke Daftar</Link>
@@ -95,13 +99,13 @@ export default function JournalDetailPage() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-6 max-w-4xl">
+        <div className="p-4 lg:p-6">
             {activeJournal && (
                 <>
                     <JournalDetail
                         journal={activeJournal}
                         onBack={() => router.push("/dashboard/journal")}
-                        onEdit={() => router.push(`/dashboard/journal/${uuid}/edit`)}
+                        onEdit={() => router.push(`/dashboard/journal/${identifier}/edit`)}
                         onDelete={() => setShowDeleteModal(true)}
                         onToggleAIShare={handleToggleAIShare}
                     />

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { ChevronRight, PanelLeftClose } from "lucide-react";
+import { ChevronRight, PanelLeftClose, MessageCircle } from "lucide-react";
 import { cn } from "@/utils";
 import { adminGroups, moderatorGroups, memberGroups, memberHighlightLink, type NavGroup } from "./nav-config";
 import { ROUTES } from "@/lib/routes";
@@ -43,7 +43,7 @@ export function Sidebar({
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-0 left-0 h-full bg-white border-r z-40 transform transition-all duration-200",
+        "sidebar-themed fixed top-0 left-0 h-full bg-white border-r z-40 transform transition-all duration-200",
         "lg:translate-x-0",
         sidebarOpen ? "translate-x-0" : "-translate-x-full",
         sidebarCollapsed ? "lg:w-20" : "lg:w-60",
@@ -61,7 +61,7 @@ export function Sidebar({
           {!sidebarCollapsed && (
             <button
               onClick={onToggleCollapsed}
-              className="hidden lg:flex w-8 h-8 rounded-lg bg-gray-100 items-center justify-center hover:bg-gray-200 transition-colors"
+              className="sidebar-collapse-btn hidden lg:flex w-8 h-8 rounded-lg bg-gray-100 items-center justify-center hover:bg-gray-200 transition-colors"
             >
               <PanelLeftClose className="w-4 h-4 text-gray-500" />
             </button>
@@ -72,7 +72,7 @@ export function Sidebar({
         {sidebarCollapsed && (
           <button
             onClick={onToggleCollapsed}
-            className="absolute top-16 -right-3 hidden lg:flex w-6 h-6 rounded-full bg-white border shadow-sm items-center justify-center hover:bg-gray-50 transition-colors"
+            className="sidebar-expand-btn absolute top-16 -right-3 hidden lg:flex w-6 h-6 rounded-full bg-white border shadow-sm items-center justify-center hover:bg-gray-50 transition-colors"
           >
             <ChevronRight className="w-3 h-3" />
           </button>
@@ -105,7 +105,8 @@ export function Sidebar({
                         {highlightLink.label}
                       </span>
                       <span className="text-[10.5px] text-white/60 block mt-0.5 leading-tight">
-                        Apa pun, kapan pun 💬
+                        Apa pun, kapan pun
+                        <MessageCircle className="inline-block w-3 h-3 ml-1 align-[-1px]" />
                       </span>
                     </div>
                   )}
@@ -119,13 +120,13 @@ export function Sidebar({
               {/* Group title */}
               {!sidebarCollapsed ? (
                 <div className="px-6 mb-1">
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+                  <span className="sidebar-group-title text-[11px] font-semibold uppercase tracking-wider text-gray-400">
                     {group.title}
                   </span>
                 </div>
               ) : (
                 groupIdx > 0 && (
-                  <div className="mx-4 mb-2 border-t border-gray-100" />
+                  <div className="sidebar-group-divider mx-4 mb-2 border-t border-gray-100" />
                 )
               )}
 
@@ -144,15 +145,15 @@ export function Sidebar({
                     href={link.href}
                     onClick={onCloseSidebar}
                     className={cn(
-                      "flex items-center gap-3 mx-3 px-4 py-2.5 rounded-xl transition-all relative mb-0.5",
+                      "sidebar-nav-link flex items-center gap-3 mx-3 px-4 py-2.5 rounded-xl transition-all relative mb-0.5",
                       isActive
-                        ? "text-white bg-primary shadow-md"
+                        ? "sidebar-nav-active text-white bg-primary shadow-md"
                         : "text-gray-600 hover:bg-gray-100",
                       sidebarCollapsed && "lg:justify-center lg:mx-2 lg:px-3"
                     )}
                     title={sidebarCollapsed ? link.label : undefined}
                   >
-                    <link.icon className={cn("w-5 h-5 shrink-0", isActive ? "text-white" : "text-gray-500")} />
+                    <link.icon className={cn("sidebar-nav-icon w-5 h-5 shrink-0", isActive ? "text-white" : "text-gray-500")} />
                     {!sidebarCollapsed && (
                       <span className="font-medium flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
                         {link.label}
@@ -166,7 +167,7 @@ export function Sidebar({
         </nav>
 
         {/* Bottom section */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t bg-white">
+        <div className="sidebar-bottom absolute bottom-0 left-0 right-0 p-4 border-t bg-white">
           <div className="flex items-center justify-center p-2">
             <span className="text-xs text-gray-400">v1.0.0</span>
           </div>

@@ -7,8 +7,8 @@ export const songService = {
     return httpClient.get<ApiResponse<SongCategory[]>>("/song-categories");
   },
 
-  getSongsByCategory(categoryId: number) {
-    return httpClient.get<ApiResponse<Song[]>>(`/song-categories/${categoryId}/songs`);
+  getSongsByCategory(categoryKey: string | number) {
+    return httpClient.get<ApiResponse<Song[]>>(`/song-categories/${encodeURIComponent(String(categoryKey))}/songs`);
   },
 
   getSong(id: number) {
@@ -20,8 +20,8 @@ export const songService = {
     return httpClient.get<ApiResponse<Playlist[]>>("/playlists", { token });
   },
 
-  getPlaylist(token: string, id: number) {
-    return httpClient.get<ApiResponse<Playlist>>(`/playlists/${id}`, { token });
+  getPlaylist(token: string, identifier: string | number) {
+    return httpClient.get<ApiResponse<Playlist>>(`/playlists/${encodeURIComponent(String(identifier))}`, { token });
   },
 
   getPublicPlaylists(params?: { page?: number; limit?: number }) {

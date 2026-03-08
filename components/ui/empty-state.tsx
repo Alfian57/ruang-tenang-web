@@ -24,19 +24,19 @@ export function EmptyState({
     return (
         <div
             className={cn(
-                "flex flex-col items-center justify-center p-8 text-center",
+                "flex flex-col items-center justify-center py-16 text-center",
                 className
             )}
         >
-            <div className="w-16 h-16 mb-4 rounded-full bg-muted flex items-center justify-center">
-                {icon || <FileQuestion className="w-8 h-8 text-muted-foreground" />}
+            <div className="mb-4">
+                {icon || <FileQuestion className="w-16 h-16 text-gray-300" />}
             </div>
-            <h3 className="text-lg font-semibold text-foreground mb-1">{title}</h3>
+            <h3 className="text-lg font-medium text-gray-500 mb-1">{title}</h3>
             {description && (
-                <p className="text-sm text-muted-foreground max-w-sm">{description}</p>
+                <p className="text-sm text-gray-400 max-w-sm">{description}</p>
             )}
             {action && (
-                <Button onClick={action.onClick} className="mt-4">
+                <Button onClick={action.onClick} variant="outline" className="mt-4">
                     {action.label}
                 </Button>
             )}
@@ -54,7 +54,7 @@ export function NoSearchResults({
 }) {
     return (
         <EmptyState
-            icon={<SearchX className="w-8 h-8 text-muted-foreground" />}
+            icon={<SearchX className="w-16 h-16 text-gray-300" />}
             title="Tidak ada hasil"
             description={
                 query
@@ -77,7 +77,7 @@ export function NoData({
 }) {
     return (
         <EmptyState
-            icon={<FileQuestion className="w-8 h-8 text-muted-foreground" />}
+            icon={<FileQuestion className="w-16 h-16 text-gray-300" />}
             title={title}
             description={description}
             action={action}
@@ -102,15 +102,13 @@ export function ErrorState({
     return (
         <div
             className={cn(
-                "flex flex-col items-center justify-center p-8 text-center",
+                "flex flex-col items-center justify-center py-16 text-center",
                 className
             )}
         >
-            <div className="w-16 h-16 mb-4 rounded-full bg-red-100 flex items-center justify-center">
-                <AlertCircle className="w-8 h-8 text-red-500" />
-            </div>
-            <h3 className="text-lg font-semibold text-foreground mb-1">{title}</h3>
-            <p className="text-sm text-muted-foreground max-w-sm">{description}</p>
+            <AlertCircle className="w-16 h-16 text-red-300 mb-4" />
+            <h3 className="text-lg font-medium text-gray-500 mb-1">{title}</h3>
+            <p className="text-sm text-gray-400 max-w-sm">{description}</p>
             {onRetry && (
                 <Button onClick={onRetry} variant="outline" className="mt-4">
                     <RefreshCw className="w-4 h-4 mr-2" />

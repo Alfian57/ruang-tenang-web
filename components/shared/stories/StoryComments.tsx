@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { cn } from "@/utils";
 import { StoryComment as StoryCommentType } from "@/types";
-import { Heart, User, MoreHorizontal, Flag, EyeOff } from "lucide-react";
+import { Heart, User, MoreHorizontal, Flag, EyeOff, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import {
     DropdownMenu,
@@ -175,9 +175,10 @@ export function StoryCommentsList({
 }: StoryCommentsListProps) {
     if (comments.length === 0) {
         return (
-            <div className={cn("text-center py-8 text-muted-foreground", className)}>
-                <p>Belum ada komentar</p>
-                <p className="text-sm">Jadilah yang pertama memberikan dukungan!</p>
+            <div className={cn("text-center py-16", className)}>
+                <MessageCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-500">Belum ada komentar</h3>
+                <p className="text-gray-400 text-sm mt-1">Jadilah yang pertama memberikan dukungan!</p>
             </div>
         );
     }
