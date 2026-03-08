@@ -9,6 +9,7 @@ import { communityService } from "@/services/api";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/authStore";
 import { useDashboardStore } from "@/store/dashboardStore";
+import { useMusicPlayerStore } from "@/store/musicPlayerStore";
 import { CoinIcon } from "@/components/shared/CoinIcon";
 
 interface DailyTaskFABProps {
@@ -22,6 +23,10 @@ export function DailyTaskFAB({ className }: DailyTaskFABProps) {
   const [claimingId, setClaimingId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { taskRefreshTrigger } = useDashboardStore();
+  const isPlayerVisible = useMusicPlayerStore((s) => s.isPlayerVisible);
+  const currentSong = useMusicPlayerStore((s) => s.currentSong);
+  const isMinimized = useMusicPlayerStore((s) => s.isMinimized);
+  const showMusicPlayer = isPlayerVisible && currentSong;
 
   const loadTasks = useCallback(async () => {
     if (!token) return;
@@ -106,10 +111,10 @@ export function DailyTaskFAB({ className }: DailyTaskFABProps) {
         />
       )}
 
-      {/* FAB Container */}
       <div
         className={cn(
-          "fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-3 z-40 sm:bottom-6 sm:right-6",
+          "fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-3 z-40 sm:bottom-6 sm:right-6 transition-all duration-300",
+          showMusicPlayer && (isMinimized ? "max-sm:bottom-[5.5rem] sm:bottom-24" : "max-sm:bottom-[8.5rem] sm:bottom-36"),
           className
         )}
       >

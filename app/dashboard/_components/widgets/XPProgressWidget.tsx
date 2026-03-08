@@ -4,12 +4,11 @@ import { useEffect, useState } from "react";
 import { communityService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import { WeeklyProgress, PersonalJourney } from "@/types";
-import { TrendingUp, TrendingDown, Zap, Activity, Award } from "lucide-react";
+import { TrendingUp, TrendingDown, Zap, Activity, Award, ArrowRight, Trophy, Star } from "lucide-react";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 
 export function XPProgressWidget() {
     const { token } = useAuthStore();
@@ -50,7 +49,30 @@ export function XPProgressWidget() {
         );
     }
 
-    if (!journey) return null;
+    if (!journey) {
+        return (
+            <Card className="flex flex-col border border-border/50 shadow-sm relative overflow-hidden bg-white/60">
+                <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                    <div>
+                        <CardTitle className="text-lg font-bold flex items-center gap-2">
+                            <Trophy className="w-5 h-5 text-yellow-500" />
+                            Level Anda
+                        </CardTitle>
+                        <CardDescription className="text-xs">
+                            Selesaikan tugas untuk mengumpulkan XP.
+                        </CardDescription>
+                    </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="bg-yellow-50/50 p-4 rounded-xl border border-yellow-100 text-center space-y-2">
+                        <Star className="w-8 h-8 text-yellow-500 mx-auto" />
+                        <h4 className="font-semibold text-gray-800 text-sm">Mulai Petualangan!</h4>
+                        <p className="text-xs text-gray-500">Mulai tulis jurnal, dengar musik, atau pakai fitur ruang tenang untuk menaikkan level.</p>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
 
     const currentExp = Number(journey.current_exp ?? 0);
     const currentLevel = Number(journey.current_level ?? 1);

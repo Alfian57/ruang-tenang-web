@@ -94,7 +94,7 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
       <div className="p-4 bg-linear-to-br from-indigo-500 to-purple-600 text-white">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">

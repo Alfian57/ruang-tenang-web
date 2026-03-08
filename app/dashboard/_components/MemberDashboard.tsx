@@ -67,7 +67,7 @@ export function MemberDashboard() {
       {/* 2. Main Dashboard Grid (Bento Box Style) */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
 
-        {/* Left Column: Widgets & Mood Calendar */}
+        {/* Left Column (wider): Widgets, Mood Calendar & Music Player */}
         <div className="md:col-span-8 space-y-6">
 
           {/* Top Widgets Row */}
@@ -85,9 +85,12 @@ export function MemberDashboard() {
 
           {/* Mood Calendar Section */}
           <MoodCalendar moods={moodHistory} />
+
+          {/* Music Player — placed here (left col) to balance column heights */}
+          <MusicPlayerWidget categories={categories} />
         </div>
 
-        {/* Right Column: Widgets */}
+        {/* Right Column (narrower): XP, Articles, Breathing & Story */}
         <div className="md:col-span-4 space-y-6">
           {/* XP Progress Widget */}
           <XPProgressWidget />
@@ -101,24 +104,10 @@ export function MemberDashboard() {
               <BreathingWidget data={breathingWidgetData} />
             </div>
           )}
-        </div>
-      </div>
 
-      {/* 3. Bottom Section: Story & Music — layout varies per theme for exclusivity */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {themeKey === "ocean_calm" || themeKey === "forest_zen" ? (
-          <>
-            {/* Music first for nature themes */}
-            <MusicPlayerWidget categories={categories} />
-            <StoryOfTheWeekWidget />
-          </>
-        ) : (
-          <>
-            {/* Story first for default & sunset themes */}
-            <StoryOfTheWeekWidget />
-            <MusicPlayerWidget categories={categories} />
-          </>
-        )}
+          {/* Story of the Week */}
+          <StoryOfTheWeekWidget />
+        </div>
       </div>
     </div>
   );

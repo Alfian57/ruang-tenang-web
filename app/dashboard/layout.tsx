@@ -13,6 +13,7 @@ import { GlobalMusicPlayer } from "@/components/layout";
 import { DailyTaskFAB } from "@/components/shared/gamification";
 import { cn } from "@/utils";
 import { useAuthStore } from "@/store/authStore";
+import { useMusicPlayerStore } from "@/store/musicPlayerStore";
 import { useBlockStore } from "@/store/blockStore";
 import { Sidebar, MobileHeader, TopHeader } from "@/components/layout/dashboard";
 import { ROUTES } from "@/lib/routes";
@@ -47,6 +48,10 @@ function DashboardContent({
   const [showAppealModal, setShowAppealModal] = useState(false);
   const { token } = useAuthStore();
   const loadBlockedUsers = useBlockStore((s) => s.loadBlockedUsers);
+  const isPlayerVisible = useMusicPlayerStore((s) => s.isPlayerVisible);
+  const currentSong = useMusicPlayerStore((s) => s.currentSong);
+  const isMinimized = useMusicPlayerStore((s) => s.isMinimized);
+  const showMusicPlayer = isPlayerVisible && currentSong;
 
   // Load blocked users list on mount
   useEffect(() => {
@@ -170,7 +175,10 @@ function DashboardContent({
         )}
 
         {/* Page Content */}
-        <main className="flex-1 pt-16 lg:pt-0">
+        <main className={cn(
+          "flex-1 pt-16 lg:pt-0 transition-[padding-bottom] duration-200",
+          showMusicPlayer && (isMinimized ? "pb-16" : "pb-28")
+        )}>
           {children}
         </main>
 
