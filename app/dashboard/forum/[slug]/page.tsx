@@ -89,7 +89,7 @@ export default function ForumTopicPage() {
                                 <div>
                                     <h3 className="font-semibold">Topik Ini Diblokir</h3>
                                     <p className="text-sm text-red-700">
-                                        Topik ini telah ditandai/diblokir oleh moderator dan tidak dapat
+                                        Topik ini telah ditandai/diblokir oleh admin dan tidak dapat
                                         menerima balasan baru.
                                     </p>
                                 </div>

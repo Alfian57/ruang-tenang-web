@@ -3,7 +3,7 @@ export { MobileHeader } from "./MobileHeader";
 export { TopHeader } from "./TopHeader";
 export { ThemeSwitcher } from "./ThemeSwitcher";
 export { NotificationBell } from "./NotificationBell";
-export { memberGroups, adminGroups, moderatorGroups } from "./nav-config";
+export { memberGroups, adminGroups } from "./nav-config";
 export type { NavLink, NavGroup } from "./nav-config";
 export { GlobalSearch } from "./GlobalSearch";
 export { EditProfileModal } from "./EditProfileModal";

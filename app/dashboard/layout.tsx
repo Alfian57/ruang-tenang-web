@@ -37,7 +37,7 @@ function DashboardContent({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, logout, isAdmin, isModerator } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -119,7 +119,6 @@ function DashboardContent({
       <MobileHeader
         user={user}
         isAdmin={isAdmin}
-        isModerator={isModerator}
         sidebarOpen={sidebarOpen}
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         onEditProfile={() => setShowEditProfileModal(true)}
@@ -131,7 +130,6 @@ function DashboardContent({
       {/* Sidebar */}
       <Sidebar
         isAdmin={isAdmin}
-        isModerator={isModerator}
         sidebarOpen={sidebarOpen}
         sidebarCollapsed={sidebarCollapsed}
         onCloseSidebar={() => setSidebarOpen(false)}
@@ -147,7 +145,6 @@ function DashboardContent({
         <TopHeader
           user={user}
           isAdmin={isAdmin}
-          isModerator={isModerator}
           onEditProfile={() => setShowEditProfileModal(true)}
           onChangePassword={() => setShowChangePasswordModal(true)}
           onLogout={() => setShowLogoutModal(true)}
@@ -183,10 +180,10 @@ function DashboardContent({
         </main>
 
         {/* Mood Check-in Modal (for regular users only) */}
-        {!isAdmin && !isModerator && <MoodCheckinProvider />}
+        {!isAdmin && <MoodCheckinProvider />}
 
-        {/* Daily Task FAB (for non-admin and non-moderator users) */}
-        {!isAdmin && !isModerator && <DailyTaskFAB />}
+        {/* Daily Task FAB (for non-admin users) */}
+        {!isAdmin && <DailyTaskFAB />}
 
         {/* Global Music Player */}
         <GlobalMusicPlayer sidebarCollapsed={sidebarCollapsed} />

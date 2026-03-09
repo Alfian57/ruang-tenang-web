@@ -22,7 +22,6 @@ export default function DashboardArticleDetailPage() {
     relatedArticles,
     isLoading,
     isAdmin,
-    isModerator,
     isArticleAuthor,
     authorId,
     showBlockConfirm,
@@ -122,7 +121,6 @@ export default function DashboardArticleDetailPage() {
           article={article}
           isArticleAuthor={isArticleAuthor}
           isAdmin={isAdmin}
-          isModerator={isModerator}
           authorId={authorId}
           isBlocked={isBlocked}
           onBlockClick={() => setShowBlockConfirm(true)}
@@ -135,7 +133,7 @@ export default function DashboardArticleDetailPage() {
 
       {/* Block Confirm Dialog */}
       <Dialog open={showBlockConfirm} onOpenChange={setShowBlockConfirm}>
-        <DialogContent className="sm:max-w-[400px]">
+        <DialogContent className="sm:max-w-100">
           <DialogHeader>
             <DialogTitle>Blokir Pengguna?</DialogTitle>
             <DialogDescription>

@@ -9,7 +9,7 @@ const userSchema: z.ZodType<User, z.ZodTypeDef, unknown> = z
     name: z.string(),
     email: z.string().email(),
     avatar: z.string().optional(),
-    role: z.enum(["admin", "moderator", "member"]).catch("member"),
+    role: z.enum(["admin", "member"]).catch("member"),
     exp: z.number().catch(0),
     gold_coins: z.number().catch(0),
     level: z.number().catch(1),

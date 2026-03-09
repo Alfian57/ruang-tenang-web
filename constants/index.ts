@@ -67,6 +67,5 @@ export const TIMEOUTS = {
 
 export const ROLES = {
   ADMIN: "admin",
-  MODERATOR: "moderator",
   MEMBER: "member",
 } as const;

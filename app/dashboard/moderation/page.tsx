@@ -17,14 +17,14 @@ import { ModerationRecentReports } from "./_components/ModerationRecentReports";
 
 export default function ModerationDashboardPage() {
     const {
-        isModerator,
+        isAdmin,
         stats,
         pendingArticles,
         recentReports,
         isLoading,
     } = useModerationDashboard();
 
-    if (!isModerator) {
+    if (!isAdmin) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
                 <Card className="max-w-md">

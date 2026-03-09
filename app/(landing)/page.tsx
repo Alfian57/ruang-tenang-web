@@ -10,6 +10,7 @@ import {
   LeaderboardSection,
   CTASection,
 } from "./_components";
+import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
 
 export default function Home() {
   return (
@@ -27,6 +28,7 @@ export default function Home() {
         <CTASection />
       </main>
       <Footer />
+      <PWAInstallPrompt />
     </div>
   );
 }

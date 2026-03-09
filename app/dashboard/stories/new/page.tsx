@@ -83,7 +83,7 @@ export default function NewStoryPage() {
           <h1 className="text-2xl font-bold mb-2">Tulis Kisah Inspiratif</h1>
           <p className="text-gray-600">
             Bagikan perjalanan kesehatan mentalmu untuk menginspirasi orang lain.
-            Kisahmu akan direview moderator sebelum dipublikasikan.
+            Kisahmu akan direview admin sebelum dipublikasikan.
           </p>
         </div>
 
@@ -154,7 +154,7 @@ export default function NewStoryPage() {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Ceritakan perjalananmu dengan jujur dan tulus. Bagikan apa yang kamu rasakan, pelajaran yang didapat, dan harapanmu..."
-              className="mt-1 min-h-[300px]"
+              className="mt-1 min-h-75"
             />
             <p
               className={cn(

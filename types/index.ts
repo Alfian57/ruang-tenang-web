@@ -13,3 +13,5 @@ export * from "./gamification";
 export * from "./forum";
 export * from "./moderation";
 export * from "./breathing";
+export * from "./progress-map";
+export * from "./guild";

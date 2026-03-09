@@ -14,6 +14,8 @@ import { ConsultationPromoWidget } from "./widgets/ConsultationPromoWidget";
 import { MusicPlayerWidget } from "./widgets/MusicPlayerWidget";
 import { StoryOfTheWeekWidget } from "./widgets/StoryOfTheWeekWidget";
 import { XPProgressWidget } from "./widgets/XPProgressWidget";
+import { GuildWidget } from "./widgets/GuildWidget";
+import { MapProgressWidget } from "./widgets/MapProgressWidget";
 import { useTheme } from "@/hooks/useTheme";
 
 export function MemberDashboard() {
@@ -94,6 +96,12 @@ export function MemberDashboard() {
         <div className="md:col-span-4 space-y-6">
           {/* XP Progress Widget */}
           <XPProgressWidget />
+
+          {/* Guild Widget */}
+          <GuildWidget />
+
+          {/* Map Progress Widget */}
+          <MapProgressWidget />
 
           {/* Recommended Articles */}
           <RecommendedArticlesWidget articles={recommendedArticles} isLoading={isLoadingWidgets} />

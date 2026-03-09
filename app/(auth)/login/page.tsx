@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/authStore";
 import { AuthIllustration } from "@/components/shared/auth/AuthIllustration";
+import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
 import { toast } from "sonner";
 
 const loginSchema = z.object({
@@ -174,11 +175,12 @@ export default function LoginPage() {
       </div>
 
       {/* Right Side - Illustration */}
-      {/* Right Side - Illustration */}
       <AuthIllustration
         title="RuangTenang"
         description="RuangTenang adalah platform konsultasi berbasis AI yang dirancang untuk membantu mahasiswa menghadapi tantangan kesehatan mental dalam dunia akademik. Melalui interaksi percakapan yang empatik, RuangTenang hadir sebagai teman virtual yang siap mendengarkan."
       />
+
+      <PWAInstallPrompt />
     </div>
   );
 }

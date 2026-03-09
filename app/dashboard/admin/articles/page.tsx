@@ -67,7 +67,7 @@ export default function AdminArticlesPage() {
     setPage
   } = useAdminArticles();
 
-  if (user?.role !== "admin" && user?.role !== "moderator") {
+  if (user?.role !== "admin") {
     return <div className="p-8 text-center">Akses ditolak</div>;
   }
 

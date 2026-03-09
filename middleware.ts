@@ -28,6 +28,7 @@ export function middleware(request: NextRequest) {
         `connect-src 'self' ${apiOrigin} https:`,
         `media-src 'self' https: http: ${apiOrigin}`,
         "frame-ancestors 'none'",
+        "worker-src 'self'",
     ].join("; ");
 
     response.headers.set("Content-Security-Policy", csp);
@@ -48,6 +49,6 @@ export const config = {
          * - _next/image (image optimization)
          * - favicon.ico
          */
-        "/((?!api|_next/static|_next/image|favicon.ico).*)",
+        "/((?!api|_next/static|_next/image|favicon.ico|sw\\.js|swe-worker|workbox).*)",
     ],
 };

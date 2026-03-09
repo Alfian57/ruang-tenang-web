@@ -11,6 +11,10 @@ import {
   Wind,
   Newspaper,
   Gift,
+  Swords,
+  Map,
+  Gamepad2,
+  Bell,
   type LucideIcon,
 } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
@@ -60,8 +64,11 @@ export const memberGroups: NavGroup[] = [
   {
     title: "Komunitas",
     links: [
+      { href: ROUTES.GUILDS, icon: Swords, label: "Guild" },
+      { href: ROUTES.PROGRESS_MAP, icon: Map, label: "Peta Perjalanan" },
       { href: ROUTES.DASHBOARD_COMMUNITY, icon: Trophy, label: "Community Stats" },
       { href: ROUTES.REWARDS, icon: Gift, label: "Klaim Hadiah" },
+      { href: ROUTES.GAME, icon: Gamepad2, label: "Mini Game" },
     ],
   },
 ];
@@ -83,29 +90,7 @@ export const adminGroups: NavGroup[] = [
       { href: ROUTES.ADMIN.FORUMS, icon: MessageSquare, label: "Forum" },
       { href: ROUTES.ADMIN.LEVELS, icon: Trophy, label: "Level" },
       { href: ROUTES.ADMIN.REWARDS, icon: Gift, label: "Hadiah" },
-    ],
-  },
-  {
-    title: "Moderasi",
-    links: [
-      { href: ROUTES.ADMIN.MODERATION, icon: Shield, label: "Moderasi" },
-    ],
-  },
-];
-
-// Moderator menu items
-export const moderatorGroups: NavGroup[] = [
-  {
-    title: "Utama",
-    links: [
-      { href: ROUTES.ADMIN.DASHBOARD, icon: LayoutDashboard, label: "Dashboard" },
-    ],
-  },
-  {
-    title: "Kelola Konten",
-    links: [
-      { href: ROUTES.ADMIN.ARTICLES, icon: FileText, label: "Artikel" },
-      { href: ROUTES.ADMIN.FORUMS, icon: MessageSquare, label: "Forum" },
+      { href: ROUTES.ADMIN.BROADCASTS, icon: Bell, label: "Broadcast" },
     ],
   },
   {

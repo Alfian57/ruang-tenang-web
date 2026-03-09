@@ -96,8 +96,6 @@ export function useAuth() {
     isAuthenticated: isHydrated && isAuthenticated,
     isLoading: !isHydrated,
     isAdmin: user?.role === "admin",
-    isModerator: user?.role === "moderator",
-    canModerate: user?.role === "admin" || user?.role === "moderator",
     isMember: user?.role === "member",
     logout,
     refreshUser,

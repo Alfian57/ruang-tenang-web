@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Menu, X, Settings, KeyRound, LogOut, Trophy, Crown, Shield } from "lucide-react";
+import { Menu, X, Settings, KeyRound, LogOut, Trophy, Crown } from "lucide-react";
 import { ThemeSwitcher } from "@/components/layout/dashboard";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,7 +19,6 @@ import type { User } from "@/types";
 interface MobileHeaderProps {
   user: User;
   isAdmin: boolean;
-  isModerator: boolean;
   sidebarOpen: boolean;
   onToggleSidebar: () => void;
   onEditProfile: () => void;
@@ -31,7 +30,6 @@ interface MobileHeaderProps {
 export function MobileHeader({
   user,
   isAdmin,
-  isModerator,
   sidebarOpen,
   onToggleSidebar,
   onEditProfile,
@@ -47,7 +45,7 @@ export function MobileHeader({
       </Link>
       <div className="flex items-center gap-1 sm:gap-2">
         {/* Theme Switcher */}
-        {!isAdmin && !isModerator && <ThemeSwitcher />}
+        {!isAdmin && <ThemeSwitcher />}
 
         {/* Mobile Avatar Dropdown */}
         <DropdownMenu>
@@ -81,12 +79,6 @@ export function MobileHeader({
               <DropdownMenuItem disabled>
                 <Crown className="mr-2 h-4 w-4 text-purple-600" />
                 <span>Admin</span>
-              </DropdownMenuItem>
-            )}
-            {isModerator && (
-              <DropdownMenuItem disabled>
-                <Shield className="mr-2 h-4 w-4 text-blue-600" />
-                <span>Moderator</span>
               </DropdownMenuItem>
             )}
             <DropdownMenuSeparator />

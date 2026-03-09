@@ -230,7 +230,7 @@ export default function StoryDetailPage() {
                     <StoryCommentsList
                         comments={comments}
                         onHeartComment={token ? handleCommentHeart : undefined}
-                        isAdmin={user?.role === "admin" || user?.role === "moderator"}
+                        isAdmin={user?.role === "admin"}
                         currentUserId={user?.id}
                     />
 

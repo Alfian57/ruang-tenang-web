@@ -39,9 +39,6 @@ export default function AdminUsersPage() {
     if (role === "admin") {
       return <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700">Admin</span>;
     }
-    if (role === "moderator") {
-      return <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">Moderator</span>;
-    }
     return <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">User</span>;
   };
 
@@ -120,12 +117,10 @@ export default function AdminUsersPage() {
                   <tr key={u.id} className={`hover:bg-gray-50 ${u.is_blocked ? 'bg-red-50/50' : ''}`}>
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${u.role === "admin" ? "bg-purple-100" : u.role === "moderator" ? "bg-blue-100" : u.is_blocked ? "bg-red-100" : "bg-gray-100"
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${u.role === "admin" ? "bg-purple-100" : u.is_blocked ? "bg-red-100" : "bg-gray-100"
                           }`}>
                           {u.role === "admin" ? (
                             <Shield className="w-5 h-5 text-purple-600" />
-                          ) : u.role === "moderator" ? (
-                            <Shield className="w-5 h-5 text-blue-600" />
                           ) : u.is_blocked ? (
                             <Ban className="w-5 h-5 text-red-500" />
                           ) : (
@@ -152,7 +147,7 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="p-4">
                       <div className="flex gap-1 justify-end">
-                        {u.role !== "admin" && u.role !== "moderator" && (
+                        {u.role !== "admin" && (
                           <>
                             {u.is_blocked ? (
                               <Button

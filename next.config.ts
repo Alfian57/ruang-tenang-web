@@ -1,5 +1,11 @@
+import withSerwistInit from "@serwist/next";
 import type { NextConfig } from "next";
 import { env } from "./config/env";
+
+const withSerwist = withSerwistInit({
+  swSrc: "app/sw.ts",
+  swDest: "public/sw.js",
+});
 
 // Parse API URL for dynamic configuration
 const apiUrl = env.NEXT_PUBLIC_API_BASE_URL;
@@ -30,4 +36,4 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: true,
 };
 
-export default nextConfig;
+export default withSerwist(nextConfig);

@@ -5,12 +5,11 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ChevronRight, PanelLeftClose, MessageCircle } from "lucide-react";
 import { cn } from "@/utils";
-import { adminGroups, moderatorGroups, memberGroups, memberHighlightLink, type NavGroup } from "./nav-config";
+import { adminGroups, memberGroups, memberHighlightLink, type NavGroup } from "./nav-config";
 import { ROUTES } from "@/lib/routes";
 
 interface SidebarProps {
   isAdmin: boolean;
-  isModerator: boolean;
   sidebarOpen: boolean;
   sidebarCollapsed: boolean;
   onCloseSidebar: () => void;
@@ -19,7 +18,6 @@ interface SidebarProps {
 
 export function Sidebar({
   isAdmin,
-  isModerator,
   sidebarOpen,
   sidebarCollapsed,
   onCloseSidebar,
@@ -27,8 +25,8 @@ export function Sidebar({
 }: SidebarProps) {
   const pathname = usePathname();
 
-  const groups: NavGroup[] = isAdmin ? adminGroups : isModerator ? moderatorGroups : memberGroups;
-  const isMember = !isAdmin && !isModerator;
+  const groups: NavGroup[] = isAdmin ? adminGroups : memberGroups;
+  const isMember = !isAdmin;
   const highlightLink = isMember ? memberHighlightLink : null;
 
   return (

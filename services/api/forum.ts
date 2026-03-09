@@ -83,7 +83,7 @@ export const forumService = {
     return httpClient.get<ApiResponse<string[]>>("/forums/sort-options");
   },
 
-  // Post reports (moderator)
+  // Post reports (admin)
   getPendingReports(token: string) {
     return httpClient.get<ApiResponse<unknown[]>>("/moderation/post-reports", { token });
   },

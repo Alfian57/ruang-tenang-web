@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { notificationService } from "@/services/api/notification";
 import { useAuthStore } from "@/store/authStore";
+import { PushNotificationToggle } from "@/components/notification/PushNotificationToggle";
 import type { Notification } from "@/types";
 
 const POLL_INTERVAL = 30000; // 30 seconds
@@ -128,7 +129,7 @@ export function NotificationBell() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-hidden p-0">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b bg-gradient-to-r from-purple-50 to-indigo-50">
+        <div className="flex items-center justify-between px-4 py-3 border-b bg-linear-to-r from-purple-50 to-indigo-50">
           <h3 className="font-semibold text-sm text-gray-800">Notifikasi</h3>
           {unreadCount > 0 && (
             <button
@@ -180,6 +181,11 @@ export function NotificationBell() {
               </div>
             ))
           )}
+        </div>
+
+        {/* Push notification toggle */}
+        <div className="border-t px-1 py-1.5">
+          <PushNotificationToggle />
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

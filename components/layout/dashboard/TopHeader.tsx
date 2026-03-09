@@ -17,7 +17,6 @@ import type { User } from "@/types";
 interface TopHeaderProps {
   user: User;
   isAdmin: boolean;
-  isModerator: boolean;
   onEditProfile: () => void;
   onChangePassword: () => void;
   onLogout: () => void;
@@ -28,7 +27,6 @@ interface TopHeaderProps {
 export function TopHeader({
   user,
   isAdmin,
-  isModerator,
   onEditProfile,
   onChangePassword,
   onLogout,
@@ -76,7 +74,7 @@ export function TopHeader({
           )}
 
           {/* Theme Switcher */}
-          {!isAdmin && !isModerator && <ThemeSwitcher />}
+          {!isAdmin && <ThemeSwitcher />}
 
           {/* Profile dropdown */}
           <DropdownMenu>
@@ -109,7 +107,7 @@ export function TopHeader({
                 <KeyRound className="mr-2 h-4 w-4" />
                 <span>Ganti Password</span>
               </DropdownMenuItem>
-              {!isAdmin && !isModerator && (
+              {!isAdmin && (
                 <DropdownMenuItem onClick={onShowBlockedUsers} className="cursor-pointer">
                   <Ban className="mr-2 h-4 w-4" />
                   <span>Pengguna Diblokir</span>

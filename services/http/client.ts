@@ -30,6 +30,38 @@ function normalizeUploadsDeep<T>(value: T): T {
 }
 
 /**
+ * Reshape flat paginated backend responses into the nested `{ data, meta }` format
+ * expected by `PaginatedResponse<T>`.
+ *
+ * Backend sends: `{ success, data, page, limit, total_items, total_pages }`
+ * Frontend expects: `{ data, meta: { page, limit, total_items, total_pages, has_next, has_prev } }`
+ */
+function normalizePagination<T>(data: T): T {
+  if (
+    data &&
+    typeof data === "object" &&
+    !Array.isArray(data) &&
+    "total_pages" in data &&
+    "page" in data &&
+    !("meta" in data)
+  ) {
+    const { page, limit, total_items, total_pages, success, ...rest } = data as Record<string, unknown>;
+    return {
+      ...rest,
+      meta: {
+        page,
+        limit,
+        total_items,
+        total_pages,
+        has_next: (page as number) < (total_pages as number),
+        has_prev: (page as number) > 1,
+      },
+    } as T;
+  }
+  return data;
+}
+
+/**
  * Centralized HTTP client wrapper.
  * All API requests MUST go through this client.
  *
@@ -147,7 +179,7 @@ class HttpClient {
         throw apiError;
       }
 
-      return normalizeUploadsDeep(data as T);
+      return normalizePagination(normalizeUploadsDeep(data as T));
     } catch (error) {
       clearTimeout(timeoutId);
 
@@ -210,7 +242,7 @@ class HttpClient {
       });
     }
 
-    return normalizeUploadsDeep(data as T);
+    return normalizePagination(normalizeUploadsDeep(data as T));
   }
 
   // ==========================================

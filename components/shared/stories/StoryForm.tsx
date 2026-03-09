@@ -179,7 +179,7 @@ export function StoryForm({
                             fill
                             className="object-cover"
                             unoptimized
-                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                         <button
                             type="button"
                             onClick={() => setCoverImage("")}
@@ -346,7 +346,7 @@ export function StoryForm({
 
             {/* Disclaimer */}
             <p className="text-xs text-muted-foreground text-center">
-                Dengan mengirim cerita, kamu menyetujui bahwa ceritamu akan ditinjau oleh moderator
+                Dengan mengirim cerita, kamu menyetujui bahwa ceritamu akan ditinjau oleh admin
                 sebelum dipublikasikan. Cerita yang melanggar pedoman komunitas tidak akan diterbitkan.
             </p>
         </form>

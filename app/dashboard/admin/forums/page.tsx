@@ -42,7 +42,7 @@ export default function AdminForumsPage() {
     setPage,
   } = useAdminForums();
 
-  if (user?.role !== "admin" && user?.role !== "moderator") {
+  if (user?.role !== "admin") {
     return <div className="p-8 text-center">Akses ditolak</div>;
   }
 

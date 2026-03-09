@@ -29,7 +29,10 @@ export const ROUTES = {
   CONSULTATION: "/dashboard/consultation",
   MOOD_TRACKER: "/dashboard/mood-tracker",
   COMMUNITY: "/community",
+  GUILDS: "/dashboard/guilds",
+  PROGRESS_MAP: "/dashboard/progress-map",
   REWARDS: "/dashboard/rewards",
+  GAME: "/dashboard/game",
 
   // Admin
   ADMIN: {
@@ -43,6 +46,7 @@ export const ROUTES = {
     MODERATION_REPORTS: "/dashboard/moderation/reports",
     MODERATION_QUEUE: "/dashboard/moderation/queue",
     REWARDS: "/dashboard/admin/rewards",
+    BROADCASTS: "/dashboard/admin/broadcasts",
   },
 
   // Dynamic Builders
@@ -53,4 +57,5 @@ export const ROUTES = {
   adminForumDetail: (id: string | number) => `/dashboard/admin/forums/${id}`,
   moderationArticle: (id: string | number) => `/dashboard/moderation/articles/${id}`,
   moderationReport: (id: string | number) => `/dashboard/moderation/reports/${id}`,
+  guildDetail: (id: string | number) => `/dashboard/guilds/${id}`,
 } as const;

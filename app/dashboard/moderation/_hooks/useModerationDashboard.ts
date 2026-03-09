@@ -13,10 +13,10 @@ export function useModerationDashboard() {
   const [recentReports, setRecentReports] = useState<UserReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const isModerator = user?.role === "moderator" || user?.role === "admin";
+  const isAdmin = user?.role === "admin";
 
   const loadData = useCallback(async () => {
-    if (!token || !isModerator) return;
+    if (!token || !isAdmin) return;
     
     setIsLoading(true);
     try {
@@ -35,7 +35,7 @@ export function useModerationDashboard() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, isModerator]);
+  }, [token, isAdmin]);
 
   useEffect(() => {
     loadData();
@@ -43,7 +43,7 @@ export function useModerationDashboard() {
 
   return {
     user,
-    isModerator,
+    isAdmin,
     stats,
     pendingArticles,
     recentReports,

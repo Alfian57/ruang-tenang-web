@@ -7,7 +7,6 @@ import { DashboardStats } from "@/types/admin";
 
 export function useAdminDashboard() {
   const { token, user } = useAuthStore();
-  const isModerator = user?.role === "moderator";
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -29,7 +28,6 @@ export function useAdminDashboard() {
 
   return {
     user,
-    isModerator,
     stats,
     isLoading,
   };

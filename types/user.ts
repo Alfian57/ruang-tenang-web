@@ -4,7 +4,7 @@ export interface User {
   name: string;
   email: string;
   avatar?: string;
-  role: "admin" | "moderator" | "member";
+  role: "admin" | "member";
   exp: number;
   gold_coins: number;
   level: number;

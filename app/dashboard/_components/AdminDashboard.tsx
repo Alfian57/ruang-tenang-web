@@ -9,7 +9,7 @@ import { AdminQuickActions } from "./admin/AdminQuickActions";
 import { AdminSummaryCards } from "./admin/AdminSummaryCards";
 
 export function AdminDashboard() {
-  const { user, isModerator, stats, isLoading } = useAdminDashboard();
+  const { user, stats, isLoading } = useAdminDashboard();
 
   return (
     <div className="p-4 lg:p-6">
@@ -38,9 +38,9 @@ export function AdminDashboard() {
       ) : stats && (
         <>
           <AdminAlertCards stats={stats} />
-          <AdminStatsCards stats={stats} isModerator={isModerator} />
-          <AdminQuickActions stats={stats} isModerator={isModerator} />
-          <AdminSummaryCards stats={stats} isModerator={isModerator} />
+          <AdminStatsCards stats={stats} />
+          <AdminQuickActions stats={stats} />
+          <AdminSummaryCards stats={stats} />
         </>
       )}
     </div>

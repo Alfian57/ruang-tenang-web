@@ -11,7 +11,6 @@ interface ArticleContentProps {
   article: Article;
   isArticleAuthor: boolean;
   isAdmin: boolean;
-  isModerator: boolean;
   authorId: number | undefined;
   isBlocked: (userId: number) => boolean;
   onBlockClick: () => void;
@@ -21,7 +20,6 @@ export function ArticleContent({
   article,
   isArticleAuthor,
   isAdmin,
-  isModerator,
   authorId,
   isBlocked,
   onBlockClick,
@@ -34,7 +32,7 @@ export function ArticleContent({
             <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
               {article.title}
             </h1>
-            {(isArticleAuthor || isAdmin || isModerator) && article.status !== "blocked" && (
+            {(isArticleAuthor || isAdmin) && article.status !== "blocked" && (
               <Link href={isArticleAuthor ? `/dashboard/articles/${article.slug}` : "#"}>
                 <Button variant="outline" size="sm" disabled={!isArticleAuthor && !isAdmin}>
                   <Edit className="w-4 h-4 mr-2" />

@@ -20,7 +20,6 @@ export function useArticleDetail() {
   const [isBlocking, setIsBlocking] = useState(false);
 
   const isAdmin = user?.role === "admin";
-  const isModerator = user?.role === "moderator";
   const isArticleAuthor = user?.id === article?.author?.id;
   const authorId = article?.author?.id || article?.user_id;
 
@@ -75,7 +74,6 @@ export function useArticleDetail() {
     relatedArticles,
     isLoading,
     isAdmin,
-    isModerator,
     isArticleAuthor,
     authorId,
     showBlockConfirm,
