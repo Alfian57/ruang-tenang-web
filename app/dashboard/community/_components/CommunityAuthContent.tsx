@@ -6,6 +6,7 @@ import {
     HallOfFame,
     BadgeShowcase,
     XPVisualizationsSection,
+    LevelTierGuideModal,
 } from "@/components/shared/gamification";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -21,7 +22,7 @@ import type {
     LevelHallOfFameResponse,
     UserBadges,
 } from "@/types";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 interface CommunityAuthContentProps {
@@ -50,6 +51,7 @@ export function CommunityAuthContent({
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const [showLevelGuide, setShowLevelGuide] = useState(false);
 
     const rawTab = searchParams.get("tab");
     const activeTab: CommunityTab = VALID_TABS.includes(rawTab as CommunityTab)
@@ -121,7 +123,10 @@ export function CommunityAuthContent({
                 <TabsContent value="journey">
                     {personalJourney && (
                         <div className="max-w-2xl mx-auto">
-                            <PersonalJourneyCard journey={personalJourney} />
+                            <PersonalJourneyCard
+                                journey={personalJourney}
+                                onShowLevelGuide={() => setShowLevelGuide(true)}
+                            />
                         </div>
                     )}
                 </TabsContent>
@@ -134,6 +139,12 @@ export function CommunityAuthContent({
                     {userBadges && <BadgeShowcase badges={userBadges} />}
                 </TabsContent>
             </Tabs>
+
+            <LevelTierGuideModal
+                isOpen={showLevelGuide}
+                onClose={() => setShowLevelGuide(false)}
+                currentLevel={personalJourney?.current_level}
+            />
         </motion.div>
     );
 }

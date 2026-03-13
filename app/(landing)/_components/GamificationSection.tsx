@@ -62,9 +62,9 @@ const GAMIFICATION_FEATURES = [
   },
   {
     icon: TrendingUp,
-    title: "Leaderboard",
+    title: "Hall of Fame",
     description:
-      "Bersaing secara sehat di leaderboard global. Lihat siapa yang paling aktif merawat kesehatan mentalnya.",
+      "Bersaing secara sehat di Hall of Fame global. Lihat siapa yang paling aktif merawat kesehatan mentalnya.",
     color: "text-green-500",
     bgColor: "bg-green-50",
     borderColor: "border-green-200",

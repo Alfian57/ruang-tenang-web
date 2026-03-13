@@ -5,6 +5,9 @@ export interface LevelConfig {
   min_exp: number;
   badge_name: string;
   badge_icon: string;
+  tier_name?: string;
+  tier_color?: string;
+  description?: string;
   created_at: string;
   updated_at: string;
 }

@@ -2,14 +2,15 @@
 
 import { cn } from "@/utils";
 import { PersonalJourney } from "@/types";
-import { Flame, Target, Star, TrendingUp, Activity } from "lucide-react";
+import { Flame, Target, Star, TrendingUp, Activity, Info } from "lucide-react";
 
 interface PersonalJourneyCardProps {
     journey: PersonalJourney;
     className?: string;
+    onShowLevelGuide?: () => void;
 }
 
-export function PersonalJourneyCard({ journey, className }: PersonalJourneyCardProps) {
+export function PersonalJourneyCard({ journey, className, onShowLevelGuide }: PersonalJourneyCardProps) {
     const currentExp = Number(journey.current_exp ?? 0);
     const progressPercent = Math.min(100, Math.max(0, Number(journey.progress_percent ?? 0)));
     const expToNextLevel = Number(journey.exp_to_next_level ?? 0);
@@ -101,6 +102,17 @@ export function PersonalJourneyCard({ journey, className }: PersonalJourneyCardP
                     </span>
                 </div>
             </div>
+
+            {/* Level Guide Button */}
+            {onShowLevelGuide && (
+                <button
+                    onClick={onShowLevelGuide}
+                    className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-linear-to-r from-indigo-50 to-purple-50 border border-indigo-200 text-indigo-700 text-sm font-medium hover:shadow-md hover:border-indigo-300 transition-all"
+                >
+                    <Info className="h-4 w-4" />
+                    Lihat Panduan Level & Tier
+                </button>
+            )}
         </div>
     );
 }

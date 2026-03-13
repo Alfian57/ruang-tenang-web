@@ -10,6 +10,7 @@ export {
   FeatureUnlockCelebration 
 } from "./FeatureComponents";
 export { LevelUpCelebration } from "./LevelUpCelebration";
+export { LevelTierGuideModal } from "./LevelTierGuideModal";
 export { DailyTaskWidget } from "./DailyTaskWidget";
 export { DailyTaskFAB } from "./DailyTaskFAB";
 export { InspiringStoryWidget } from "./InspiringStoryWidget";
