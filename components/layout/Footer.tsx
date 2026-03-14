@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Phone, MapPin, Mail } from "lucide-react";
+import { ROUTES } from "@/lib/routes";
 
 export function Footer() {
   return (
@@ -18,7 +19,7 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-6">
+            <Link href={ROUTES.HOME} className="flex items-center gap-2 mb-6">
               <Image
                 src="/logo-full.webp"
                 alt="Ruang Tenang"
@@ -74,27 +75,27 @@ export function Footer() {
             <h3 className="font-semibold text-gray-800 mb-5">Jelajahi</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/dashboard/chat" className="text-sm text-gray-600 hover:text-primary transition-colors">
+                <Link href={ROUTES.CHAT} className="text-sm text-gray-600 hover:text-primary transition-colors">
                   AI Chat Consultant
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard/mood" className="text-sm text-gray-600 hover:text-primary transition-colors">
+                <Link href={ROUTES.MOOD_TRACKER} className="text-sm text-gray-600 hover:text-primary transition-colors">
                   Mood Tracker Harian
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard/music" className="text-sm text-gray-600 hover:text-primary transition-colors">
+                <Link href={ROUTES.MUSIC} className="text-sm text-gray-600 hover:text-primary transition-colors">
                   Terapi Musik & Pernapasan
                 </Link>
               </li>
               <li>
-                <Link href="/articles" className="text-sm text-gray-600 hover:text-primary transition-colors">
+                <Link href={ROUTES.PUBLIC_ARTICLES} className="text-sm text-gray-600 hover:text-primary transition-colors">
                   Artikel Edukasi
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-sm text-gray-600 hover:text-primary transition-colors">
+                <Link href={ROUTES.CONSULTATION} className="text-sm text-gray-600 hover:text-primary transition-colors">
                   Tes Kesehatan Mental
                 </Link>
               </li>
@@ -130,10 +131,10 @@ export function Footer() {
             © {new Date().getFullYear()} Ruang Tenang. All Rights Reserved.
           </p>
           <div className="flex items-center gap-6">
-            <Link href="/privacy-policy" className="text-sm text-gray-500 hover:text-primary transition-colors">
+            <Link href={ROUTES.PRIVACY_POLICY} className="text-sm text-gray-500 hover:text-primary transition-colors">
               Kebijakan Privasi
             </Link>
-            <Link href="/terms-of-service" className="text-sm text-gray-500 hover:text-primary transition-colors">
+            <Link href={ROUTES.TERMS_OF_SERVICE} className="text-sm text-gray-500 hover:text-primary transition-colors">
               Syarat Layanan
             </Link>
           </div>

@@ -3,6 +3,7 @@
 import { useEffect, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
+import { ROUTES } from "@/lib/routes";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -17,7 +18,7 @@ export function AuthProvider({
   requireAuth = false,
   requireAdmin = false,
   requireMember = false,
-  redirectTo = "/login",
+  redirectTo = ROUTES.LOGIN,
 }: AuthProviderProps) {
   const router = useRouter();
   const { isAuthenticated, refreshUser, isHydrated } = useAuthStore();
@@ -51,12 +52,12 @@ export function AuthProvider({
 
       // Check role requirements
       if (requireAdmin && freshState.user?.role !== "admin") {
-        router.replace("/dashboard");
+        router.replace(ROUTES.DASHBOARD);
         return;
       }
 
       if (requireMember && freshState.user?.role !== "member") {
-        router.replace("/dashboard");
+        router.replace(ROUTES.DASHBOARD);
         return;
       }
 

@@ -1,50 +1,62 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { communityService } from "@/services/api";
 import { CommunityStats } from "@/types";
 import {
   Users,
   BookOpen,
-  ArrowRight,
-  Sparkles,
   Heart,
+  Zap,
 } from "lucide-react";
 
-const STAT_CONFIGS = [
+type StatConfig = {
+  key: string;
+  label: string;
+  icon: typeof Users;
+  color: string;
+  bgColor: string;
+  suffix: string;
+  getValue: (stats: CommunityStats) => number;
+};
+
+const STAT_CONFIGS: StatConfig[] = [
   {
-    key: "total_users" as const,
+    key: "active_members",
     label: "Pengguna Aktif",
     icon: Users,
     color: "text-blue-600",
     bgColor: "bg-blue-50",
     suffix: "+",
+    getValue: (stats) => Number(stats.active_members ?? 0),
   },
   {
-    key: "supportive_hearts_given" as const,
-    label: "Dukungan Diberikan",
+    key: "total_achievements",
+    label: "Pencapaian",
     icon: Heart,
     color: "text-rose-600",
     bgColor: "bg-rose-50",
     suffix: "+",
+    getValue: (stats) => Number(stats.total_achievements ?? 0),
   },
   {
-    key: "stories_shared" as const,
+    key: "total_stories_published",
     label: "Cerita Inspiratif",
     icon: BookOpen,
     color: "text-purple-600",
     bgColor: "bg-purple-50",
     suffix: "",
+    getValue: (stats) => Number(stats.total_stories_published ?? 0),
   },
   {
-    key: "total_activities" as const,
-    label: "Aktivitas Positif",
-    icon: Sparkles,
+    key: "total_xp_earned",
+    label: "XP Komunitas",
+    icon: Zap,
     color: "text-amber-600",
     bgColor: "bg-amber-50",
-    suffix: "+",
+    suffix: " XP",
+    getValue: (stats) => Number(stats.total_xp_earned ?? 0),
   },
 ];
 
@@ -79,6 +91,7 @@ function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
 
 export function CommunitySection() {
   const [stats, setStats] = useState<CommunityStats | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -87,12 +100,14 @@ export function CommunitySection() {
         setStats(response.data);
       } catch {
         // silently ignore
+      } finally {
+        setLoading(false);
       }
     };
     fetchStats();
   }, []);
 
-  if (!stats) return null;
+  const hasStats = Boolean(stats);
 
   return (
     <section id="community" className="py-24 px-4 relative overflow-hidden bg-gradient-to-b from-white to-gray-50">
@@ -120,10 +135,9 @@ export function CommunitySection() {
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           {STAT_CONFIGS.map((config, index) => {
-            // Access property dynamically with type safety check if needed,
-            // but since we verified keys exist in CommunityStats, straightforward access works
-            // if we cast key to keyof CommunityStats
-            const value = stats[config.key as keyof CommunityStats] as number || 0;
+            const rawValue = hasStats && stats ? config.getValue(stats) : 0;
+            const value = Number.isFinite(rawValue) ? Math.max(0, Math.floor(rawValue)) : 0;
+
             return (
               <motion.div
                 key={config.key}
@@ -139,7 +153,11 @@ export function CommunitySection() {
                   <config.icon className={`w-6 h-6 ${config.color}`} />
                 </div>
                 <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-1">
-                  <AnimatedCounter value={value} suffix={config.suffix} />
+                  {loading ? (
+                    <span className="inline-block h-10 w-20 bg-gray-100 rounded animate-pulse" />
+                  ) : (
+                    <AnimatedCounter value={value} suffix={config.suffix} />
+                  )}
                 </div>
                 <p className="text-sm text-gray-500 font-medium">
                   {config.label}
@@ -149,21 +167,14 @@ export function CommunitySection() {
           })}
         </div>
 
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-center"
-        >
-          <Link
-            href="/community"
-            className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
-          >
-            <span>Jelajahi Komunitas</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </motion.div>
+        {!loading && !hasStats && (
+          <div className="rounded-2xl border border-dashed border-gray-200 bg-white/70 px-6 py-8 text-center">
+            <p className="text-lg font-semibold text-gray-700 mb-2">Statistik komunitas belum tersedia</p>
+            <p className="text-sm text-gray-500">
+              Data komunitas sedang disiapkan. Section ini tetap tampil dan akan terisi otomatis saat data tersedia.
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );

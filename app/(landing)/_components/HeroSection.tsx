@@ -4,11 +4,12 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/lib/routes";
 import { ArrowRight } from "lucide-react";
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden pt-24 pb-12">
+    <section className="relative min-h-screen flex items-center overflow-hidden pt-32 sm:pt-36 lg:pt-24 pb-12">
       {/* Background - Pink gradient with decorative elements */}
       <div
         className="absolute inset-0"
@@ -56,7 +57,7 @@ export function HeroSection() {
                 *Platform ini membantu refleksi diri, bukan menggantikan layanan profesional.
               </p>
 
-              <Link href="/register">
+              <Link href={ROUTES.REGISTER}>
                 <Button
                   size="lg"
                   className="bg-primary text-white hover:bg-red-600 font-semibold px-8 py-6 text-base rounded-[15px] shadow-lg hover:shadow-xl transition-all group"
@@ -73,9 +74,9 @@ export function HeroSection() {
             initial={{ opacity: 0, x: 50, scale: 0.9 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="relative flex justify-center lg:justify-end order-1 lg:order-2"
+            className="relative flex justify-center lg:justify-end order-1 lg:order-2 mt-4 sm:mt-6 lg:mt-0"
           >
-            <div className="relative w-full max-w-md lg:max-w-lg">
+            <div className="relative w-full max-w-[320px] sm:max-w-md lg:max-w-[560px] xl:max-w-[640px]">
               {/* Main hero illustration */}
               <Image
                 src="/images/landing/about-doctor.png"
@@ -83,7 +84,7 @@ export function HeroSection() {
                 width={500}
                 height={600}
                 className="relative z-10 w-full h-auto drop-shadow-2xl"
-                style={{ width: "auto", height: "auto" }}
+                sizes="(max-width: 640px) 320px, (max-width: 1024px) 448px, (max-width: 1280px) 560px, 640px"
               />
 
               {/* Floating elements */}
@@ -96,16 +97,16 @@ export function HeroSection() {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute -top-4 right-0 lg:right-4"
+                className="absolute top-2 sm:-top-4 right-0 lg:right-4"
               >
-                <div className="bg-white rounded-2xl p-3 shadow-xl">
+                <div className="bg-white rounded-2xl p-2.5 sm:p-3 shadow-xl">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center">
-                      <span className="text-2xl">💝</span>
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-pink-100 rounded-full flex items-center justify-center">
+                      <span className="text-xl sm:text-2xl">💝</span>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-800">Mood Tracker</p>
-                      <p className="text-xs text-gray-500">Pantau perasaanmu</p>
+                      <p className="text-xs sm:text-sm font-semibold text-gray-800">Mood Tracker</p>
+                      <p className="text-[11px] sm:text-xs text-gray-500">Pantau perasaanmu</p>
                     </div>
                   </div>
                 </div>
@@ -120,16 +121,16 @@ export function HeroSection() {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute bottom-24 left-0"
+                className="absolute bottom-10 sm:bottom-24 left-0"
               >
-                <div className="bg-white rounded-2xl p-3 shadow-xl">
+                <div className="bg-white rounded-2xl p-2.5 sm:p-3 shadow-xl">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-2xl">💬</span>
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-xl sm:text-2xl">💬</span>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-800">AI Chat</p>
-                      <p className="text-xs text-gray-500">Tersedia 24/7</p>
+                      <p className="text-xs sm:text-sm font-semibold text-gray-800">AI Chat</p>
+                      <p className="text-[11px] sm:text-xs text-gray-500">Tersedia 24/7</p>
                     </div>
                   </div>
                 </div>
@@ -144,16 +145,16 @@ export function HeroSection() {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute top-1/3 right-0 lg:-right-4"
+                className="absolute top-[36%] sm:top-1/3 right-0 lg:-right-4"
               >
-                <div className="bg-white rounded-2xl p-3 shadow-xl">
+                <div className="bg-white rounded-2xl p-2.5 sm:p-3 shadow-xl">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                      <span className="text-2xl">🎵</span>
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center">
+                      <span className="text-xl sm:text-2xl">🎵</span>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-800">Relaksasi</p>
-                      <p className="text-xs text-gray-500">Musik menenangkan</p>
+                      <p className="text-xs sm:text-sm font-semibold text-gray-800">Relaksasi</p>
+                      <p className="text-[11px] sm:text-xs text-gray-500">Musik menenangkan</p>
                     </div>
                   </div>
                 </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ROUTES } from "@/lib/routes";
 import { Star } from "lucide-react";
 import type { StoryCard } from "@/types";
 
@@ -19,7 +20,7 @@ export function FeaturedStories({ stories }: FeaturedStoriesProps) {
             </h2>
             <div className="grid md:grid-cols-3 gap-6">
                 {stories.slice(0, 3).map((story) => (
-                    <Link key={story.id} href={`/stories/${story.id}`}>
+                    <Link key={story.id} href={ROUTES.publicStoryDetail(story.id)}>
                         <div className="bg-linear-to-br from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20 rounded-xl border border-yellow-200 dark:border-yellow-800 p-4 hover:shadow-lg transition-shadow">
                             <div className="flex items-center gap-2 mb-2">
                                 <Star className="h-4 w-4 text-yellow-500" />

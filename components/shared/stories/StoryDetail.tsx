@@ -17,6 +17,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { ROUTES } from "@/lib/routes";
 
 interface StoryDetailProps {
     story: InspiringStory;
@@ -45,7 +46,7 @@ export function StoryDetail({
         <article className={cn("max-w-3xl mx-auto", className)}>
             {/* Back Link */}
             <Link
-                href="/stories"
+                href={ROUTES.PUBLIC_STORIES}
                 className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
             >
                 <ArrowLeft className="h-4 w-4" />

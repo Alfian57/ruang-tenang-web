@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getUploadUrl } from "@/services/http/upload-url";
+import { ROUTES } from "@/lib/routes";
 import type { User } from "@/types";
 
 interface MobileHeaderProps {
@@ -39,7 +40,7 @@ export function MobileHeader({
 }: MobileHeaderProps) {
   return (
     <header className="header-themed lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b z-50 flex items-center justify-between px-4">
-      <Link href="/dashboard" className="flex items-center gap-2">
+      <Link href={ROUTES.DASHBOARD} className="flex items-center gap-2">
         <Image src="/logo.webp" alt="Ruang Tenang" width={32} height={32} className="object-contain" />
         <span className="text-base sm:text-lg font-bold text-gray-800">Ruang Tenang</span>
       </Link>

@@ -1,4 +1,5 @@
 import { Navbar, Footer } from "@/components/layout";
+import { ROUTES } from "@/lib/routes";
 import { FileText, Shield, AlertTriangle, Ban, Mail } from "lucide-react";
 
 const sections = [
@@ -42,7 +43,7 @@ const sections = [
 export default function TermsOfServicePage() {
     return (
         <div className="min-h-screen bg-background overflow-x-hidden">
-            <Navbar variant="back" backHref="/" backLabel="Kembali ke Beranda" />
+            <Navbar variant="back" backHref={ROUTES.HOME} backLabel="Kembali ke Beranda" />
 
             <main className="pt-28 pb-16">
                 <section className="px-4">

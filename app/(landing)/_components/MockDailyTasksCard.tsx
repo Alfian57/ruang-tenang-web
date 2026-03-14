@@ -1,13 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Flame, Zap } from "lucide-react";
 
 const MOCK_TASKS = [
-    { name: "Login Harian", icon: "🔑", done: true, xp: 10 },
-    { name: "Rekam Mood", icon: "💝", done: true, xp: 15 },
-    { name: "Chat AI", icon: "💬", done: false, xp: 20 },
-    { name: "Baca Artikel", icon: "📖", done: false, xp: 15 },
+    { name: "Login Harian", icon: "🔑", done: true, xp: 10, coin: 1 },
+    { name: "Rekam Mood", icon: "💝", done: true, xp: 15, coin: 2 },
+    { name: "Chat AI", icon: "💬", done: false, xp: 20, coin: 2 },
+    { name: "Baca Artikel", icon: "📖", done: false, xp: 15, coin: 1 },
 ];
 
 export function MockDailyTasksCard() {
@@ -22,7 +23,7 @@ export function MockDailyTasksCard() {
                             Preview
                         </span>
                     </div>
-                    <p className="text-sm text-gray-500">Selesaikan tugas untuk dapat XP!</p>
+                    <p className="text-sm text-gray-500">Selesaikan tugas untuk dapat XP & Gold Coin!</p>
                 </div>
                 <div
                     className="flex items-center gap-2 bg-orange-50 px-3 py-1.5 rounded-full"
@@ -45,7 +46,7 @@ export function MockDailyTasksCard() {
                         whileInView={{ width: "50%" }}
                         viewport={{ once: true }}
                         transition={{ duration: 1, delay: 0.3 }}
-                        className="bg-gradient-to-r from-primary to-red-400 h-2.5 rounded-full"
+                        className="bg-linear-to-r from-primary to-red-400 h-2.5 rounded-full"
                     />
                 </div>
             </div>
@@ -60,14 +61,14 @@ export function MockDailyTasksCard() {
                         viewport={{ once: true }}
                         transition={{ delay: 0.4 + idx * 0.1 }}
                         className={`flex items-center justify-between p-3 rounded-xl border ${task.done
-                                ? "bg-green-50/50 border-green-200"
-                                : "bg-gray-50/50 border-gray-100"
+                            ? "bg-green-50/50 border-green-200"
+                            : "bg-gray-50/50 border-gray-100"
                             }`}
                     >
                         <div className="flex items-center gap-3">
                             <span className="text-xl">{task.icon}</span>
                             <span
-                                className={`font-medium text-sm ${task.done ? "text-green-700 line-through" : "text-gray-700"
+                                className={`font-medium text-sm ${task.done ? "text-green-700" : "text-gray-700"
                                     }`}
                             >
                                 {task.name}
@@ -77,21 +78,31 @@ export function MockDailyTasksCard() {
                             <span className="text-xs font-semibold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full">
                                 +{task.xp} XP
                             </span>
+                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
+                                <Image src="/coin.png" alt="Gold Coin" width={12} height={12} />
+                                +{task.coin}
+                            </span>
                             {task.done && <span className="text-green-500 text-lg">✓</span>}
                         </div>
                     </motion.div>
                 ))}
             </div>
 
-            {/* XP Summary */}
-            <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
+            {/* Reward Summary */}
+            <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
                     <Zap className="w-5 h-5 text-yellow-500" />
                     <span className="text-sm font-semibold text-gray-700">Total hari ini</span>
                 </div>
-                <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-orange-500">
-                    +25 XP
-                </span>
+                <div className="flex items-center gap-2">
+                    <span className="text-lg font-bold text-transparent bg-clip-text bg-linear-to-r from-yellow-500 to-orange-500">
+                        +25 XP
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-sm font-bold text-amber-700">
+                        <Image src="/coin.png" alt="Gold Coin" width={14} height={14} />
+                        +3
+                    </span>
+                </div>
             </div>
         </div>
     );

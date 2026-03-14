@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { ROUTES } from "@/lib/routes";
 import {
   Zap,
   CalendarCheck,
@@ -19,7 +20,7 @@ const GAMIFICATION_FEATURES = [
     icon: Zap,
     title: "XP & Level Up",
     description:
-      "Kumpulkan XP dari setiap aktivitas - login, ngobrol, nulis jurnal, baca artikel. Naik level dan unlock reward!",
+      "Kumpulkan XP dan Gold Coin dari setiap aktivitas - login, ngobrol, nulis jurnal, baca artikel. Naik level dan unlock reward!",
     color: "text-yellow-500",
     bgColor: "bg-yellow-50",
     borderColor: "border-yellow-200",
@@ -28,7 +29,7 @@ const GAMIFICATION_FEATURES = [
     icon: CalendarCheck,
     title: "Daily Tasks",
     description:
-      "7 tugas harian yang mendorongmu merawat diri - mulai dari login, rekam mood, hingga menulis jurnal.",
+      "7 tugas harian yang mendorongmu merawat diri - mulai dari login, rekam mood, hingga menulis jurnal. Setiap task memberi XP dan Gold Coin.",
     color: "text-blue-500",
     bgColor: "bg-blue-50",
     borderColor: "border-blue-200",
@@ -37,7 +38,7 @@ const GAMIFICATION_FEATURES = [
     icon: Flame,
     title: "Login Streak",
     description:
-      "Jaga streak login harianmu! Semakin panjang streak, semakin besar bonus XP yang kamu dapatkan.",
+      "Jaga streak login harianmu! Semakin panjang streak, semakin besar bonus XP dan Gold Coin yang kamu dapatkan.",
     color: "text-orange-500",
     bgColor: "bg-orange-50",
     borderColor: "border-orange-200",
@@ -73,7 +74,7 @@ const GAMIFICATION_FEATURES = [
 
 export function GamificationSection() {
   return (
-    <section className="py-24 px-4 relative overflow-hidden bg-gradient-to-b from-gray-50 to-white" id="gamification">
+    <section className="py-24 px-4 relative overflow-hidden bg-linear-to-b from-gray-50 to-white" id="gamification">
       {/* Background decorations */}
       <div className="absolute top-20 right-0 w-80 h-80 bg-yellow-100/40 rounded-full blur-[100px]" />
       <div className="absolute bottom-20 left-0 w-80 h-80 bg-purple-100/30 rounded-full blur-[100px]" />
@@ -92,13 +93,13 @@ export function GamificationSection() {
           </div>
           <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
             Merawat Diri Jadi{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-orange-500">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-yellow-500 to-orange-500">
               Lebih Seru
             </span>
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
             Sistem gamifikasi yang memotivasi kamu untuk konsisten menjaga
-            kesehatan mental. Kumpulkan XP, raih badge, dan naik level!
+            kesehatan mental. Kumpulkan XP, Gold Coin, raih badge, dan naik level!
           </p>
         </motion.div>
 
@@ -149,10 +150,10 @@ export function GamificationSection() {
               className="mt-6 text-center sm:text-left"
             >
               <Link
-                href="/community"
+                href={ROUTES.GAMIFICATION}
                 className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
               >
-                <span>Lihat Komunitas & Gamifikasi</span>
+                <span>Lihat Gamifikasi</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </motion.div>

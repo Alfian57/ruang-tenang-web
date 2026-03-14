@@ -5,6 +5,7 @@ import { StoryCard as StoryCardType } from "@/types";
 import { Heart, MessageCircle, Star, AlertTriangle, User, BookOpen } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { ROUTES } from "@/lib/routes";
 
 interface StoryCardProps {
     story: StoryCardType;
@@ -13,7 +14,7 @@ interface StoryCardProps {
 
 export function StoryCard({ story, className }: StoryCardProps) {
     return (
-        <Link href={`/stories/${story.id}`}>
+        <Link href={ROUTES.publicStoryDetail(story.id)}>
             <div
                 className={cn(
                     "bg-card rounded-xl border shadow-sm overflow-hidden hover:shadow-md transition-all group",

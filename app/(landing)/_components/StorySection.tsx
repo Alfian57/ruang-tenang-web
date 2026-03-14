@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { storyService } from "@/services/api";
+import { ROUTES } from "@/lib/routes";
 import { ArrowRight, BookHeart, Heart, Quote } from "lucide-react";
 import type { StoryCard } from "@/types";
 
@@ -56,9 +57,6 @@ export function StorySection() {
     fetchStories();
   }, []);
 
-  if (loading) return null;
-  if (stories.length === 0) return null;
-
   return (
     <section id="stories" className="py-24 px-4 bg-white relative overflow-hidden">
       {/* Background */}
@@ -87,45 +85,65 @@ export function StorySection() {
         </motion.div>
 
         {/* Story Cards */}
-        <div className="grid md:grid-cols-2 gap-6 mb-10">
-          {stories.map((story, index) => (
-            <motion.div
-              key={story.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <Link href={`/stories/${story.id}`}>
-                <div
-                  className={`group bg-gradient-to-br ${GRADIENT_ACCENTS[index % GRADIENT_ACCENTS.length]} rounded-2xl p-7 border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full`}
-                >
-                  <Quote className="w-8 h-8 text-primary/20 mb-4" />
-                  <h3 className="font-bold text-gray-900 text-lg mb-3 group-hover:text-primary transition-colors line-clamp-2">
-                    {story.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-5 line-clamp-3">
-                    {truncateContent(story.content, 150)}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-sm font-bold text-primary">
-                        {story.author_name?.charAt(0)?.toUpperCase() || "A"}
+        {loading ? (
+          <div className="grid md:grid-cols-2 gap-6 mb-10">
+            {Array.from({ length: 2 }).map((_, index) => (
+              <div key={index} className="rounded-2xl border border-gray-100 p-7 bg-white animate-pulse">
+                <div className="h-6 bg-gray-100 rounded w-1/2 mb-4" />
+                <div className="h-5 bg-gray-100 rounded w-4/5 mb-3" />
+                <div className="h-4 bg-gray-100 rounded w-full mb-2" />
+                <div className="h-4 bg-gray-100 rounded w-2/3" />
+              </div>
+            ))}
+          </div>
+        ) : stories.length === 0 ? (
+          <div className="mb-10 rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-10 text-center">
+            <p className="text-lg font-semibold text-gray-700 mb-2">Cerita inspiratif belum tersedia</p>
+            <p className="text-sm text-gray-500 max-w-xl mx-auto">
+              Belum ada cerita yang dipublikasikan saat ini. Section ini akan otomatis terisi saat data tersedia.
+            </p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-6 mb-10">
+            {stories.map((story, index) => (
+              <motion.div
+                key={story.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Link href={ROUTES.publicStoryDetail(story.id)}>
+                  <div
+                    className={`group bg-gradient-to-br ${GRADIENT_ACCENTS[index % GRADIENT_ACCENTS.length]} rounded-2xl p-7 border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full`}
+                  >
+                    <Quote className="w-8 h-8 text-primary/20 mb-4" />
+                    <h3 className="font-bold text-gray-900 text-lg mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                      {story.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm leading-relaxed mb-5 line-clamp-3">
+                      {truncateContent(story.content, 150)}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-sm font-bold text-primary">
+                          {story.author_name?.charAt(0)?.toUpperCase() || "A"}
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">
+                          {story.author_name || "Anonim"}
+                        </span>
                       </div>
-                      <span className="text-sm font-medium text-gray-700">
-                        {story.author_name || "Anonim"}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1 text-gray-400">
-                      <Heart className="w-4 h-4" />
-                      <span className="text-xs">{story.like_count || 0}</span>
+                      <div className="flex items-center gap-1 text-gray-400">
+                        <Heart className="w-4 h-4" />
+                        <span className="text-xs">{story.like_count || 0}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
         {/* CTA */}
         <motion.div
@@ -135,7 +153,7 @@ export function StorySection() {
           className="text-center"
         >
           <Link
-            href="/stories"
+            href={ROUTES.PUBLIC_STORIES}
             className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
           >
             <span>Baca Semua Cerita</span>

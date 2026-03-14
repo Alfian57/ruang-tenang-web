@@ -11,6 +11,7 @@ import { ArrowLeft, AlertTriangle, Lock } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { ROUTES } from "@/lib/routes";
 
 export default function CreateStoryPage() {
     const router = useRouter();
@@ -25,7 +26,7 @@ export default function CreateStoryPage() {
     useEffect(() => {
         // Redirect if not authenticated
         if (!token) {
-            router.push("/login?redirect=/stories/create");
+            router.push(`${ROUTES.LOGIN}?redirect=${ROUTES.PUBLIC_STORY_CREATE}`);
             return;
         }
 
@@ -56,7 +57,7 @@ export default function CreateStoryPage() {
 
         try {
             await storyService.create(token, data);
-            router.push("/stories?success=created");
+            router.push(`${ROUTES.PUBLIC_STORIES}?success=created`);
         } catch {
             setError("Gagal mengirim cerita. Silakan coba lagi.");
         } finally {
@@ -108,7 +109,7 @@ export default function CreateStoryPage() {
                         <p className="text-sm text-muted-foreground mb-6">
                             Terus beraktivitas di platform untuk meningkatkan level dan membuka fitur ini!
                         </p>
-                        <Link href="/stories">
+                        <Link href={ROUTES.PUBLIC_STORIES}>
                             <Button>
                                 <ArrowLeft className="h-4 w-4 mr-2" />
                                 Kembali ke Cerita
@@ -140,7 +141,7 @@ export default function CreateStoryPage() {
                             Tunggu hingga bulan depan untuk berbagi cerita baru.
                             {user && user.level >= 7 && " Sebagai pengguna Level 7+, kamu mendapatkan kuota tambahan!"}
                         </p>
-                        <Link href="/stories">
+                        <Link href={ROUTES.PUBLIC_STORIES}>
                             <Button>
                                 <ArrowLeft className="h-4 w-4 mr-2" />
                                 Kembali ke Cerita
@@ -164,7 +165,7 @@ export default function CreateStoryPage() {
                 <div className="max-w-2xl mx-auto">
                     {/* Back Link */}
                     <Link
-                        href="/stories"
+                        href={ROUTES.PUBLIC_STORIES}
                         className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
                     >
                         <ArrowLeft className="h-4 w-4" />

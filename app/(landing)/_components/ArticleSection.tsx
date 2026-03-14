@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { articleService } from "@/services/api";
+import { ROUTES } from "@/lib/routes";
 import { ArrowRight, BookOpen, Calendar } from "lucide-react";
 import type { PaginatedResponse } from "@/services/http/types";
 import { getHtmlExcerpt } from "@/utils";
@@ -60,9 +61,6 @@ export function ArticleSection() {
     fetchArticles();
   }, []);
 
-  if (loading) return null;
-  if (articles.length === 0) return null;
-
   return (
     <section id="articles" className="py-24 px-4 bg-white relative overflow-hidden">
       {/* Background */}
@@ -91,52 +89,74 @@ export function ArticleSection() {
         </motion.div>
 
         {/* Article Cards */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-          {articles.map((article, index) => (
-            <motion.div
-              key={article.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <Link href={`/articles/${article.slug}`}>
-                <div className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
-                  {/* Thumbnail */}
-                  <div className="relative h-48 overflow-hidden">
-                    <Image
-                      src={getArticleImage(article.thumbnail)}
-                      alt={article.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      priority={index === 0}
-                    />
-                    {article.category && (
-                      <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-primary text-xs font-medium px-3 py-1 rounded-full">
-                        {article.category.name}
-                      </span>
-                    )}
-                  </div>
+        {loading ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse">
+                <div className="w-full aspect-16/10 bg-gray-100" />
+                <div className="p-5 space-y-3">
+                  <div className="h-5 bg-gray-100 rounded w-4/5" />
+                  <div className="h-4 bg-gray-100 rounded w-full" />
+                  <div className="h-4 bg-gray-100 rounded w-3/4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : articles.length === 0 ? (
+          <div className="mb-10 rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-10 text-center">
+            <p className="text-lg font-semibold text-gray-700 mb-2">Artikel belum tersedia</p>
+            <p className="text-sm text-gray-500 max-w-xl mx-auto">
+              Konten edukasi sedang dipersiapkan. Silakan cek kembali beberapa saat lagi.
+            </p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+            {articles.map((article, index) => (
+              <motion.div
+                key={article.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Link href={ROUTES.publicArticleDetail(article.slug)}>
+                  <div className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
+                    {/* Thumbnail */}
+                    <div className="relative w-full aspect-16/10 overflow-hidden bg-gray-100">
+                      <Image
+                        src={getArticleImage(article.thumbnail)}
+                        alt={article.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                        priority={index === 0}
+                      />
+                      {article.category && (
+                        <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-primary text-xs font-medium px-3 py-1 rounded-full">
+                          {article.category.name}
+                        </span>
+                      )}
+                    </div>
 
-                  {/* Content */}
-                  <div className="p-5 flex-1 flex flex-col">
-                    <h3 className="font-bold text-gray-900 text-lg mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                      {article.title}
-                    </h3>
-                    <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-2 flex-1">
-                      {getHtmlExcerpt(article.excerpt || article.content || "", 120)}
-                    </p>
-                    <div className="flex items-center gap-2 text-xs text-gray-400">
-                      <Calendar className="w-3.5 h-3.5" />
-                      <span>{formatDate(article.created_at)}</span>
+                    {/* Content */}
+                    <div className="p-5 flex-1 flex flex-col">
+                      <h3 className="font-bold text-gray-900 text-lg mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                        {article.title}
+                      </h3>
+                      <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-2 flex-1">
+                        {getHtmlExcerpt(article.excerpt || article.content || "", 120)}
+                      </p>
+                      <div className="flex items-center gap-2 text-xs text-gray-400">
+                        <Calendar className="w-3.5 h-3.5" />
+                        <span>{formatDate(article.created_at)}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
         {/* CTA */}
         <motion.div
@@ -146,7 +166,7 @@ export function ArticleSection() {
           className="text-center"
         >
           <Link
-            href="/articles"
+            href={ROUTES.PUBLIC_ARTICLES}
             className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all"
           >
             <span>Lihat Semua Artikel</span>

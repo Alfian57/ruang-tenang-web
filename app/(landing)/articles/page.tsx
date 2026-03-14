@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { articleService } from "@/services/api";
 import { Article, ArticleCategory } from "@/types";
 import { formatDate, getHtmlExcerpt } from "@/utils";
+import { ROUTES } from "@/lib/routes";
 
 import { Suspense } from "react";
 
@@ -31,7 +32,7 @@ function ArticlesContent() {
     if (window.history.length > 1) {
       router.back();
     } else {
-      router.push("/");
+      router.push(ROUTES.HOME);
     }
   };
 
@@ -154,7 +155,7 @@ function ArticlesContent() {
             ) : articles.length > 0 ? (
               <div className="space-y-4">
                 {articles.map((article) => (
-                  <Link key={article.id} href={`/articles/${article.slug}`}>
+                  <Link key={article.id} href={ROUTES.publicArticleDetail(article.slug)}>
                     <Card className="overflow-hidden hover:shadow-md transition-shadow bg-white">
                       <div className="flex gap-4 p-4">
                         <div className="w-32 h-24 rounded-lg overflow-hidden shrink-0 bg-gray-100">
@@ -205,48 +206,73 @@ function ArticlesContent() {
           <div className="lg:col-span-4">
             <div className="sticky top-24">
               <h3 className="text-lg font-bold mb-4 text-gray-900">Artikel Terbaru</h3>
-              <div className="space-y-4">
-                {articles.slice(0, 5).map((article) => (
-                  <Link
-                    key={article.id}
-                    href={`/articles/${article.slug}`}
-                    className="block group"
-                  >
-                    <Card className="overflow-hidden border-gray-100 group-hover:shadow-md transition-all bg-white">
-                      <div className="flex gap-3 p-4 items-start">
-                        <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-gray-100">
-                          {article.thumbnail ? (
-                            <Image
-                              src={article.thumbnail}
-                              alt={article.title}
-                              width={80}
-                              height={80}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-2xl">
-                              📄
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0 pt-0.5">
-                          <h4 className="font-semibold text-sm line-clamp-2 text-gray-900 group-hover:text-primary transition-colors">
-                            {article.title}
-                          </h4>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {article.category?.name || "Umum"}
-                          </p>
-                          {getHtmlExcerpt(article.excerpt || article.content || "", 56) && (
-                            <p className="text-xs text-gray-400 mt-1 line-clamp-1 leading-relaxed">
-                              {getHtmlExcerpt(article.excerpt || article.content || "", 56)}
-                            </p>
-                          )}
+              {isLoading ? (
+                <div className="space-y-4">
+                  {Array.from({ length: 3 }).map((_, idx) => (
+                    <Card key={idx} className="overflow-hidden border-gray-100 bg-white">
+                      <div className="flex gap-3 p-4 items-start animate-pulse">
+                        <div className="w-20 h-20 rounded-lg shrink-0 bg-gray-100" />
+                        <div className="flex-1 min-w-0 pt-0.5 space-y-2">
+                          <div className="h-4 bg-gray-100 rounded w-5/6" />
+                          <div className="h-3 bg-gray-100 rounded w-1/2" />
+                          <div className="h-3 bg-gray-100 rounded w-2/3" />
                         </div>
                       </div>
                     </Card>
-                  </Link>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : articles.length > 0 ? (
+                <div className="space-y-4">
+                  {articles.slice(0, 5).map((article) => (
+                    <Link
+                      key={article.id}
+                      href={ROUTES.publicArticleDetail(article.slug)}
+                      className="block group"
+                    >
+                      <Card className="overflow-hidden border-gray-100 group-hover:shadow-md transition-all bg-white">
+                        <div className="flex gap-3 p-4 items-start">
+                          <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-gray-100">
+                            {article.thumbnail ? (
+                              <Image
+                                src={article.thumbnail}
+                                alt={article.title}
+                                width={80}
+                                height={80}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-2xl">
+                                📄
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0 pt-0.5">
+                            <h4 className="font-semibold text-sm line-clamp-2 text-gray-900 group-hover:text-primary transition-colors">
+                              {article.title}
+                            </h4>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {article.category?.name || "Umum"}
+                            </p>
+                            {getHtmlExcerpt(article.excerpt || article.content || "", 56) && (
+                              <p className="text-xs text-gray-400 mt-1 line-clamp-1 leading-relaxed">
+                                {getHtmlExcerpt(article.excerpt || article.content || "", 56)}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <Card className="border-dashed border-gray-200 bg-white/80">
+                  <div className="p-6 text-center">
+                    <BookOpen className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+                    <p className="text-sm font-medium text-gray-600">Belum ada artikel terbaru</p>
+                    <p className="text-xs text-gray-400 mt-1">Artikel terbaru akan muncul di sini saat tersedia.</p>
+                  </div>
+                </Card>
+              )}
             </div>
           </div>
         </div>

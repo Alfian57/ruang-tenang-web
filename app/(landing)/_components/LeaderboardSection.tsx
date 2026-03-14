@@ -4,10 +4,10 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { communityService } from "@/services/api";
 import Link from "next/link";
+import Image from "next/image";
+import { ROUTES } from "@/lib/routes";
 import { User } from "lucide-react";
 import { LeaderboardEntry } from "@/types";
-
-
 
 export default function LeaderboardSection() {
   const [users, setUsers] = useState<LeaderboardEntry[]>([]);
@@ -27,9 +27,6 @@ export default function LeaderboardSection() {
 
     fetchLeaderboard();
   }, []);
-
-  if (loading) return null;
-  if (!users.length) return null;
 
   const featuredMembers = users.slice(0, 3);
 
@@ -67,34 +64,66 @@ export default function LeaderboardSection() {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto mb-12">
-          {featuredMembers.map((member, index) => (
-            <motion.div
-              key={member.user_id}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-white/85 backdrop-blur-sm border border-gray-100 rounded-3xl p-6 flex flex-col items-center shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-gray-200/60 transition-all duration-300"
-            >
-              <div className="w-20 h-20 mt-2 bg-linear-to-br from-primary/80 to-red-600 rounded-2xl mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                {member.name.charAt(0).toUpperCase()}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto mb-12">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="bg-white/85 border border-gray-100 rounded-3xl p-6 animate-pulse">
+                <div className="w-20 h-20 mx-auto mt-2 mb-4 rounded-2xl bg-gray-100" />
+                <div className="h-6 bg-gray-100 rounded w-2/3 mx-auto mb-2" />
+                <div className="h-4 bg-gray-100 rounded w-1/2 mx-auto mb-3" />
+                <div className="h-8 bg-gray-100 rounded-full w-24 mx-auto" />
               </div>
+            ))}
+          </div>
+        ) : featuredMembers.length === 0 ? (
+          <div className="max-w-4xl mx-auto mb-12 rounded-2xl border border-dashed border-gray-200 bg-white/70 px-6 py-10 text-center">
+            <p className="text-lg font-semibold text-gray-700 mb-2">Leaderboard belum memiliki data</p>
+            <p className="text-sm text-gray-500">
+              Belum ada member yang masuk ranking saat ini. Aktivitas komunitas berikutnya akan muncul di sini.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto mb-12">
+            {featuredMembers.map((member, index) => (
+              <motion.div
+                key={`${member.user_id ?? "anonymous"}-${member.rank ?? index}-${index}`}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-white/85 backdrop-blur-sm border border-gray-100 rounded-3xl p-6 flex flex-col items-center shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-gray-200/60 transition-all duration-300"
+              >
+                {member.avatar ? (
+                  <div className="relative w-20 h-20 mt-2 rounded-2xl mb-4 shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                    <Image
+                      src={member.avatar}
+                      alt={member.name}
+                      fill
+                      sizes="80px"
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-20 h-20 mt-2 bg-linear-to-br from-primary/80 to-red-600 rounded-2xl mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                    {member.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
 
-              <h3 className="text-xl font-bold text-gray-800 mb-1 truncate max-w-full text-center px-4 w-full">
-                {member.name}
-              </h3>
-              <p className="text-gray-500 font-medium mb-2">{member.role || member.badge_name}</p>
+                <h3 className="text-xl font-bold text-gray-800 mb-1 truncate max-w-full text-center px-4 w-full">
+                  {member.name}
+                </h3>
+                <p className="text-gray-500 font-medium mb-2">{member.role || member.badge_name}</p>
 
-              <div className="bg-gray-100 text-gray-600 px-4 py-1.5 rounded-full font-bold text-sm">
-                {member.exp.toLocaleString()} EXP
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                <div className="bg-gray-100 text-gray-600 px-4 py-1.5 rounded-full font-bold text-sm">
+                  {member.exp.toLocaleString()} EXP
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
         <div className="text-center">
-          <Link href="/leaderboard" className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all">
+          <Link href={ROUTES.LEADERBOARD} className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all">
             <span>Lihat Hall of Fame</span>
             <User size={18} />
           </Link>

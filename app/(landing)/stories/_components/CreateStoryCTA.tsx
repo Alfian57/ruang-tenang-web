@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
+import { ROUTES } from "@/lib/routes";
 import { BookOpen, LogIn, Plus, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { StoryStats } from "@/types";
@@ -38,7 +39,7 @@ export function CreateStoryCTA({ myStats }: CreateStoryCTAProps) {
                 </div>
 
                 {!token ? (
-                    <Link href="/login">
+                    <Link href={ROUTES.LOGIN}>
                         <Button>
                             <LogIn className="h-4 w-4 mr-2" />
                             Masuk
@@ -55,7 +56,7 @@ export function CreateStoryCTA({ myStats }: CreateStoryCTAProps) {
                         Batas Tercapai
                     </Button>
                 ) : (
-                    <Link href="/stories/create">
+                    <Link href={ROUTES.PUBLIC_STORY_CREATE}>
                         <Button>
                             <Plus className="h-4 w-4 mr-2" />
                             Tulis Cerita

@@ -12,6 +12,7 @@ import { Article } from "@/types";
 import { formatDate } from "@/utils";
 import { sanitizeHtml } from "@/utils/sanitize";
 import { getHtmlExcerpt } from "@/utils";
+import { ROUTES } from "@/lib/routes";
 
 export default function ArticleDetailPage() {
   const params = useParams();
@@ -24,7 +25,7 @@ export default function ArticleDetailPage() {
     if (window.history.length > 1) {
       router.back();
     } else {
-      router.push("/articles");
+      router.push(ROUTES.PUBLIC_ARTICLES);
     }
   };
 
@@ -172,7 +173,7 @@ export default function ArticleDetailPage() {
                 {relatedArticles.map((related) => (
                   <Link
                     key={related.id}
-                    href={`/articles/${related.slug}`}
+                    href={ROUTES.publicArticleDetail(related.slug)}
                     className="block group"
                   >
                     <Card className="overflow-hidden border-gray-100 group-hover:shadow-md transition-all bg-white">
@@ -213,7 +214,7 @@ export default function ArticleDetailPage() {
 
               {/* Back to Articles */}
               <div className="mt-6">
-                <Link href="/articles">
+                <Link href={ROUTES.PUBLIC_ARTICLES}>
                   <Button variant="outline" className="w-full">
                     Lihat Semua Artikel
                   </Button>

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/lib/routes";
 import { ArrowRight, Heart, Sparkles, Star } from "lucide-react";
 
 export function CTASection() {
@@ -90,7 +91,7 @@ export function CTASection() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/register">
+            <Link href={ROUTES.REGISTER}>
               <Button
                 size="lg"
                 className="bg-primary hover:bg-primary/90 text-white font-semibold px-10 py-7 text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all group"
@@ -99,7 +100,7 @@ export function CTASection() {
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <Link href="/login">
+            <Link href={ROUTES.LOGIN}>
               <Button
                 size="lg"
                 variant="outline"

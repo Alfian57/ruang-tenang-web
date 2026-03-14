@@ -7,6 +7,7 @@ import { searchService } from "@/services/api";
 import { getUploadUrl } from "@/services/http/upload-url";
 import { Article, Song } from "@/types";
 import Image from "next/image";
+import { ROUTES } from "@/lib/routes";
 
 // Simple debounce hook implementation if not exists
 function useDebounceValue<T>(value: T, delay: number): T {
@@ -107,7 +108,7 @@ export function GlobalSearch() {
               {results.articles.map((article) => (
                 <div
                   key={article.id}
-                  onClick={() => handleSelect(`/dashboard/articles/read/${article.slug || article.id}`)}
+                  onClick={() => handleSelect(ROUTES.articleRead(article.slug || String(article.id)))}
                   className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-md cursor-pointer group"
                 >
                   <div className="relative w-10 h-10 rounded-md overflow-hidden shrink-0 bg-gray-100">
@@ -146,7 +147,7 @@ export function GlobalSearch() {
                   // Wait, "Songs (Segera Hadir)" suggests maybe I shouldn't link it?
                   // But the user asked for global search.
                   // I'll make it clickable to "/dashboard/songs" for now.
-                  onClick={() => handleSelect(`/dashboard/songs/${song.id}`)}
+                  onClick={() => handleSelect(ROUTES.MUSIC)}
                   className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-md cursor-pointer group"
                 >
                   <div className="relative w-10 h-10 rounded-md overflow-hidden shrink-0 bg-gray-100">

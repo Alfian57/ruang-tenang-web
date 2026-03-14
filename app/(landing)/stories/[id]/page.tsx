@@ -10,6 +10,7 @@ import { InspiringStory, StoryComment } from "@/types";
 import { LogIn, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/lib/routes";
 
 export default function StoryDetailPage() {
     const params = useParams();
@@ -172,7 +173,7 @@ export default function StoryDetailPage() {
                 <div className="container mx-auto px-4 py-40 text-center">
                     <h1 className="text-2xl font-bold mb-4">Cerita Tidak Ditemukan</h1>
                     <p className="text-muted-foreground mb-6">{error || "Cerita yang kamu cari tidak ada."}</p>
-                    <Link href="/stories">
+                    <Link href={ROUTES.PUBLIC_STORIES}>
                         <Button>Kembali ke Daftar Cerita</Button>
                     </Link>
                 </div>
@@ -217,7 +218,7 @@ export default function StoryDetailPage() {
                             <p className="text-muted-foreground mb-3">
                                 Masuk untuk memberikan dukungan
                             </p>
-                            <Link href="/login">
+                            <Link href={ROUTES.LOGIN}>
                                 <Button size="sm">
                                     <LogIn className="h-4 w-4 mr-2" />
                                     Masuk

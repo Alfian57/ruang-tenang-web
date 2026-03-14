@@ -20,6 +20,24 @@ const ACTIVITY_LABELS: Record<string, string> = {
   chat_ai: "Chat AI",
   upload_article: "Upload Artikel",
   forum_comment: "Komentar Forum",
+  breathing: "Latihan Pernapasan",
+  accepted_answer: "Jawaban Diterima",
+  post_upvote_given: "Menerima Upvote",
+  post_upvote_removed: "Upvote Dihapus",
+  story_approved: "Story Disetujui",
+  heart_received: "Menerima Heart",
+};
+
+const ACTIVITY_ICONS: Record<string, string> = {
+  chat_ai: "💬",
+  upload_article: "📝",
+  forum_comment: "💭",
+  breathing: "🧘",
+  accepted_answer: "✅",
+  post_upvote_given: "👍",
+  post_upvote_removed: "👎",
+  story_approved: "📖",
+  heart_received: "❤️",
 };
 
 export function ExpHistoryModal({
@@ -140,7 +158,10 @@ export function ExpHistoryModal({
       {/* Modal */}
       <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden mx-4">
         {/* Header */}
-        <div className="bg-linear-to-r from-yellow-400 to-amber-500 p-6 text-white">
+        <div 
+          className="p-6 text-white relative overflow-hidden shrink-0"
+          style={{ background: `linear-gradient(to right, var(--theme-fab-from, var(--color-primary)), var(--theme-fab-to, var(--color-secondary, var(--color-primary))))` }}
+        >
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/20 transition-colors"
@@ -156,7 +177,7 @@ export function ExpHistoryModal({
             )}
             <div>
               <h2 className="text-2xl font-bold">{badgeName}</h2>
-              <p className="text-yellow-100">Level {currentLevel}</p>
+              <p className="text-white/80">Level {currentLevel}</p>
             </div>
           </div>
 
@@ -172,11 +193,11 @@ export function ExpHistoryModal({
               />
             </div>
             {nextLevel ? (
-              <p className="text-xs text-yellow-100 mt-1">
+              <p className="text-xs text-white/80 mt-1">
                 {nextLevel.min_exp - currentExp} EXP lagi untuk mencapai {nextLevel.badge_name}
               </p>
             ) : (
-              <p className="text-xs text-yellow-100 mt-1 flex items-center gap-1">
+              <p className="text-xs text-white/80 mt-1 flex items-center gap-1">
                 <Sparkles className="w-3 h-3" /> Level maksimum tercapai!
               </p>
             )}
@@ -195,7 +216,8 @@ export function ExpHistoryModal({
                   setSelectedActivityType(e.target.value);
                   setPage(1);
                 }}
-                className="px-3 py-1.5 border rounded-lg text-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                className="px-3 py-1.5 border rounded-lg text-sm focus:ring-2 focus:border-transparent outline-none transition-shadow"
+                style={{ "--tw-ring-color": "var(--color-primary)" } as React.CSSProperties}
               >
                 <option value="">Semua Aktivitas</option>
                 {activityTypes.map((type) => (
@@ -216,7 +238,8 @@ export function ExpHistoryModal({
                   setStartDate(e.target.value);
                   setPage(1);
                 }}
-                className="px-3 py-1.5 border rounded-lg text-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                className="px-3 py-1.5 border rounded-lg text-sm focus:ring-2 focus:border-transparent outline-none transition-shadow"
+                style={{ "--tw-ring-color": "var(--color-primary)" } as React.CSSProperties}
                 placeholder="Dari"
               />
               <span className="text-gray-400">-</span>
@@ -227,7 +250,8 @@ export function ExpHistoryModal({
                   setEndDate(e.target.value);
                   setPage(1);
                 }}
-                className="px-3 py-1.5 border rounded-lg text-sm focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                className="px-3 py-1.5 border rounded-lg text-sm focus:ring-2 focus:border-transparent outline-none transition-shadow"
+                style={{ "--tw-ring-color": "var(--color-primary)" } as React.CSSProperties}
                 placeholder="Sampai"
               />
             </div>
@@ -249,7 +273,7 @@ export function ExpHistoryModal({
         <div className="p-4 overflow-y-auto max-h-[40vh]">
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-yellow-500" />
+              <Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--color-primary)" }} />
             </div>
           ) : history.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
@@ -264,11 +288,12 @@ export function ExpHistoryModal({
                   className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                    <div 
+                      className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: "color-mix(in srgb, var(--color-primary) 15%, transparent)" }}
+                    >
                       <span className="text-lg">
-                        {item.activity_type === "chat_ai" && "💬"}
-                        {item.activity_type === "upload_article" && "📝"}
-                        {item.activity_type === "forum_comment" && "💭"}
+                        {ACTIVITY_ICONS[item.activity_type] || "✨"}
                       </span>
                     </div>
                     <div>
@@ -285,7 +310,10 @@ export function ExpHistoryModal({
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-bold bg-linear-to-r from-yellow-400 to-amber-500 text-white">
+                    <span 
+                      className="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-bold text-white shadow-sm"
+                      style={{ background: `linear-gradient(to right, var(--theme-fab-from, var(--color-primary)), var(--theme-fab-to, var(--color-secondary, var(--color-primary))))` }}
+                    >
                       +{item.points} EXP
                     </span>
                   </div>

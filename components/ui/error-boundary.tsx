@@ -4,6 +4,7 @@ import React, { Component, ReactNode } from "react";
 import { AlertTriangle, RefreshCw, Home, ArrowLeft } from "lucide-react";
 import { Button } from "./button";
 import { env } from "@/config/env";
+import { ROUTES } from "@/lib/routes";
 
 interface ErrorBoundaryProps {
     children: ReactNode;
@@ -57,7 +58,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
     handleGoHome = (): void => {
         if (typeof window !== "undefined") {
-            window.location.href = "/";
+            window.location.href = ROUTES.HOME;
         }
     };
 

@@ -5,6 +5,7 @@ import { env } from "./config/env";
 const withSerwist = withSerwistInit({
   swSrc: "app/sw.ts",
   swDest: "public/sw.js",
+  disable: process.env.NODE_ENV !== "production",
 });
 
 // Parse API URL for dynamic configuration
@@ -36,4 +37,6 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: true,
 };
 
-export default withSerwist(nextConfig);
+export default process.env.NODE_ENV === "production"
+  ? withSerwist(nextConfig)
+  : nextConfig;

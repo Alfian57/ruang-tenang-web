@@ -6,6 +6,7 @@ import { Sparkles, Heart, ChevronRight, User } from "lucide-react";
 import Image from "next/image";
 import { storyService } from "@/services/api";
 import { StoryCard } from "@/types";
+import { ROUTES } from "@/lib/routes";
 
 export function InspiringStoryWidget() {
   const [featuredStory, setFeaturedStory] = useState<StoryCard | null>(null);
@@ -43,7 +44,7 @@ export function InspiringStoryWidget() {
   if (!featuredStory) {
     return (
       <Link
-        href="/dashboard/stories"
+        href={ROUTES.STORIES}
         className="block theme-story-bg border theme-story-border rounded-xl p-6 hover:shadow-md transition-all group"
       >
         <div className="flex items-center gap-2 mb-4">
@@ -64,7 +65,7 @@ export function InspiringStoryWidget() {
 
   return (
     <Link
-      href={`/dashboard/stories/${featuredStory.id}`}
+      href={ROUTES.storyDetail(featuredStory.id)}
       className="block theme-story-bg border theme-story-border rounded-xl overflow-hidden hover:shadow-md transition-all group"
     >
       {featuredStory.cover_image && (
