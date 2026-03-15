@@ -123,7 +123,7 @@ export default function LeaderboardSection() {
         )}
 
         <div className="text-center">
-          <Link href={ROUTES.LEADERBOARD} className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all">
+          <Link href={ROUTES.HALL_OF_FAME} className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all">
             <span>Lihat Hall of Fame</span>
             <User size={18} />
           </Link>

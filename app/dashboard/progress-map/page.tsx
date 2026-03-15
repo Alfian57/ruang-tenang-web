@@ -12,30 +12,54 @@ import {
 function MapSkeleton() {
     return (
         <div className="space-y-5">
-            <div className="rounded-3xl border bg-white/80 p-5">
-                <div className="flex items-center gap-3 mb-4">
-                    <Skeleton className="h-11 w-11 rounded-xl" />
-                    <div className="space-y-2 flex-1">
-                        <Skeleton className="h-5 w-52 rounded-full" />
-                        <Skeleton className="h-4 w-80 rounded-full" />
+            {/* Info banner skeleton */}
+            <div className="rounded-2xl border border-white/50 bg-white/60 p-4">
+                <div className="flex items-start gap-2">
+                    <Skeleton className="h-4 w-4 mt-0.5 rounded" />
+                    <div className="flex-1 space-y-1.5">
+                        <Skeleton className="h-3.5 w-full rounded-full" />
+                        <Skeleton className="h-3.5 w-3/4 rounded-full" />
                     </div>
                 </div>
-                <Skeleton className="h-2.5 w-full rounded-full" />
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
+            {/* Stats row skeleton */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {[1, 2, 3].map((i) => (
-                    <Skeleton key={i} className="h-24 rounded-xl" />
-                ))}
-            </div>
-            <Skeleton className="h-16 rounded-xl" />
-            <div className="space-y-6 max-w-4xl mx-auto">
-                {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} className={`flex gap-4 ${i % 2 === 0 ? "flex-row-reverse" : ""}`}>
-                        <Skeleton className="w-20 h-20 md:w-24 md:h-24 rounded-2xl shrink-0" />
-                        <Skeleton className="flex-1 h-24 rounded-xl" />
+                    <div key={i} className="rounded-2xl border border-white/70 bg-white/80 p-4 flex flex-col items-center gap-2">
+                        <Skeleton className="h-9 w-9 rounded-xl" />
+                        <Skeleton className="h-6 w-16 rounded" />
+                        <Skeleton className="h-3 w-12 rounded" />
                     </div>
                 ))}
+            </div>
+
+            {/* Overall progress bar skeleton */}
+            <div className="rounded-2xl border border-white/70 bg-white/85 p-5">
+                <div className="flex items-center justify-between mb-2">
+                    <Skeleton className="h-4 w-40 rounded" />
+                    <Skeleton className="h-4 w-10 rounded" />
+                </div>
+                <Skeleton className="h-3.5 w-full rounded-full" />
+            </div>
+
+            {/* Tier journey skeleton */}
+            <div className="rounded-3xl border border-white/50 bg-white/60 p-5">
+                <div className="flex items-start gap-3 mb-5">
+                    <Skeleton className="h-11 w-11 rounded-2xl" />
+                    <div className="flex-1 space-y-2">
+                        <Skeleton className="h-5 w-48 rounded" />
+                        <Skeleton className="h-4 w-72 rounded" />
+                    </div>
+                </div>
+                <div className="space-y-6 max-w-4xl mx-auto">
+                    {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className={`flex gap-4 ${i % 2 === 0 ? "flex-row-reverse" : ""}`}>
+                            <Skeleton className="w-14 h-14 md:w-16 md:h-16 rounded-2xl shrink-0" />
+                            <Skeleton className="flex-1 h-28 rounded-2xl" />
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
@@ -114,6 +138,11 @@ export default function ProgressMapPage() {
                                 </h1>
                                 <p className="text-slate-600 text-sm md:text-base mt-1.5 max-w-2xl">
                                     Navigasi progres kamu kini berbasis tier dinamis. Ikuti jalur, selesaikan kriteria, dan klaim hadiah saat target tercapai.
+                                    {mapData && (
+                                        <span className="block mt-1 text-xs font-medium" style={{ color: "var(--theme-accent-dark)" }}>
+                                            {mapData.unlocked_regions}/{mapData.total_regions} area terbuka · {mapData.unlocked_landmarks}/{mapData.total_landmarks} landmark · {Math.round(mapData.overall_progress)}% selesai
+                                        </span>
+                                    )}
                                 </p>
                             </div>
                         </div>

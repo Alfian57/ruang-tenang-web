@@ -14,68 +14,70 @@ export function CommunityStatsCard({ stats, className }: CommunityStatsCardProps
         {
             label: "Anggota Aktif",
             value: stats.active_members,
-            subtext: "bulan ini",
             icon: Users,
             color: "text-blue-500",
             bgColor: "bg-blue-50",
+            borderColor: "border-blue-100",
         },
         {
             label: "Anggota Baru",
             value: stats.new_members,
-            subtext: `+${stats.growth_percentage}% pertumbuhan`,
             icon: Activity,
             color: "text-green-500",
             bgColor: "bg-green-50",
+            borderColor: "border-green-100",
         },
         {
-            label: "Total XP Komunitas",
+            label: "Total XP",
             value: Number(stats.total_xp_earned || 0).toLocaleString(),
-            subtext: "dikumpulkan bersama",
             icon: Zap,
-            color: "text-yellow-500",
-            bgColor: "bg-yellow-50",
+            color: "text-amber-500",
+            bgColor: "bg-amber-50",
+            borderColor: "border-amber-100",
         },
         {
             label: "Pencapaian",
             value: stats.total_achievements,
-            subtext: "badge & prestasi",
             icon: Trophy,
             color: "text-purple-500",
             bgColor: "bg-purple-50",
+            borderColor: "border-purple-100",
         },
         {
-            label: "Cerita Dibagikan",
+            label: "Cerita",
             value: stats.total_stories_published,
-            subtext: "kisah inspirasi",
             icon: BookOpen,
             color: "text-pink-500",
             bgColor: "bg-pink-50",
+            borderColor: "border-pink-100",
         },
         {
-            label: "Artikel Ditulis",
+            label: "Artikel",
             value: stats.total_articles_published,
-            subtext: "konten edukasi",
             icon: Heart,
             color: "text-rose-500",
             bgColor: "bg-rose-50",
+            borderColor: "border-rose-100",
         },
     ];
 
     return (
-        <div className={cn("grid grid-cols-2 md:grid-cols-3 gap-4", className)}>
+        <div className={cn("grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3", className)}>
             {statItems.map((item, index) => (
                 <div
                     key={index}
-                    className="bg-card rounded-xl p-4 border shadow-sm hover:shadow-md transition-shadow"
+                    className={cn(
+                        "bg-white rounded-xl p-3 border shadow-xs flex items-center gap-3 transition-colors hover:bg-gray-50",
+                        item.borderColor
+                    )}
                 >
-                    <div className="flex items-start justify-between mb-2">
-                        <div className={cn("p-2 rounded-lg", item.bgColor)}>
-                            <item.icon className={cn("h-5 w-5", item.color)} />
-                        </div>
+                    <div className={cn("p-2 rounded-lg shrink-0", item.bgColor)}>
+                        <item.icon className={cn("h-4 w-4", item.color)} />
                     </div>
-                    <p className="text-2xl font-bold text-foreground">{item.value}</p>
-                    <p className="text-sm text-muted-foreground">{item.label}</p>
-                    <p className="text-xs text-muted-foreground/70">{item.subtext}</p>
+                    <div className="min-w-0">
+                        <p className="text-sm font-bold text-gray-900 truncate">{item.value}</p>
+                        <p className="text-[11px] font-medium text-gray-500 truncate">{item.label}</p>
+                    </div>
                 </div>
             ))}
         </div>

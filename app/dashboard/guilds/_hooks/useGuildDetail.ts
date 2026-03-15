@@ -3,11 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { guildService } from "@/services/api/guild";
-import type {
-  GuildDetail,
-  CreateGuildChallengeRequest,
-  GuildChallengeType,
-} from "@/types/guild";
+import type { GuildDetail } from "@/types/guild";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
@@ -18,18 +14,8 @@ export function useGuildDetail(guildId: string) {
 
   const [guild, setGuild] = useState<GuildDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"overview" | "members" | "challenges" | "activity">("overview");
-
-  // Challenge creation
-  const [isChallengeOpen, setIsChallengeOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [challengeTitle, setChallengeTitle] = useState("");
-  const [challengeDescription, setChallengeDescription] = useState("");
-  const [challengeType, setChallengeType] = useState<GuildChallengeType>("total_xp");
-  const [challengeTarget, setChallengeTarget] = useState(100);
-  const [challengeXPReward, setChallengeXPReward] = useState(50);
-  const [challengeCoinReward, setChallengeCoinReward] = useState(10);
-  const [challengeDuration, setChallengeDuration] = useState(7);
+  const [activeTab, setActiveTab] = useState<"overview" | "members" | "tasks" | "activity">("overview");
+  const [isClaimingId, setIsClaimingId] = useState<string | null>(null);
 
   // Guild settings
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -81,7 +67,7 @@ export function useGuildDetail(guildId: string) {
     if (!token || !guild) return;
     try {
       await guildService.promoteMember(token, guild.id, userId);
-      toast.success("Anggota berhasil dipromosikan");
+      toast.success("Anggota berhasil dipromosikan menjadi Wakil Ketua");
       fetchGuild();
     } catch {
       toast.error("Gagal mempromosikan anggota");
@@ -110,37 +96,6 @@ export function useGuildDetail(guildId: string) {
     }
   };
 
-  const handleCreateChallenge = async () => {
-    if (!token || !guild || !challengeTitle.trim()) return;
-    setIsSubmitting(true);
-    try {
-      const data: CreateGuildChallengeRequest = {
-        title: challengeTitle.trim(),
-        description: challengeDescription.trim(),
-        challenge_type: challengeType,
-        target_value: challengeTarget,
-        xp_reward: challengeXPReward,
-        coin_reward: challengeCoinReward,
-        duration_days: challengeDuration,
-      };
-      await guildService.createChallenge(token, guild.id, data);
-      toast.success("Challenge berhasil dibuat!");
-      setIsChallengeOpen(false);
-      setChallengeTitle("");
-      setChallengeDescription("");
-      setChallengeType("total_xp");
-      setChallengeTarget(100);
-      setChallengeXPReward(50);
-      setChallengeCoinReward(10);
-      setChallengeDuration(7);
-      fetchGuild();
-    } catch {
-      toast.error("Gagal membuat challenge");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handleJoinGuild = async () => {
     if (!token || !guild) return;
     try {
@@ -149,6 +104,20 @@ export function useGuildDetail(guildId: string) {
       fetchGuild();
     } catch {
       toast.error("Gagal bergabung ke guild");
+    }
+  };
+
+  const handleClaimTask = async (challengeId: string) => {
+    if (!token || !guild) return;
+    setIsClaimingId(challengeId);
+    try {
+      await guildService.claimChallenge(token, guild.id, challengeId);
+      toast.success("Hadiah berhasil diklaim!");
+      fetchGuild();
+    } catch {
+      toast.error("Gagal mengklaim hadiah");
+    } finally {
+      setIsClaimingId(null);
     }
   };
 
@@ -167,25 +136,9 @@ export function useGuildDetail(guildId: string) {
     handleTransferLeadership,
     handleDeleteGuild,
     handleJoinGuild,
-    // Challenge creation
-    isChallengeOpen,
-    setIsChallengeOpen,
-    isSubmitting,
-    challengeTitle,
-    setChallengeTitle,
-    challengeDescription,
-    setChallengeDescription,
-    challengeType,
-    setChallengeType,
-    challengeTarget,
-    setChallengeTarget,
-    challengeXPReward,
-    setChallengeXPReward,
-    challengeCoinReward,
-    setChallengeCoinReward,
-    challengeDuration,
-    setChallengeDuration,
-    handleCreateChallenge,
+    // Tasks (claim)
+    handleClaimTask,
+    isClaimingId,
     // Settings
     isSettingsOpen,
     setIsSettingsOpen,

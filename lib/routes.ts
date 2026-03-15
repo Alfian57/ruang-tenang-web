@@ -4,7 +4,7 @@ export const ROUTES = {
   ABOUT: "/about",
   CONTACT: "/contact",
   GAMIFICATION: "/gamification",
-  LEADERBOARD: "/leaderboard",
+  HALL_OF_FAME: "/hall-of-fame",
   PRIVACY_POLICY: "/privacy-policy",
   TERMS_OF_SERVICE: "/terms-of-service",
   PUBLIC_ARTICLES: "/articles",

@@ -46,6 +46,8 @@ export interface GuildChallenge {
   is_completed: boolean;
   is_expired: boolean;
   is_active: boolean;
+  is_claimed?: boolean;
+  can_claim?: boolean;
   top_contributors?: GuildChallengeContributor[];
   created_at: string;
 }
@@ -116,12 +118,3 @@ export interface UpdateGuildRequest {
   is_public?: boolean;
 }
 
-export interface CreateGuildChallengeRequest {
-  title: string;
-  description: string;
-  challenge_type: GuildChallengeType;
-  target_value: number;
-  xp_reward: number;
-  coin_reward: number;
-  duration_days: number;
-}

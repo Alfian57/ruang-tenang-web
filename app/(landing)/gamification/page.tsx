@@ -256,10 +256,10 @@ export default function GamificationPage() {
 
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                             <Link
-                                href={ROUTES.LEADERBOARD}
+                                href={ROUTES.HALL_OF_FAME}
                                 className="inline-flex items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-gray-800 px-6 py-3 font-semibold hover:bg-gray-50 transition"
                             >
-                                Lihat Leaderboard
+                                Lihat Hall of Fame
                                 <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>

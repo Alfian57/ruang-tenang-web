@@ -9,7 +9,6 @@ import type {
   GuildActivity,
   CreateGuildRequest,
   UpdateGuildRequest,
-  CreateGuildChallengeRequest,
 } from "@/types/guild";
 
 export const guildService = {
@@ -28,7 +27,10 @@ export const guildService = {
     return httpClient.get<ApiResponse<GuildDetail>>(`/guilds/${guildId}`, { token });
   },
 
-  createGuild(token: string, data: CreateGuildRequest) {
+  createGuild(token: string, data: CreateGuildRequest | FormData) {
+    if (data instanceof FormData) {
+      return httpClient.post<ApiResponse<Guild>>("/guilds", data, { token });
+    }
     return httpClient.post<ApiResponse<Guild>>("/guilds", data, { token });
   },
 
@@ -84,15 +86,15 @@ export const guildService = {
   },
 
   // ==========================================
-  // Challenges
+  // Guild Tasks (System-generated challenges)
   // ==========================================
-
-  createChallenge(token: string, guildId: string, data: CreateGuildChallengeRequest) {
-    return httpClient.post<ApiResponse<GuildChallenge>>(`/guilds/${guildId}/challenges`, data, { token });
-  },
 
   getActiveChallenges(token: string, guildId: string) {
     return httpClient.get<ApiResponse<GuildChallenge[]>>(`/guilds/${guildId}/challenges`, { token });
+  },
+
+  claimChallenge(token: string, guildId: string, challengeId: string) {
+    return httpClient.post<ApiResponse<null>>(`/guilds/${guildId}/challenges/${challengeId}/claim`, {}, { token });
   },
 
   getChallengeHistory(token: string, guildId: string, params?: { page?: number; limit?: number }) {

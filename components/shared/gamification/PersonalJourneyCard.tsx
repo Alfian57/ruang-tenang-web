@@ -3,6 +3,9 @@
 import { cn } from "@/utils";
 import { PersonalJourney } from "@/types";
 import { Flame, Target, Star, TrendingUp, Activity, Info } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import { useAuthStore } from "@/store/authStore";
 
 interface PersonalJourneyCardProps {
     journey: PersonalJourney;
@@ -16,20 +19,53 @@ export function PersonalJourneyCard({ journey, className, onShowLevelGuide }: Pe
     const expToNextLevel = Number(journey.exp_to_next_level ?? 0);
     const monthlyXp = Number(journey.monthly_xp ?? 0);
 
+    const { user } = useAuthStore();
+    const [imageError, setImageError] = useState(false);
+
     return (
         <div className={cn("bg-card rounded-xl border shadow-sm p-6", className)}>
             {/* Header with tier */}
             <div className="flex items-center gap-4 mb-6">
-                <div
-                    className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white"
-                    style={{ backgroundColor: journey.tier_color }}
-                >
-                    {journey.current_level}
+                <div className="relative">
+                    <div
+                        className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold overflow-hidden shadow-sm"
+                        style={{ backgroundColor: journey.tier_color || "#EF4444" }}
+                    >
+                        {user?.avatar ? (
+                            <Image src={user.avatar} alt="Avatar" width={64} height={64} className="object-cover w-full h-full" />
+                        ) : (
+                            <span className="text-white">{user?.name?.charAt(0).toUpperCase() || journey.current_level}</span>
+                        )}
+                    </div>
+                    {/* Level indicator overlay */}
+                    <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-100">
+                        <span className="text-xs font-bold" style={{ color: journey.tier_color || "#EF4444" }}>
+                            {journey.current_level}
+                        </span>
+                    </div>
                 </div>
-                <div>
-                    <h3 className="text-lg font-semibold">
-                        {journey.badge_icon} {journey.badge_name}
-                    </h3>
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                        {!imageError && journey.badge_icon ? (
+                            <div className="w-6 h-6 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
+                                <Image 
+                                    src={journey.badge_icon} 
+                                    alt={journey.badge_name} 
+                                    width={24} 
+                                    height={24} 
+                                    className="object-contain"
+                                    onError={() => setImageError(true)}
+                                />
+                            </div>
+                        ) : (
+                            <div className="w-6 h-6 rounded-md bg-red-50 text-red-600 border border-red-100 flex items-center justify-center shrink-0 text-xs font-bold">
+                                {journey.badge_name?.charAt(0).toUpperCase() || <Star className="w-3 h-3" />}
+                            </div>
+                        )}
+                        <h3 className="text-lg font-bold text-gray-900 truncate">
+                            {journey.badge_name}
+                        </h3>
+                    </div>
                     <p
                         className="text-sm font-medium"
                         style={{ color: journey.tier_color }}

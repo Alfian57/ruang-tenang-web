@@ -77,7 +77,7 @@ export function CommunityAuthContent({
             transition={{ delay: 0.3 }}
         >
             <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as CommunityTab)} className="mb-12">
-                <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto mb-8">
+                <TabsList className="grid w-full grid-cols-4 mb-8">
                     <TabsTrigger value="overview" className="flex items-center gap-2">
                         <Star className="h-4 w-4" />
                         <span className="hidden sm:inline">Overview</span>
@@ -120,7 +120,7 @@ export function CommunityAuthContent({
 
                 <TabsContent value="journey">
                     {personalJourney && (
-                        <div className="max-w-2xl mx-auto">
+                        <div>
                             <PersonalJourneyCard
                                 journey={personalJourney}
                                 onShowLevelGuide={() => router.push(ROUTES.PROGRESS_MAP)}

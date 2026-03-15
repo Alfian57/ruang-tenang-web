@@ -1,19 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { guildService } from "@/services/api/guild";
-import type { Guild, GuildLeaderboardEntry, MyGuildInfo } from "@/types/guild";
+import type { Guild, MyGuildInfo } from "@/types/guild";
 import { toast } from "sonner";
 
 export function useGuildPage() {
   const { token } = useAuthStore();
 
   const [publicGuilds, setPublicGuilds] = useState<Guild[]>([]);
-  const [leaderboard, setLeaderboard] = useState<GuildLeaderboardEntry[]>([]);
   const [myGuild, setMyGuild] = useState<MyGuildInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"browse" | "leaderboard">("browse");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -23,6 +21,9 @@ export function useGuildPage() {
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [newIsPublic, setNewIsPublic] = useState(true);
+  const [newProfileImage, setNewProfileImage] = useState<File | null>(null);
+  const [newProfileImagePreview, setNewProfileImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Join by invite code dialog
   const [isJoinOpen, setIsJoinOpen] = useState(false);
@@ -32,15 +33,13 @@ export function useGuildPage() {
     if (!token) return;
     setIsLoading(true);
     try {
-      const [guildsRes, leaderboardRes, myGuildRes] = await Promise.all([
+      const [guildsRes, myGuildRes] = await Promise.all([
         guildService.getPublicGuilds(token, { page, limit: 12 }),
-        guildService.getLeaderboard(token, 10),
         guildService.getMyGuild(token),
       ]);
 
       setPublicGuilds(guildsRes.data);
       setTotalPages(guildsRes.meta?.total_pages ?? 1);
-      setLeaderboard(leaderboardRes.data);
       setMyGuild(myGuildRes.data);
     } catch {
       toast.error("Gagal memuat data guild");
@@ -53,20 +52,36 @@ export function useGuildPage() {
     fetchData();
   }, [fetchData]);
 
+  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setNewProfileImage(file);
+      const reader = new FileReader();
+      reader.onload = () => setNewProfileImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleCreateGuild = async () => {
     if (!token || !newName.trim()) return;
     setIsSubmitting(true);
     try {
-      await guildService.createGuild(token, {
-        name: newName.trim(),
-        description: newDescription.trim(),
-        is_public: newIsPublic,
-      });
+      const formData = new FormData();
+      formData.append("name", newName.trim());
+      formData.append("description", newDescription.trim());
+      formData.append("is_public", String(newIsPublic));
+      if (newProfileImage) {
+        formData.append("icon", newProfileImage);
+      }
+
+      await guildService.createGuild(token, formData);
       toast.success("Guild berhasil dibuat!");
       setIsCreateOpen(false);
       setNewName("");
       setNewDescription("");
       setNewIsPublic(true);
+      setNewProfileImage(null);
+      setNewProfileImagePreview(null);
       fetchData();
     } catch {
       toast.error("Gagal membuat guild");
@@ -104,11 +119,8 @@ export function useGuildPage() {
 
   return {
     publicGuilds,
-    leaderboard,
     myGuild,
     isLoading,
-    activeTab,
-    setActiveTab,
     page,
     setPage,
     totalPages,
@@ -122,6 +134,10 @@ export function useGuildPage() {
     setNewDescription,
     newIsPublic,
     setNewIsPublic,
+    newProfileImage,
+    newProfileImagePreview,
+    handleProfileImageChange,
+    fileInputRef,
     handleCreateGuild,
     // Join
     isJoinOpen,

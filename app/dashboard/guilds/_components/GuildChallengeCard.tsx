@@ -1,9 +1,9 @@
 "use client";
 
-import { Target, Clock, Trophy, Coins, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Target, Clock, Trophy, Coins, CheckCircle2, AlertTriangle, Gift, CalendarDays, CalendarClock } from "lucide-react";
 import { motion } from "framer-motion";
 import type { GuildChallenge } from "@/types/guild";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, differenceInDays } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 
 const CHALLENGE_TYPE_LABELS: Record<string, string> = {
@@ -26,9 +26,11 @@ const CHALLENGE_TYPE_ICONS: Record<string, string> = {
 
 interface GuildChallengeCardProps {
     challenge: GuildChallenge;
+    onClaim?: (challengeId: string) => void;
+    isClaiming?: boolean;
 }
 
-export function GuildChallengeCard({ challenge }: GuildChallengeCardProps) {
+export function GuildChallengeCard({ challenge, onClaim, isClaiming }: GuildChallengeCardProps) {
     const typeLabel = CHALLENGE_TYPE_LABELS[challenge.challenge_type] || challenge.challenge_type;
     const typeIcon = CHALLENGE_TYPE_ICONS[challenge.challenge_type] || "🎯";
     const progressPercent = Math.min(challenge.progress_percent, 100);
@@ -36,6 +38,11 @@ export function GuildChallengeCard({ challenge }: GuildChallengeCardProps) {
     const timeLeft = challenge.is_active
         ? formatDistanceToNow(new Date(challenge.ends_at), { addSuffix: false, locale: idLocale })
         : null;
+
+    // Determine if daily or weekly based on duration
+    const durationDays = differenceInDays(new Date(challenge.ends_at), new Date(challenge.starts_at));
+    const isDaily = durationDays <= 1;
+    const isWeekly = durationDays > 1 && durationDays <= 7;
 
     return (
         <motion.div
@@ -52,6 +59,19 @@ export function GuildChallengeCard({ challenge }: GuildChallengeCardProps) {
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                         <h4 className="font-semibold text-gray-800 truncate">{challenge.title}</h4>
+                        {/* Daily/Weekly badge */}
+                        {isDaily && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-medium bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full shrink-0">
+                                <CalendarDays className="w-3 h-3" />
+                                Harian
+                            </span>
+                        )}
+                        {isWeekly && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-medium bg-purple-50 text-purple-600 px-1.5 py-0.5 rounded-full shrink-0">
+                                <CalendarClock className="w-3 h-3" />
+                                Mingguan
+                            </span>
+                        )}
                         {challenge.is_completed && (
                             <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
                         )}
@@ -78,7 +98,7 @@ export function GuildChallengeCard({ challenge }: GuildChallengeCardProps) {
                             <motion.div
                                 className={`h-2.5 rounded-full ${challenge.is_completed ? "bg-green-500" :
                                         challenge.is_expired ? "bg-red-400" :
-                                            "bg-linear-to-r from-primary to-violet-500"
+                                            "bg-gradient-to-r from-primary to-violet-500"
                                     }`}
                                 initial={{ width: 0 }}
                                 animate={{ width: `${progressPercent}%` }}
@@ -90,36 +110,56 @@ export function GuildChallengeCard({ challenge }: GuildChallengeCardProps) {
                         </p>
                     </div>
 
-                    {/* Meta info */}
-                    <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
-                        {timeLeft && challenge.is_active && (
-                            <span className="flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                Sisa {timeLeft}
-                            </span>
+                    {/* Meta info + Claim */}
+                    <div className="flex items-center justify-between mt-2">
+                        <div className="flex items-center gap-3 text-xs text-gray-400">
+                            {timeLeft && challenge.is_active && (
+                                <span className="flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    Sisa {timeLeft}
+                                </span>
+                            )}
+                            {challenge.is_completed && (
+                                <span className="flex items-center gap-1 text-green-600">
+                                    <CheckCircle2 className="w-3 h-3" />
+                                    Selesai
+                                </span>
+                            )}
+                            {challenge.is_expired && !challenge.is_completed && (
+                                <span className="flex items-center gap-1 text-red-500">
+                                    <AlertTriangle className="w-3 h-3" />
+                                    Kedaluwarsa
+                                </span>
+                            )}
+                            {challenge.xp_reward > 0 && (
+                                <span className="flex items-center gap-1">
+                                    <Trophy className="w-3 h-3" />
+                                    {challenge.xp_reward} XP
+                                </span>
+                            )}
+                            {challenge.coin_reward > 0 && (
+                                <span className="flex items-center gap-1">
+                                    <Coins className="w-3 h-3" />
+                                    {challenge.coin_reward} Koin
+                                </span>
+                            )}
+                        </div>
+
+                        {/* Claim button */}
+                        {challenge.is_completed && !challenge.is_claimed && challenge.can_claim && onClaim && (
+                            <button
+                                onClick={() => onClaim(challenge.id)}
+                                disabled={isClaiming}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-500 text-white text-xs font-medium hover:bg-green-600 transition-colors disabled:opacity-50"
+                            >
+                                <Gift className="w-3.5 h-3.5" />
+                                {isClaiming ? "Mengklaim..." : "Claim Hadiah"}
+                            </button>
                         )}
-                        {challenge.is_completed && (
-                            <span className="flex items-center gap-1 text-green-600">
-                                <CheckCircle2 className="w-3 h-3" />
-                                Selesai
-                            </span>
-                        )}
-                        {challenge.is_expired && !challenge.is_completed && (
-                            <span className="flex items-center gap-1 text-red-500">
-                                <AlertTriangle className="w-3 h-3" />
-                                Kedaluwarsa
-                            </span>
-                        )}
-                        {challenge.xp_reward > 0 && (
-                            <span className="flex items-center gap-1">
-                                <Trophy className="w-3 h-3" />
-                                {challenge.xp_reward} XP
-                            </span>
-                        )}
-                        {challenge.coin_reward > 0 && (
-                            <span className="flex items-center gap-1">
-                                <Coins className="w-3 h-3" />
-                                {challenge.coin_reward} Koin
+                        {challenge.is_claimed && (
+                            <span className="inline-flex items-center gap-1 text-xs text-green-600 font-medium">
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                Sudah diklaim
                             </span>
                         )}
                     </div>

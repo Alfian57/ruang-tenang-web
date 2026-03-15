@@ -4,16 +4,12 @@ import { useEffect, useState } from "react";
 import { guildService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import type { MyGuildInfo } from "@/types/guild";
-import { Swords, Users, Star, Crown, ArrowRight, Sparkles } from "lucide-react";
+import { Swords, Users, Star, Crown, ArrowRight, Sparkles, Shield } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { ROUTES } from "@/lib/routes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-const GUILD_ICONS: Record<string, string> = {
-    shield: "🛡️", sword: "⚔️", star: "⭐", heart: "❤️", fire: "🔥",
-    crown: "👑", gem: "💎", leaf: "🍃", moon: "🌙", sun: "☀️",
-};
 
 const ROLE_LABELS: Record<string, string> = {
     leader: "Leader", admin: "Admin", member: "Member",
@@ -48,7 +44,7 @@ export function GuildWidget() {
     // User is in a guild — show compact guild info
     if (myGuild?.is_member && myGuild.guild) {
         const { guild } = myGuild;
-        const icon = GUILD_ICONS[guild.icon] || "🛡️";
+        const hasProfileImage = guild.icon && (guild.icon.startsWith("http") || guild.icon.startsWith("/"));
         const roleLabel = ROLE_LABELS[myGuild.member_role || "member"] || "Member";
 
         return (
@@ -66,8 +62,18 @@ export function GuildWidget() {
                 </CardHeader>
                 <CardContent className="px-4 pb-4 pt-2">
                     <div className="flex items-center gap-3 mb-3">
-                        <div className="w-11 h-11 rounded-xl bg-white shadow-sm flex items-center justify-center text-2xl shrink-0">
-                            {icon}
+                        <div className="w-11 h-11 rounded-xl bg-white shadow-sm flex items-center justify-center text-2xl shrink-0 overflow-hidden">
+                            {hasProfileImage ? (
+                                <Image
+                                    src={guild.icon}
+                                    alt={guild.name}
+                                    width={44}
+                                    height={44}
+                                    className="w-full h-full object-cover rounded-xl"
+                                />
+                            ) : (
+                                <Shield className="w-6 h-6 text-primary/60" />
+                            )}
                         </div>
                         <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
