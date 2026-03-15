@@ -82,7 +82,7 @@ export default function MusicPage() {
         isLoading={isDeleting}
       />
 
-      <div className="p-4 lg:p-6 pb-32">
+      <div className="p-4 lg:p-6 pb-32 overflow-x-hidden">
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold">Musik Relaksasi</h1>
@@ -92,24 +92,24 @@ export default function MusicPage() {
         </div>
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="mb-6">
-            <TabsTrigger value="browse" className="text-xs sm:text-sm">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full min-w-0">
+          <TabsList className="mb-6 w-full max-w-full overflow-x-auto">
+            <TabsTrigger value="browse" className="text-xs sm:text-sm shrink-0">
               <Library className="w-4 h-4 mr-1.5" />
               Jelajahi
             </TabsTrigger>
-            <TabsTrigger value="explore" className="text-xs sm:text-sm">
+            <TabsTrigger value="explore" className="text-xs sm:text-sm shrink-0">
               <Compass className="w-4 h-4 mr-1.5" />
               Explore
             </TabsTrigger>
-            <TabsTrigger value="playlists" className="text-xs sm:text-sm">
+            <TabsTrigger value="playlists" className="text-xs sm:text-sm shrink-0">
               <ListMusic className="w-4 h-4 mr-1.5" />
               Playlist
             </TabsTrigger>
           </TabsList>
 
           {/* Browse Tab - Categories */}
-          <TabsContent value="browse">
+          <TabsContent value="browse" className="min-w-0 overflow-x-hidden">
             <BrowseTab
               search={search}
               setSearch={setSearch}
@@ -125,7 +125,7 @@ export default function MusicPage() {
           </TabsContent>
 
           {/* Explore Tab - Public Playlists */}
-          <TabsContent value="explore">
+          <TabsContent value="explore" className="min-w-0 overflow-x-hidden">
             <ExploreTab
               isLoading={publicPlaylistsLoading}
               adminPlaylists={adminPlaylists}
@@ -135,7 +135,7 @@ export default function MusicPage() {
           </TabsContent>
 
           {/* My Playlists Tab */}
-          <TabsContent value="playlists">
+          <TabsContent value="playlists" className="min-w-0 overflow-x-hidden">
             <PlaylistsTab
               isLoading={playlistsLoading}
               playlists={playlists}

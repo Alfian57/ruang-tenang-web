@@ -59,3 +59,42 @@ export interface MapProgressSummary {
   latest_unlock?: string;
   latest_unlock_at?: string;
 }
+
+export interface AdminMapLandmark {
+  id: string;
+  region_id: string;
+  region_name: string;
+  region_key: string;
+  landmark_key: string;
+  name: string;
+  description: string;
+  icon: string;
+  unlock_type: string;
+  unlock_activity?: string;
+  unlock_value: number;
+  position_x: number;
+  position_y: number;
+  xp_reward: number;
+  coin_reward: number;
+  display_order: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface AdminMapLandmarkPayload {
+  region_id: string;
+  landmark_key: string;
+  name: string;
+  description: string;
+  icon: string;
+  unlock_type: string;
+  unlock_activity?: string;
+  unlock_value: number;
+  position_x: number;
+  position_y: number;
+  xp_reward: number;
+  coin_reward: number;
+  display_order: number;
+  is_active?: boolean;
+}
+

@@ -19,6 +19,7 @@ const envSchema = z.object({
         ? API_BASE_PLACEHOLDER
         : val
     ),
+  NEXT_PUBLIC_APP_TIMEZONE: z.string().default("Asia/Jakarta"),
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
@@ -27,5 +28,6 @@ const envSchema = z.object({
 export const env = envSchema.parse({
   NEXT_PUBLIC_API_BASE_URL:
     process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.NEXT_PUBLIC_API_URL,
+  NEXT_PUBLIC_APP_TIMEZONE: process.env.NEXT_PUBLIC_APP_TIMEZONE,
   NODE_ENV: process.env.NODE_ENV,
 });

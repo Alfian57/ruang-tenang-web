@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { communityService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
-import { WeeklyProgress, PersonalJourney } from "@/types";
+import { WeeklyProgress, PersonalJourney, LevelConfig } from "@/types";
 import { TrendingUp, TrendingDown, Zap, Activity, Award, ArrowRight, Trophy, Star } from "lucide-react";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
@@ -14,6 +14,7 @@ export function XPProgressWidget() {
     const { token } = useAuthStore();
     const [journey, setJourney] = useState<PersonalJourney | null>(null);
     const [weeklyProgress, setWeeklyProgress] = useState<WeeklyProgress | null>(null);
+    const [levelConfigs, setLevelConfigs] = useState<LevelConfig[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -21,12 +22,14 @@ export function XPProgressWidget() {
 
         const fetchData = async () => {
             try {
-                const [journeyRes, weeklyRes] = await Promise.all([
+                const [journeyRes, weeklyRes, levelConfigsRes] = await Promise.all([
                     communityService.getPersonalJourney(token).catch(() => null),
                     communityService.getWeeklyProgress(token).catch(() => null),
+                    communityService.getLevelConfigs().catch(() => null),
                 ]);
                 if (journeyRes?.data) setJourney(journeyRes.data);
                 if (weeklyRes?.data) setWeeklyProgress(weeklyRes.data);
+                if (Array.isArray(levelConfigsRes?.data)) setLevelConfigs(levelConfigsRes.data);
             } catch {
                 // Silent fail
             } finally {
@@ -81,6 +84,8 @@ export function XPProgressWidget() {
     const monthlyExp = Number(journey.monthly_xp ?? 0);
     const badgesEarned = Number(journey.new_badges_count ?? 0);
     const progressPercent = Math.min(100, Math.max(0, Number(journey.progress_percent ?? 0)));
+    const nextLevelConfig = levelConfigs.find((item) => item.level === currentLevel + 1);
+    const nextTaskDescription = nextLevelConfig?.task_description?.trim();
 
     // Determine trend from weekly change
     const xpChange = Number(weeklyProgress?.xp_change ?? 0);
@@ -126,6 +131,12 @@ export function XPProgressWidget() {
                     <p className="text-[11px] text-gray-500 mt-1">
                         {expToNextLevel.toLocaleString()} XP lagi ke Level {currentLevel + 1}
                     </p>
+                    {nextTaskDescription ? (
+                        <div className="mt-2 rounded-md border border-violet-100 bg-violet-50/60 px-2 py-1.5">
+                            <p className="text-[11px] font-semibold text-violet-700">Tugas Level Berikutnya</p>
+                            <p className="text-[11px] text-violet-800">{nextTaskDescription}</p>
+                        </div>
+                    ) : null}
                 </div>
 
                 <div className="grid grid-cols-3 gap-2">

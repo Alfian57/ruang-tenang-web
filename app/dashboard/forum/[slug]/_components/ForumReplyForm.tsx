@@ -18,8 +18,8 @@ export function ForumReplyForm({
     isFlagged,
 }: ForumReplyFormProps) {
     return (
-        <div className="bg-white border p-4 rounded-xl shadow-sm mb-6">
-            <div className="flex gap-3">
+        <div className="bg-white border p-3 sm:p-4 rounded-xl shadow-sm mb-6">
+            <div className="flex items-end gap-2 sm:gap-3">
                 <div className="flex-1 relative">
                     <Textarea
                         placeholder={
@@ -29,13 +29,12 @@ export function ForumReplyForm({
                         }
                         value={replyContent}
                         onChange={(e) => setReplyContent(e.target.value)}
-                        className="min-h-[44px] max-h-[120px] resize-none pr-12 py-3 bg-gray-50 border-gray-200 focus:bg-white transition-colors"
-                        style={{ height: "44px" }}
+                        className="min-h-13 max-h-35 resize-y pr-3 py-3 bg-gray-50 border-gray-200 focus:bg-white transition-colors"
                         disabled={!!isFlagged}
                     />
                 </div>
                 <Button
-                    className="h-[44px] w-[44px] p-0 shrink-0 rounded-xl"
+                    className="h-11 w-11 p-0 shrink-0 rounded-xl"
                     disabled={
                         !replyContent.trim() || submitting || !!isFlagged
                     }

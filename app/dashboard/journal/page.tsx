@@ -76,6 +76,8 @@ export default function JournalPage() {
         journalToDelete,
     } = useJournalPage();
 
+    const isJournalBlocked = Boolean(settings?.is_blocked);
+
     // Show loading state
     if (authLoading) {
         return (
@@ -101,13 +103,26 @@ export default function JournalPage() {
                     </div>
                 </div>
 
-                <Button asChild>
-                    <Link href="/dashboard/journal/create">
-                        <PlusCircle className="w-4 h-4 mr-2" />
-                        Tulis Jurnal
-                    </Link>
+                <Button asChild={!isJournalBlocked} disabled={isJournalBlocked}>
+                    {isJournalBlocked ? (
+                        <span>
+                            <PlusCircle className="w-4 h-4 mr-2" />
+                            Akses Jurnal Diblokir
+                        </span>
+                    ) : (
+                        <Link href="/dashboard/journal/create">
+                            <PlusCircle className="w-4 h-4 mr-2" />
+                            Tulis Jurnal
+                        </Link>
+                    )}
                 </Button>
             </div>
+
+            {isJournalBlocked && (
+                <div className="mb-6 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                    Akses fitur jurnal kamu sedang diblokir oleh admin. Kamu tidak bisa membuat atau mengubah jurnal sampai blokir dibuka.
+                </div>
+            )}
 
             {/* Main Content */}
             <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>

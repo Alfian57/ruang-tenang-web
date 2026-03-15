@@ -7,6 +7,7 @@ import { ArrowLeft, Send, Trash2, Clock, Heart, MessageSquare, CheckCircle2, Tro
 import { formatDistanceToNow } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { cn } from "@/utils";
+import { parseApiDate } from "@/utils/date";
 import { BlockUserButton } from "@/components/shared/moderation";
 import {
   DropdownMenu,
@@ -124,7 +125,7 @@ export default function AdminForumTopicPage() {
                     {forum.category.name}
                   </span>
                 )}
-                <span className="text-xs text-gray-400">{formatDistanceToNow(new Date(forum.created_at), { addSuffix: true, locale: idLocale })}</span>
+                <span className="text-xs text-gray-400">{formatDistanceToNow(parseApiDate(forum.created_at), { addSuffix: true, locale: idLocale })}</span>
               </div>
               <h1 className="text-lg lg:text-xl font-bold text-gray-800 line-clamp-1">{forum.title}</h1>
             </div>
@@ -232,11 +233,11 @@ export default function AdminForumTopicPage() {
                     placeholder="Tulis balasan sebagai Admin..."
                     value={replyContent}
                     onChange={(e) => setReplyContent(e.target.value)}
-                    className="min-h-[44px] max-h-[120px] resize-none pr-12 py-3 bg-gray-50 border-gray-200 focus:bg-white transition-colors"
+                    className="min-h-11 max-h-30 resize-none pr-12 py-3 bg-gray-50 border-gray-200 focus:bg-white transition-colors"
                     style={{ height: '44px' }} // Initial height
                   />
                 </div>
-                <Button className="h-[44px] w-[44px] p-0 shrink-0 rounded-xl" disabled={!replyContent.trim() || submitting} onClick={handleReply}>
+                <Button className="h-11 w-11 p-0 shrink-0 rounded-xl" disabled={!replyContent.trim() || submitting} onClick={handleReply}>
                   {submitting ? <Clock className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
                 </Button>
               </div>
@@ -270,7 +271,7 @@ export default function AdminForumTopicPage() {
                           {post.user?.name}
                         </span>
                         <span className="text-xs text-gray-400">•</span>
-                        <span className="text-xs text-gray-400">{formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: idLocale })}</span>
+                        <span className="text-xs text-gray-400">{formatDistanceToNow(parseApiDate(post.created_at), { addSuffix: true, locale: idLocale })}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Button

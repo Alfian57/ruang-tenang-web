@@ -5,6 +5,7 @@ import type {
   InspiringStory, 
   StoryCategory, 
   StoryComment, 
+  StoryCommentsListResponse,
   StoryStats,
   StoryCard
 } from "@/types";
@@ -60,7 +61,7 @@ export const storyService = {
 
   // Comments
   getComments(id: string, params?: { page?: number; limit?: number }, token?: string) {
-    return httpClient.get<PaginatedResponse<StoryComment>>(`/stories/${id}/comments`, { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<ApiResponse<StoryCommentsListResponse>>(`/stories/${id}/comments`, { token, params: params as Record<string, string | number | boolean | undefined> });
   },
 
   createComment(token: string, storyId: string, data: { content: string }) {

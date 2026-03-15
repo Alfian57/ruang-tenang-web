@@ -2,6 +2,7 @@ import { httpClient } from "@/services/http/client";
 import type { ApiResponse, PaginatedResponse } from "@/services/http/types";
 import type { User, Article, Song, SongCategory, LevelConfig } from "@/types";
 import type { Forum, ForumCategory } from "@/types/forum";
+import type { AdminMapLandmark, AdminMapLandmarkPayload } from "@/types/progress-map";
 import type { DashboardStats } from "@/types/admin";
 
 export const adminService = {
@@ -32,11 +33,11 @@ export const adminService = {
   },
 
   banUser(token: string, id: number, reason: string) {
-    return httpClient.post<ApiResponse<null>>(`/admin/users/${id}/ban`, { reason }, { token });
+    return httpClient.put<ApiResponse<null>>(`/admin/users/${id}/block`, { reason }, { token });
   },
 
   unbanUser(token: string, id: number) {
-    return httpClient.post<ApiResponse<null>>(`/admin/users/${id}/unban`, {}, { token });
+    return httpClient.put<ApiResponse<null>>(`/admin/users/${id}/unblock`, {}, { token });
   },
 
   // Articles
@@ -97,29 +98,47 @@ export const adminService = {
 
   // Levels
   getLevels(token: string) {
-    return httpClient.get<ApiResponse<LevelConfig[]>>("/admin/levels", { token });
+    return httpClient.get<ApiResponse<LevelConfig[]>>("/admin/level-configs", { token });
   },
 
-  createLevel(token: string, data: { level: number; min_exp: number; badge_name: string; badge_image: File }) {
+  createLevel(token: string, data: { level: number; min_exp: number; badge_name: string; task_description?: string; badge_image: File }) {
     const formData = new FormData();
     formData.append("level", String(data.level));
     formData.append("min_exp", String(data.min_exp));
     formData.append("badge_name", data.badge_name);
+    formData.append("task_description", data.task_description || "");
     formData.append("badge_image", data.badge_image);
     return httpClient.upload<ApiResponse<LevelConfig>>("/admin/level-configs", formData, token);
   },
 
-  updateLevel(token: string, id: number, data: { level?: number; min_exp?: number; badge_name?: string; badge_image?: File | null }) {
+  updateLevel(token: string, id: number, data: { level?: number; min_exp?: number; badge_name?: string; task_description?: string; badge_image?: File | null }) {
     const formData = new FormData();
     if (data.level !== undefined) formData.append("level", String(data.level));
     if (data.min_exp !== undefined) formData.append("min_exp", String(data.min_exp));
     if (data.badge_name) formData.append("badge_name", data.badge_name);
+    if (data.task_description !== undefined) formData.append("task_description", data.task_description);
     if (data.badge_image) formData.append("badge_image", data.badge_image);
     return httpClient.upload<ApiResponse<LevelConfig>>("/admin/level-configs/" + id, formData, token, "PUT");
   },
 
   deleteLevel(token: string, id: number) {
-    return httpClient.delete<ApiResponse<null>>(`/admin/levels/${id}`, { token });
+    return httpClient.delete<ApiResponse<null>>(`/admin/level-configs/${id}`, { token });
+  },
+
+  getAdminMapLandmarks(token: string) {
+    return httpClient.get<ApiResponse<AdminMapLandmark[]>>("/admin/map-landmarks", { token });
+  },
+
+  createAdminMapLandmark(token: string, payload: AdminMapLandmarkPayload) {
+    return httpClient.post<ApiResponse<null>>("/admin/map-landmarks", payload, { token });
+  },
+
+  updateAdminMapLandmark(token: string, id: string, payload: AdminMapLandmarkPayload) {
+    return httpClient.put<ApiResponse<null>>(`/admin/map-landmarks/${id}`, payload, { token });
+  },
+
+  deleteAdminMapLandmark(token: string, id: string) {
+    return httpClient.delete<ApiResponse<null>>(`/admin/map-landmarks/${id}`, { token });
   },
 
   // Forum Categories
@@ -153,4 +172,5 @@ export const adminService = {
   toggleForumBlock(token: string, userId: number) {
     return httpClient.put<ApiResponse<null>>(`/admin/users/${userId}/block-forum`, {}, { token });
   },
+
 };

@@ -1,7 +1,7 @@
 import type { User } from "./user";
 
 /** Simplified user shape returned by forum endpoints */
-type ForumUser = Pick<User, "id" | "name" | "email">;
+type ForumUser = Pick<User, "id" | "name" | "email" | "avatar">;
 
 export interface ForumPost {
   id: number;

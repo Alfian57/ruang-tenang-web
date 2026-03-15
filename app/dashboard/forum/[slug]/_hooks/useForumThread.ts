@@ -132,7 +132,12 @@ export function useForumThread() {
   };
 
   const handleToggleLike = async () => {
-    if (!token) return;
+    if (!token || !forum) return;
+    if (user?.id === forum.user_id) {
+      toast.error("Tidak bisa menyukai topik sendiri");
+      return;
+    }
+
     // Optimistic update
     const previousLiked = isLiked;
     const previousCount = likesCount;
@@ -153,6 +158,11 @@ export function useForumThread() {
   
   const handleTogglePostLike = async (post: ForumPost) => {
     if (!token) return;
+    if (user?.id === post.user_id) {
+      toast.error("Tidak bisa menyukai komentar sendiri");
+      return;
+    }
+
     const currentlyLiked = post.has_user_voted ?? post.is_liked ?? false;
     
     // Optimistic Update

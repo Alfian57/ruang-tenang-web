@@ -68,27 +68,46 @@ export function WorldMap({ mapData, onSelectRegion }: WorldMapProps) {
                                     className={`relative shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-2xl flex items-center justify-center transition-all duration-300 cursor-pointer
                     ${region.is_unlocked
                                             ? `bg-linear-to-br ${theme.bg} text-white shadow-lg ${theme.glow} hover:scale-110 hover:shadow-xl active:scale-105`
-                                            : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                            : "bg-gray-300 text-white cursor-not-allowed"
                                         }
                   `}
                                 >
+                                    {region.image && (
+                                        <div
+                                            className={`absolute inset-0 rounded-2xl bg-cover bg-center ${region.is_unlocked ? "opacity-40" : "opacity-80 grayscale"}`}
+                                            style={{ backgroundImage: `url(${region.image})` }}
+                                            aria-hidden="true"
+                                        />
+                                    )}
+
+                                    {region.is_unlocked ? (
+                                        <div className="absolute inset-0 rounded-2xl bg-linear-to-t from-black/20 to-transparent" aria-hidden="true" />
+                                    ) : (
+                                        <div className="absolute inset-0 rounded-2xl bg-black/35" aria-hidden="true" />
+                                    )}
+
                                     {region.is_unlocked ? (
                                         <>
-                                            <span className="text-3xl md:text-4xl">{region.icon || "🏝️"}</span>
+                                            <span className="relative z-10 text-3xl md:text-4xl">{region.icon || "🏝️"}</span>
                                             {/* Landmark progress badge */}
                                             {region.total_landmarks > 0 && (
-                                                <span className="absolute -bottom-1 -right-1 bg-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow text-gray-700">
+                                                <span className="absolute z-10 -bottom-1 -right-1 bg-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow text-gray-700">
                                                     {region.unlocked_landmarks}/{region.total_landmarks}
                                                 </span>
                                             )}
                                             {/* Sparkle for fully completed */}
                                             {region.unlocked_landmarks === region.total_landmarks &&
                                                 region.total_landmarks > 0 && (
-                                                    <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-yellow-400 animate-pulse" />
+                                                    <Sparkles className="absolute z-10 -top-1 -right-1 h-4 w-4 text-yellow-400 animate-pulse" />
                                                 )}
                                         </>
                                     ) : (
-                                        <Lock className="h-6 w-6 md:h-8 md:w-8" />
+                                        <div className="relative z-10 flex flex-col items-center gap-1">
+                                            <Lock className="h-6 w-6 md:h-8 md:w-8" />
+                                            <span className="text-[10px] md:text-xs font-semibold px-1.5 py-0.5 rounded-full bg-black/35">
+                                                Lv. {region.unlock_value}
+                                            </span>
+                                        </div>
                                     )}
                                 </button>
 

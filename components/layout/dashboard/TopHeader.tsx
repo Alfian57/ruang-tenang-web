@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { ChevronDown, Settings, KeyRound, LogOut, Ban, Info } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ChevronDown, Settings, KeyRound, LogOut, Ban, MapIcon } from "lucide-react";
 import { GlobalSearch, ThemeSwitcher } from "@/components/layout/dashboard";
 import {
   DropdownMenu,
@@ -12,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getUploadUrl } from "@/services/http/upload-url";
+import { ROUTES } from "@/lib/routes";
 import type { User } from "@/types";
 
 interface TopHeaderProps {
@@ -22,7 +24,6 @@ interface TopHeaderProps {
   onLogout: () => void;
   onShowBlockedUsers: () => void;
   onShowExpHistory: () => void;
-  onShowLevelGuide?: () => void;
 }
 
 export function TopHeader({
@@ -33,8 +34,9 @@ export function TopHeader({
   onLogout,
   onShowBlockedUsers,
   onShowExpHistory,
-  onShowLevelGuide,
 }: TopHeaderProps) {
+  const router = useRouter();
+
   return (
     <header className="header-themed hidden lg:flex h-16 bg-white border-b items-center px-6 sticky top-0 z-40">
       {/* Search & Actions */}
@@ -74,15 +76,13 @@ export function TopHeader({
                   </span>
                 </div>
               </button>
-              {onShowLevelGuide && (
-                <button
-                  onClick={onShowLevelGuide}
-                  className="hidden md:flex items-center justify-center w-8 h-8 rounded-full bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 transition-all"
-                  title="Panduan Level & Tier"
-                >
-                  <Info className="h-3.5 w-3.5 text-indigo-500" />
-                </button>
-              )}
+              <button
+                onClick={() => router.push(ROUTES.PROGRESS_MAP)}
+                className="hidden md:flex items-center justify-center w-8 h-8 rounded-full bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 transition-all"
+                title="Lihat Journey Tier di Peta Perjalanan"
+              >
+                <MapIcon className="h-3.5 w-3.5 text-indigo-500" />
+              </button>
             </>
           )}
 

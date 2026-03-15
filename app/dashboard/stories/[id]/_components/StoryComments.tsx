@@ -27,6 +27,7 @@ interface StoryCommentsProps {
   comments: StoryComment[];
   commentCount: number;
   loadingComments: boolean;
+  canComment: boolean;
   token: string | null;
   userId?: number;
   newComment: string;
@@ -39,6 +40,7 @@ export function StoryComments({
   comments,
   commentCount,
   loadingComments,
+  canComment,
   token,
   userId,
   newComment,
@@ -46,6 +48,8 @@ export function StoryComments({
   onNewCommentChange,
   onSubmitComment,
 }: StoryCommentsProps) {
+  const safeComments = Array.isArray(comments) ? comments : [];
+
   return (
     <section>
       <h2 className="text-xl font-bold mb-6">
@@ -53,7 +57,7 @@ export function StoryComments({
       </h2>
 
       {/* Comment Input */}
-      {token ? (
+      {token && canComment ? (
         <div className="mb-6">
           <Textarea
             placeholder="Tulis komentar yang mendukung..."
@@ -75,6 +79,12 @@ export function StoryComments({
             Kirim Komentar
           </Button>
         </div>
+      ) : token && !canComment ? (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 text-center">
+          <p className="text-amber-700 text-sm">
+            Komentar akan tersedia setelah kisah ini disetujui admin.
+          </p>
+        </div>
       ) : (
         <div className="bg-gray-50 rounded-lg p-4 mb-6 text-center">
           <p className="text-gray-600 mb-2">
@@ -91,7 +101,7 @@ export function StoryComments({
         <div className="flex justify-center py-8">
           <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
         </div>
-      ) : comments.length === 0 ? (
+      ) : safeComments.length === 0 ? (
         <div className="text-center py-16">
           <MessageCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-500">Belum ada komentar</h3>
@@ -99,7 +109,7 @@ export function StoryComments({
         </div>
       ) : (
         <div className="space-y-4">
-          {comments.map((comment) => (
+          {safeComments.map((comment) => (
             <div
               key={comment.id}
               className="bg-white rounded-lg border p-4"
@@ -145,7 +155,7 @@ export function StoryComments({
                             contentId={comment.id}
                             userId={comment.author?.id}
                             trigger={
-                              <div className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer">
+                              <div className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 cursor-pointer">
                                 <Flag className="w-4 h-4 mr-2" />
                                 Laporkan
                               </div>

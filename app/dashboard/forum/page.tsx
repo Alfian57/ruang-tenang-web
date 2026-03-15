@@ -27,6 +27,7 @@ export default function ForumPage() {
     newContent,
     newCategoryId,
     isSubmitting,
+    isForumBlocked,
     setSearch,
     setSelectedCategory,
     setIsCreateOpen,
@@ -46,9 +47,9 @@ export default function ForumPage() {
 
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-primary hover:bg-primary/90 text-white gap-2 w-full md:w-auto">
+            <Button className="bg-primary hover:bg-primary/90 text-white gap-2 w-full md:w-auto" disabled={isForumBlocked}>
               <Plus className="w-4 h-4" />
-              Buat Topik Baru
+              {isForumBlocked ? "Akses Forum Diblokir" : "Buat Topik Baru"}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-lg">
@@ -68,7 +69,7 @@ export default function ForumPage() {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Kategori</label>
                 <select
-                  className="w-full flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   value={newCategoryId || ""}
                   onChange={(e) => setNewCategoryId(e.target.value ? Number(e.target.value) : undefined)}
                 >
@@ -98,6 +99,12 @@ export default function ForumPage() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {isForumBlocked && (
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          Akses forum kamu sedang diblokir oleh admin. Kamu tidak bisa membuat topik, membalas, atau berinteraksi di forum.
+        </div>
+      )}
 
       {/* Filters */}
       <div className="space-y-4">

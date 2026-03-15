@@ -1,23 +1,74 @@
-/**
- * Date formatting utilities with Indonesian locale.
- *
- * IMPORTANT: The backend sends timestamps from TIMESTAMP WITHOUT TIME ZONE columns.
- * Due to DSN TimeZone=Asia/Jakarta, the stored values are WIB wall-clock times
- * but serialized with a "Z" (UTC) suffix. Use parseApiDate() to strip the "Z"
- * so the browser correctly interprets them as local time.
- */
+import { env } from "@/config/env";
 
 /**
- * Parse a date string from the API, stripping any trailing "Z" suffix.
- * This prevents double timezone conversion since backend timestamps
- * already represent WIB wall-clock time but are labeled as UTC.
+ * Date formatting utilities with Indonesian locale.
+ */
+
+const APP_TIMEZONE = env.NEXT_PUBLIC_APP_TIMEZONE || "Asia/Jakarta";
+const TIMEZONE_OFFSETS: Record<string, string> = {
+  "Asia/Jakarta": "+07:00",
+  "Asia/Makassar": "+08:00",
+  "Asia/Jayapura": "+09:00",
+};
+const APP_TIMEZONE_OFFSET = TIMEZONE_OFFSETS[APP_TIMEZONE] || "";
+
+function normalizeTimestampInput(value: string): string {
+  return value.trim().replace(" ", "T");
+}
+
+function hasExplicitTimezone(value: string): boolean {
+  return /(Z|[+-]\d{2}:?\d{2})$/i.test(value);
+}
+
+function hasUTCZuluSuffix(value: string): boolean {
+  return /Z$/i.test(value);
+}
+
+function isIsoLikeTimestamp(value: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,9})?(Z|[+-]\d{2}:?\d{2})?$/i.test(value);
+}
+
+/**
+ * Normalize timestamp strings from API to be interpreted consistently
+ * in application timezone.
+ */
+export function normalizeApiTimestampString(value: string): string {
+  const normalized = normalizeTimestampInput(value);
+  if (!normalized || !isIsoLikeTimestamp(normalized)) {
+    return value;
+  }
+
+  if (hasUTCZuluSuffix(normalized)) {
+    // Backend historically sends WIB wall-clock with Z suffix.
+    // Treat this as app timezone wall-clock to avoid -7h drift.
+    if (APP_TIMEZONE_OFFSET) {
+      return `${normalized.replace(/Z$/i, "")}${APP_TIMEZONE_OFFSET}`;
+    }
+    return normalized.replace(/Z$/i, "");
+  }
+
+  if (!hasExplicitTimezone(normalized) && APP_TIMEZONE_OFFSET) {
+    return `${normalized}${APP_TIMEZONE_OFFSET}`;
+  }
+
+  return normalized;
+}
+
+/**
+ * Parse a date string from API consistently.
+ * - If timestamp already has timezone info, parse as-is.
+ * - If timestamp is naive, interpret it using app timezone offset when known.
  */
 export function parseApiDate(date: string | Date): Date {
-  if (typeof date === "string") {
-    // Remove trailing Z or timezone offset to treat as local time
-    return new Date(date.replace(/Z$/i, ""));
+  if (date instanceof Date) {
+    return date;
   }
-  return date;
+
+  const normalized = normalizeApiTimestampString(date);
+  if (!normalized) {
+    return new Date(NaN);
+  }
+  return new Date(normalized);
 }
 
 
@@ -29,6 +80,7 @@ export function formatDate(date: string | Date): string {
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: APP_TIMEZONE,
   }).format(parseApiDate(date));
 }
 
@@ -42,6 +94,8 @@ export function formatDateTime(date: string | Date): string {
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    hour12: false,
+    timeZone: APP_TIMEZONE,
   }).format(parseApiDate(date));
 }
 

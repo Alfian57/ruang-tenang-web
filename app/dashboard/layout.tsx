@@ -11,7 +11,6 @@ import { AuthProvider, useAuth } from "@/components/providers/AuthProvider";
 import { MoodCheckinProvider } from "@/components/providers/MoodCheckinProvider";
 import { GlobalMusicPlayer } from "@/components/layout";
 import { DailyTaskFAB } from "@/components/shared/gamification";
-import { LevelTierGuideModal } from "@/components/shared/gamification";
 import { cn } from "@/utils";
 import { useAuthStore } from "@/store/authStore";
 import { useMusicPlayerStore } from "@/store/musicPlayerStore";
@@ -47,7 +46,6 @@ function DashboardContent({
   const [showBlockedUsersModal, setShowBlockedUsersModal] = useState(false);
   const [showExpHistoryModal, setShowExpHistoryModal] = useState(false);
   const [showAppealModal, setShowAppealModal] = useState(false);
-  const [showLevelGuideModal, setShowLevelGuideModal] = useState(false);
   const { token } = useAuthStore();
   const loadBlockedUsers = useBlockStore((s) => s.loadBlockedUsers);
   const isPlayerVisible = useMusicPlayerStore((s) => s.isPlayerVisible);
@@ -116,14 +114,6 @@ function DashboardContent({
           badgeIcon={user?.badge_icon || "🌱"}
         />
       )}
-      {!isAdmin && (
-        <LevelTierGuideModal
-          isOpen={showLevelGuideModal}
-          onClose={() => setShowLevelGuideModal(false)}
-          currentLevel={user?.level || 1}
-        />
-      )}
-
       {/* Mobile Header */}
       <MobileHeader
         user={user}
@@ -159,7 +149,6 @@ function DashboardContent({
           onLogout={() => setShowLogoutModal(true)}
           onShowBlockedUsers={() => setShowBlockedUsersModal(true)}
           onShowExpHistory={() => setShowExpHistoryModal(true)}
-          onShowLevelGuide={() => setShowLevelGuideModal(true)}
         />
 
         {/* Suspension/Ban Banner */}

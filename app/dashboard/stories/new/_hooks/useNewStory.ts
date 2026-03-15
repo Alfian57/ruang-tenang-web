@@ -111,8 +111,14 @@ export function useNewStory() {
 
       const response = await storyService.create(token!, storyData);
       if (response.data) {
-        toast.success("Kisah berhasil dikirim untuk moderasi!");
-        router.push("/dashboard/stories");
+        toast.success("Kisah berhasil dikirim. Saat ini menunggu moderasi.");
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem(
+            `story:draft:${response.data.id}`,
+            JSON.stringify(response.data)
+          );
+        }
+        router.push(`/dashboard/stories/${response.data.id}`);
       }
     } catch (error: unknown) {
       console.error("Failed to submit story:", error);

@@ -21,13 +21,13 @@ export function SongTable({
 }: SongTableProps) {
     return (
         <div className="bg-white rounded-xl border overflow-hidden">
-            <div className="overflow-x-auto">
-                <table className="w-full">
+            <div className="overflow-x-auto table-scroll-indicator">
+                <table className="w-full min-w-115">
                     <thead className="bg-gray-50 border-b">
                         <tr>
                             <th className="text-left p-4 font-medium text-gray-600">Lagu</th>
                             <th className="text-left p-4 font-medium text-gray-600 hidden sm:table-cell">Kategori</th>
-                            <th className="text-right p-4 font-medium text-gray-600">Aksi</th>
+                            <th className="text-right p-4 font-medium text-gray-600 whitespace-nowrap w-23">Aksi</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y">

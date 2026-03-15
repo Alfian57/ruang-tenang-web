@@ -44,7 +44,7 @@ export function CategoryDetailView({
                             Kembali
                         </button>
 
-                        <div className="flex items-center gap-4">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                             <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 relative shrink-0">
                                 {category.thumbnail ? (
                                     <Image
@@ -61,12 +61,13 @@ export function CategoryDetailView({
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Kategori</p>
-                                <h1 className="text-2xl font-bold text-gray-900">{category.name}</h1>
+                                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{category.name}</h1>
                                 <p className="text-sm text-gray-500">{songs.length} lagu tersedia</p>
                             </div>
                             <Button
-                                className="gradient-primary rounded-full px-6"
+                                className="gradient-primary rounded-full px-6 w-full sm:w-auto"
                                 onClick={() => songs.length > 0 && onPlay(songs[0])}
+                                disabled={songs.length === 0}
                             >
                                 <Play className="w-4 h-4 mr-2 fill-current" />
                                 Putar Semua

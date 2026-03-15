@@ -19,6 +19,7 @@ export interface ChatMessagesAreaProps {
   activeSession: ChatSession | null;
   messages: ChatMessage[];
   userName?: string;
+  userAvatar?: string;
   isSending: boolean;
   isRecording: boolean;
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
@@ -42,6 +43,7 @@ export function ChatMessagesArea({
   activeSession,
   messages,
   userName,
+  userAvatar,
   isSending,
   isRecording,
   messagesEndRef,
@@ -100,21 +102,21 @@ export function ChatMessagesArea({
             <ChatSummaryPanel
               summary={summary}
               isGenerating={isGeneratingSummary || false}
-              onGenerate={onGenerateSummary || (() => {})}
+              onGenerate={onGenerateSummary || (() => { })}
             />
           </div>
         )}
 
         <div className="shrink-0 z-10">
-           <AIDisclaimerBanner />
+          <AIDisclaimerBanner />
         </div>
 
         {journalAIAccessEnabled && (
-           <div className="shrink-0 z-10">
-             <JournalContextIndicator journalSharedCount={journalSharedCount} />
-           </div>
+          <div className="shrink-0 z-10">
+            <JournalContextIndicator journalSharedCount={journalSharedCount} />
+          </div>
         )}
-        
+
         {/* Main Scroll Area */}
         <div className="flex-1 overflow-y-auto p-4 lg:p-6 space-y-4">
           {messages.length === 0 && suggestedPrompts && suggestedPrompts.length > 0 && (
@@ -139,6 +141,7 @@ export function ChatMessagesArea({
               key={message.id}
               message={message}
               userName={userName}
+              userAvatar={userAvatar}
               onToggleLike={onToggleMessageLike}
               onTogglePin={onToggleMessagePin}
             />

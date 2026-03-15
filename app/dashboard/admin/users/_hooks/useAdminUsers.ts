@@ -7,11 +7,13 @@ import { adminService } from "@/services/api";
 import { httpClient } from "@/services/http/client";
 import type { PaginatedResponse } from "@/services/http/types";
 import { useDebounce } from "@/hooks/use-debounce";
+import { toast } from "sonner";
 
 export interface UserData {
   id: number;
   name: string;
   email: string;
+  avatar?: string;
   role: string;
   is_blocked: boolean;
   journal_blocked?: boolean;
@@ -94,33 +96,51 @@ export function useAdminUsers() {
     try {
       if (blockAction === "block") {
         await adminService.banUser(token, blockId, "Diblokir oleh admin");
+        toast.success("Akses login pengguna berhasil diblokir");
       } else {
         await adminService.unbanUser(token, blockId);
+        toast.success("Akses login pengguna berhasil dibuka");
       }
       setBlockId(null);
       loadUsers();
     } catch (error) {
       console.error("Failed to block/unblock user:", error);
+      toast.error("Gagal memperbarui status blokir login");
+      throw error;
     }
   };
 
-  const handleJournalBlockToggle = async (userId: number) => {
+  const handleJournalBlockToggle = async (userId: number, currentlyBlocked?: boolean) => {
     if (!token) return;
     try {
       await adminService.toggleJournalBlock(token, userId);
+      toast.success(
+        currentlyBlocked
+          ? "Blokir fitur jurnal berhasil dibuka"
+          : "Fitur jurnal berhasil diblokir"
+      );
       loadUsers();
     } catch (error) {
       console.error("Failed to toggle journal block:", error);
+      toast.error("Gagal memperbarui blokir fitur jurnal");
+      throw error;
     }
   };
 
-  const handleForumBlockToggle = async (userId: number) => {
+  const handleForumBlockToggle = async (userId: number, currentlyBlocked?: boolean) => {
     if (!token) return;
     try {
       await adminService.toggleForumBlock(token, userId);
+      toast.success(
+        currentlyBlocked
+          ? "Blokir fitur forum berhasil dibuka"
+          : "Fitur forum berhasil diblokir"
+      );
       loadUsers();
     } catch (error) {
       console.error("Failed to toggle forum block:", error);
+      toast.error("Gagal memperbarui blokir fitur forum");
+      throw error;
     }
   };
 

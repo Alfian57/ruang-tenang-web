@@ -4,8 +4,27 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { storyService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
+import { ApiError } from "@/services/http/types";
 import { InspiringStory, StoryComment } from "@/types";
 import { toast } from "sonner";
+
+function loadDraftStoryFromSession(storyId: string): InspiringStory | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const raw = sessionStorage.getItem(`story:draft:${storyId}`);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw) as InspiringStory;
+    if (parsed && parsed.id === storyId) {
+      return parsed;
+    }
+  } catch (error) {
+    console.error("Failed to restore draft story from session:", error);
+  }
+
+  return null;
+}
 
 export function useStoryDetail() {
   const params = useParams();
@@ -22,12 +41,17 @@ export function useStoryDetail() {
   const [submittingComment, setSubmittingComment] = useState(false);
   const [heartLoading, setHeartLoading] = useState(false);
 
+  const canComment = story?.status === "approved";
+
   const loadStory = useCallback(async () => {
     setLoading(true);
     try {
       const response = await storyService.getStory(storyId, token || undefined);
       if (response.data) {
         setStory(response.data);
+        if (typeof window !== "undefined") {
+          sessionStorage.removeItem(`story:draft:${storyId}`);
+        }
         // Auto-show content if no trigger warning
         if (!response.data.has_trigger_warning) {
           setShowContent(true);
@@ -35,7 +59,20 @@ export function useStoryDetail() {
       }
     } catch (error) {
       console.error("Failed to load story:", error);
-      toast.error("Gagal memuat kisah");
+      if (error instanceof ApiError && error.status === 404) {
+        const fallbackStory = loadDraftStoryFromSession(storyId);
+        if (fallbackStory) {
+          setStory(fallbackStory);
+          if (!fallbackStory.has_trigger_warning) {
+            setShowContent(true);
+          }
+          return;
+        }
+      }
+
+      if (!(error instanceof ApiError && error.status === 404)) {
+        toast.error("Gagal memuat kisah");
+      }
     } finally {
       setLoading(false);
     }
@@ -45,11 +82,11 @@ export function useStoryDetail() {
     setLoadingComments(true);
     try {
       const response = await storyService.getComments(storyId, {}, token || undefined);
-      if (response.data) {
-        setComments(response.data);
-      }
+      const list = response.data?.comments;
+      setComments(Array.isArray(list) ? list : []);
     } catch (error) {
       console.error("Failed to load comments:", error);
+      setComments([]);
     } finally {
       setLoadingComments(false);
     }
@@ -91,6 +128,11 @@ export function useStoryDetail() {
   };
 
   const handleSubmitComment = async () => {
+    if (!canComment) {
+      toast.error("Komentar hanya tersedia setelah cerita disetujui");
+      return;
+    }
+
     if (!token) {
       toast.error("Silakan login untuk berkomentar");
       return;
@@ -141,6 +183,7 @@ export function useStoryDetail() {
     newComment,
     submittingComment,
     heartLoading,
+    canComment,
     router,
     setShowContent,
     setNewComment,

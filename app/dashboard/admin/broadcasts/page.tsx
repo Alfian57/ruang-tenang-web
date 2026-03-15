@@ -130,8 +130,8 @@ export default function AdminBroadcastsPage() {
 
             {/* Broadcasts Table */}
             <div className="bg-white rounded-xl border overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full">
+                <div className="overflow-x-auto table-scroll-indicator">
+                    <table className="w-full min-w-180">
                         <thead className="bg-gray-50 border-b">
                             <tr>
                                 <th className="text-left p-4 font-medium text-gray-600">
@@ -143,13 +143,13 @@ export default function AdminBroadcastsPage() {
                                 <th className="text-left p-4 font-medium text-gray-600 hidden lg:table-cell">
                                     Jadwal
                                 </th>
-                                <th className="text-left p-4 font-medium text-gray-600 hidden lg:table-cell">
+                                <th className="text-left p-4 font-medium text-gray-600 hidden lg:table-cell whitespace-nowrap">
                                     Terkirim
                                 </th>
                                 <th className="text-left p-4 font-medium text-gray-600 hidden xl:table-cell">
                                     Dibuat
                                 </th>
-                                <th className="text-right p-4 font-medium text-gray-600">
+                                <th className="text-right p-4 font-medium text-gray-600 whitespace-nowrap w-32">
                                     Aksi
                                 </th>
                             </tr>

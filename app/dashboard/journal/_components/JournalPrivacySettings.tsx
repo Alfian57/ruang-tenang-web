@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { JournalSettings } from "@/types";
 import {
     Eye,
@@ -33,8 +33,9 @@ function ToggleSwitch({
         <button
             type="button"
             onClick={() => !disabled && onChange(!enabled)}
+            aria-pressed={enabled}
             className={cn(
-                "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
+                "relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors touch-manipulation",
                 enabled ? "bg-primary" : "bg-gray-200",
                 disabled && "opacity-50 cursor-not-allowed"
             )}
@@ -42,7 +43,7 @@ function ToggleSwitch({
         >
             <span
                 className={cn(
-                    "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                    "inline-block h-5 w-5 transform rounded-full bg-white transition-transform",
                     enabled ? "translate-x-6" : "translate-x-1"
                 )}
             />
@@ -57,6 +58,10 @@ export function JournalPrivacySettings({
 }: JournalPrivacySettingsProps) {
     const [localSettings, setLocalSettings] = useState(settings);
     const [isExpanded, setIsExpanded] = useState(false);
+
+    useEffect(() => {
+        setLocalSettings(settings);
+    }, [settings]);
 
     const handleToggleAIAccess = () => {
         const newValue = !localSettings.allow_ai_access;
@@ -99,14 +104,14 @@ export function JournalPrivacySettings({
                 <CardContent className="space-y-6">
                     {/* Master AI Access Toggle */}
                     <div className="p-4 bg-gray-50 rounded-lg">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-start gap-3">
+                        <div className="flex items-start justify-between gap-3">
+                            <div className="flex min-w-0 flex-1 items-start gap-3">
                                 {localSettings.allow_ai_access ? (
-                                    <Eye className="w-5 h-5 text-purple-600 mt-0.5" />
+                                    <Eye className="w-5 h-5 text-purple-600 mt-0.5 shrink-0" />
                                 ) : (
-                                    <EyeOff className="w-5 h-5 text-gray-500 mt-0.5" />
+                                    <EyeOff className="w-5 h-5 text-gray-500 mt-0.5 shrink-0" />
                                 )}
-                                <div>
+                                <div className="min-w-0">
                                     <Label className="text-base font-medium">
                                         Izinkan AI Membaca Jurnal
                                     </Label>
@@ -129,7 +134,7 @@ export function JournalPrivacySettings({
                     {localSettings.allow_ai_access && (
                         <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                             <div className="flex items-start gap-2">
-                                <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                                <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 shrink-0" />
                                 <p className="text-sm text-yellow-800">
                                     AI hanya dapat membaca jurnal yang{" "}
                                     <strong>secara spesifik kamu bagikan</strong>. Jurnal dengan status
@@ -143,8 +148,8 @@ export function JournalPrivacySettings({
                     {localSettings.allow_ai_access && (
                         <>
                             {/* Default Share Toggle */}
-                            <div className="flex items-center justify-between">
-                                <div>
+                            <div className="flex items-start justify-between gap-3">
+                                <div className="min-w-0 flex-1">
                                     <Label className="font-medium">Default Bagikan ke AI</Label>
                                     <p className="text-sm text-gray-600 mt-1">
                                         Jurnal baru secara default akan dibagikan ke AI

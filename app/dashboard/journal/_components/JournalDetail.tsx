@@ -37,33 +37,49 @@ export function JournalDetail({
     return (
         <div className="flex flex-col h-full bg-white rounded-xl border border-gray-200 overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                <Button variant="ghost" size="sm" onClick={onBack}>
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Kembali
-                </Button>
-                <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="sm" onClick={onToggleAIShare}>
-                        {journal.share_with_ai ? (
-                            <>
-                                <EyeOff className="w-4 h-4 mr-2" />
-                                Sembunyikan dari AI
-                            </>
-                        ) : (
-                            <>
-                                <Eye className="w-4 h-4 mr-2" />
-                                Bagikan ke AI
-                            </>
-                        )}
+            <div className="p-3 sm:p-4 border-b border-gray-200">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <Button variant="ghost" size="sm" onClick={onBack} className="self-start">
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Kembali
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={onEdit}>
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={onDelete} className="text-red-600 hover:text-red-700">
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Hapus
-                    </Button>
+                    <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={onToggleAIShare}
+                            className="min-h-9"
+                            aria-label={journal.share_with_ai ? "Sembunyikan dari AI" : "Bagikan ke AI"}
+                        >
+                            {journal.share_with_ai ? (
+                                <>
+                                    <EyeOff className="w-4 h-4 mr-2" />
+                                    <span className="hidden sm:inline">Sembunyikan dari AI</span>
+                                    <span className="sm:hidden">Sembunyikan AI</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Eye className="w-4 h-4 mr-2" />
+                                    <span className="hidden sm:inline">Bagikan ke AI</span>
+                                    <span className="sm:hidden">Bagikan AI</span>
+                                </>
+                            )}
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={onEdit} className="min-h-9" aria-label="Edit jurnal">
+                            <Edit className="w-4 h-4 mr-2" />
+                            <span>Edit</span>
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={onDelete}
+                            className="text-red-600 hover:text-red-700 min-h-9"
+                            aria-label="Hapus jurnal"
+                        >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            <span>Hapus</span>
+                        </Button>
+                    </div>
                 </div>
             </div>
 
@@ -98,64 +114,64 @@ export function JournalDetail({
                             })}
                         </span>
                     </div>
-                        <div className="flex items-center gap-1">
-                            <FileText className="w-4 h-4" />
-                            <span>{journal.word_count} kata</span>
-                        </div>
-                        {journal.is_private && (
-                            <div className="flex items-center gap-1 text-green-600">
-                                <Lock className="w-4 h-4" />
-                                <span>Privat</span>
-                            </div>
-                        )}
-                        <div
-                            className={cn(
-                                "flex items-center gap-1",
-                                journal.share_with_ai
-                                    ? "text-purple-600"
-                                    : "text-gray-500"
-                            )}
-                        >
-                            {journal.share_with_ai ? (
-                                <>
-                                    <Eye className="w-4 h-4" />
-                                    <span>AI dapat membaca</span>
-                                </>
-                            ) : (
-                                <>
-                                    <EyeOff className="w-4 h-4" />
-                                    <span>AI tidak dapat membaca</span>
-                                </>
-                            )}
-                        </div>
+                    <div className="flex items-center gap-1">
+                        <FileText className="w-4 h-4" />
+                        <span>{journal.word_count} kata</span>
                     </div>
-
-                    {/* Tags */}
-                    {journal.tags && journal.tags.length > 0 && (
-                        <div className="flex items-center gap-2 flex-wrap mb-6">
-                            <Tag className="w-4 h-4 text-gray-400" />
-                            {journal.tags.map((tag) => (
-                                <span
-                                    key={tag}
-                                    className="px-2 py-1 bg-gray-100 rounded-full text-sm text-gray-600"
-                                >
-                                    #{tag}
-                                </span>
-                            ))}
+                    {journal.is_private && (
+                        <div className="flex items-center gap-1 text-green-600">
+                            <Lock className="w-4 h-4" />
+                            <span>Privat</span>
                         </div>
                     )}
-
-                    {/* AI Access Info */}
-                    {journal.ai_accessed_at && (
-                        <div className="mb-6 p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                            <div className="flex items-center gap-2 text-sm text-purple-700">
+                    <div
+                        className={cn(
+                            "flex items-center gap-1",
+                            journal.share_with_ai
+                                ? "text-purple-600"
+                                : "text-gray-500"
+                        )}
+                    >
+                        {journal.share_with_ai ? (
+                            <>
                                 <Eye className="w-4 h-4" />
-                                <span>
-                                    AI terakhir membaca jurnal ini:{" "}
-                                    {format(parseApiDate(journal.ai_accessed_at), "d MMMM yyyy 'pukul' HH:mm", {
-                                        locale: id,
-                                    })}
-                                </span>
+                                <span>AI dapat membaca</span>
+                            </>
+                        ) : (
+                            <>
+                                <EyeOff className="w-4 h-4" />
+                                <span>AI tidak dapat membaca</span>
+                            </>
+                        )}
+                    </div>
+                </div>
+
+                {/* Tags */}
+                {journal.tags && journal.tags.length > 0 && (
+                    <div className="flex items-center gap-2 flex-wrap mb-6">
+                        <Tag className="w-4 h-4 text-gray-400" />
+                        {journal.tags.map((tag) => (
+                            <span
+                                key={tag}
+                                className="px-2 py-1 bg-gray-100 rounded-full text-sm text-gray-600"
+                            >
+                                #{tag}
+                            </span>
+                        ))}
+                    </div>
+                )}
+
+                {/* AI Access Info */}
+                {journal.ai_accessed_at && (
+                    <div className="mb-6 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                        <div className="flex items-center gap-2 text-sm text-purple-700">
+                            <Eye className="w-4 h-4" />
+                            <span>
+                                AI terakhir membaca jurnal ini:{" "}
+                                {format(parseApiDate(journal.ai_accessed_at), "d MMMM yyyy 'pukul' HH:mm", {
+                                    locale: id,
+                                })}
+                            </span>
                         </div>
                     </div>
                 )}

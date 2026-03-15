@@ -1,13 +1,23 @@
 "use client";
 
-import { Search, Shield, User, Users, Ban, CheckCircle, BookX, BookOpen, MessageSquareOff, MessageSquare } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import { Search, Shield, Users, Ban, CheckCircle, BookX, BookOpen, MessageSquareOff, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { getUploadUrl } from "@/services/http/upload-url";
 import { formatDate } from "@/utils";
 import { useAdminUsers } from "./_hooks/useAdminUsers";
 
 export default function AdminUsersPage() {
+  const [featureBlockAction, setFeatureBlockAction] = useState<{
+    userId: number;
+    userName: string;
+    feature: "journal" | "forum";
+    currentlyBlocked: boolean;
+  } | null>(null);
+
   const {
     user,
     users,
@@ -49,6 +59,33 @@ export default function AdminUsersPage() {
     return <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">Aktif</span>;
   };
 
+  const getInitial = (name: string) => {
+    return (name || "U").trim().charAt(0).toUpperCase() || "U";
+  };
+
+  const getAvatarSrc = (avatar?: string) => {
+    const value = avatar?.trim();
+    if (!value) return null;
+    return value.startsWith("http") ? value : getUploadUrl(value);
+  };
+
+  const openFeatureBlockDialog = (userId: number, userName: string, feature: "journal" | "forum", currentlyBlocked: boolean) => {
+    setFeatureBlockAction({ userId, userName, feature, currentlyBlocked });
+  };
+
+  const handleConfirmFeatureBlock = async () => {
+    if (!featureBlockAction) return;
+
+    const { userId, feature, currentlyBlocked } = featureBlockAction;
+    if (feature === "journal") {
+      await handleJournalBlockToggle(userId, currentlyBlocked);
+    } else {
+      await handleForumBlockToggle(userId, currentlyBlocked);
+    }
+
+    setFeatureBlockAction(null);
+  };
+
   return (
     <div className="p-4 lg:p-6">
       <div className="mb-6">
@@ -71,8 +108,8 @@ export default function AdminUsersPage() {
 
       {/* Users Table */}
       <div className="bg-white rounded-xl border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        <div className="overflow-x-auto table-scroll-indicator">
+          <table className="w-full min-w-160">
             <thead className="bg-gray-50 border-b">
               <tr>
                 <th className="text-left p-4 font-medium text-gray-600">Pengguna</th>
@@ -80,7 +117,7 @@ export default function AdminUsersPage() {
                 <th className="text-left p-4 font-medium text-gray-600">Role</th>
                 <th className="text-left p-4 font-medium text-gray-600">Status</th>
                 <th className="text-left p-4 font-medium text-gray-600 hidden lg:table-cell">Terdaftar</th>
-                <th className="text-right p-4 font-medium text-gray-600">Aksi</th>
+                <th className="text-right p-4 font-medium text-gray-600 whitespace-nowrap w-44">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -117,18 +154,24 @@ export default function AdminUsersPage() {
                   <tr key={u.id} className={`hover:bg-gray-50 ${u.is_blocked ? 'bg-red-50/50' : ''}`}>
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${u.role === "admin" ? "bg-purple-100" : u.is_blocked ? "bg-red-100" : "bg-gray-100"
-                          }`}>
-                          {u.role === "admin" ? (
-                            <Shield className="w-5 h-5 text-purple-600" />
-                          ) : u.is_blocked ? (
-                            <Ban className="w-5 h-5 text-red-500" />
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden relative border border-gray-200">
+                          {getAvatarSrc(u.avatar) ? (
+                            <Image
+                              src={getAvatarSrc(u.avatar) as string}
+                              alt={u.name || "User"}
+                              fill
+                              sizes="40px"
+                              className="object-cover"
+                            />
                           ) : (
-                            <User className="w-5 h-5 text-gray-600" />
+                            <span className="text-primary font-bold">{getInitial(u.name)}</span>
                           )}
                         </div>
                         <div className="min-w-0">
-                          <p className="font-medium truncate">{u.name}</p>
+                          <p className="font-medium truncate flex items-center gap-1.5">
+                            {u.name}
+                            {u.role === "admin" && <Shield className="w-3.5 h-3.5 text-purple-600 shrink-0" />}
+                          </p>
                           <p className="text-xs text-gray-500 md:hidden truncate">{u.email}</p>
                         </div>
                       </div>
@@ -146,8 +189,12 @@ export default function AdminUsersPage() {
                       <span className="text-sm text-gray-500">{formatDate(u.created_at)}</span>
                     </td>
                     <td className="p-4">
-                      <div className="flex gap-1 justify-end">
-                        {u.role !== "admin" && (
+                      <div className="flex gap-1 justify-end items-center">
+                        {u.role === "admin" ? (
+                          <span className="text-xs px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
+                            Admin tidak bisa diedit
+                          </span>
+                        ) : (
                           <>
                             {u.is_blocked ? (
                               <Button
@@ -173,7 +220,7 @@ export default function AdminUsersPage() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => handleJournalBlockToggle(u.id)}
+                              onClick={() => openFeatureBlockDialog(u.id, u.name, "journal", Boolean(u.journal_blocked))}
                               className={u.journal_blocked
                                 ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
                                 : "text-rose-500 hover:text-rose-600 hover:bg-rose-50"}
@@ -188,7 +235,7 @@ export default function AdminUsersPage() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => handleForumBlockToggle(u.id)}
+                              onClick={() => openFeatureBlockDialog(u.id, u.name, "forum", Boolean(u.is_forum_blocked))}
                               className={u.is_forum_blocked
                                 ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
                                 : "text-violet-500 hover:text-violet-600 hover:bg-violet-50"}
@@ -262,6 +309,35 @@ export default function AdminUsersPage() {
               onClick={handleBlockAction}
             >
               {blockAction === "unblock" ? "Buka Blokir" : "Blokir"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Journal/Forum Block Confirmation Modal */}
+      <Dialog open={featureBlockAction !== null} onOpenChange={() => setFeatureBlockAction(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {featureBlockAction?.currentlyBlocked ? "Buka Blokir Fitur?" : "Blokir Fitur?"}
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-gray-600 py-4">
+            {featureBlockAction?.currentlyBlocked
+              ? `Pengguna ${featureBlockAction?.userName} akan bisa mengakses kembali fitur ${featureBlockAction?.feature === "journal" ? "jurnal" : "forum"}.`
+              : `Pengguna ${featureBlockAction?.userName} tidak akan bisa mengakses fitur ${featureBlockAction?.feature === "journal" ? "jurnal" : "forum"}.`}
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setFeatureBlockAction(null)}>Batal</Button>
+            <Button
+              className={featureBlockAction?.currentlyBlocked
+                ? "bg-emerald-500 hover:bg-emerald-600 text-white"
+                : "bg-rose-500 hover:bg-rose-600 text-white"}
+              onClick={handleConfirmFeatureBlock}
+            >
+              {featureBlockAction?.currentlyBlocked
+                ? `Buka Blokir ${featureBlockAction?.feature === "journal" ? "Jurnal" : "Forum"}`
+                : `Blokir ${featureBlockAction?.feature === "journal" ? "Jurnal" : "Forum"}`}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -10,7 +10,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 
 export function useStoriesPage() {
   const router = useRouter();
-  useAuthStore();
+  const { token, user } = useAuthStore();
   const isBlocked = useBlockStore((s) => s.isBlocked);
   const [stories, setStories] = useState<StoryCard[]>([]);
   const [featuredStories, setFeaturedStories] = useState<StoryCard[]>([]);
@@ -62,18 +62,63 @@ export function useStoriesPage() {
         category_id: selectedCategory !== "all" ? selectedCategory : undefined,
         search: urlSearchQuery.trim() || undefined, // Use URL value
       });
-      if (response.data && Array.isArray(response.data)) {
-        setStories(response.data);
-        setTotalPages(response.meta?.total_pages || 1);
-      } else {
-        setStories([]);
+
+      const publicStories = Array.isArray(response.data) ? response.data : [];
+      let combinedStories = publicStories;
+
+      if (token && user?.id) {
+        const myResponse = await storyService.getMyStories(token, { page: 1, limit: 100 });
+        const myStories = Array.isArray(myResponse.data) ? myResponse.data : [];
+
+        const myStoriesMap = new Map(
+          myStories.map((story) => [story.id, { ...story, is_own: true } as StoryCard])
+        );
+
+        const mergedPublic = publicStories.map((story) => {
+          const mine = myStoriesMap.get(story.id);
+          if (!mine) {
+            return story;
+          }
+          return {
+            ...story,
+            status: mine.status,
+            is_own: true,
+          };
+        });
+
+        // Show non-public own stories at top of first page so user can always see them.
+        const nonPublicOwnStories =
+          page === 1
+            ? myStories
+                .filter((story) => story.status && story.status !== "approved")
+                .filter((story) => {
+                  const text = `${story.title} ${story.excerpt}`.toLowerCase();
+                  const matchesSearch = !urlSearchQuery.trim() || text.includes(urlSearchQuery.trim().toLowerCase());
+                  const matchesCategory =
+                    selectedCategory === "all" ||
+                    !!story.categories?.some((cat) => cat.slug === selectedCategory);
+                  return matchesSearch && matchesCategory;
+                })
+                .map((story) => ({ ...story, is_own: true as const }))
+            : [];
+
+        const seen = new Set<string>();
+        combinedStories = [...nonPublicOwnStories, ...mergedPublic].filter((story) => {
+          if (seen.has(story.id)) return false;
+          seen.add(story.id);
+          return true;
+        });
       }
+
+      setStories(combinedStories);
+      setTotalPages(response.meta?.total_pages || 1);
     } catch (error) {
       console.error("Failed to load stories:", error);
+      setStories([]);
     } finally {
       setLoading(false);
     }
-  }, [page, sortBy, selectedCategory, urlSearchQuery]);
+  }, [page, sortBy, selectedCategory, urlSearchQuery, token, user?.id]);
 
   const loadFeaturedStories = useCallback(async () => {
     try {
@@ -108,7 +153,7 @@ export function useStoriesPage() {
     loadStories();
   }, [loadStories]);
 
-  const filteredStories = stories.filter((story) => story.is_anonymous || !isBlocked(story.author?.id));
+  const filteredStories = stories.filter((story) => story.is_own || story.is_anonymous || !isBlocked(story.author?.id));
   const filteredFeaturedStories = featuredStories.filter((story) => story.is_anonymous || !isBlocked(story.author?.id));
 
   return {

@@ -3,14 +3,16 @@
 import Image from "next/image";
 import { useState } from "react";
 import { ThumbsUp, ThumbsDown, Copy, Check, Pin } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AudioPlayer } from "./AudioPlayer";
 import { ChatMessage } from "@/types";
 import { cn, formatDate } from "@/utils";
+import { getUploadUrl } from "@/services/http/upload-url";
 
 interface ChatMessageBubbleProps {
   message: ChatMessage;
   userName?: string;
+  userAvatar?: string;
   onToggleLike: (messageId: number, isLike: boolean) => void;
   onTogglePin?: (messageId: number) => void;
 }
@@ -22,12 +24,17 @@ interface ChatMessageBubbleProps {
 export function ChatMessageBubble({
   message,
   userName,
+  userAvatar,
   onToggleLike,
   onTogglePin
 }: ChatMessageBubbleProps) {
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const isUser = message.role === "user";
   const isAudio = message.type === "audio";
+  const trimmedUserAvatar = userAvatar?.trim() || "";
+  const userAvatarSrc = trimmedUserAvatar
+    ? (trimmedUserAvatar.startsWith("http") ? trimmedUserAvatar : getUploadUrl(trimmedUserAvatar))
+    : "";
 
   const handleCopy = (content: string, messageId: number) => {
     navigator.clipboard.writeText(content);
@@ -194,6 +201,7 @@ export function ChatMessageBubble({
       {/* User Avatar */}
       {isUser && (
         <Avatar className="w-10 h-10 shrink-0 mt-1">
+          {userAvatarSrc && <AvatarImage src={userAvatarSrc} alt={userName || "User"} className="object-cover" />}
           <AvatarFallback className="bg-primary/10 text-primary font-bold">
             {userName?.charAt(0).toUpperCase() || "U"}
           </AvatarFallback>

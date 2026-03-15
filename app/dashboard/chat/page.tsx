@@ -64,13 +64,14 @@ export default function ChatPage() {
   } = useChatPage();
 
   return (
-    <div className="flex h-[calc(100vh-theme(spacing.16))] overflow-hidden bg-white">
+    <div className="flex h-[calc(100vh-(--spacing(16)))] overflow-hidden bg-white">
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col h-full relative">
         <ChatMessagesArea
           activeSession={activeSession}
           messages={messages}
           userName={user?.name}
+          userAvatar={user?.avatar}
           isSending={isSending}
           isRecording={isRecording}
           messagesEndRef={messagesEndRef}

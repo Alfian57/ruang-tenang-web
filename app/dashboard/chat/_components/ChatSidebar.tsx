@@ -151,23 +151,21 @@ export function ChatSidebar({
 
         {/* Session list */}
         <div className="flex-1 overflow-y-auto p-4 min-h-0">
-          {!(folders.length > 0 && filter === "all" && !activeFolderId && isUnassignedSectionCollapsed) && (
-            <ChatSidebarSessionList
-              sessions={displaySessions}
-              folders={folders}
-              filter={filter}
-              activeFolderId={activeFolderId || null}
-              activeSessionId={activeSessionId}
-              isCollapsed={isUnassignedSectionCollapsed}
-              onToggleCollapse={() => setIsUnassignedSectionCollapsed(!isUnassignedSectionCollapsed)}
-              onSessionSelect={onSessionSelect}
-              onClose={onClose}
-              onToggleFavorite={onToggleFavorite}
-              onToggleTrash={onToggleTrash}
-              onDeletePermanent={onDeletePermanent}
-              onMoveToFolder={onMoveToFolder}
-            />
-          )}
+          <ChatSidebarSessionList
+            sessions={displaySessions}
+            folders={folders}
+            filter={filter}
+            activeFolderId={activeFolderId || null}
+            activeSessionId={activeSessionId}
+            isCollapsed={isUnassignedSectionCollapsed}
+            onToggleCollapse={() => setIsUnassignedSectionCollapsed(!isUnassignedSectionCollapsed)}
+            onSessionSelect={onSessionSelect}
+            onClose={onClose}
+            onToggleFavorite={onToggleFavorite}
+            onToggleTrash={onToggleTrash}
+            onDeletePermanent={onDeletePermanent}
+            onMoveToFolder={onMoveToFolder}
+          />
         </div>
       </div>
 

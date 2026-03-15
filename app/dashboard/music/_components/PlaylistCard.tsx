@@ -50,12 +50,12 @@ export function PlaylistCard({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             className={cn(
-                "group relative bg-white rounded-xl border p-4 cursor-pointer transition-all hover:shadow-md",
+                "group relative max-w-full overflow-hidden bg-white rounded-xl border p-4 pr-5 sm:pr-4 cursor-pointer transition-all hover:shadow-md",
                 isSelected && "ring-2 ring-primary border-primary"
             )}
             onClick={onClick}
         >
-            <div className="flex items-center gap-4">
+            <div className="flex w-full items-start gap-3 sm:items-center sm:gap-4 min-w-0">
                 {/* Thumbnail */}
                 <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-linear-to-br from-purple-100 to-purple-200 shrink-0">
                     {playlist.thumbnail && !imgError ? (
@@ -88,22 +88,22 @@ export function PlaylistCard({
                 </div>
 
                 {/* Info */}
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-gray-900 truncate">{playlist.name}</h3>
+                <div className="flex-1 min-w-0 overflow-hidden pr-1">
+                    <div className="flex items-center gap-2 min-w-0">
+                        <h3 className="font-semibold text-gray-900 truncate min-w-0 flex-1">{playlist.name}</h3>
                         {playlist.is_admin_playlist ? (
                             <BadgeCheck className="w-4 h-4 text-primary shrink-0" />
                         ) : playlist.is_public ? (
-                            <Globe className="w-4 h-4 text-gray-400" />
+                            <Globe className="w-4 h-4 text-gray-400 shrink-0" />
                         ) : (
-                            <Lock className="w-4 h-4 text-gray-400" />
+                            <Lock className="w-4 h-4 text-gray-400 shrink-0" />
                         )}
                     </div>
                     <p className="text-sm text-gray-500">
                         {playlist.item_count} lagu
                     </p>
                     {playlist.description && (
-                        <p className="text-sm text-gray-400 truncate mt-1">
+                        <p className="text-sm text-gray-400 line-clamp-2 wrap-break-word mt-1">
                             {playlist.description}
                         </p>
                     )}
@@ -115,7 +115,7 @@ export function PlaylistCard({
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="h-8 w-8 shrink-0 mr-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <MoreHorizontal className="w-4 h-4" />

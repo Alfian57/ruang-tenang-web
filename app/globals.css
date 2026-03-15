@@ -238,6 +238,34 @@ button:disabled,
   background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);
 }
 
+/* Subtle left/right fade cues for horizontally scrollable admin tables on mobile */
+.table-scroll-indicator {
+  position: relative;
+}
+
+@media (max-width: 767px) {
+  .table-scroll-indicator::before,
+  .table-scroll-indicator::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 18px;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .table-scroll-indicator::before {
+    left: 0;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+  }
+
+  .table-scroll-indicator::after {
+    right: 0;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+  }
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;

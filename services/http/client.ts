@@ -2,6 +2,7 @@ import { env } from "@/config/env";
 import { ApiError, type RequestOptions } from "./types";
 import { toast } from "sonner";
 import { getUploadUrl } from "./upload-url";
+import { normalizeApiTimestampString } from "@/utils/date";
 
 const DEFAULT_TIMEOUT = 30_000; // 30 seconds
 const RATE_LIMIT_TOAST_COOLDOWN_MS = 5000;
@@ -9,9 +10,84 @@ const MAX_RETRIES = 2;
 const RETRY_DELAY_MS = 1500;
 let lastRateLimitToastAt = 0;
 
+const VALIDATION_FIELD_LABELS: Record<string, string> = {
+  Title: "Judul",
+  Content: "Konten",
+  CoverImage: "Cover cerita",
+  CategoryIDs: "Kategori",
+  Tags: "Tag",
+  TriggerWarningText: "Deskripsi trigger warning",
+  Email: "Email",
+  Password: "Kata sandi",
+  Name: "Nama",
+};
+
+const VALIDATION_TAG_MESSAGES: Record<string, string> = {
+  required: "wajib diisi.",
+  email: "format email tidak valid.",
+  oneof: "memiliki nilai yang tidak valid.",
+};
+
+function getFriendlyFieldLabel(rawField: string): string {
+  const key = rawField.split(".").pop() || rawField;
+  return VALIDATION_FIELD_LABELS[key] || key;
+}
+
+function getFriendlyTagMessage(field: string, tag: string): string {
+  const key = field.split(".").pop() || field;
+
+  if (tag === "min") {
+    if (key === "Title") return "minimal 5 karakter.";
+    if (key === "Content") return "minimal 200 karakter.";
+    if (key === "CategoryIDs") return "minimal pilih 1 kategori.";
+    return "belum memenuhi batas minimum.";
+  }
+
+  if (tag === "max") {
+    if (key === "CategoryIDs") return "maksimal 3 kategori.";
+    if (key === "Tags") return "maksimal 5 tag.";
+    if (key === "Title") return "maksimal 200 karakter.";
+    if (key === "Content") return "maksimal 50000 karakter.";
+    return "melebihi batas maksimum.";
+  }
+
+  return VALIDATION_TAG_MESSAGES[tag] || "tidak valid.";
+}
+
+function normalizeApiErrorMessage(message: string): string {
+  const raw = (message || "").trim();
+  if (!raw) return "Terjadi kesalahan. Silakan coba lagi.";
+
+  const validationMatches = Array.from(
+    raw.matchAll(/validation for '([^']+)' failed on the '([^']+)' tag/gi)
+  );
+
+  if (validationMatches.length > 0) {
+    const friendly = validationMatches
+      .map((m) => {
+        const field = m[1];
+        const tag = m[2];
+        return `${getFriendlyFieldLabel(field)} ${getFriendlyTagMessage(field, tag)}`;
+      })
+      .filter(Boolean);
+
+    if (friendly.length > 0) {
+      const unique = Array.from(new Set(friendly));
+      return `Data belum valid: ${unique.join(" ")}`;
+    }
+  }
+
+  if (/^Data tidak valid:/i.test(raw)) {
+    return "Data yang dimasukkan belum valid. Mohon periksa kembali isian Anda.";
+  }
+
+  return raw;
+}
+
 function normalizeUploadsDeep<T>(value: T): T {
   if (typeof value === "string") {
-    return (value.startsWith("/uploads/") ? getUploadUrl(value) : value) as T;
+    const uploadNormalized = value.startsWith("/uploads/") ? getUploadUrl(value) : value;
+    return normalizeApiTimestampString(uploadNormalized) as T;
   }
 
   if (Array.isArray(value)) {
@@ -151,7 +227,7 @@ class HttpClient {
 
       if (!response.ok) {
         const apiError = new ApiError({
-          message: data.message || data.error || "An error occurred",
+          message: normalizeApiErrorMessage(data.message || data.error || "An error occurred"),
           code: data.code,
           status: response.status,
           details: data.details,
@@ -234,7 +310,7 @@ class HttpClient {
     const data = await response.json();
     if (!response.ok) {
       throw new ApiError({
-        message: data.message || data.error || "Upload failed",
+        message: normalizeApiErrorMessage(data.message || data.error || "Upload failed"),
         code: data.code,
         status: response.status,
         details: data.details,

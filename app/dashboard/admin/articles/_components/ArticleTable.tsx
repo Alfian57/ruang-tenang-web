@@ -50,8 +50,8 @@ export function ArticleTable({
 
     return (
         <div className="bg-white rounded-xl border overflow-hidden">
-            <div className="overflow-x-auto">
-                <table className="w-full">
+            <div className="overflow-x-auto table-scroll-indicator">
+                <table className="w-full min-w-lg">
                     <thead className="bg-gray-50 border-b">
                         <tr>
                             <th className="text-left p-4 font-medium text-gray-600">Artikel</th>
@@ -59,7 +59,7 @@ export function ArticleTable({
                             <th className="text-left p-4 font-medium text-gray-600 hidden lg:table-cell">Penulis</th>
                             <th className="text-left p-4 font-medium text-gray-600 hidden sm:table-cell">Status</th>
                             <th className="text-left p-4 font-medium text-gray-600 hidden lg:table-cell">Tanggal</th>
-                            <th className="text-right p-4 font-medium text-gray-600">Aksi</th>
+                            <th className="text-right p-4 font-medium text-gray-600 whitespace-nowrap w-36">Aksi</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y">

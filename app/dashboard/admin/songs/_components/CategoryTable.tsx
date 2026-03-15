@@ -21,13 +21,13 @@ export function CategoryTable({
 }: CategoryTableProps) {
     return (
         <div className="bg-white rounded-xl border overflow-hidden">
-            <div className="overflow-x-auto">
-                <table className="w-full">
+            <div className="overflow-x-auto table-scroll-indicator">
+                <table className="w-full min-w-115">
                     <thead className="bg-gray-50 border-b">
                         <tr>
                             <th className="text-left p-4 font-medium text-gray-600">Kategori</th>
-                            <th className="text-left p-4 font-medium text-gray-600">Jumlah Lagu</th>
-                            <th className="text-right p-4 font-medium text-gray-600">Aksi</th>
+                            <th className="text-left p-4 font-medium text-gray-600 whitespace-nowrap w-32.5">Jumlah Lagu</th>
+                            <th className="text-right p-4 font-medium text-gray-600 whitespace-nowrap w-23">Aksi</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y">
@@ -52,12 +52,12 @@ export function CategoryTable({
                                             <span className="font-medium">{cat.name}</span>
                                         </div>
                                     </td>
-                                    <td className="p-4">
-                                        <span className="px-2 py-1 text-sm bg-blue-100 text-blue-700 rounded-full">
+                                    <td className="p-4 whitespace-nowrap">
+                                        <span className="inline-flex whitespace-nowrap px-2 py-1 text-sm bg-blue-100 text-blue-700 rounded-full">
                                             {cat.song_count || 0} lagu
                                         </span>
                                     </td>
-                                    <td className="p-4">
+                                    <td className="p-4 whitespace-nowrap">
                                         <div className="flex gap-1 justify-end">
                                             <Button
                                                 variant="ghost"

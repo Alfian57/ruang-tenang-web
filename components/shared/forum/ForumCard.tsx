@@ -7,13 +7,34 @@ import { id } from "date-fns/locale";
 import type { Forum } from "@/types/forum";
 import { cn } from "@/utils";
 import { ROUTES } from "@/lib/routes";
+import { parseApiDate } from "@/utils/date";
 
 interface ForumCardProps {
   forum: Forum;
   className?: string;
 }
 
+const CATEGORY_BADGE_STYLES = [
+  "bg-blue-50 text-blue-700 border-blue-200",
+  "bg-emerald-50 text-emerald-700 border-emerald-200",
+  "bg-purple-50 text-purple-700 border-purple-200",
+  "bg-amber-50 text-amber-700 border-amber-200",
+  "bg-rose-50 text-rose-700 border-rose-200",
+  "bg-cyan-50 text-cyan-700 border-cyan-200",
+] as const;
+
+function getCategoryBadgeClass(categoryName?: string): string {
+  if (!categoryName) {
+    return "bg-gray-100 text-gray-700 border-gray-200";
+  }
+
+  const hash = Array.from(categoryName).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return CATEGORY_BADGE_STYLES[hash % CATEGORY_BADGE_STYLES.length];
+}
+
 export function ForumCard({ forum, className }: ForumCardProps) {
+  const categoryName = forum.category?.name || "Umum";
+
   return (
     <Link
       href={ROUTES.forumDetail(forum.slug)}
@@ -26,28 +47,27 @@ export function ForumCard({ forum, className }: ForumCardProps) {
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-1 w-full">
             <div className="flex items-center gap-2 mb-1 flex-wrap">
-              {forum.category ? (
-                <span className="text-xs font-medium px-2 py-0.5 rounded bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
-                  {forum.category.name}
-                </span>
-              ) : (
-                <span className="text-xs font-medium px-2 py-0.5 rounded bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
-                  Umum
-                </span>
-              )}
+              <span
+                className={cn(
+                  "inline-flex items-center text-xs font-medium px-2 py-0.5 rounded border max-w-full",
+                  getCategoryBadgeClass(categoryName)
+                )}
+              >
+                <span className="truncate max-w-45">{categoryName}</span>
+              </span>
               <span className="text-xs text-muted-foreground">•</span>
               <span className="text-xs text-muted-foreground flex items-center gap-1">
                 <User className="w-3 h-3" />
                 {forum.user?.name || "Anonymous"}
               </span>
             </div>
-            <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1 break-words">
+            <h3 className="font-semibold text-lg text-foreground group-hover:text-primary transition-colors line-clamp-1 wrap-break-word">
               {forum.title}
             </h3>
           </div>
         </div>
 
-        <p className="text-muted-foreground line-clamp-2 text-sm break-words">
+        <p className="text-muted-foreground line-clamp-2 text-sm wrap-break-word">
           {forum.content || "Tidak ada preview konten"}
         </p>
 
@@ -65,7 +85,7 @@ export function ForumCard({ forum, className }: ForumCardProps) {
 
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Clock className="w-3 h-3" />
-            <span>{formatDistanceToNow(new Date(forum.created_at), { addSuffix: true, locale: id })}</span>
+            <span>{formatDistanceToNow(parseApiDate(forum.created_at), { addSuffix: true, locale: id })}</span>
           </div>
         </div>
       </div>

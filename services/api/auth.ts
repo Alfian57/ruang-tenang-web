@@ -20,6 +20,7 @@ const userSchema: z.ZodType<User, z.ZodTypeDef, unknown> = z
     is_suspended: z.boolean().optional(),
     suspension_end: z.string().optional(),
     is_banned: z.boolean().optional(),
+    is_forum_blocked: z.boolean().optional(),
     created_at: z.string().catch(""),
   })
   .passthrough();

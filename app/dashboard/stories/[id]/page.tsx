@@ -6,6 +6,7 @@ import {
   Flag,
   AlertTriangle,
   MoreVertical,
+  Clock3,
 } from "lucide-react";
 import { ReportModal, BlockUserButton } from "@/components/shared/moderation";
 import {
@@ -31,6 +32,7 @@ export default function StoryDetailPage() {
     newComment,
     submittingComment,
     heartLoading,
+    canComment,
     router,
     setShowContent,
     setNewComment,
@@ -73,7 +75,7 @@ export default function StoryDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50/50 to-white">
+    <div className="min-h-screen bg-linear-to-b from-amber-50/50 to-white">
       {/* Header */}
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="p-4 lg:p-6">
@@ -103,7 +105,7 @@ export default function StoryDetailPage() {
                       contentId={parseInt(storyId)}
                       userId={story?.author?.id}
                       trigger={
-                        <div className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 cursor-pointer">
+                        <div className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 cursor-pointer">
                           <Flag className="w-4 h-4 mr-2" />
                           Laporkan Kisah
                         </div>
@@ -123,6 +125,20 @@ export default function StoryDetailPage() {
       </div>
 
       <div className="p-4 lg:p-6">
+        {user?.id === story.author?.id && story.status !== "approved" && (
+          <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
+            <div className="flex items-start gap-3">
+              <Clock3 className="w-5 h-5 mt-0.5 text-amber-600" />
+              <div>
+                <p className="font-semibold">Kisah Anda sedang menunggu moderasi</p>
+                <p className="text-sm text-amber-800 mt-1">
+                  Kisah belum tampil di halaman publik sampai disetujui admin.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Trigger Warning Overlay */}
         {story.has_trigger_warning && !showContent && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-8 text-center mb-8">
@@ -164,6 +180,7 @@ export default function StoryDetailPage() {
               comments={comments}
               commentCount={story.comment_count}
               loadingComments={loadingComments}
+              canComment={canComment}
               token={token}
               userId={user?.id}
               newComment={newComment}

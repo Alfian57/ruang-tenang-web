@@ -8,13 +8,15 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { useAuthStore } from "@/store/authStore";
 import { useBlockStore } from "@/store/blockStore";
 import { toast } from "sonner";
+import { ApiError } from "@/services/http/types";
 
 export function useForumPage() {
   const [forums, setForums] = useState<Forum[]>([]);
   const [categories, setCategories] = useState<ForumCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { token } = useAuthStore();
+  const { token, user } = useAuthStore();
   const isBlocked = useBlockStore((s) => s.isBlocked);
+  const isForumBlocked = Boolean(user?.is_forum_blocked);
 
   // Create Modal State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -84,6 +86,11 @@ export function useForumPage() {
   const handleCreateForum = async () => {
     if (!newTitle.trim() || !token) return;
 
+    if (isForumBlocked) {
+      toast.error("Akses forum kamu sedang diblokir oleh admin");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const response = await forumService.create(token, {
@@ -106,7 +113,11 @@ export function useForumPage() {
       }
     } catch (error) {
       console.error("Failed to create forum:", error);
-      toast.error("Gagal membuat topik");
+      if (error instanceof ApiError && error.status === 403) {
+        toast.error(error.message || "Akses forum kamu sedang diblokir oleh admin");
+      } else {
+        toast.error("Gagal membuat topik");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -125,6 +136,7 @@ export function useForumPage() {
     newContent,
     newCategoryId,
     isSubmitting,
+    isForumBlocked,
     setSearch,
     setSelectedCategory,
     setIsCreateOpen,

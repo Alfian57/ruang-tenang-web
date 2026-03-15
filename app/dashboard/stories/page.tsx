@@ -23,6 +23,36 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useStoriesPage } from "./_hooks/useStoriesPage";
 
+function getStatusLabel(status?: string): string {
+  switch (status) {
+    case "pending":
+      return "Menunggu Moderasi";
+    case "rejected":
+      return "Ditolak";
+    case "revision_requested":
+      return "Perlu Revisi";
+    case "approved":
+      return "Disetujui";
+    default:
+      return "Status Tidak Diketahui";
+  }
+}
+
+function getStatusBadgeClass(status?: string): string {
+  switch (status) {
+    case "pending":
+      return "bg-amber-100 text-amber-800 border-amber-200";
+    case "rejected":
+      return "bg-rose-100 text-rose-800 border-rose-200";
+    case "revision_requested":
+      return "bg-orange-100 text-orange-800 border-orange-200";
+    case "approved":
+      return "bg-emerald-100 text-emerald-800 border-emerald-200";
+    default:
+      return "bg-gray-100 text-gray-700 border-gray-200";
+  }
+}
+
 export default function StoriesPage() {
   const {
     router,
@@ -59,7 +89,7 @@ export default function StoriesPage() {
                   className="group relative theme-story-bg rounded-2xl overflow-hidden border theme-story-border hover:shadow-lg transition-all"
                 >
                   {story.cover_image && (
-                    <div className="h-40 overflow-hidden">
+                    <div className="relative h-40 overflow-hidden">
                       <Image
                         src={story.cover_image}
                         alt={story.title}
@@ -170,7 +200,7 @@ export default function StoriesPage() {
                   className="group bg-white rounded-xl border hover:shadow-lg transition-all overflow-hidden"
                 >
                   {story.cover_image && (
-                    <div className="h-40 overflow-hidden bg-gray-100">
+                    <div className="relative h-40 overflow-hidden bg-gray-100">
                       <Image
                         src={story.cover_image}
                         alt={story.title}
@@ -180,6 +210,18 @@ export default function StoriesPage() {
                     </div>
                   )}
                   <div className="p-4">
+                    {story.is_own && (
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <Badge className="bg-blue-100 text-blue-800 border border-blue-200">Milik Anda</Badge>
+                        <Badge className={getStatusBadgeClass(story.status)}>
+                          {getStatusLabel(story.status)}
+                        </Badge>
+                        {story.status !== "approved" && (
+                          <span className="text-[11px] font-medium text-amber-700">Tidak Publik</span>
+                        )}
+                      </div>
+                    )}
+
                     {story.has_trigger_warning && (
                       <Badge variant="destructive" className="mb-2 gap-1">
                         <AlertTriangle className="w-3 h-3" />

@@ -12,14 +12,17 @@ export function useProgressMap() {
   const [selectedRegion, setSelectedRegion] = useState<MapRegion | null>(null);
   const [loading, setLoading] = useState(true);
   const [claimingLandmark, setClaimingLandmark] = useState<string | null>(null);
+  const selectedRegionKey = selectedRegion?.region_key;
 
   const fetchMap = useCallback(async () => {
-    if (!token) return;
+    if (!token) return null;
     try {
       const response = await progressMapService.getFullMap(token);
       setMapData(response.data);
+      return response.data;
     } catch {
       toast.error("Gagal memuat peta progress");
+      return null;
     } finally {
       setLoading(false);
     }
@@ -28,6 +31,18 @@ export function useProgressMap() {
   useEffect(() => {
     fetchMap();
   }, [fetchMap]);
+
+  useEffect(() => {
+    if (!selectedRegionKey || !mapData) return;
+
+    const updatedRegion = mapData.regions.find(
+      (r) => r.region_key === selectedRegionKey
+    );
+
+    if (updatedRegion) {
+      setSelectedRegion(updatedRegion);
+    }
+  }, [mapData, selectedRegionKey]);
 
   const handleSelectRegion = useCallback((region: MapRegion) => {
     setSelectedRegion(region);
@@ -44,10 +59,10 @@ export function useProgressMap() {
       try {
         await progressMapService.claimLandmarkReward(token, landmarkId);
         toast.success("Reward berhasil diklaim!");
-        await fetchMap();
+        const freshMap = await fetchMap();
         // Update selected region if open
-        if (selectedRegion) {
-          const updated = mapData?.regions.find(
+        if (selectedRegion && freshMap) {
+          const updated = freshMap.regions.find(
             (r) => r.region_key === selectedRegion.region_key
           );
           if (updated) setSelectedRegion(updated);
@@ -58,7 +73,7 @@ export function useProgressMap() {
         setClaimingLandmark(null);
       }
     },
-    [token, claimingLandmark, fetchMap, selectedRegion, mapData]
+    [token, claimingLandmark, fetchMap, selectedRegion]
   );
 
   return {

@@ -84,8 +84,8 @@ export default function AdminForumsPage() {
           </div>
 
           <div className="bg-white rounded-xl border overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto table-scroll-indicator">
+              <table className="w-full min-w-160">
                 <thead className="bg-gray-50 border-b">
                   <tr>
                     <th className="text-left p-4 font-medium text-gray-600">Topik</th>
@@ -93,7 +93,7 @@ export default function AdminForumsPage() {
                     <th className="text-left p-4 font-medium text-gray-600 hidden md:table-cell">Penulis</th>
                     <th className="text-left p-4 font-medium text-gray-600">Status</th>
                     <th className="text-left p-4 font-medium text-gray-600 hidden lg:table-cell">Tanggal</th>
-                    <th className="text-right p-4 font-medium text-gray-600">Aksi</th>
+                    <th className="text-right p-4 font-medium text-gray-600 whitespace-nowrap w-28">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -199,52 +199,54 @@ export default function AdminForumsPage() {
           </div>
 
           <div className="bg-white rounded-xl border overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="text-left p-4 font-medium text-gray-600">Nama Kategori</th>
-                  <th className="text-left p-4 font-medium text-gray-600">Tanggal Dibuat</th>
-                  <th className="text-right p-4 font-medium text-gray-600">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {categories.length === 0 ? (
+            <div className="overflow-x-auto table-scroll-indicator">
+              <table className="w-full min-w-120">
+                <thead className="bg-gray-50 border-b">
                   <tr>
-                    <td colSpan={3} className="py-16 text-center">
-                      <Tag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-500">Belum ada kategori</h3>
-                      <p className="text-gray-400 text-sm mt-1">Klik &quot;Tambah Kategori&quot; untuk memulai</p>
-                    </td>
+                    <th className="text-left p-4 font-medium text-gray-600">Nama Kategori</th>
+                    <th className="text-left p-4 font-medium text-gray-600 whitespace-nowrap">Tanggal Dibuat</th>
+                    <th className="text-right p-4 font-medium text-gray-600 whitespace-nowrap w-23">Aksi</th>
                   </tr>
-                ) : (
-                  categories.map((cat) => (
-                    <tr key={cat.id} className="hover:bg-gray-50">
-                      <td className="p-4 font-medium">{cat.name}</td>
-                      <td className="p-4 text-gray-500 text-sm">{formatDate(cat.created_at)}</td>
-                      <td className="p-4">
-                        <div className="flex gap-1 justify-end">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => openCategoryModal(cat)}
-                          >
-                            <Pencil className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-red-500 hover:text-red-600"
-                            onClick={() => setDeleteId(cat.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
+                </thead>
+                <tbody className="divide-y">
+                  {categories.length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="py-16 text-center">
+                        <Tag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-500">Belum ada kategori</h3>
+                        <p className="text-gray-400 text-sm mt-1">Klik &quot;Tambah Kategori&quot; untuk memulai</p>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    categories.map((cat) => (
+                      <tr key={cat.id} className="hover:bg-gray-50">
+                        <td className="p-4 font-medium">{cat.name}</td>
+                        <td className="p-4 text-gray-500 text-sm">{formatDate(cat.created_at)}</td>
+                        <td className="p-4">
+                          <div className="flex gap-1 justify-end">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => openCategoryModal(cat)}
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-red-500 hover:text-red-600"
+                              onClick={() => setDeleteId(cat.id)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </TabsContent>
       </Tabs>

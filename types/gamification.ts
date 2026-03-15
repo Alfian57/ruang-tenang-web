@@ -274,6 +274,8 @@ export interface StoryCard {
   cover_image: string;
   is_anonymous: boolean;
   has_trigger_warning: boolean;
+  status?: "pending" | "approved" | "rejected" | "revision_requested";
+  is_own?: boolean;
   heart_count: number;
   comment_count: number;
   is_featured: boolean;
