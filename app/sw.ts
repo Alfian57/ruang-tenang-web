@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
 import { defaultCache } from "@serwist/next/worker";
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
-import { Serwist } from "serwist";
+import { Serwist, NetworkFirst, StaleWhileRevalidate, ExpirationPlugin } from "serwist";
 
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
@@ -11,12 +11,99 @@ declare global {
 
 declare const self: ServiceWorkerGlobalScope & typeof globalThis;
 
+// Custom runtime caching for API routes
+const apiCacheStrategies = [
+  // Articles — StaleWhileRevalidate (fast offline reads, update in background)
+  {
+    matcher: ({ url }: { url: URL }) => url.pathname.includes("/api/v1/articles"),
+    handler: new StaleWhileRevalidate({
+      cacheName: "api-articles",
+      plugins: [
+        new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 24 * 60 * 60 }),
+      ],
+    }),
+  },
+  // Journals — NetworkFirst (prefer fresh data, fallback to cache)
+  {
+    matcher: ({ url }: { url: URL }) => url.pathname.includes("/api/v1/journals"),
+    handler: new NetworkFirst({
+      cacheName: "api-journals",
+      networkTimeoutSeconds: 5,
+      plugins: [
+        new ExpirationPlugin({ maxEntries: 200, maxAgeSeconds: 7 * 24 * 60 * 60 }),
+      ],
+    }),
+  },
+  // Moods — NetworkFirst
+  {
+    matcher: ({ url }: { url: URL }) => url.pathname.includes("/api/v1/user-moods"),
+    handler: new NetworkFirst({
+      cacheName: "api-moods",
+      networkTimeoutSeconds: 5,
+      plugins: [
+        new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 24 * 60 * 60 }),
+      ],
+    }),
+  },
+  // Gamification — NetworkFirst
+  {
+    matcher: ({ url }: { url: URL }) =>
+      url.pathname.includes("/api/v1/gamification") ||
+      url.pathname.includes("/api/v1/community-progress") ||
+      url.pathname.includes("/api/v1/badges") ||
+      url.pathname.includes("/api/v1/level-configs"),
+    handler: new NetworkFirst({
+      cacheName: "api-gamification",
+      networkTimeoutSeconds: 5,
+      plugins: [
+        new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 24 * 60 * 60 }),
+      ],
+    }),
+  },
+  // Chat sessions — NetworkFirst
+  {
+    matcher: ({ url }: { url: URL }) => url.pathname.includes("/api/v1/chat"),
+    handler: new NetworkFirst({
+      cacheName: "api-chat",
+      networkTimeoutSeconds: 5,
+      plugins: [
+        new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 7 * 24 * 60 * 60 }),
+      ],
+    }),
+  },
+  // Songs / music metadata — StaleWhileRevalidate
+  {
+    matcher: ({ url }: { url: URL }) =>
+      url.pathname.includes("/api/v1/songs") ||
+      url.pathname.includes("/api/v1/song-categories"),
+    handler: new StaleWhileRevalidate({
+      cacheName: "api-music",
+      plugins: [
+        new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 24 * 60 * 60 }),
+      ],
+    }),
+  },
+  // Forum — StaleWhileRevalidate
+  {
+    matcher: ({ url }: { url: URL }) => url.pathname.includes("/api/v1/forums"),
+    handler: new StaleWhileRevalidate({
+      cacheName: "api-forums",
+      plugins: [
+        new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 24 * 60 * 60 }),
+      ],
+    }),
+  },
+];
+
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
-  runtimeCaching: defaultCache,
+  runtimeCaching: [
+    ...apiCacheStrategies,
+    ...defaultCache,
+  ],
   fallbacks: {
     entries: [
       {

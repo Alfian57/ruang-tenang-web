@@ -3,6 +3,7 @@ import { ApiError, type RequestOptions } from "./types";
 import { toast } from "sonner";
 import { getUploadUrl } from "./upload-url";
 import { normalizeApiTimestampString } from "@/utils/date";
+import { enqueueMutation } from "@/lib/offline";
 
 const DEFAULT_TIMEOUT = 30_000; // 30 seconds
 const RATE_LIMIT_TOAST_COOLDOWN_MS = 5000;
@@ -148,6 +149,7 @@ function normalizePagination<T>(data: T): T {
  * - Standardized error parsing
  * - Rate limit handling (429)
  * - Query param builder
+ * - **Offline mutation queueing** (POST/PUT/DELETE → IndexedDB when offline)
  */
 class HttpClient {
   private baseUrl: string;
@@ -272,10 +274,30 @@ class HttpClient {
         });
       }
 
-      // Handle network errors
+      // Handle network errors — queue mutations for offline replay
       if (error instanceof TypeError) {
+        const method = (fetchOptions.method || "GET").toUpperCase();
+
+        // For mutating requests, queue them for later sync
+        if (
+          (method === "POST" || method === "PUT" || method === "DELETE") &&
+          token
+        ) {
+          await enqueueMutation({
+            endpoint,
+            method: method as "POST" | "PUT" | "DELETE",
+            body,
+            token,
+            tag: endpoint.split("/")[1] || "unknown", // e.g. "journals", "user-moods"
+          });
+
+          // Return optimistic response so the UI doesn't break
+          toast.info("Tersimpan offline — akan disinkronkan saat koneksi kembali");
+          return { data: body, _offline: true } as T;
+        }
+
         throw new ApiError({
-          message: "Network error - periksa koneksi internet Anda",
+          message: "Tidak ada koneksi internet",
           code: "NETWORK_ERROR",
           status: 0,
         });

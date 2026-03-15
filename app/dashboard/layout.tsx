@@ -11,6 +11,8 @@ import { AuthProvider, useAuth } from "@/components/providers/AuthProvider";
 import { MoodCheckinProvider } from "@/components/providers/MoodCheckinProvider";
 import { GlobalMusicPlayer } from "@/components/layout";
 import { DailyTaskFAB } from "@/components/shared/gamification";
+import { OfflineIndicator } from "@/components/pwa/OfflineIndicator";
+import { initAutoSync } from "@/lib/offline";
 import { cn } from "@/utils";
 import { useAuthStore } from "@/store/authStore";
 import { useMusicPlayerStore } from "@/store/musicPlayerStore";
@@ -60,6 +62,12 @@ function DashboardContent({
     }
   }, [token, loadBlockedUsers]);
 
+  // Initialize offline auto-sync
+  useEffect(() => {
+    const cleanup = initAutoSync();
+    return cleanup;
+  }, []);
+
   const handleLogout = useCallback(() => {
     logout();
     router.push(ROUTES.LOGIN);
@@ -81,6 +89,9 @@ function DashboardContent({
         ? `theme-${user.profile_theme} theme-bg`
         : "bg-gray-50"
     )}>
+      {/* Offline Indicator */}
+      <OfflineIndicator />
+
       {/* Modals */}
       <LogoutModal
         isOpen={showLogoutModal}
