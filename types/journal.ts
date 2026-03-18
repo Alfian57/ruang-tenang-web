@@ -24,6 +24,7 @@ export interface Journal {
 export interface JournalSettings {
   id: number;
   user_id: number;
+  is_blocked?: boolean;
   allow_ai_access: boolean;
   ai_context_days: number;
   ai_context_max_entries: number;

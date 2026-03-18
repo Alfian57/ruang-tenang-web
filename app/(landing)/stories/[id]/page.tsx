@@ -38,8 +38,8 @@ export default function StoryDetailPage() {
     const fetchComments = useCallback(async (page: number = 1) => {
         try {
             const response = await storyService.getComments(id, { page, limit: 20 }, token || undefined);
-            setComments(response.data || []);
-            setTotalCommentPages(response.meta?.total_pages || 1);
+            setComments(response.data?.comments || []);
+            setTotalCommentPages(response.data?.total_pages || response.meta?.total_pages || 1);
             setCommentPage(page);
         } catch {
             // silently ignore

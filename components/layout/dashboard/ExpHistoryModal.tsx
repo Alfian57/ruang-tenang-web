@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
 import { X, Calendar, Filter, ChevronLeft, ChevronRight, Loader2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -108,9 +109,8 @@ export function ExpHistoryModal({
 
   const fetchLevelConfigs = useCallback(async () => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const response = await communityService.getLevelConfigs() as any;
-      const configs = response.data as LevelConfig[];
+      const response = await communityService.getLevelConfigs();
+      const configs: LevelConfig[] = response.data || [];
       setLevelConfigs(configs);
 
       // Find next level
@@ -158,7 +158,7 @@ export function ExpHistoryModal({
       {/* Modal */}
       <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden mx-4">
         {/* Header */}
-        <div 
+        <div
           className="p-6 text-white relative overflow-hidden shrink-0"
           style={{ background: `linear-gradient(to right, var(--theme-fab-from, var(--color-primary)), var(--theme-fab-to, var(--color-secondary, var(--color-primary))))` }}
         >
@@ -171,7 +171,15 @@ export function ExpHistoryModal({
 
           <div className="flex items-center gap-4">
             {badgeIcon && (badgeIcon.startsWith("/") || badgeIcon.startsWith("http")) ? (
-              <img src={badgeIcon} alt={badgeName} className="w-12 h-12 object-contain" />
+              <Image
+                src={badgeIcon}
+                alt={badgeName}
+                width={48}
+                height={48}
+                className="w-12 h-12 object-contain"
+                unoptimized
+                loader={({ src }) => src}
+              />
             ) : (
               <div className="text-5xl">{badgeIcon || "🌱"}</div>
             )}
@@ -288,7 +296,7 @@ export function ExpHistoryModal({
                   className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <div 
+                    <div
                       className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
                       style={{ backgroundColor: "color-mix(in srgb, var(--color-primary) 15%, transparent)" }}
                     >
@@ -310,7 +318,7 @@ export function ExpHistoryModal({
                     </div>
                   </div>
                   <div className="text-right">
-                    <span 
+                    <span
                       className="inline-flex items-center px-2.5 py-1 rounded-full text-sm font-bold text-white shadow-sm"
                       style={{ background: `linear-gradient(to right, var(--theme-fab-from, var(--color-primary)), var(--theme-fab-to, var(--color-secondary, var(--color-primary))))` }}
                     >

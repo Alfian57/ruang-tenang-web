@@ -79,8 +79,8 @@ export function PlaylistDialog({
         try {
             setIsUploading(true);
             const res = await uploadService.uploadImage(token, file);
-            if (res.data && res.data.urls && res.data.urls.length > 0) {
-                setThumbnail(res.data.urls[0]);
+            if (res.data?.url) {
+                setThumbnail(res.data.url);
                 toast.success("Gambar berhasil diunggah");
             }
         } catch (error) {
@@ -122,13 +122,13 @@ export function PlaylistDialog({
                         <div className="space-y-3">
                             <Label>Cover Playlist <span className="text-red-500">*</span></Label>
                             <div className="flex gap-4 items-start">
-                                <div 
+                                <div
                                     className="relative w-24 h-24 rounded-xl bg-gray-50 border border-dashed border-gray-200 flex items-center justify-center shrink-0 overflow-hidden group cursor-pointer"
                                     onClick={() => !isUploading && !isLoading && fileInputRef.current?.click()}
                                 >
                                     {thumbnail ? (
                                         <>
-                                            <Image 
+                                            <Image
                                                 src={thumbnail}
                                                 alt="Preview"
                                                 fill

@@ -64,7 +64,15 @@ export function TopHeader({
                 <div className="flex items-center gap-2">
                   {user?.badge_icon ? (
                     <div className="w-6 h-6 shrink-0 flex items-center justify-center ml-0.5">
-                      <img src={user.badge_icon} alt={user?.badge_name || "Badge"} className="w-full h-full object-contain" />
+                      <Image
+                        src={user.badge_icon}
+                        alt={user?.badge_name || "Badge"}
+                        width={24}
+                        height={24}
+                        className="w-full h-full object-contain"
+                        unoptimized
+                        loader={({ src }) => src}
+                      />
                     </div>
                   ) : (
                     <span className="text-lg ml-0.5">🌱</span>

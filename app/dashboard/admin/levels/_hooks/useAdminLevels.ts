@@ -97,17 +97,15 @@ export function useAdminLevels() {
     setLoading(true);
     try {
       if (!token) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const response = await communityService.getLevelConfigs() as any;
+        const response = await communityService.getLevelConfigs();
         setLevels(response.data || []);
         setMapRegions([]);
         setAdminLandmarks([]);
         return;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const [levelsRes, fullMapRes, landmarksRes] = await Promise.all([
-        adminService.getLevels(token).catch(async () => await communityService.getLevelConfigs() as any),
+        adminService.getLevels(token).catch(() => communityService.getLevelConfigs()),
         progressMapService.getFullMap(token),
         adminService.getAdminMapLandmarks(token),
       ]);
