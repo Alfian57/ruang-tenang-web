@@ -35,7 +35,6 @@ export function SessionPlayer({
     targetDurationSeconds,
     onComplete,
     onExit,
-    voiceGuidance = false,
     hapticFeedback = false,
     backgroundSound = "none",
     backgroundTrack,
@@ -101,9 +100,11 @@ export function SessionPlayer({
     }, [state.isActive, state.isPaused, state.phase, backgroundTrack]);
 
     useEffect(() => {
+        const audio = audioRef.current;
+
         return () => {
-            if (audioRef.current) {
-                audioRef.current.pause();
+            if (audio) {
+                audio.pause();
             }
         };
     }, []);

@@ -1,13 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import { Providers } from "@/components/providers";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  adjustFontFallback: false,
-});
 
 export const viewport: Viewport = {
   themeColor: "#EF4444",
@@ -44,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className="dark" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>
