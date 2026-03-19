@@ -3,13 +3,12 @@
 import {
     DURATION_OPTIONS,
     MOOD_OPTIONS,
-    BACKGROUND_SOUNDS,
     formatBreathingDuration,
     MoodId,
     BackgroundSoundId,
     BreathingTechnique
 } from "@/types/breathing";
-import { X, Volume2, Vibrate } from "lucide-react";
+import { X } from "lucide-react";
 import { cn } from "@/utils";
 
 interface MoodSelectorModalProps {
@@ -20,10 +19,6 @@ interface MoodSelectorModalProps {
     setSelectedDuration: (duration: number) => void;
     moodBefore: MoodId | null;
     setMoodBefore: (mood: MoodId) => void;
-    voiceGuidance: boolean;
-    setVoiceGuidance: (enabled: boolean) => void;
-    hapticFeedback: boolean;
-    setHapticFeedback: (enabled: boolean) => void;
     backgroundSound: BackgroundSoundId;
     setBackgroundSound: (sound: BackgroundSoundId) => void;
     onStart: () => void;
@@ -37,10 +32,6 @@ export function MoodSelectorModal({
     setSelectedDuration,
     moodBefore,
     setMoodBefore,
-    voiceGuidance,
-    setVoiceGuidance,
-    hapticFeedback,
-    setHapticFeedback,
     backgroundSound,
     setBackgroundSound,
     onStart,
@@ -103,70 +94,34 @@ export function MoodSelectorModal({
                     </div>
                 </div>
 
-                {/* Session Settings */}
-                <div className="mb-6 space-y-3">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <Volume2 className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">Panduan suara</span>
-                        </div>
-                        <button
-                            onClick={() => setVoiceGuidance(!voiceGuidance)}
-                            className={cn(
-                                "w-10 h-6 rounded-full transition-colors relative",
-                                voiceGuidance ? "bg-primary" : "bg-muted"
-                            )}
-                        >
-                            <div
-                                className={cn(
-                                    "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform",
-                                    voiceGuidance ? "translate-x-5" : "translate-x-1"
-                                )}
-                            />
-                        </button>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <Vibrate className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">Getaran</span>
-                        </div>
-                        <button
-                            onClick={() => setHapticFeedback(!hapticFeedback)}
-                            className={cn(
-                                "w-10 h-6 rounded-full transition-colors relative",
-                                hapticFeedback ? "bg-primary" : "bg-muted"
-                            )}
-                        >
-                            <div
-                                className={cn(
-                                    "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform",
-                                    hapticFeedback ? "translate-x-5" : "translate-x-1"
-                                )}
-                            />
-                        </button>
-                    </div>
-                </div>
-
                 {/* Background Sound */}
                 <div className="mb-6">
                     <label className="text-sm font-medium mb-2 block">Suara latar</label>
                     <div className="flex flex-wrap gap-2">
-                        {BACKGROUND_SOUNDS.slice(0, 5).map((sound) => (
-                            <button
-                                key={sound.id}
-                                onClick={() => setBackgroundSound(sound.id as BackgroundSoundId)}
-                                className={cn(
-                                    "py-1.5 px-3 rounded-full text-sm transition-colors flex items-center gap-1.5",
-                                    backgroundSound === sound.id
-                                        ? "bg-primary text-primary-foreground"
-                                        : "bg-muted hover:bg-muted/80"
-                                )}
-                            >
-                                <span>{sound.icon}</span>
-                                <span>{sound.name}</span>
-                            </button>
-                        ))}
+                        <button
+                            onClick={() => setBackgroundSound("none")}
+                            className={cn(
+                                "py-1.5 px-3 rounded-full text-sm transition-colors flex items-center gap-1.5",
+                                backgroundSound === "none"
+                                    ? "bg-primary text-primary-foreground"
+                                    : "bg-muted hover:bg-muted/80"
+                            )}
+                        >
+                            <span>🔇</span>
+                            <span>Tidak Ada</span>
+                        </button>
+                        <button
+                            onClick={() => setBackgroundSound("rain")}
+                            className={cn(
+                                "py-1.5 px-3 rounded-full text-sm transition-colors flex items-center gap-1.5",
+                                backgroundSound !== "none"
+                                    ? "bg-primary text-primary-foreground"
+                                    : "bg-muted hover:bg-muted/80"
+                            )}
+                        >
+                            <span>🎵</span>
+                            <span>Ada</span>
+                        </button>
                     </div>
                 </div>
 

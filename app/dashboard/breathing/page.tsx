@@ -42,6 +42,7 @@ export default function BreathingPage() {
         systemTechniques,
         customTechniques,
         selectedTechnique,
+        sessionSong,
         selectedDuration,
         setSelectedDuration,
         completionResult,
@@ -171,6 +172,7 @@ export default function BreathingPage() {
                 <SessionPlayer
                     technique={selectedTechnique}
                     targetDurationSeconds={selectedDuration}
+                    backgroundTrack={sessionSong}
                     voiceGuidance={voiceGuidance}
                     hapticFeedback={hapticFeedback}
                     backgroundSound={backgroundSound}
@@ -252,10 +254,6 @@ export default function BreathingPage() {
                 setSelectedDuration={setSelectedDuration}
                 moodBefore={moodBefore}
                 setMoodBefore={setMoodBefore}
-                voiceGuidance={voiceGuidance}
-                setVoiceGuidance={setVoiceGuidance}
-                hapticFeedback={hapticFeedback}
-                setHapticFeedback={setHapticFeedback}
                 backgroundSound={backgroundSound}
                 setBackgroundSound={setBackgroundSound}
                 onStart={handleStartSession}

@@ -79,13 +79,15 @@ export function StoryComment({
                     <User className="h-5 w-5 text-muted-foreground" />
                 </div>
             ) : (
-                <Image
-                    src={comment.author.avatar || "/images/default-avatar.png"}
-                    alt={comment.author.name}
-                    width={40}
-                    height={40}
-                    className="rounded-full shrink-0"
-                />
+                <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 bg-muted">
+                    <Image
+                        src={comment.author.avatar || "/images/default-avatar.png"}
+                        alt={comment.author.name}
+                        width={40}
+                        height={40}
+                        className="w-full h-full object-cover"
+                    />
+                </div>
             )}
 
             {/* Content */}

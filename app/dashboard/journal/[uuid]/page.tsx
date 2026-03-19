@@ -24,6 +24,8 @@ export default function JournalDetailPage() {
     } = useJournalStore();
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [isDeletingJournal, setIsDeletingJournal] = useState(false);
+    const [hasDeletedJournal, setHasDeletedJournal] = useState(false);
     const identifier = params.uuid as string | undefined;
 
     useEffect(() => {
@@ -32,7 +34,7 @@ export default function JournalDetailPage() {
             return;
         }
 
-        if (token && identifier) {
+        if (token && identifier && !hasDeletedJournal && !isDeletingJournal) {
             const activeMatchesIdentifier =
                 activeJournal?.uuid === identifier ||
                 activeJournal?.slug === identifier ||
@@ -42,7 +44,7 @@ export default function JournalDetailPage() {
                 loadJournal(token, identifier);
             }
         }
-    }, [token, isAuthenticated, identifier, loadJournal, activeJournal, router]);
+    }, [token, isAuthenticated, identifier, loadJournal, activeJournal, router, hasDeletedJournal, isDeletingJournal]);
 
     // Clean up on unmount
     useEffect(() => {
@@ -50,10 +52,19 @@ export default function JournalDetailPage() {
     }, [setActiveJournal]);
 
     const handleDelete = async () => {
-        if (!token || !identifier) return;
-        await deleteJournal(token, identifier);
-        toast.success("Jurnal berhasil dihapus");
-        router.push("/dashboard/journal");
+        if (!token || !identifier || isDeletingJournal) return;
+
+        setIsDeletingJournal(true);
+        try {
+            await deleteJournal(token, identifier);
+            setHasDeletedJournal(true);
+            toast.success("Jurnal berhasil dihapus");
+            router.push("/dashboard/journal");
+        } catch {
+            // Error toast is handled by journal page/listeners from store state.
+        } finally {
+            setIsDeletingJournal(false);
+        }
     };
 
     const handleToggleAIShare = async () => {
@@ -116,7 +127,7 @@ export default function JournalDetailPage() {
                         onConfirm={handleDelete}
                         title="Hapus Jurnal"
                         description={`Apakah kamu yakin ingin menghapus jurnal "${activeJournal.title}"? Tindakan ini tidak dapat dibatalkan.`}
-                        isLoading={isLoading}
+                        isLoading={isDeletingJournal}
                     />
                 </>
             )}

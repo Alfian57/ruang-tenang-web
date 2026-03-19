@@ -86,152 +86,173 @@ export function ExpandedPlayer({
     };
 
     return (
-        <div className="p-4">
-            {/* Progress bar */}
-            <div className="flex items-center gap-3 mb-3">
-                <span className="text-xs text-gray-500 w-10 text-right">
-                    {formatTime(currentTime)}
-                </span>
-                <Slider
-                    value={[currentTime]}
-                    max={duration || 100}
-                    step={1}
-                    onValueChange={onSeek}
-                    className="flex-1"
-                />
-                <span className="text-xs text-gray-500 w-10">
-                    {formatTime(duration)}
-                </span>
-            </div>
+        <div className="p-4 md:py-3">
+            <div className="mx-auto w-full max-w-6xl">
+                {/* Progress bar */}
+                <div className="flex items-center gap-3 mb-4 md:mb-3">
+                    <span className="text-xs text-gray-500 w-10 text-right">
+                        {formatTime(currentTime)}
+                    </span>
+                    <Slider
+                        value={[currentTime]}
+                        max={duration || 100}
+                        step={1}
+                        onValueChange={onSeek}
+                        className="flex-1"
+                    />
+                    <span className="text-xs text-gray-500 w-10">
+                        {formatTime(duration)}
+                    </span>
+                </div>
 
-            <div className="relative flex items-center gap-4">
-                {/* Song info */}
-                <div className="flex items-center gap-3 min-w-0 md:max-w-[40%]">
-                    <div className="w-14 h-14 rounded-xl overflow-hidden theme-placeholder-bg shrink-0">
-                        {currentSong.thumbnail ? (
-                            <Image
-                                src={currentSong.thumbnail}
-                                alt={currentSong.title}
-                                width={56}
-                                height={56}
-                                className="w-full h-full object-cover"
-                            />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                                <Music className="w-6 h-6 text-primary" />
-                            </div>
-                        )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                        <h4 className="font-semibold text-gray-900 truncate">
-                            {currentSong.title}
-                        </h4>
-                        <p className="text-sm text-gray-500 truncate">
-                            {playbackSourceName || currentSong.category?.name}
-                        </p>
-                        {queueLength > 1 && (
-                            <p className="text-xs text-gray-400">
-                                {queueIndex + 1} / {queueLength}
+                <div className="relative">
+                    <div className="flex items-center gap-3 min-w-0 md:max-w-[34%]">
+                        <div className="w-14 h-14 rounded-xl overflow-hidden theme-placeholder-bg shrink-0">
+                            {currentSong.thumbnail ? (
+                                <Image
+                                    src={currentSong.thumbnail}
+                                    alt={currentSong.title}
+                                    width={56}
+                                    height={56}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                    <Music className="w-6 h-6 text-primary" />
+                                </div>
+                            )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <h4 className="font-semibold text-gray-900 truncate">
+                                {currentSong.title}
+                            </h4>
+                            <p className="text-sm text-gray-500 truncate">
+                                {playbackSourceName || currentSong.category?.name}
                             </p>
-                        )}
+                            {queueLength > 1 && (
+                                <p className="text-xs text-gray-400">
+                                    {queueIndex + 1} / {queueLength}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Mobile Minimize/Close */}
+                        <div className="ml-auto flex items-center gap-1 md:hidden shrink-0">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={onToggleMinimize}
+                            >
+                                <ChevronDown className="w-4 h-4" />
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-gray-400 hover:text-gray-600"
+                                onClick={onHidePlayer}
+                            >
+                                <X className="w-4 h-4" />
+                            </Button>
+                        </div>
                     </div>
-                </div>
 
-                {/* Controls */}
-                <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className={cn(
-                            "h-8 w-8 hidden sm:flex",
-                            shuffle && "text-primary"
-                        )}
-                        onClick={onToggleShuffle}
-                    >
-                        <Shuffle className="w-4 h-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-9 w-9"
-                        onClick={onPlayPrevious}
-                    >
-                        <SkipBack className="w-5 h-5" />
-                    </Button>
-                    <Button
-                        size="icon"
-                        className="h-12 w-12 rounded-full gradient-primary border-0"
-                        onClick={onTogglePlay}
-                    >
-                        {isPlaying ? (
-                            <Pause className="w-6 h-6 text-white" />
-                        ) : (
-                            <Play className="w-6 h-6 text-white" />
-                        )}
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-9 w-9"
-                        onClick={onPlayNext}
-                    >
-                        <SkipForward className="w-5 h-5" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className={cn(
-                            "h-8 w-8 hidden sm:flex",
-                            repeatMode !== "off" && "text-primary"
-                        )}
-                        onClick={onToggleRepeat}
-                    >
-                        {getRepeatIcon()}
-                    </Button>
-                </div>
-
-                {/* Volume & Actions */}
-                <div className="ml-auto flex items-center gap-3 pl-2">
-                    <div className="hidden md:flex items-center gap-3 w-40">
+                    {/* Controls */}
+                    <div className="mt-3 flex items-center justify-center gap-2 md:mt-0 md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2">
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
-                            onClick={onToggleMute}
+                            className={cn(
+                                "h-8 w-8 hidden sm:flex",
+                                shuffle && "text-primary"
+                            )}
+                            onClick={onToggleShuffle}
                         >
-                            {isMuted || volume === 0 ? (
-                                <VolumeX className="w-4 h-4 text-gray-400" />
+                            <Shuffle className="w-4 h-4" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-9 w-9"
+                            onClick={onPlayPrevious}
+                        >
+                            <SkipBack className="w-5 h-5" />
+                        </Button>
+                        <Button
+                            size="icon"
+                            className="h-12 w-12 rounded-full gradient-primary border-0"
+                            onClick={onTogglePlay}
+                        >
+                            {isPlaying ? (
+                                <Pause className="w-6 h-6 text-white" />
                             ) : (
-                                <Volume2 className="w-4 h-4 text-gray-400" />
+                                <Play className="w-6 h-6 text-white" />
                             )}
                         </Button>
-                        <Slider
-                            value={[isMuted ? 0 : volume * 100]}
-                            max={100}
-                            step={1}
-                            onValueChange={(value: number[]) => onVolumeChange(value[0] / 100)}
-                            className="flex-1"
-                        />
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-9 w-9"
+                            onClick={onPlayNext}
+                        >
+                            <SkipForward className="w-5 h-5" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className={cn(
+                                "h-8 w-8 hidden sm:flex",
+                                repeatMode !== "off" && "text-primary"
+                            )}
+                            onClick={onToggleRepeat}
+                        >
+                            {getRepeatIcon()}
+                        </Button>
                     </div>
 
-                    {/* Minimize/Close buttons */}
-                    <div className="flex items-center gap-1">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={onToggleMinimize}
-                        >
-                            <ChevronDown className="w-4 h-4" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-gray-400 hover:text-gray-600"
-                            onClick={onHidePlayer}
-                        >
-                            <X className="w-4 h-4" />
-                        </Button>
+                    {/* Volume & Actions */}
+                    <div className="hidden md:flex ml-auto items-center justify-end gap-3 pl-2 min-h-14">
+                        <div className="hidden md:flex items-center gap-3 w-40">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={onToggleMute}
+                            >
+                                {isMuted || volume === 0 ? (
+                                    <VolumeX className="w-4 h-4 text-gray-400" />
+                                ) : (
+                                    <Volume2 className="w-4 h-4 text-gray-400" />
+                                )}
+                            </Button>
+                            <Slider
+                                value={[isMuted ? 0 : volume * 100]}
+                                max={100}
+                                step={1}
+                                onValueChange={(value: number[]) => onVolumeChange(value[0] / 100)}
+                                className="flex-1"
+                            />
+                        </div>
+
+                        {/* Minimize/Close buttons */}
+                        <div className="flex items-center gap-1">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={onToggleMinimize}
+                            >
+                                <ChevronDown className="w-4 h-4" />
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-gray-400 hover:text-gray-600"
+                                onClick={onHidePlayer}
+                            >
+                                <X className="w-4 h-4" />
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>

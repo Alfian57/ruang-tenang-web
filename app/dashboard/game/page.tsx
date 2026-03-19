@@ -6,7 +6,7 @@ import MindfulRunnerGame from "@/components/game/MindfulRunnerGame";
 
 export default function GamePage() {
     return (
-        <div className="space-y-6">
+        <div className="p-4 lg:p-6 space-y-6">
             {/* Header */}
             <motion.div
                 initial={{ opacity: 0, y: -10 }}
@@ -29,7 +29,7 @@ export default function GamePage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
+                className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6"
             >
                 <MindfulRunnerGame />
             </motion.div>

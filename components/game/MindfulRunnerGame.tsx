@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 // ——— Constants ———
-const CANVAS_W = 800;
-const CANVAS_H = 300;
-const GROUND_Y = 240;
+const CANVAS_W = 1400;
+const CANVAS_H = 420;
+const GROUND_Y = 330;
 const GRAVITY = 0.6;
 const JUMP_FORCE = -11;
 const INITIAL_SPEED = 4;
@@ -113,6 +113,14 @@ const OBSTACLE_LABELS = [
     "Ragu",
 ];
 
+function getRandomObstacleGap() {
+    return 180 + Math.random() * 200;
+}
+
+function getRandomCollectibleGap() {
+    return 250 + Math.random() * 300;
+}
+
 export default function MindfulRunnerGame() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const gameStateRef = useRef({
@@ -133,8 +141,10 @@ export default function MindfulRunnerGame() {
         particles: [] as Particle[],
         floatingTexts: [] as FloatingText[],
         // Timing
-        lastObstacleX: CANVAS_W,
-        lastCollectibleX: CANVAS_W + 200,
+        obstacleTravel: 0,
+        collectibleTravel: 0,
+        nextObstacleGap: getRandomObstacleGap(),
+        nextCollectibleGap: getRandomCollectibleGap(),
         // Affirmation
         affirmation: "",
         affirmationTimer: 0,
@@ -360,8 +370,11 @@ export default function MindfulRunnerGame() {
         }
         gs.playerFrame++;
 
+        gs.obstacleTravel += gs.speed;
+        gs.collectibleTravel += gs.speed;
+
         // ——— Spawn obstacles ———
-        if (gs.lastObstacleX < CANVAS_W - (180 + Math.random() * 200)) {
+        if (gs.obstacleTravel >= gs.nextObstacleGap) {
             const types: Obstacle["type"][] = ["thought", "stress", "spiral"];
             const type = types[Math.floor(Math.random() * types.length)];
             const w = type === "spiral" ? 28 : 30 + Math.random() * 20;
@@ -373,11 +386,12 @@ export default function MindfulRunnerGame() {
                 type,
                 label: OBSTACLE_LABELS[Math.floor(Math.random() * OBSTACLE_LABELS.length)],
             });
-            gs.lastObstacleX = CANVAS_W + 20;
+            gs.obstacleTravel = 0;
+            gs.nextObstacleGap = getRandomObstacleGap();
         }
 
         // ——— Spawn collectibles ———
-        if (gs.lastCollectibleX < CANVAS_W - (250 + Math.random() * 300)) {
+        if (gs.collectibleTravel >= gs.nextCollectibleGap) {
             const types: Collectible["type"][] = ["heart", "star", "lotus"];
             gs.collectibles.push({
                 x: CANVAS_W + 20,
@@ -385,7 +399,8 @@ export default function MindfulRunnerGame() {
                 type: types[Math.floor(Math.random() * types.length)],
                 collected: false,
             });
-            gs.lastCollectibleX = CANVAS_W + 20;
+            gs.collectibleTravel = 0;
+            gs.nextCollectibleGap = getRandomCollectibleGap();
         }
 
         // ——— Spawn clouds ———
@@ -401,7 +416,6 @@ export default function MindfulRunnerGame() {
         // ——— Update obstacles ———
         for (let i = gs.obstacles.length - 1; i >= 0; i--) {
             gs.obstacles[i].x -= gs.speed;
-            gs.lastObstacleX = Math.min(gs.lastObstacleX, gs.obstacles[i].x);
             if (gs.obstacles[i].x + gs.obstacles[i].width < -20) {
                 gs.obstacles.splice(i, 1);
                 gs.score += 1;
@@ -411,7 +425,6 @@ export default function MindfulRunnerGame() {
         // ——— Update collectibles ———
         for (let i = gs.collectibles.length - 1; i >= 0; i--) {
             gs.collectibles[i].x -= gs.speed;
-            gs.lastCollectibleX = Math.min(gs.lastCollectibleX, gs.collectibles[i].x);
             if (gs.collectibles[i].x < -20) {
                 gs.collectibles.splice(i, 1);
                 gs.combo = 0;
@@ -656,6 +669,12 @@ export default function MindfulRunnerGame() {
     // ——— Start / Restart ———
     const startGame = useCallback(() => {
         const gs = gameStateRef.current;
+        if (gs.running) return;
+
+        if (animFrameRef.current) {
+            cancelAnimationFrame(animFrameRef.current);
+        }
+
         let hs = gs.highScore;
         try {
             const saved = localStorage.getItem("mindful-runner-high-score");
@@ -682,8 +701,10 @@ export default function MindfulRunnerGame() {
         ];
         gs.particles = [];
         gs.floatingTexts = [];
-        gs.lastObstacleX = CANVAS_W;
-        gs.lastCollectibleX = CANVAS_W + 200;
+        gs.obstacleTravel = 0;
+        gs.collectibleTravel = 120;
+        gs.nextObstacleGap = getRandomObstacleGap();
+        gs.nextCollectibleGap = getRandomCollectibleGap();
         gs.affirmation = "";
         gs.affirmationTimer = 0;
         gs.combo = 0;
@@ -806,8 +827,8 @@ export default function MindfulRunnerGame() {
                 ref={canvasRef}
                 width={CANVAS_W}
                 height={CANVAS_H}
-                className="rounded-xl border border-red-200 shadow-md cursor-pointer max-w-full"
-                style={{ imageRendering: "pixelated", touchAction: "none" }}
+                className="rounded-xl border border-red-200 shadow-md cursor-pointer w-full h-auto"
+                style={{ touchAction: "none" }}
                 onClick={() => {
                     if (gameStateRef.current.running) {
                         jump();

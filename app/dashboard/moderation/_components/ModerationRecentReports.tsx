@@ -13,13 +13,13 @@ interface ModerationRecentReportsProps {
 export function ModerationRecentReports({ reports, isLoading }: ModerationRecentReportsProps) {
     return (
         <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <CardTitle className="text-lg">Laporan Terbaru</CardTitle>
                     <CardDescription>Laporan pengguna yang perlu ditangani</CardDescription>
                 </div>
-                <Button asChild variant="ghost" size="sm">
-                    <Link href={ROUTES.ADMIN.MODERATION_REPORTS}>
+                <Button asChild variant="ghost" size="sm" className="w-full sm:w-auto">
+                    <Link href={ROUTES.ADMIN.MODERATION_REPORTS} className="w-full justify-center sm:justify-start">
                         Lihat Semua
                         <ChevronRight className="h-4 w-4 ml-1" />
                     </Link>
@@ -60,11 +60,11 @@ export function ModerationRecentReports({ reports, isLoading }: ModerationRecent
                                     <p className="font-medium truncate">
                                         {report.content_title || `Laporan ${report.report_type}`}
                                     </p>
-                                    <p className="text-sm text-muted-foreground">
+                                    <p className="text-sm text-muted-foreground truncate sm:whitespace-normal">
                                         Dilaporkan oleh {report.reporter_name} • {report.reason}
                                     </p>
                                 </div>
-                                <Button asChild size="sm" variant="ghost">
+                                <Button asChild size="sm" variant="ghost" className="shrink-0">
                                     <Link href={ROUTES.moderationReport(report.id)}>
                                         <Eye className="h-4 w-4" />
                                     </Link>

@@ -51,8 +51,8 @@ export default function ArticlesPage() {
             <TabsTrigger value="mine">Artikel Saya</TabsTrigger>
           </TabsList>
           {activeTab === "mine" && (
-            <Link href={ROUTES.ARTICLE_CREATE}>
-              <Button className="gradient-primary">
+            <Link href={ROUTES.ARTICLE_CREATE} className="w-full sm:w-auto">
+              <Button className="gradient-primary w-full sm:w-auto">
                 <Plus className="w-4 h-4 mr-2" /> Tulis Artikel
               </Button>
             </Link>
@@ -71,12 +71,12 @@ export default function ArticlesPage() {
                 className="pl-10 bg-white"
               />
             </div>
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex gap-2 overflow-x-auto pb-1 -mb-1">
               <Button
                 variant={selectedCategory === null ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedCategory(null)}
-                className={selectedCategory === null ? "gradient-primary" : "bg-white"}
+                className={`shrink-0 ${selectedCategory === null ? "gradient-primary" : "bg-white"}`}
               >
                 Semua
               </Button>
@@ -86,7 +86,7 @@ export default function ArticlesPage() {
                   variant={selectedCategory === cat.id ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={selectedCategory === cat.id ? "gradient-primary" : "bg-white"}
+                  className={`shrink-0 ${selectedCategory === cat.id ? "gradient-primary" : "bg-white"}`}
                 >
                   {cat.name}
                 </Button>

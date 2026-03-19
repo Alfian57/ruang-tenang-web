@@ -13,13 +13,13 @@ interface ModerationPendingArticlesProps {
 export function ModerationPendingArticles({ articles, isLoading }: ModerationPendingArticlesProps) {
     return (
         <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <CardTitle className="text-lg">Artikel Menunggu Moderasi</CardTitle>
                     <CardDescription>Artikel terbaru yang perlu ditinjau</CardDescription>
                 </div>
-                <Button asChild variant="ghost" size="sm">
-                    <Link href={ROUTES.ADMIN.MODERATION_QUEUE}>
+                <Button asChild variant="ghost" size="sm" className="w-full sm:w-auto">
+                    <Link href={ROUTES.ADMIN.MODERATION_QUEUE} className="w-full justify-center sm:justify-start">
                         Lihat Semua
                         <ChevronRight className="h-4 w-4 ml-1" />
                     </Link>
@@ -62,9 +62,9 @@ export function ModerationPendingArticles({ articles, isLoading }: ModerationPen
                                         oleh {article.author_name}
                                     </p>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 shrink-0">
                                     {article.moderation_status === "flagged" && (
-                                        <span className="px-2 py-1 text-xs bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 rounded">
+                                        <span className="hidden sm:inline-flex px-2 py-1 text-xs bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 rounded">
                                             Ditandai
                                         </span>
                                     )}

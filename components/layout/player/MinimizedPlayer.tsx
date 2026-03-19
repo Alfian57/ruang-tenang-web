@@ -32,7 +32,7 @@ export function MinimizedPlayer({
     onToggleMinimize,
 }: MinimizedPlayerProps) {
     return (
-        <div className="grid grid-cols-[1fr_auto_auto] items-center gap-3 px-4 py-2 md:grid-cols-[1fr_auto_1fr]">
+        <div className="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center gap-2 md:gap-3 px-3 md:px-4 py-2">
             <div className="flex items-center gap-3 min-w-0">
                 <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                     {currentSong.thumbnail ? (
@@ -63,14 +63,14 @@ export function MinimizedPlayer({
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-8 w-8 hidden md:inline-flex"
                     onClick={onPlayPrevious}
                 >
                     <SkipBack className="w-4 h-4" />
                 </Button>
                 <Button
                     size="icon"
-                    className="h-10 w-10 rounded-full gradient-primary"
+                    className="h-10 w-10 rounded-full gradient-primary shrink-0"
                     onClick={onTogglePlay}
                 >
                     {isPlaying ? (
@@ -82,14 +82,11 @@ export function MinimizedPlayer({
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-8 w-8 hidden md:inline-flex"
                     onClick={onPlayNext}
                 >
                     <SkipForward className="w-4 h-4" />
                 </Button>
-            </div>
-
-            <div className="flex justify-end">
                 <Button
                     variant="ghost"
                     size="icon"

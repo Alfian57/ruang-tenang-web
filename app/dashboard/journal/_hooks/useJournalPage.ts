@@ -96,6 +96,7 @@ export function useJournalPage() {
     // Local state (UI only)
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [journalToDelete, setJournalToDelete] = useState<Journal | null>(null);
+    const [isDeletingJournal, setIsDeletingJournal] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
     const [showDisclaimer, setShowDisclaimer] = useState(false);
 
@@ -182,11 +183,19 @@ export function useJournalPage() {
     // Handlers
 
     const handleDeleteJournal = async () => {
-        if (!token || !journalToDelete) return;
-        await deleteJournal(token, journalToDelete.uuid);
-        setShowDeleteModal(false);
-        setJournalToDelete(null);
-        toast.success("Jurnal berhasil dihapus");
+        if (!token || !journalToDelete || isDeletingJournal) return;
+
+        setIsDeletingJournal(true);
+        try {
+            await deleteJournal(token, journalToDelete.uuid);
+            setShowDeleteModal(false);
+            setJournalToDelete(null);
+            toast.success("Jurnal berhasil dihapus");
+        } catch {
+            // Error toast is handled by the global error effect from store state.
+        } finally {
+            setIsDeletingJournal(false);
+        }
     };
 
     const handleDeleteClick = (journal: Journal) => {
@@ -288,6 +297,7 @@ export function useJournalPage() {
         aiAccessLogs,
         isLoading,
         isSaving,
+        isDeletingJournal,
         isExporting,
         searchResults,
         isSearching,

@@ -246,6 +246,7 @@ export const useJournalStore = create<JournalState & JournalActions>((set, get) 
         isLoading: false,
         error: error instanceof Error ? error.message : "Gagal menghapus jurnal",
       });
+      throw error;
     }
   },
 

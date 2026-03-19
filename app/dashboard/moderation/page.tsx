@@ -43,22 +43,22 @@ export default function ModerationDashboardPage() {
     return (
         <div className="p-4 lg:p-6 space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h1 className="text-2xl font-bold">Dashboard Moderasi</h1>
                     <p className="text-muted-foreground">
                         Kelola konten dan laporan pengguna
                     </p>
                 </div>
-                <div className="flex gap-2">
-                    <Button asChild variant="outline">
-                        <Link href={ROUTES.ADMIN.MODERATION_REPORTS}>
+                <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:flex">
+                    <Button asChild variant="outline" className="w-full sm:w-auto">
+                        <Link href={ROUTES.ADMIN.MODERATION_REPORTS} className="w-full justify-center">
                             <Flag className="h-4 w-4 mr-2" />
                             Laporan
                         </Link>
                     </Button>
-                    <Button asChild>
-                        <Link href={ROUTES.ADMIN.MODERATION_QUEUE}>
+                    <Button asChild className="w-full sm:w-auto">
+                        <Link href={ROUTES.ADMIN.MODERATION_QUEUE} className="w-full justify-center">
                             <FileText className="h-4 w-4 mr-2" />
                             Antrian Moderasi
                         </Link>

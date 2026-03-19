@@ -90,7 +90,7 @@ export function CategoryDetailView({
                             />
                         ) : (
                             <>
-                                <div className="border-b px-6 py-3 bg-gray-50/50 flex text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                <div className="hidden sm:flex border-b px-6 py-3 bg-gray-50/50 text-xs font-medium text-gray-400 uppercase tracking-wider">
                                     <div className="w-12 text-center">#</div>
                                     <div className="flex-1">Judul Lagu</div>
                                     <div className="w-24 text-right pr-4">Aksi</div>
@@ -101,15 +101,15 @@ export function CategoryDetailView({
                                         <div
                                             key={song.id}
                                             className={cn(
-                                                "group flex items-center px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer",
+                                                "group flex items-center gap-2 px-3 sm:px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer",
                                                 currentSong?.id === song.id && "bg-primary/5 hover:bg-primary/10"
                                             )}
                                             onClick={() => onPlay(song)}
                                         >
-                                            <div className="w-10 text-center text-sm text-gray-400 font-medium group-hover:hidden">
+                                            <div className="w-8 sm:w-10 text-center text-sm text-gray-400 font-medium sm:group-hover:hidden">
                                                 {index + 1}
                                             </div>
-                                            <div className="w-10 text-center hidden group-hover:flex justify-center">
+                                            <div className="w-8 sm:w-10 text-center hidden sm:group-hover:flex justify-center">
                                                 {currentSong?.id === song.id && isPlaying ? (
                                                     <Pause className="w-4 h-4 text-primary fill-current" />
                                                 ) : (
@@ -117,7 +117,7 @@ export function CategoryDetailView({
                                                 )}
                                             </div>
 
-                                            <div className="flex-1 min-w-0 flex items-center gap-4">
+                                            <div className="flex-1 min-w-0 flex items-center gap-3 sm:gap-4">
                                                 <div className="w-10 h-10 rounded bg-gray-100 relative overflow-hidden shrink-0">
                                                     {song.thumbnail ? (
                                                         <Image src={song.thumbnail} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
@@ -127,7 +127,7 @@ export function CategoryDetailView({
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div>
+                                                <div className="min-w-0">
                                                     <p className={cn(
                                                         "font-medium text-sm truncate",
                                                         currentSong?.id === song.id ? "text-primary" : "text-gray-900"
@@ -138,11 +138,11 @@ export function CategoryDetailView({
                                                 </div>
                                             </div>
 
-                                            <div className="w-24 flex justify-end pr-2">
+                                            <div className="w-10 sm:w-24 flex justify-end pr-0 sm:pr-2">
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="w-8 h-8 rounded-full text-gray-400 opacity-0 group-hover:opacity-100 hover:text-primary hover:bg-primary/10 transition-all"
+                                                    className="w-8 h-8 rounded-full text-gray-400 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 hover:text-primary hover:bg-primary/10 transition-all"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         // Optional: Show modal to add to playlist

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { breathingService } from "@/services/api";
+import { songService } from "@/services/api/song";
 import { useAuthStore } from "@/store/authStore";
 import {
     BreathingTechnique,
@@ -16,6 +17,7 @@ import {
     TechniqueUsageStats,
     BreathingPreferences,
 } from "@/types/breathing";
+import type { Song } from "@/types";
 import { toast } from "sonner";
 
 export type ViewMode = "techniques" | "session" | "history" | "stats" | "faq";
@@ -39,9 +41,32 @@ export function useBreathing() {
 
     // Read view from URL, default to "techniques"
     const urlView = searchParams.get("view") as ViewMode | null;
-    const viewMode: ViewMode = urlView && ["techniques", "session", "history", "stats", "faq"].includes(urlView) ? urlView : "techniques";
+    const initialViewMode: ViewMode =
+        urlView && ["techniques", "session", "history", "stats", "faq"].includes(urlView)
+            ? urlView
+            : "techniques";
+    const [viewMode, setViewModeState] = useState<ViewMode>(initialViewMode);
+
+    useEffect(() => {
+        const nextView: ViewMode =
+            urlView && ["techniques", "session", "history", "stats", "faq"].includes(urlView)
+                ? urlView
+                : "techniques";
+
+        // Do not override active session state from URL changes.
+        if (viewMode !== "session") {
+            setViewModeState(nextView);
+        }
+    }, [urlView, viewMode]);
 
     const setViewMode = (mode: ViewMode) => {
+        setViewModeState(mode);
+
+        // Session is transient state; avoid route navigation to reduce SW no-response issues.
+        if (mode === "session") {
+            return;
+        }
+
         updateUrlParam("view", mode === "techniques" ? null : mode);
     };
 
@@ -64,6 +89,7 @@ export function useBreathing() {
     const [selectedDuration, setSelectedDuration] = useState(300); // 5 minutes default
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [completionResult, setCompletionResult] = useState<SessionCompletionResult | null>(null);
+    const [sessionSong, setSessionSong] = useState<Song | null>(null);
 
     // Settings
     const [moodBefore, setMoodBefore] = useState<MoodId | null>(null);
@@ -215,6 +241,30 @@ export function useBreathing() {
         if (!token || !selectedTechnique) return;
 
         try {
+            let randomSong: Song | null = null;
+
+            if (backgroundSound !== "none") {
+                try {
+                    const categoriesRes = await songService.getCategories();
+                    const categories = categoriesRes.data || [];
+
+                    if (categories.length > 0) {
+                        const shuffledCategories = [...categories].sort(() => Math.random() - 0.5);
+
+                        for (const category of shuffledCategories) {
+                            const songsRes = await songService.getSongsByCategory(category.slug || category.id);
+                            const songs = songsRes.data || [];
+                            if (songs.length > 0) {
+                                randomSong = songs[Math.floor(Math.random() * songs.length)];
+                                break;
+                            }
+                        }
+                    }
+                } catch (songError) {
+                    console.error("Failed to fetch random breathing song:", songError);
+                }
+            }
+
             const res = await breathingService.startSession(token, {
                 technique_id: selectedTechnique.id,
                 target_duration_seconds: selectedDuration,
@@ -225,6 +275,7 @@ export function useBreathing() {
             });
 
             setSessionId(res.data.id);
+            setSessionSong(randomSong);
             setShowMoodSelector(false);
             setViewMode("session");
         } catch (error) {
@@ -271,6 +322,7 @@ export function useBreathing() {
         setMoodBefore(null);
         setMoodAfter(null);
         setCompletionResult(null);
+        setSessionSong(null);
         setShowCompletionModal(false);
     };
 
@@ -367,6 +419,7 @@ export function useBreathing() {
 
         // Session
         selectedTechnique,
+        sessionSong,
         selectedDuration,
         setSelectedDuration,
         completionResult,

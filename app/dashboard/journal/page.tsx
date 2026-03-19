@@ -55,6 +55,7 @@ export default function JournalPage() {
         aiAccessLogs,
         isLoading,
         isSaving,
+        isDeletingJournal,
         isExporting,
         searchResults,
         isSearching,
@@ -278,7 +279,7 @@ export default function JournalPage() {
                 onConfirm={handleDeleteJournal}
                 title="Hapus Jurnal"
                 description={`Apakah Anda yakin ingin menghapus jurnal "${journalToDelete?.title || 'ini'}"? Tindakan ini tidak dapat dibatalkan.`}
-                isLoading={isSaving}
+                isLoading={isDeletingJournal}
             />
         </div>
     );
