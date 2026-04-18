@@ -195,6 +195,8 @@ export default function StoryDetailPage() {
                     story={story}
                     onHeart={token ? handleHeart : undefined}
                     isHeartLoading={heartLoading}
+                    currentUserId={user?.id}
+                    canModerate={Boolean(token)}
                 />
 
                 {/* Comments Section */}
@@ -203,6 +205,12 @@ export default function StoryDetailPage() {
                         <MessageCircle className="h-5 w-5" />
                         Dukungan & Komentar ({story.comment_count})
                     </h2>
+
+                    {token && (
+                        <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                            Jika menemukan konten berisiko, gunakan menu aksi untuk lapor atau blokir. Tim moderasi meninjau laporan maksimal 1 x 24 jam.
+                        </div>
+                    )}
 
                     {/* Comment Input */}
                     {token ? (
@@ -233,6 +241,7 @@ export default function StoryDetailPage() {
                         onHeartComment={token ? handleCommentHeart : undefined}
                         isAdmin={user?.role === "admin"}
                         currentUserId={user?.id}
+                        canModerate={Boolean(token)}
                     />
 
                     {/* Load More Comments */}

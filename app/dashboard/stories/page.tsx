@@ -10,6 +10,8 @@ import {
   Sparkles,
   AlertTriangle,
   User,
+  PenLine,
+  ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,9 +73,30 @@ export default function StoriesPage() {
     setSortBy,
   } = useStoriesPage();
 
+  const weeklyChallengeHref = `/dashboard/stories/new?challenge=weekly-reset&challengeTitle=${encodeURIComponent("Aku Bangkit dari Titik Terendah Minggu Ini")}&challengeTag=weekly-reset`;
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="p-4 lg:p-6">
+        <section className="mb-8 rounded-2xl border border-violet-200 bg-violet-50 p-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">STORY CHALLENGE</p>
+              <h2 className="text-lg font-semibold text-gray-900 mt-1">Tema Mingguan: From Chaos to Calm</h2>
+              <p className="text-sm text-gray-600 mt-1">
+                Ceritakan satu momen sulit minggu ini dan langkah kecil yang membantumu kembali stabil.
+              </p>
+            </div>
+            <Button asChild className="gap-1.5">
+              <Link href={weeklyChallengeHref}>
+                <PenLine className="w-4 h-4" />
+                Ikut Challenge
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </Button>
+          </div>
+        </section>
+
         {/* Featured Stories */}
         {featuredStories.length > 0 && (
           <section className="mb-12">

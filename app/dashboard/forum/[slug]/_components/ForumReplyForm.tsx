@@ -2,6 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, Clock } from "lucide-react";
 
+const SAFE_RESPONSE_STARTERS = [
+    "Terima kasih sudah cerita. Perasaan kamu valid, dan kamu tidak sendirian.",
+    "Aku pernah merasakan hal mirip, yang membantuku waktu itu adalah langkah kecil ini.",
+    "Kalau kamu berkenan, kita bisa pecah masalah ini jadi langkah paling ringan dulu.",
+] as const;
+
 interface ForumReplyFormProps {
     replyContent: string;
     setReplyContent: (content: string) => void;
@@ -19,6 +25,24 @@ export function ForumReplyForm({
 }: ForumReplyFormProps) {
     return (
         <div className="bg-white border p-3 sm:p-4 rounded-xl shadow-sm mb-6">
+            {!isFlagged && (
+                <div className="mb-3">
+                    <p className="text-xs font-medium text-gray-500 mb-2">Safe response starter</p>
+                    <div className="flex flex-wrap gap-2">
+                        {SAFE_RESPONSE_STARTERS.map((starter) => (
+                            <button
+                                key={starter}
+                                type="button"
+                                className="text-left rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs text-gray-600 hover:border-primary/30 hover:bg-primary/5 hover:text-primary transition-colors"
+                                onClick={() => setReplyContent(starter)}
+                            >
+                                {starter}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             <div className="flex items-end gap-2 sm:gap-3">
                 <div className="flex-1 relative">
                     <Textarea

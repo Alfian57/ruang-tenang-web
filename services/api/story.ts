@@ -18,7 +18,7 @@ export const storyService = {
 
   // List & Search
   getStories(params?: { category_id?: string; search?: string; sort_by?: string; page?: number; limit?: number; author_id?: number; is_featured?: boolean }) {
-    return httpClient.get<PaginatedResponse<StoryCard>>("/stories", { params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<StoryCard>>("/stories", { params });
   },
 
   getFeatured() {
@@ -47,7 +47,7 @@ export const storyService = {
   },
 
   getMyStories(token: string, params?: { page?: number; limit?: number }) {
-    return httpClient.get<PaginatedResponse<StoryCard>>("/stories/my-stories", { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<StoryCard>>("/stories/my-stories", { token, params });
   },
 
   getMyStats(token: string) {
@@ -61,7 +61,7 @@ export const storyService = {
 
   // Comments
   getComments(id: string, params?: { page?: number; limit?: number }, token?: string) {
-    return httpClient.get<ApiResponse<StoryCommentsListResponse>>(`/stories/${id}/comments`, { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<ApiResponse<StoryCommentsListResponse>>(`/stories/${id}/comments`, { token, params });
   },
 
   createComment(token: string, storyId: string, data: { content: string }) {
@@ -78,7 +78,7 @@ export const storyService = {
 
   // Admin moderation
   getPending(token: string, params?: { page?: number; limit?: number }) {
-    return httpClient.get<PaginatedResponse<InspiringStory>>("/admin/stories/pending", { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<InspiringStory>>("/admin/stories/pending", { token, params });
   },
 
   moderate(token: string, id: string, data: { status: string; feedback?: string }) {

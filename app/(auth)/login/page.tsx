@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/authStore";
 import { AuthIllustration } from "@/components/shared/auth/AuthIllustration";
 import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
+import { TRUST_CUES } from "@/constants";
 import { toast } from "sonner";
 
 const loginSchema = z.object({
@@ -86,6 +87,13 @@ export default function LoginPage() {
               />
             </Link>
             <p className="text-gray-500">Masukan detail Anda untuk Login</p>
+          </div>
+
+          <div className="mb-6 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-sky-900">
+              Privasi & Batasan AI
+            </p>
+            <p className="mt-1 text-xs leading-relaxed text-sky-800">{TRUST_CUES.COMBINED}</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

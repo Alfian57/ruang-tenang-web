@@ -6,7 +6,7 @@ export const notificationService = {
   getNotifications(token: string, params?: { page?: number; limit?: number; unread_only?: boolean }) {
     return httpClient.get<ApiResponse<NotificationList>>("/notifications", {
       token,
-      params: params as Record<string, string | number | boolean | undefined>,
+      params,
     });
   },
 

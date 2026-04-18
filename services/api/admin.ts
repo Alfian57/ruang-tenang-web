@@ -13,7 +13,7 @@ export const adminService = {
 
   // Users
   getUsers(token: string, params?: { page?: number; limit?: number; search?: string; role?: string }) {
-    return httpClient.get<PaginatedResponse<User>>("/admin/users", { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<User>>("/admin/users", { token, params });
   },
 
   getUser(token: string, id: number) {
@@ -42,7 +42,7 @@ export const adminService = {
 
   // Articles
   getArticles(token: string, params?: { page?: number; limit?: number; search?: string; status?: string; category_id?: number }) {
-    return httpClient.get<PaginatedResponse<Article>>("/admin/articles", { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<Article>>("/admin/articles", { token, params });
   },
 
   updateArticleStatus(token: string, id: number, status: string) {
@@ -55,7 +55,7 @@ export const adminService = {
 
   // Songs
   getSongs(token: string, params?: { page?: number; limit?: number; search?: string; category_id?: number }) {
-    return httpClient.get<PaginatedResponse<Song>>("/admin/songs", { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<Song>>("/admin/songs", { token, params });
   },
 
   createSong(token: string, data: { title: string; file_path: string; thumbnail?: string; category_id: number }) {
@@ -89,7 +89,7 @@ export const adminService = {
 
   // Forums
   getForums(token: string, params?: { page?: number; limit?: number; search?: string }) {
-    return httpClient.get<PaginatedResponse<Forum>>("/admin/forums", { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<Forum>>("/admin/forums", { token, params });
   },
 
   deleteForum(token: string, id: number) {

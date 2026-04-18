@@ -1,11 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Calendar, Tag, Ban, Edit } from "lucide-react";
+import { Calendar, Tag, Ban, Edit, ArrowRight, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/utils";
 import { sanitizeHtml } from "@/utils/sanitize";
 import { Article } from "@/types";
+import { ROUTES } from "@/lib/routes";
 
 interface ArticleContentProps {
   article: Article;
@@ -16,6 +17,61 @@ interface ArticleContentProps {
   onBlockClick: () => void;
 }
 
+type ArticleActionPlan = {
+  title: string;
+  description: string;
+  primaryLabel: string;
+  primaryHref: string;
+  secondaryLabel: string;
+  secondaryHref: string;
+};
+
+function getArticleActionPlan(article: Article): ArticleActionPlan {
+  const signal = `${article.title} ${article.category?.name || ""}`.toLowerCase();
+
+  if (/(cemas|panik|gelisah|stress|overthink|tegang)/.test(signal)) {
+    return {
+      title: "Tutup bacaan ini dengan napas terstruktur 3 menit",
+      description: "Regulasi tubuh dulu agar insight dari artikel lebih mudah dipraktikkan.",
+      primaryLabel: "Mulai Atur Napas",
+      primaryHref: ROUTES.BREATHING,
+      secondaryLabel: "Catat Trigger di Jurnal",
+      secondaryHref: `${ROUTES.JOURNAL}/create?mode=structured-reflection`,
+    };
+  }
+
+  if (/(syukur|gratitude|refleksi|mindful|jurnal|journal)/.test(signal)) {
+    return {
+      title: "Ubah insight jadi catatan pribadi sekarang",
+      description: "Satu paragraf refleksi setelah membaca akan memperkuat retensi dan arah aksi.",
+      primaryLabel: "Lanjut ke Jurnal Syukur",
+      primaryHref: `${ROUTES.JOURNAL}/create?mode=gratitude`,
+      secondaryLabel: "Diskusi di Community",
+      secondaryHref: ROUTES.DASHBOARD_COMMUNITY,
+    };
+  }
+
+  if (/(relasi|komunikasi|dukungan|keluarga|teman|komunitas)/.test(signal)) {
+    return {
+      title: "Hubungkan insight ini ke dukungan sosial",
+      description: "Pilih satu langkah interaksi sehat agar dampak artikel terasa di kehidupan nyata.",
+      primaryLabel: "Buka Community Mission",
+      primaryHref: ROUTES.DASHBOARD_COMMUNITY,
+      secondaryLabel: "Mulai Obrolan Aman",
+      secondaryHref: ROUTES.CHAT,
+    };
+  }
+
+  return {
+    title: "Lanjutkan ke aksi 2 menit agar tidak berhenti di bacaan",
+    description: "Pilih satu langkah kecil yang paling relevan dengan kondisimu hari ini.",
+    primaryLabel: "Refleksi Cepat di Jurnal",
+    primaryHref: `${ROUTES.JOURNAL}/create?mode=action-plan`,
+    secondaryLabel: "Buka Chat Pendamping",
+    secondaryHref: ROUTES.CHAT,
+  };
+}
+
 export function ArticleContent({
   article,
   isArticleAuthor,
@@ -24,6 +80,8 @@ export function ArticleContent({
   isBlocked,
   onBlockClick,
 }: ArticleContentProps) {
+  const actionPlan = getArticleActionPlan(article);
+
   return (
     <div className="lg:col-span-8">
       <Card className="bg-white p-6 lg:p-8">
@@ -86,6 +144,28 @@ export function ArticleContent({
           className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-primary"
           dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.content) }}
         />
+
+        <div className="mt-8 rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-cyan-50 p-5 md:p-6">
+          <div className="flex items-center gap-2 text-emerald-700 mb-2">
+            <Sparkles className="w-4 h-4" />
+            <span className="text-xs font-semibold uppercase tracking-wide">Langkah Lanjutan</span>
+          </div>
+          <h3 className="text-lg md:text-xl font-bold text-gray-900">{actionPlan.title}</h3>
+          <p className="text-sm text-gray-600 mt-2 max-w-2xl">{actionPlan.description}</p>
+          <div className="mt-4 flex flex-col sm:flex-row gap-3">
+            <Link href={actionPlan.primaryHref}>
+              <Button className="w-full sm:w-auto">
+                {actionPlan.primaryLabel}
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+            <Link href={actionPlan.secondaryHref}>
+              <Button variant="outline" className="w-full sm:w-auto border-emerald-200 text-emerald-700 hover:bg-emerald-50">
+                {actionPlan.secondaryLabel}
+              </Button>
+            </Link>
+          </div>
+        </div>
       </Card>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,6 +19,8 @@ import {
     Swords,
     ImagePlus,
     Shield,
+    Flame,
+    ArrowRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -232,6 +235,27 @@ export default function GuildsPage() {
 
             {/* My Guild Banner — shown prominently if user has a guild */}
             {myGuild?.is_member && <MyGuildBanner myGuild={myGuild} />}
+
+            <section className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-amber-700 inline-flex items-center gap-1.5">
+                            <Flame className="w-3.5 h-3.5" />
+                            Guild Event 7 Hari
+                        </p>
+                        <h3 className="text-base font-semibold text-gray-900 mt-1">Challenge: 1 aksi kecil tiap hari</h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                            Setiap anggota menuntaskan minimal 1 aksi pemulihan harian (jurnal/chat/pernafasan), lalu share insight singkat ke guild.
+                        </p>
+                    </div>
+                    <Button asChild variant="outline" className="bg-white">
+                        <Link href="/dashboard/community">
+                            Buka Mission Board
+                            <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                        </Link>
+                    </Button>
+                </div>
+            </section>
 
             {/* Guild list title + already-joined info */}
             <div className="space-y-3">

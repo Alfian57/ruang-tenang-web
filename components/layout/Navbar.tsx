@@ -27,8 +27,8 @@ type NavSection = "home" | "features" | "gamification" | "articles";
 
 const NAV_ITEMS: Array<{ key: NavSection; label: string; href: string }> = [
   { key: "home", label: "Beranda", href: ROUTES.HOME },
-  { key: "features", label: "Fitur", href: LANDING_SECTION_ROUTES.FEATURES },
   { key: "gamification", label: "Gamifikasi", href: LANDING_SECTION_ROUTES.GAMIFICATION },
+  { key: "features", label: "Fitur", href: LANDING_SECTION_ROUTES.FEATURES },
   { key: "articles", label: "Artikel", href: LANDING_SECTION_ROUTES.ARTICLES },
 ];
 
@@ -54,7 +54,7 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
       return;
     }
 
-    const sectionIds: NavSection[] = ["features", "gamification", "articles"];
+    const sectionIds: NavSection[] = ["gamification", "features", "articles"];
     const sectionElements = sectionIds
       .map((id) => document.getElementById(id))
       .filter((section): section is HTMLElement => Boolean(section));
@@ -213,8 +213,8 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={`block px-4 py-3 font-medium rounded-xl transition-colors ${active
-                    ? "text-primary bg-primary/5"
-                    : "text-gray-600 hover:bg-primary/5 hover:text-primary"
+                  ? "text-primary bg-primary/5"
+                  : "text-gray-600 hover:bg-primary/5 hover:text-primary"
                   }`}
                 onClick={() => setMobileMenuOpen(false)}
               >

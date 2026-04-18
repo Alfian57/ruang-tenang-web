@@ -33,20 +33,24 @@ export function Sidebar({
     <>
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
-        <div
+        <button
+          type="button"
           className="lg:hidden fixed inset-0 bg-black/50 z-40"
           onClick={onCloseSidebar}
+          aria-label="Tutup navigasi"
         />
       )}
 
       {/* Sidebar */}
-      <aside className={cn(
-        "sidebar-themed fixed top-0 left-0 h-full bg-white border-r z-40 transform transition-all duration-200",
-        "lg:translate-x-0",
-        sidebarOpen ? "translate-x-0" : "-translate-x-full",
-        sidebarCollapsed ? "lg:w-20" : "lg:w-60",
-        "w-60"
-      )}>
+      <aside
+        id="dashboard-sidebar"
+        className={cn(
+          "sidebar-themed fixed top-0 left-0 h-full bg-white border-r z-40 transform transition-all duration-200",
+          "lg:translate-x-0",
+          sidebarOpen ? "translate-x-0" : "-translate-x-full",
+          sidebarCollapsed ? "lg:w-20" : "lg:w-60",
+          "w-60"
+        )}>
         {/* Logo */}
         <div className="p-4 h-16 flex items-center justify-between border-b">
           <Link href={ROUTES.DASHBOARD} className="flex items-center gap-2">
@@ -58,8 +62,12 @@ export function Sidebar({
           </Link>
           {!sidebarCollapsed && (
             <button
+              type="button"
               onClick={onToggleCollapsed}
               className="sidebar-collapse-btn hidden lg:flex w-8 h-8 rounded-lg bg-gray-100 items-center justify-center hover:bg-gray-200 transition-colors"
+              aria-label="Ciutkan sidebar"
+              aria-expanded={!sidebarCollapsed}
+              aria-controls="dashboard-sidebar"
             >
               <PanelLeftClose className="w-4 h-4 text-gray-500" />
             </button>
@@ -69,15 +77,19 @@ export function Sidebar({
         {/* Toggle button for collapsed state */}
         {sidebarCollapsed && (
           <button
+            type="button"
             onClick={onToggleCollapsed}
             className="sidebar-expand-btn absolute top-16 -right-3 hidden lg:flex w-6 h-6 rounded-full bg-white border shadow-sm items-center justify-center hover:bg-gray-50 transition-colors"
+            aria-label="Perluas sidebar"
+            aria-expanded={!sidebarCollapsed}
+            aria-controls="dashboard-sidebar"
           >
             <ChevronRight className="w-3 h-3" />
           </button>
         )}
 
         {/* Navigation */}
-        <nav className="py-4 overflow-y-auto h-[calc(100vh-10rem)]">
+        <nav className="py-4 overflow-y-auto h-[calc(100vh-10rem)]" aria-label="Navigasi dashboard">
           {/* AI Chat highlight - rendered before groups */}
           {highlightLink && (() => {
             const isActive = pathname === highlightLink.href || pathname.startsWith(highlightLink.href);
@@ -86,6 +98,7 @@ export function Sidebar({
               <Link
                 href={highlightLink.href}
                 onClick={onCloseSidebar}
+                aria-current={isActive ? "page" : undefined}
                 className={cn(
                   "sidebar-ai-card mx-3 px-4 py-3.5 rounded-2xl relative mb-4 block",
                   isActive && "active",
@@ -137,23 +150,36 @@ export function Sidebar({
                   ? isDashboardPath
                   : pathname === link.href || pathname.startsWith(`${link.href}/`);
 
+                const inactiveClass = link.secondary
+                  ? "text-gray-500 hover:bg-gray-50"
+                  : "text-gray-600 hover:bg-gray-100";
+
                 return (
                   <Link
                     key={link.href}
                     href={link.href}
                     onClick={onCloseSidebar}
+                    aria-current={isActive ? "page" : undefined}
                     className={cn(
                       "sidebar-nav-link flex items-center gap-3 mx-3 px-4 py-2.5 rounded-xl transition-all relative mb-0.5",
                       isActive
                         ? "sidebar-nav-active text-white bg-primary shadow-md"
-                        : "text-gray-600 hover:bg-gray-100",
+                        : inactiveClass,
                       sidebarCollapsed && "lg:justify-center lg:mx-2 lg:px-3"
                     )}
                     title={sidebarCollapsed ? link.label : undefined}
                   >
-                    <link.icon className={cn("sidebar-nav-icon w-5 h-5 shrink-0", isActive ? "text-white" : "text-gray-500")} />
+                    <link.icon
+                      className={cn(
+                        "sidebar-nav-icon w-5 h-5 shrink-0",
+                        isActive ? "text-white" : link.secondary ? "text-gray-400" : "text-gray-500"
+                      )}
+                    />
                     {!sidebarCollapsed && (
-                      <span className="font-medium flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                      <span className={cn(
+                        "font-medium flex-1 whitespace-nowrap overflow-hidden text-ellipsis",
+                        link.secondary && !isActive && "text-sm"
+                      )}>
                         {link.label}
                       </span>
                     )}

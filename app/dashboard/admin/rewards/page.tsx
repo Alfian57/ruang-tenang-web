@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { CoinIcon } from "@/components/shared/CoinIcon";
 import { cn } from "@/utils";
 import { toast } from "sonner";
@@ -28,6 +29,7 @@ import { rewardService } from "@/services/api";
 import { uploadService } from "@/services/api";
 import { getUploadUrl } from "@/services/http/upload-url";
 import type { Reward, RewardClaim } from "@/types";
+import { AdminCompactTabs } from "../_components/AdminCompactTabs";
 
 interface RewardFormData {
   name: string;
@@ -213,36 +215,35 @@ export default function AdminRewardsPage() {
         )}
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 mb-6 border-b">
-        <button
-          onClick={() => setActiveTab("rewards")}
-          className={cn(
-            "flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px",
-            activeTab === "rewards"
-              ? "border-amber-500 text-amber-700"
-              : "border-transparent text-gray-500 hover:text-gray-700"
-          )}
-        >
-          <Package className="w-4 h-4" />
-          Daftar Hadiah ({rewards.length})
-        </button>
-        <button
-          onClick={() => setActiveTab("claims")}
-          className={cn(
-            "flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px",
-            activeTab === "claims"
-              ? "border-amber-500 text-amber-700"
-              : "border-transparent text-gray-500 hover:text-gray-700"
-          )}
-        >
-          <History className="w-4 h-4" />
-          Riwayat Klaim ({claims.length})
-        </button>
-      </div>
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) => setActiveTab(value as "rewards" | "claims")}
+        className="space-y-6"
+      >
+        <AdminCompactTabs
+          items={[
+            {
+              value: "rewards",
+              label: (
+                <span className="flex items-center gap-2">
+                  <Package className="w-4 h-4" />
+                  Daftar Hadiah ({rewards.length})
+                </span>
+              ),
+            },
+            {
+              value: "claims",
+              label: (
+                <span className="flex items-center gap-2">
+                  <History className="w-4 h-4" />
+                  Riwayat Klaim ({claims.length})
+                </span>
+              ),
+            },
+          ]}
+        />
 
-      {activeTab === "rewards" && (
-        <>
+        <TabsContent value="rewards" className="space-y-6">
           {/* Add Form */}
           {showAddForm && (
             <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
@@ -580,12 +581,9 @@ export default function AdminRewardsPage() {
               </div>
             </div>
           )}
-        </>
-      )}
+        </TabsContent>
 
-      {/* Claims Tab */}
-      {activeTab === "claims" && (
-        <>
+        <TabsContent value="claims" className="space-y-6">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
@@ -652,8 +650,8 @@ export default function AdminRewardsPage() {
               </div>
             </div>
           )}
-        </>
-      )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

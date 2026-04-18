@@ -1,7 +1,14 @@
 import { httpClient } from "@/services/http/client";
 import type { ApiResponse, PaginatedResponse } from "@/services/http/types";
-import type { Article, User } from "@/types";
-import type { UserReport, ModeratorAction, ModerationStats, ModerationQueueItem } from "@/types/moderation";
+import type { User } from "@/types";
+import type {
+  CreateReportRequest,
+  ModerationQueueItem,
+  ModerationStats,
+  ModeratorAction,
+  ReportType,
+  UserReport,
+} from "@/types/moderation";
 
 interface UserStrike {
   id: number;
@@ -32,6 +39,73 @@ interface BlockedUser {
   blocked_user?: User;
 }
 
+const STORY_REPORT_TYPES: ReadonlySet<ReportType> = new Set([
+  "story",
+  "story_comment",
+]);
+
+function parseContentId(contentId: number | string | undefined): number | undefined {
+  if (typeof contentId === "number") {
+    return Number.isFinite(contentId) ? contentId : undefined;
+  }
+
+  if (typeof contentId === "string") {
+    const trimmed = contentId.trim();
+    if (!trimmed || !/^\d+$/.test(trimmed)) return undefined;
+    return Number(trimmed);
+  }
+
+  return undefined;
+}
+
+function normalizeReportPayload(data: CreateReportRequest): CreateReportRequest {
+  const description = data.description?.trim() || undefined;
+
+  if (STORY_REPORT_TYPES.has(data.report_type)) {
+    if (!data.user_id) {
+      throw new Error("Laporan cerita membutuhkan target pengguna yang valid.");
+    }
+
+    const contextLabel =
+      data.report_type === "story"
+        ? "Referensi cerita"
+        : "Referensi komentar cerita";
+    const contentReference =
+      data.content_id !== undefined
+        ? `${contextLabel}: ${String(data.content_id)}`
+        : contextLabel;
+
+    return {
+      report_type: "user",
+      user_id: data.user_id,
+      reason: data.reason,
+      description: description
+        ? `${contentReference}\n${description}`
+        : contentReference,
+    };
+  }
+
+  if (data.report_type === "user") {
+    return {
+      report_type: data.report_type,
+      user_id: data.user_id,
+      reason: data.reason,
+      description,
+    };
+  }
+
+  const parsedContentId = parseContentId(data.content_id);
+  if (!parsedContentId) {
+    throw new Error("ID konten untuk laporan tidak valid.");
+  }
+
+  return {
+    ...data,
+    content_id: parsedContentId,
+    description,
+  };
+}
+
 export const moderationService = {
   // Dashboard
   getStats(token: string) {
@@ -39,7 +113,7 @@ export const moderationService = {
   },
 
   getQueue(token: string, params?: { status?: string; page?: number; limit?: number }) {
-    return httpClient.get<PaginatedResponse<ModerationQueueItem>>("/moderation/queue", { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<ModerationQueueItem>>("/moderation/queue", { token, params });
   },
 
   moderateArticle(token: string, articleId: number, data: { action: string; notes?: string; trigger_warnings?: string[] }) {
@@ -48,7 +122,7 @@ export const moderationService = {
 
   // Reports
   getReports(token: string, params?: { status?: string; report_type?: string; reason?: string; page?: number; limit?: number }) {
-    return httpClient.get<PaginatedResponse<UserReport>>("/moderation/reports", { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<UserReport>>("/moderation/reports", { token, params });
   },
 
   handleReport(token: string, reportId: number, data: { action: string; notes?: string; duration?: number }) {
@@ -67,7 +141,7 @@ export const moderationService = {
 
   // Action logs
   getActions(token: string, params?: { moderator_id?: number; action_type?: string; target_type?: string; page?: number; limit?: number }) {
-    return httpClient.get<PaginatedResponse<ModeratorAction>>("/moderation/actions", { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<ModeratorAction>>("/moderation/actions", { token, params });
   },
 
   // Crisis keywords
@@ -84,8 +158,9 @@ export const moderationService = {
   },
 
   // User reports (any user)
-  createReport(token: string, data: { report_type: string; content_id?: number | string; user_id?: number; reason: string; description?: string }) {
-    return httpClient.post<ApiResponse<null>>("/reports", data, { token });
+  createReport(token: string, data: CreateReportRequest) {
+    const payload = normalizeReportPayload(data);
+    return httpClient.post<ApiResponse<null>>("/reports", payload, { token });
   },
 
   // User blocking

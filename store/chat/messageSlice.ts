@@ -2,7 +2,7 @@ import { StateCreator } from "zustand";
 import { toast } from "sonner";
 import { ChatStore, ChatMessageState, ChatMessageActions } from "./types";
 import { chatService, uploadService } from "@/services/api";
-import { ChatMessage } from "@/types";
+import { ChatMessage, SendMessageOptions } from "@/types";
 import { useAuthStore } from "../authStore";
 
 export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageState & ChatMessageActions> = (set, get) => ({
@@ -10,7 +10,7 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
   isSending: false,
   isRecording: false,
 
-  sendTextMessage: async (token: string, content: string) => {
+  sendTextMessage: async (token: string, content: string, options?: SendMessageOptions) => {
     const { activeSession } = get();
     if (!token || !activeSession) return;
 
@@ -30,7 +30,7 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
     set((state) => ({ messages: [...state.messages, optimisticMessage] }));
 
     try {
-      const response = (await chatService.sendMessage(token, activeSession.uuid, content)) as {
+      const response = (await chatService.sendMessage(token, activeSession.uuid, content, "text", options)) as {
         data: { user_message: ChatMessage; ai_message: ChatMessage };
       };
 
@@ -57,7 +57,7 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
     }
   },
 
-  sendAudioMessage: async (token: string, audioBlob: Blob) => {
+  sendAudioMessage: async (token: string, audioBlob: Blob, options?: SendMessageOptions) => {
     const { activeSession } = get();
     if (!token || !activeSession) return;
 
@@ -70,7 +70,7 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
       const audioUrl = uploadRes.data.url;
 
       // Send message with audio type
-      const response = (await chatService.sendMessage(token, activeSession.uuid, audioUrl, "audio")) as {
+      const response = (await chatService.sendMessage(token, activeSession.uuid, audioUrl, "audio", options)) as {
         data: { user_message: ChatMessage; ai_message: ChatMessage };
       };
 

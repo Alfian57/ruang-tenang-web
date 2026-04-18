@@ -19,7 +19,7 @@ export const rewardService = {
   getMyClaims(token: string, params?: { page?: number; page_size?: number }) {
     return httpClient.get<ApiResponse<RewardClaimListResult>>("/rewards/my-claims", {
       token,
-      params: params as Record<string, string | number | boolean | undefined>,
+      params,
     });
   },
 
@@ -55,7 +55,7 @@ export const rewardService = {
   adminGetAllClaims(token: string, params?: { page?: number; page_size?: number }) {
     return httpClient.get<ApiResponse<RewardClaimListResult>>("/admin/rewards/claims", {
       token,
-      params: params as Record<string, string | number | boolean | undefined>,
+      params,
     });
   },
 };

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AlertTriangle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TRUST_CUES } from "@/constants";
 
 interface AIDisclaimerBannerProps {
   onDismiss?: () => void;
@@ -24,8 +25,10 @@ export function AIDisclaimerBanner({ onDismiss }: AIDisclaimerBannerProps) {
       <div className="flex-1 text-sm text-sky-950 pr-6">
         <p className="font-medium">Penting: Bukan Pengganti Profesional</p>
         <p className="mt-1 text-sky-800">
-          AI Chat ini dirancang untuk dukungan emosional awal. Jika Anda dalam krisis atau membutuhkan bantuan serius,
-          silakan hubungi tenaga profesional atau layanan darurat.
+          {TRUST_CUES.COMBINED}
+        </p>
+        <p className="mt-1 text-sky-800">
+          Jika kamu dalam krisis atau butuh bantuan segera, hubungi tenaga profesional atau layanan darurat.
         </p>
       </div>
       <Button

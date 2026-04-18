@@ -8,6 +8,7 @@ import {
   AlertTriangle,
   Send,
   X,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +43,7 @@ export default function NewStoryPage() {
     categories,
     submitting,
     loadingCategories,
+    challengeMeta,
     handleAddTag,
     handleRemoveTag,
     handleToggleCategory,
@@ -85,6 +87,17 @@ export default function NewStoryPage() {
             Bagikan perjalanan kesehatan mentalmu untuk menginspirasi orang lain.
             Kisahmu akan direview admin sebelum dipublikasikan.
           </p>
+
+          {challengeMeta && (
+            <div className="mt-4 rounded-xl border border-violet-200 bg-violet-50 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 inline-flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" />
+                Story Challenge Aktif
+              </p>
+              <p className="text-sm font-semibold text-gray-900 mt-1">{challengeMeta.title}</p>
+              <p className="text-xs text-gray-600 mt-1">{challengeMeta.description}</p>
+            </div>
+          )}
         </div>
 
         <div className="space-y-6">

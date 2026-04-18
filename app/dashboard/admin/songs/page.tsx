@@ -3,8 +3,9 @@
 import { Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useAdminSongs } from "./_hooks/useAdminSongs";
+import { AdminCompactTabs } from "../_components/AdminCompactTabs";
 import {
   CategoryTable,
   SongTable,
@@ -83,10 +84,12 @@ export default function AdminSongsPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="songs">Lagu</TabsTrigger>
-          <TabsTrigger value="categories">Kategori</TabsTrigger>
-        </TabsList>
+        <AdminCompactTabs
+          items={[
+            { value: "songs", label: "Lagu" },
+            { value: "categories", label: "Kategori" },
+          ]}
+        />
 
         {/* Categories Tab */}
         <TabsContent value="categories" className="space-y-6">

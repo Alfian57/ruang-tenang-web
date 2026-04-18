@@ -16,15 +16,15 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <Navbar />
-      <main>
+      <main id="main-content" tabIndex={-1} className="focus:outline-none">
         <HeroSection />
+        <GamificationSection />
         <MarqueeSection />
         <FeaturesSection />
-        <GamificationSection />
-        <ArticleSection />
         <StorySection />
         <CommunitySection />
         <LeaderboardSection />
+        <ArticleSection />
         <CTASection />
       </main>
       <Footer />

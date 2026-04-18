@@ -8,6 +8,12 @@ import { MessageSquare, ChevronRight } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
 import type { Forum } from "@/types";
 
+const STARTER_PROMPTS = [
+    "Hal kecil apa yang paling membantu kamu tetap tenang minggu ini?",
+    "Kalau lagi overthinking malam, ritual 10 menit apa yang paling works?",
+    "Satu kalimat penyemangat untuk teman yang lagi capek akademik.",
+];
+
 interface LatestDiscussionsProps {
     forums: Forum[];
 }
@@ -43,14 +49,28 @@ export function LatestDiscussions({ forums }: LatestDiscussionsProps) {
                 {forums.length > 0 ? (
                     forums.map((forum) => <ForumCard key={forum.id} forum={forum} className="h-full" />)
                 ) : (
-                    <div className="col-span-2 text-center py-8 bg-card rounded-xl border border-dashed">
-                        <MessageSquare className="h-10 w-10 text-muted-foreground/50 mx-auto mb-3" />
-                        <p className="text-muted-foreground">Belum ada diskusi terbaru.</p>
-                        <Link href={`${ROUTES.FORUM}/create`} className="mt-2 inline-block">
-                            <Button variant="link" className="text-primary">
-                                Jadilah yang pertama!
-                            </Button>
-                        </Link>
+                    <div className="col-span-2 py-8 bg-card rounded-xl border border-dashed px-6">
+                        <div className="text-center">
+                            <MessageSquare className="h-10 w-10 text-muted-foreground/50 mx-auto mb-3" />
+                            <p className="text-foreground font-medium">Ruang diskusi sedang menunggu topik pertama.</p>
+                            <p className="text-sm text-muted-foreground mt-1">Mulai dari prompt berikut agar percakapan terasa hangat dan aman.</p>
+                        </div>
+
+                        <div className="mt-5 grid gap-2">
+                            {STARTER_PROMPTS.map((prompt) => (
+                                <div key={prompt} className="rounded-lg border bg-muted/20 px-3 py-2 text-sm text-muted-foreground">
+                                    {prompt}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-4 text-center">
+                            <Link href={`${ROUTES.FORUM}/create`} className="inline-block">
+                                <Button variant="link" className="text-primary">
+                                    Mulai Diskusi Pertama
+                                </Button>
+                            </Link>
+                        </div>
                     </div>
                 )}
             </div>

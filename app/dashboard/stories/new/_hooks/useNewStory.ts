@@ -1,15 +1,24 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { storyService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import { StoryCategory, CreateStoryRequest } from "@/types";
 import { ApiError } from "@/services/http/types";
 import { toast } from "sonner";
 
+const STORY_CHALLENGE_PRESETS: Record<string, { title: string; description: string; defaultTag: string }> = {
+  "weekly-reset": {
+    title: "From Chaos to Calm",
+    description: "Ceritakan momen sulit minggu ini lalu langkah kecil yang membantumu kembali stabil.",
+    defaultTag: "weekly-reset",
+  },
+};
+
 export function useNewStory() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { token } = useAuthStore();
 
   const [title, setTitle] = useState("");
@@ -25,11 +34,33 @@ export function useNewStory() {
   const [submitting, setSubmitting] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(true);
 
+  const challengeKey = searchParams.get("challenge") || "";
+  const challengePreset = challengeKey ? STORY_CHALLENGE_PRESETS[challengeKey] : undefined;
+  const challengeTitleParam = searchParams.get("challengeTitle") || "";
+  const challengeTagParam = searchParams.get("challengeTag") || "";
+
   useEffect(() => {
     if (!token) {
       router.push("/dashboard/stories");
     }
   }, [token, router]);
+
+  useEffect(() => {
+    if (!challengePreset) return;
+
+    if (!title.trim()) {
+      setTitle(challengeTitleParam || `Challenge: ${challengePreset.title}`);
+    }
+
+    const normalizedTag = (challengeTagParam || challengePreset.defaultTag).trim().toLowerCase();
+    if (normalizedTag) {
+      setTags((prev) => {
+        if (prev.includes(normalizedTag)) return prev;
+        if (prev.length >= 5) return prev;
+        return [...prev, normalizedTag];
+      });
+    }
+  }, [challengePreset, challengeTagParam, challengeTitleParam, title]);
 
   const loadCategories = useCallback(async () => {
     try {
@@ -154,6 +185,13 @@ export function useNewStory() {
     categories,
     submitting,
     loadingCategories,
+    challengeMeta: challengePreset
+      ? {
+          key: challengeKey,
+          title: challengePreset.title,
+          description: challengePreset.description,
+        }
+      : null,
     handleAddTag,
     handleRemoveTag,
     handleToggleCategory,

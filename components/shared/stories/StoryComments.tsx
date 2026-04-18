@@ -5,6 +5,7 @@ import { cn } from "@/utils";
 import { StoryComment as StoryCommentType } from "@/types";
 import { Heart, User, MoreHorizontal, Flag, EyeOff, MessageCircle } from "lucide-react";
 import Image from "next/image";
+import { ReportModal, BlockUserButton } from "@/components/shared/moderation";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -19,6 +20,8 @@ interface StoryCommentProps {
     onHide?: () => void;
     isAdmin?: boolean;
     isOwner?: boolean;
+    canModerate?: boolean;
+    onModerationFeedback?: (message: string) => void;
     className?: string;
 }
 
@@ -29,6 +32,8 @@ export function StoryComment({
     onHide,
     isAdmin,
     isOwner,
+    canModerate,
+    onModerationFeedback,
     className,
 }: StoryCommentProps) {
     const formatDate = (dateStr: string) => {
@@ -113,16 +118,43 @@ export function StoryComment({
 
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <button className="text-muted-foreground hover:text-foreground p-1 rounded">
+                                <button type="button" className="text-muted-foreground hover:text-foreground p-1 rounded">
                                     <MoreHorizontal className="h-4 w-4" />
                                 </button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                {onReport && (
-                                    <DropdownMenuItem onClick={onReport}>
-                                        <Flag className="h-4 w-4 mr-2" />
-                                        Laporkan
-                                    </DropdownMenuItem>
+                                {canModerate && !isOwner && !!comment.author?.id ? (
+                                    <>
+                                        <ReportModal
+                                            type="story_comment"
+                                            contentId={comment.id}
+                                            userId={comment.author.id}
+                                            onSuccess={() =>
+                                                onModerationFeedback?.("Laporan komentar dikirim. Tim moderasi akan meninjau dalam 1 x 24 jam.")
+                                            }
+                                            trigger={
+                                                <button type="button" className="relative flex w-full select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 cursor-pointer">
+                                                    <Flag className="h-4 w-4 mr-2" />
+                                                    Laporkan
+                                                </button>
+                                            }
+                                        />
+                                        <BlockUserButton
+                                            userId={comment.author.id}
+                                            userName={comment.author.name}
+                                            onSuccess={() =>
+                                                onModerationFeedback?.("Pengguna diblokir. Kamu tidak akan melihat konten dari akun ini lagi.")
+                                            }
+                                            className="w-full justify-start text-sm font-normal px-2 py-1.5 h-auto text-red-600 hover:text-red-600 hover:bg-red-50"
+                                        />
+                                    </>
+                                ) : (
+                                    onReport && (
+                                        <DropdownMenuItem onClick={onReport}>
+                                            <Flag className="h-4 w-4 mr-2" />
+                                            Laporkan
+                                        </DropdownMenuItem>
+                                    )
                                 )}
                                 {(isAdmin || isOwner) && onHide && (
                                     <DropdownMenuItem onClick={onHide} className="text-destructive">
@@ -140,6 +172,7 @@ export function StoryComment({
                 {/* Actions */}
                 <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                     <button
+                        type="button"
                         onClick={onHeart}
                         className={cn(
                             "flex items-center gap-1 hover:text-red-500 transition-colors",
@@ -163,6 +196,7 @@ interface StoryCommentsListProps {
     onHideComment?: (commentId: string) => void;
     isAdmin?: boolean;
     currentUserId?: number;
+    canModerate?: boolean;
     className?: string;
 }
 
@@ -173,8 +207,11 @@ export function StoryCommentsList({
     onHideComment,
     isAdmin,
     currentUserId,
+    canModerate,
     className,
 }: StoryCommentsListProps) {
+    const [moderationFeedback, setModerationFeedback] = useState<string | null>(null);
+
     if (comments.length === 0) {
         return (
             <div className={cn("text-center py-16", className)}>
@@ -187,6 +224,12 @@ export function StoryCommentsList({
 
     return (
         <div className={cn("space-y-4", className)}>
+            {moderationFeedback && (
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                    {moderationFeedback}
+                </div>
+            )}
+
             {comments.map((comment) => (
                 <StoryComment
                     key={comment.id}
@@ -196,6 +239,8 @@ export function StoryCommentsList({
                     onHide={() => onHideComment?.(comment.id)}
                     isAdmin={isAdmin}
                     isOwner={comment.author?.id === currentUserId}
+                    canModerate={canModerate}
+                    onModerationFeedback={setModerationFeedback}
                 />
             ))}
         </div>

@@ -8,6 +8,7 @@ import type { Forum } from "@/types/forum";
 import { cn } from "@/utils";
 import { ROUTES } from "@/lib/routes";
 import { parseApiDate } from "@/utils/date";
+import { stripForumFormatTag } from "@/utils/forum-content";
 
 interface ForumCardProps {
   forum: Forum;
@@ -34,6 +35,7 @@ function getCategoryBadgeClass(categoryName?: string): string {
 
 export function ForumCard({ forum, className }: ForumCardProps) {
   const categoryName = forum.category?.name || "Umum";
+  const previewContent = stripForumFormatTag(forum.content);
 
   return (
     <Link
@@ -68,7 +70,7 @@ export function ForumCard({ forum, className }: ForumCardProps) {
         </div>
 
         <p className="text-muted-foreground line-clamp-2 text-sm wrap-break-word">
-          {forum.content || "Tidak ada preview konten"}
+          {previewContent || "Tidak ada preview konten"}
         </p>
 
         <div className="flex items-center justify-between mt-2 pt-3 border-t">

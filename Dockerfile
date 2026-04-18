@@ -8,7 +8,7 @@ WORKDIR /app
 # Gunakan placeholder untuk runtime injection
 # ============================================
 ARG NEXT_PUBLIC_API_BASE_URL=__NEXT_PUBLIC_API_BASE_URL__
-ARG NEXT_PUBLIC_API_URL=__NEXT_PUBLIC_API_BASE_URL__
+ARG NEXT_PUBLIC_API_URL=__NEXT_PUBLIC_API_URL__
 
 # Convert ARG ke ENV agar terbaca oleh next build
 ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}

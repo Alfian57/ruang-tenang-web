@@ -139,6 +139,19 @@ function formatUnlockCriteria(landmark: MapLandmark): string {
     }
 }
 
+function getTierNarrative(tier: TierGroup): string {
+    if (tier.maxLevel <= 5) {
+        return "Chapter 1 · Stabilkan ritme dasar lewat kebiasaan kecil yang konsisten.";
+    }
+    if (tier.maxLevel <= 10) {
+        return "Chapter 2 · Ubah refleksi jadi aksi nyata dan mulai membangun momentum.";
+    }
+    if (tier.maxLevel <= 20) {
+        return "Chapter 3 · Perkuat ketahanan emosi dan kontribusi ke komunitas.";
+    }
+    return "Chapter 4 · Jadilah role model: dampak personalmu mulai mengangkat orang lain.";
+}
+
 function buildTierLandmarks(tier: TierGroup, regions: MapRegion[]): TierLandmarkItem[] {
     return regions
         .filter(
@@ -531,6 +544,9 @@ export function TierJourneySection() {
                                                     </p>
                                                     <p className="text-xs text-slate-500 mt-0.5">
                                                         EXP {formatExp(tier.minExp)}{tier.maxExp ? ` - ${formatExp(tier.maxExp)}` : "+"}
+                                                    </p>
+                                                    <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                                                        {getTierNarrative(tier)}
                                                     </p>
 
                                                     <div className="mt-3 h-2.5 bg-slate-100 rounded-full overflow-hidden">

@@ -44,7 +44,7 @@ export function BlockUserButton({
     setSubmitting(true);
     try {
       await blockUser(token, userId);
-      toast.success(`Berhasil memblokir ${userName}`);
+      toast.success(`Berhasil memblokir ${userName}. Kamu bisa kelola daftar blokir dari menu akun.`);
       setOpen(false);
       onSuccess?.();
     } catch (error) {
@@ -67,7 +67,7 @@ export function BlockUserButton({
         <DialogHeader>
           <DialogTitle>Blokir Pengguna?</DialogTitle>
           <DialogDescription>
-            Apakah Anda yakin ingin memblokir <strong>{userName}</strong>? Anda tidak akan lagi melihat konten dari pengguna ini.
+            Apakah Anda yakin ingin memblokir <strong>{userName}</strong>? Anda tidak akan lagi melihat konten dari pengguna ini, dan pengaturan ini bisa dibuka kembali dari daftar pengguna diblokir di menu akun.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

@@ -14,25 +14,32 @@ interface RecommendedArticlesWidgetProps {
   isLoading?: boolean;
 }
 
+function getEstimatedReadTime(article: Article): string {
+  const rawText = (article.content || article.excerpt || "").replace(/<[^>]*>/g, " ").trim();
+  const words = rawText ? rawText.split(/\s+/).filter(Boolean).length : 0;
+  const minutes = Math.max(1, Math.ceil(words / 180));
+  return `${minutes} min baca`;
+}
+
 export function RecommendedArticlesWidget({ articles, isLoading }: RecommendedArticlesWidgetProps) {
   if (isLoading) {
     return (
-       <Card className="h-full border-none shadow-none bg-transparent">
-         <CardHeader className="px-0 pt-0">
-           <div className="h-6 w-1/3 bg-gray-200 rounded animate-pulse" />
-         </CardHeader>
-         <CardContent className="px-0 space-y-4">
-           {[1, 2, 3].map((i) => (
-             <div key={i} className="flex gap-4">
-               <div className="w-20 h-20 bg-gray-200 rounded-xl animate-pulse shrink-0" />
-               <div className="flex-1 space-y-2">
-                 <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
-                 <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse" />
-               </div>
-             </div>
-           ))}
-         </CardContent>
-       </Card>
+      <Card className="h-full border-none shadow-none bg-transparent">
+        <CardHeader className="px-0 pt-0">
+          <div className="h-6 w-1/3 bg-gray-200 rounded animate-pulse" />
+        </CardHeader>
+        <CardContent className="px-0 space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex gap-4">
+              <div className="w-20 h-20 bg-gray-200 rounded-xl animate-pulse shrink-0" />
+              <div className="flex-1 space-y-2">
+                <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
+                <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse" />
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
     );
   }
 
@@ -55,16 +62,16 @@ export function RecommendedArticlesWidget({ articles, isLoading }: RecommendedAr
             <Link key={article.id} href={ROUTES.articleRead(article.slug)} className="block group relative">
               <div className="flex gap-4 items-start p-3 rounded-2xl hover:bg-gray-50 transition-all duration-300 border border-transparent hover:border-gray-100">
                 <div className="w-24 h-24 rounded-xl overflow-hidden bg-gray-100 shrink-0 relative shadow-sm group-hover:shadow-md transition-shadow">
-                   {article.thumbnail ? (
-                     <Image
-                       src={article.thumbnail}
-                       alt={article.title}
-                       fill
-                       className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  {article.thumbnail ? (
+                    <Image
+                      src={article.thumbnail}
+                      alt={article.title}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-500"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
-                   ) : (
-                     <div className="w-full h-full flex items-center justify-center bg-primary/5 text-2xl">📄</div>
-                   )}
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-primary/5 text-2xl">📄</div>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0 py-1 flex flex-col justify-between h-24">
                   <div className="space-y-1.5">
@@ -74,8 +81,7 @@ export function RecommendedArticlesWidget({ articles, isLoading }: RecommendedAr
                       </span>
                       <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                         <span className="w-1 h-1 rounded-full bg-gray-300"></span>
-                        {/* Mock reading time for now */}
-                        5 min baca
+                        {getEstimatedReadTime(article)}
                       </span>
                     </div>
                     <h4 className="font-bold text-sm leading-snug line-clamp-2 group-hover:text-primary transition-colors text-gray-800">
@@ -83,8 +89,8 @@ export function RecommendedArticlesWidget({ articles, isLoading }: RecommendedAr
                     </h4>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mt-auto pt-2 border-t border-dashed border-gray-100 group-hover:border-gray-200 transition-colors">
-                     <span className="font-medium text-gray-500">{formatDate(article.created_at)}</span>
-                     <ArrowRight className="w-3.5 h-3.5 ml-auto text-gray-300 group-hover:text-primary transition-colors -translate-x-1 group-hover:translate-x-0" />
+                    <span className="font-medium text-gray-500">{formatDate(article.created_at)}</span>
+                    <ArrowRight className="w-3.5 h-3.5 ml-auto text-gray-300 group-hover:text-primary transition-colors -translate-x-1 group-hover:translate-x-0" />
                   </div>
                 </div>
               </div>
@@ -96,9 +102,14 @@ export function RecommendedArticlesWidget({ articles, isLoading }: RecommendedAr
               <BookOpen className="w-6 h-6 text-gray-400" />
             </div>
             <div className="space-y-1">
-              <p className="font-medium text-gray-900">Belum ada artikel</p>
-              <p className="text-xs text-muted-foreground">Cek kembali nanti untuk bacaan baru</p>
+              <p className="font-medium text-gray-900">Rekomendasi bacaan sedang disiapkan</p>
+              <p className="text-xs text-muted-foreground">Kamu tetap bisa jelajahi pustaka artikel untuk menemukan panduan yang relevan.</p>
             </div>
+            <Link href={ROUTES.ARTICLES}>
+              <Button variant="outline" size="sm" className="mt-2">
+                Jelajahi Semua Artikel
+              </Button>
+            </Link>
           </div>
         )}
       </CardContent>

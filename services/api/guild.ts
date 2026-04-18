@@ -19,7 +19,7 @@ export const guildService = {
   getPublicGuilds(token: string, params?: { page?: number; limit?: number }) {
     return httpClient.get<PaginatedResponse<Guild>>("/guilds", {
       token,
-      params: params as Record<string, string | number | boolean | undefined>,
+      params,
     });
   },
 
@@ -100,7 +100,7 @@ export const guildService = {
   getChallengeHistory(token: string, guildId: string, params?: { page?: number; limit?: number }) {
     return httpClient.get<PaginatedResponse<GuildChallenge>>(`/guilds/${guildId}/challenges/history`, {
       token,
-      params: params as Record<string, string | number | boolean | undefined>,
+      params,
     });
   },
 

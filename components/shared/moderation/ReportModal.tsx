@@ -54,7 +54,21 @@ export function ReportModal({
   const [reason, setReason] = useState<ReportReason | "">("");
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const { token } = useAuthStore();
+
+  const resetForm = () => {
+    setReason("");
+    setDescription("");
+    setSubmitted(false);
+  };
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+    if (!nextOpen) {
+      resetForm();
+    }
+  };
 
   const handleSubmit = async () => {
     if (!token) {
@@ -75,21 +89,20 @@ export function ReportModal({
         reason: reason as ReportReason,
         description: description.trim(),
       });
-      toast.success("Laporan berhasil dikirim");
-      setOpen(false);
-      setReason("");
-      setDescription("");
+      toast.success("Laporan diterima dan masuk antrean review");
+      setSubmitted(true);
       onSuccess?.();
     } catch (error) {
       console.error("Failed to submit report:", error);
-      toast.error("Gagal mengirim laporan");
+      const message = error instanceof Error ? error.message : "Gagal mengirim laporan";
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger || (
           <Button variant="ghost" size="sm" className="text-gray-500 hover:text-red-600">
@@ -99,54 +112,80 @@ export function ReportModal({
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Laporkan Konten</DialogTitle>
-          <DialogDescription>
-            Bantu kami menjaga komunitas tetap aman dan nyaman.
-          </DialogDescription>
-        </DialogHeader>
+        {submitted ? (
+          <>
+            <DialogHeader>
+              <DialogTitle>Laporan Terkirim</DialogTitle>
+              <DialogDescription>
+                Terima kasih sudah membantu menjaga ruang komunitas tetap aman.
+              </DialogDescription>
+            </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <div className="space-y-2">
-            <Label>Alasan Pelaporan</Label>
-            <Select
-              value={reason}
-              onValueChange={(v) => setReason(v as ReportReason)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Pilih alasan..." />
-              </SelectTrigger>
-              <SelectContent>
-                {REPORT_REASONS.map((r) => (
-                  <SelectItem key={r.value} value={r.value}>
-                    {r.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800 space-y-1">
+              <p>Tim moderasi akan meninjau laporan dalam 1 x 24 jam.</p>
+              <p>Jika terbukti melanggar, konten atau akun terkait akan ditindak.</p>
+              <p>Kamu dapat terus melapor jika menemukan konten lain yang berisiko.</p>
+            </div>
 
-          <div className="space-y-2">
-            <Label>Keterangan Tambahan (Opsional)</Label>
-            <Textarea
-              placeholder="Jelaskan detail pelanggaran..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="resize-none"
-              rows={4}
-            />
-          </div>
-        </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={resetForm}>
+                Buat Laporan Lain
+              </Button>
+              <Button onClick={() => setOpen(false)}>Tutup</Button>
+            </DialogFooter>
+          </>
+        ) : (
+          <>
+            <DialogHeader>
+              <DialogTitle>Laporkan Konten</DialogTitle>
+              <DialogDescription>
+                Bantu kami menjaga komunitas tetap aman dan nyaman.
+              </DialogDescription>
+            </DialogHeader>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)} disabled={submitting}>
-            Batal
-          </Button>
-          <Button onClick={handleSubmit} disabled={submitting || !reason} variant="destructive">
-            {submitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            Kirim Laporan
-          </Button>
-        </DialogFooter>
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <Label>Alasan Pelaporan</Label>
+                <Select
+                  value={reason}
+                  onValueChange={(v) => setReason(v as ReportReason)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih alasan..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {REPORT_REASONS.map((r) => (
+                      <SelectItem key={r.value} value={r.value}>
+                        {r.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Keterangan Tambahan (Opsional)</Label>
+                <Textarea
+                  placeholder="Jelaskan detail pelanggaran..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="resize-none"
+                  rows={4}
+                />
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setOpen(false)} disabled={submitting}>
+                Batal
+              </Button>
+              <Button onClick={handleSubmit} disabled={submitting || !reason} variant="destructive">
+                {submitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Kirim Laporan
+              </Button>
+            </DialogFooter>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

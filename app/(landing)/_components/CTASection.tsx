@@ -80,7 +80,7 @@ export function CTASection() {
             <Heart className="w-10 h-10 text-primary" fill="currentColor" />
           </motion.div>
 
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-6 leading-tight">
+          <h2 className="font-brand-display text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-6 leading-tight">
             Siap untuk Merasa{" "}
             <span className="text-primary">Lebih Tenang</span> Hari Ini?
           </h2>

@@ -1,4 +1,4 @@
-import { ChatSession, ChatMessage, ChatFolder, ChatSessionSummary, SuggestedPrompt, ChatExportResponse } from "@/types";
+import { ChatSession, ChatMessage, ChatFolder, ChatSessionSummary, SuggestedPrompt, ChatExportResponse, SendMessageOptions } from "@/types";
 
 export type FilterType = "all" | "favorites" | "trash";
 
@@ -28,8 +28,8 @@ export interface ChatMessageState {
 }
 
 export interface ChatMessageActions {
-  sendTextMessage: (token: string, content: string) => Promise<void>;
-  sendAudioMessage: (token: string, audioBlob: Blob) => Promise<void>;
+  sendTextMessage: (token: string, content: string, options?: SendMessageOptions) => Promise<void>;
+  sendAudioMessage: (token: string, audioBlob: Blob, options?: SendMessageOptions) => Promise<void>;
   toggleMessageLike: (token: string, messageId: number, isLike: boolean) => Promise<void>;
   toggleMessagePin: (token: string, messageId: number) => Promise<void>;
 }

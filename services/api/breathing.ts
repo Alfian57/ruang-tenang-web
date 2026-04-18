@@ -1,12 +1,11 @@
 import { httpClient } from "@/services/http/client";
-import type { ApiResponse, PaginatedResponse } from "@/services/http/types";
+import type { ApiResponse } from "@/services/http/types";
 import type {
   BreathingTechnique,
   BreathingSession,
   BreathingPreferences,
   BreathingStats,
   BreathingCalendar,
-  BreathingCalendarDay,
   RecommendationsResponse,
   TechniqueUsageStats,
   SessionCompletionResult,
@@ -47,7 +46,7 @@ export const breathingService = {
 
   // Sessions
   getSessions(token: string, params?: { start_date?: string; end_date?: string; technique_id?: string; page?: number; limit?: number }) {
-    return httpClient.get<ApiResponse<SessionHistoryResponse>>("/breathing/sessions", { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<ApiResponse<SessionHistoryResponse>>("/breathing/sessions", { token, params });
   },
 
   getSession(token: string, id: string) {
@@ -109,7 +108,7 @@ export const breathingService = {
   getRecommendations(token: string, mood?: string, timeOfDay?: string) {
     return httpClient.get<ApiResponse<RecommendationsResponse>>("/breathing/recommendations", {
       token,
-      params: { mood, time_of_day: timeOfDay } as Record<string, string | number | boolean | undefined>,
+      params: { mood, time_of_day: timeOfDay },
     });
   },
 };

@@ -1,16 +1,23 @@
 # Ruang Tenang Web
 
-Frontend untuk aplikasi Ruang Tenang - Platform Kesehatan Mental.
+Frontend aplikasi Ruang Tenang.
+
+## Checklist Quickstart
+
+- [x] Dependency terpasang.
+- [x] `.env.local` terisi `NEXT_PUBLIC_API_BASE_URL`.
+- [x] Dev server berjalan.
+- [x] Build produksi lulus.
 
 ## Tech Stack
 
-- **Next.js 15** dengan App Router
-- **React 19**
-- **Tailwind CSS v4** - CSS-first configuration
-- **shadcn/ui** - Component library berbasis Radix UI
-- **Zustand** - State management
-- **React Hook Form + Zod** - Form handling dan validation
-- **Lucide React** - Icon library
+- Next.js 15 (App Router)
+- React 19
+- Tailwind CSS v4
+- shadcn/ui + Radix UI
+- Zustand
+- React Hook Form + Zod
+- Lucide React
 
 ## Getting Started
 
@@ -19,22 +26,25 @@ Frontend untuk aplikasi Ruang Tenang - Platform Kesehatan Mental.
 - Node.js 18+
 - npm atau yarn
 
-### Installation
+### Setup Cepat
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
+1. Install dependency:
 
-2. Buat file `.env.local`:
-   ```
-   NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api/v1
-   ```
+```bash
+npm install
+```
 
-3. Jalankan development server:
-   ```bash
-   npm run dev
-   ```
+2. Buat `.env.local`:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api/v1
+```
+
+3. Jalankan dev server:
+
+```bash
+npm run dev
+```
 
 4. Buka http://localhost:3000
 
@@ -62,7 +72,7 @@ Frontend untuk aplikasi Ruang Tenang - Platform Kesehatan Mental.
     └── index.ts            # TypeScript types
 ```
 
-## Features
+## Fitur Utama
 
 - **Landing Page** - Hero, fitur, CTA
 - **Authentication** - Login & Register dengan validasi
@@ -81,3 +91,8 @@ npm run build    # Production build
 npm run start    # Production server
 npm run lint     # ESLint
 ```
+
+## Catatan Fokus Produk
+
+- Prioritaskan kualitas flow utama: dashboard, chat, forum, progress, rewards.
+- Fitur eksplorasi seperti stories/mini game dijaga sebagai pelengkap, bukan pusat navigasi utama.

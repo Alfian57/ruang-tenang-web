@@ -21,4 +21,5 @@ export { uploadService } from "./upload";
 export { rewardService } from "./reward";
 export { guildService } from "./guild";
 export { progressMapService } from "./progress-map";
+export { xpBoostService } from "./xp-boost";
 export { pushService } from "./push";

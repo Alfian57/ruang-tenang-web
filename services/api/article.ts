@@ -4,7 +4,7 @@ import type { Article, ArticleCategory } from "@/types";
 
 export const articleService = {
   getArticles(params?: { page?: number; limit?: number; search?: string; category_id?: number }) {
-    return httpClient.get<PaginatedResponse<Article>>("/articles", { params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<Article>>("/articles", { params });
   },
 
   getArticle(id: string, token?: string) {
@@ -18,7 +18,7 @@ export const articleService = {
 
   // User articles
   getMyArticles(token: string, params?: { page?: number; limit?: number; status?: string }) {
-    return httpClient.get<PaginatedResponse<Article>>("/my-articles", { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<Article>>("/my-articles", { token, params });
   },
 
   createArticle(token: string, data: { title: string; content: string; thumbnail?: string; category_id: number }) {

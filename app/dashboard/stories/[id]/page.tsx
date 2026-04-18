@@ -92,7 +92,7 @@ export default function StoryDetailPage() {
               <Button variant="ghost" size="icon" onClick={handleShare}>
                 <Share2 className="w-4 h-4" />
               </Button>
-              {token && story?.author?.id !== user?.id && (
+              {token && !!story?.author?.id && story.author.id !== user?.id && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon">
@@ -102,7 +102,7 @@ export default function StoryDetailPage() {
                   <DropdownMenuContent align="end">
                     <ReportModal
                       type="story"
-                      contentId={parseInt(storyId)}
+                      contentId={storyId}
                       userId={story?.author?.id}
                       trigger={
                         <div className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 cursor-pointer">

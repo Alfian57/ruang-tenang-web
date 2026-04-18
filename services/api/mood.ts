@@ -17,7 +17,7 @@ export interface TodayMoodResponse {
 
 export const moodService = {
   getHistory(token: string, params?: { start_date?: string; end_date?: string; page?: number; limit?: number }) {
-    return httpClient.get<PaginatedResponse<UserMood>>("/user-moods", { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<UserMood>>("/user-moods", { token, params });
   },
 
   record(token: string, mood: string) {

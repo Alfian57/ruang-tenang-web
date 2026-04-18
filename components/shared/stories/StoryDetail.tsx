@@ -7,6 +7,8 @@ import {
     Heart,
     MessageCircle,
     Share2,
+    MoreVertical,
+    Flag,
     AlertTriangle,
     Star,
     Eye,
@@ -18,11 +20,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { ROUTES } from "@/lib/routes";
+import { ReportModal, BlockUserButton } from "@/components/shared/moderation";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface StoryDetailProps {
     story: InspiringStory;
     onHeart?: () => void;
     isHeartLoading?: boolean;
+    currentUserId?: number;
+    canModerate?: boolean;
     className?: string;
 }
 
@@ -30,9 +40,17 @@ export function StoryDetail({
     story,
     onHeart,
     isHeartLoading,
+    currentUserId,
+    canModerate = false,
     className
 }: StoryDetailProps) {
     const [showContent, setShowContent] = useState(!story.has_trigger_warning);
+    const [moderationFeedback, setModerationFeedback] = useState<string | null>(null);
+
+    const canShowModerationMenu =
+        canModerate &&
+        !!story.author?.id &&
+        story.author.id !== currentUserId;
 
     const formatDate = (dateStr: string) => {
         return new Date(dateStr).toLocaleDateString("id-ID", {
@@ -164,6 +182,7 @@ export function StoryDetail({
                         {story.trigger_warning_text || "Cerita ini mungkin mengandung konten yang sensitif."}
                     </p>
                     <button
+                        type="button"
                         onClick={() => setShowContent(true)}
                         className="text-white px-4 py-2 rounded-lg transition-colors theme-accent-bg theme-accent-bg-hover"
                         style={{ backgroundColor: `var(--theme-accent)` }}
@@ -184,6 +203,7 @@ export function StoryDetail({
             {/* Actions */}
             <div className="flex items-center gap-4 py-6 border-t border-b">
                 <button
+                    type="button"
                     onClick={onHeart}
                     disabled={isHeartLoading}
                     className={cn(
@@ -203,18 +223,69 @@ export function StoryDetail({
                 </div>
 
                 <button
+                    type="button"
                     className="ml-auto flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-                    onClick={() => {
-                        navigator.share?.({
-                            title: story.title,
-                            url: window.location.href,
-                        });
+                    onClick={async () => {
+                        const shareUrl = window.location.href;
+
+                        try {
+                            if (navigator.share) {
+                                await navigator.share({
+                                    title: story.title,
+                                    url: shareUrl,
+                                });
+                                return;
+                            }
+
+                            if (navigator.clipboard?.writeText) {
+                                await navigator.clipboard.writeText(shareUrl);
+                            }
+                        } catch {
+                            // Ignore share cancellation or clipboard permission denial.
+                        }
                     }}
                 >
                     <Share2 className="h-5 w-5" />
                     Bagikan
                 </button>
+
+                {canShowModerationMenu && (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button type="button" className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
+                                <MoreVertical className="h-5 w-5" />
+                                Aksi
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <ReportModal
+                                type="story"
+                                contentId={story.id}
+                                userId={story.author?.id}
+                                onSuccess={() => setModerationFeedback("Laporanmu masuk antrean review. Tim moderasi akan menindaklanjuti dalam 1 x 24 jam.")}
+                                trigger={
+                                    <button type="button" className="relative flex w-full select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 cursor-pointer">
+                                        <Flag className="w-4 h-4 mr-2" />
+                                        Laporkan Kisah
+                                    </button>
+                                }
+                            />
+                            <BlockUserButton
+                                userId={story.author?.id || 0}
+                                userName={story.author?.name || "User"}
+                                onSuccess={() => setModerationFeedback("Pengguna berhasil diblokir. Konten dari akun ini tidak akan kamu lihat lagi.")}
+                                className="w-full justify-start text-sm font-normal px-2 py-1.5 h-auto text-red-600 hover:text-red-600 hover:bg-red-50"
+                            />
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )}
             </div>
+
+            {moderationFeedback && (
+                <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                    {moderationFeedback}
+                </div>
+            )}
         </article>
     );
 }

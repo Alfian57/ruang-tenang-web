@@ -3,7 +3,8 @@
 import { Search, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { AdminCompactTabs } from "../_components/AdminCompactTabs";
 import { useAdminArticles } from "./_hooks/useAdminArticles";
 import {
   ArticleTable,
@@ -87,10 +88,12 @@ export default function AdminArticlesPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="articles">Artikel</TabsTrigger>
-          <TabsTrigger value="categories">Kategori</TabsTrigger>
-        </TabsList>
+        <AdminCompactTabs
+          items={[
+            { value: "articles", label: "Artikel" },
+            { value: "categories", label: "Kategori" },
+          ]}
+        />
 
         {/* Articles Tab */}
         <TabsContent value="articles" className="space-y-6">

@@ -25,6 +25,7 @@ export interface NavLink {
   icon: LucideIcon;
   label: string;
   highlight?: boolean;
+  secondary?: boolean;
 }
 
 export interface NavGroup {
@@ -53,22 +54,27 @@ export const memberGroups: NavGroup[] = [
     ],
   },
   {
-    title: "Konten",
+    title: "Fokus Inti",
     links: [
       { href: ROUTES.ARTICLES, icon: Newspaper, label: "Artikel" },
       { href: ROUTES.MUSIC, icon: Music, label: "Musik" },
       { href: ROUTES.FORUM, icon: Users, label: "Forum" },
-      { href: ROUTES.STORIES, icon: Sparkles, label: "Kisah Inspiratif" },
+      { href: ROUTES.PROGRESS_MAP, icon: Map, label: "Peta Perjalanan" },
+      { href: ROUTES.REWARDS, icon: Gift, label: "Klaim Hadiah" },
     ],
   },
   {
     title: "Komunitas",
     links: [
       { href: ROUTES.GUILDS, icon: Swords, label: "Guild" },
-      { href: ROUTES.PROGRESS_MAP, icon: Map, label: "Peta Perjalanan" },
       { href: ROUTES.DASHBOARD_COMMUNITY, icon: Trophy, label: "Community Stats" },
-      { href: ROUTES.REWARDS, icon: Gift, label: "Klaim Hadiah" },
-      { href: ROUTES.GAME, icon: Gamepad2, label: "Mini Game" },
+    ],
+  },
+  {
+    title: "Eksplorasi Opsional",
+    links: [
+      { href: ROUTES.STORIES, icon: Sparkles, label: "Kisah Inspiratif", secondary: true },
+      { href: ROUTES.GAME, icon: Gamepad2, label: "Mini Game", secondary: true },
     ],
   },
 ];

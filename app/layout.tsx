@@ -1,6 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import { Fraunces, Manrope } from "next/font/google";
 import { Providers } from "@/components/providers";
 import "./globals.css";
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+  weight: ["500", "600", "700", "800"],
+});
 
 export const viewport: Viewport = {
   themeColor: "#EF4444",
@@ -36,8 +50,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className="dark" suppressHydrationWarning>
-      <body suppressHydrationWarning>
+    <html lang="id" className={`dark ${manrope.variable} ${fraunces.variable}`} suppressHydrationWarning>
+      <body className="font-app" suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

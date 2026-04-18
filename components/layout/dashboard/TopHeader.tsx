@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Settings, KeyRound, LogOut, Ban, MapIcon } from "lucide-react";
+import { ChevronDown, Settings, KeyRound, LogOut, Ban, MapIcon, Rocket } from "lucide-react";
 import { GlobalSearch, ThemeSwitcher } from "@/components/layout/dashboard";
 import {
   DropdownMenu,
@@ -14,11 +14,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { getUploadUrl } from "@/services/http/upload-url";
 import { ROUTES } from "@/lib/routes";
-import type { User } from "@/types";
+import type { User, XPBoostStatus } from "@/types";
 
 interface TopHeaderProps {
   user: User;
   isAdmin: boolean;
+  xpBoost: XPBoostStatus | null;
   onEditProfile: () => void;
   onChangePassword: () => void;
   onLogout: () => void;
@@ -29,6 +30,7 @@ interface TopHeaderProps {
 export function TopHeader({
   user,
   isAdmin,
+  xpBoost,
   onEditProfile,
   onChangePassword,
   onLogout,
@@ -36,6 +38,21 @@ export function TopHeader({
   onShowExpHistory,
 }: TopHeaderProps) {
   const router = useRouter();
+
+  const hasXPBoost = Boolean(xpBoost && xpBoost.remaining_seconds > 0);
+
+  const formatRemaining = (seconds: number) => {
+    if (seconds <= 0) return "berakhir";
+
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+
+    if (hours > 0) {
+      return `${hours}j ${minutes}m`;
+    }
+
+    return `${Math.max(1, minutes)}m`;
+  };
 
   return (
     <header className="header-themed hidden lg:flex h-16 bg-white border-b items-center px-6 sticky top-0 z-40">
@@ -56,10 +73,27 @@ export function TopHeader({
             </div>
           ) : (
             <>
+              {hasXPBoost && (
+                <div
+                  className="hidden md:flex items-center gap-2 rounded-full border border-orange-200 bg-linear-to-r from-orange-50 to-amber-50 px-3 py-1.5 shadow-sm"
+                  title="XP Boost aktif"
+                >
+                  <Rocket className="h-3.5 w-3.5 text-orange-600" />
+                  <span className="text-xs font-semibold text-orange-700 whitespace-nowrap">
+                    XP x{xpBoost?.multiplier ?? 1}
+                  </span>
+                  <span className="text-[11px] text-orange-500 whitespace-nowrap">
+                    {formatRemaining(xpBoost?.remaining_seconds ?? 0)}
+                  </span>
+                </div>
+              )}
+
               <button
+                type="button"
                 onClick={onShowExpHistory}
                 className="hidden md:flex items-center bg-linear-to-r from-yellow-50 to-amber-50 border border-yellow-200 rounded-full pl-3 pr-4 py-1.5 shadow-sm hover:shadow-md hover:border-yellow-300 transition-all cursor-pointer overflow-hidden relative"
                 title="Klik untuk melihat riwayat EXP"
+                aria-label="Lihat riwayat EXP"
               >
                 <div className="flex items-center gap-2">
                   {user?.badge_icon ? (
@@ -85,9 +119,11 @@ export function TopHeader({
                 </div>
               </button>
               <button
+                type="button"
                 onClick={() => router.push(ROUTES.PROGRESS_MAP)}
                 className="hidden md:flex items-center justify-center w-8 h-8 rounded-full bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 hover:border-indigo-300 transition-all"
                 title="Lihat Journey Tier di Peta Perjalanan"
+                aria-label="Buka peta perjalanan"
               >
                 <MapIcon className="h-3.5 w-3.5 text-indigo-500" />
               </button>
@@ -100,7 +136,12 @@ export function TopHeader({
           {/* Profile dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="flex items-center gap-2 cursor-pointer">
+              <button
+                type="button"
+                className="flex items-center gap-2 cursor-pointer"
+                aria-label="Buka menu akun"
+                aria-haspopup="menu"
+              >
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden relative border border-gray-200">
                   {user?.avatar ? (
                     <Image
@@ -115,7 +156,7 @@ export function TopHeader({
                   )}
                 </div>
                 <ChevronDown className="w-4 h-4 text-gray-400" />
-              </div>
+              </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>

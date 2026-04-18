@@ -1,10 +1,21 @@
 import { httpClient } from "@/services/http/client";
 import type { ApiResponse, PaginatedResponse } from "@/services/http/types";
-import type { ChatSession, ChatMessage, ChatSessionSummary, ChatExportResponse, SuggestedPrompt, ChatFolder, SendMessageResponse } from "@/types";
+import type {
+  ChatSession,
+  ChatMessage,
+  ChatSessionSummary,
+  ChatExportResponse,
+  SuggestedPrompt,
+  ChatFolder,
+  SendMessageResponse,
+  SendMessageOptions,
+  ChatContextState,
+  ChatContextPreferencesUpdate,
+} from "@/types";
 
 export const chatService = {
   getSessions(token: string, params?: { filter?: string; search?: string; page?: number; limit?: number }) {
-    return httpClient.get<PaginatedResponse<ChatSession>>("/chat-sessions", { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<ChatSession>>("/chat-sessions", { token, params });
   },
 
   getSession(token: string, id: string) {
@@ -23,8 +34,31 @@ export const chatService = {
     return httpClient.delete<ApiResponse<null>>(`/chat-sessions/${id}`, { token });
   },
 
-  sendMessage(token: string, sessionId: string, content: string, type: "text" | "audio" = "text") {
-    return httpClient.post<ApiResponse<SendMessageResponse>>(`/chat-sessions/${sessionId}/messages`, { content, type }, { token, timeout: 60000 });
+  sendMessage(token: string, sessionId: string, content: string, type: "text" | "audio" = "text", options?: SendMessageOptions) {
+    const payload: {
+      content: string;
+      type: "text" | "audio";
+      context?: SendMessageOptions["context"];
+      metadata?: SendMessageOptions["metadata"];
+    } = { content, type };
+
+    if (options?.context) {
+      payload.context = options.context;
+    }
+
+    if (options?.metadata) {
+      payload.metadata = options.metadata;
+    }
+
+    return httpClient.post<ApiResponse<SendMessageResponse>>(`/chat-sessions/${sessionId}/messages`, payload, { token, timeout: 60000 });
+  },
+
+  getContextState(token: string, sessionId: string) {
+    return httpClient.get<ApiResponse<ChatContextState>>(`/chat-sessions/${sessionId}/context-state`, { token });
+  },
+
+  updateContextPreferences(token: string, sessionId: string, data: ChatContextPreferencesUpdate) {
+    return httpClient.put<ApiResponse<ChatContextState>>(`/chat-sessions/${sessionId}/context-preferences`, data, { token });
   },
 
   toggleFavorite(token: string, id: string) {

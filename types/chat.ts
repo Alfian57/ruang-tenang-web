@@ -48,6 +48,125 @@ export interface SendMessageResponse {
   ai_message: ChatMessage;
 }
 
+export type ChatSessionIntent = "general" | "grounding" | "planning" | "reflection" | "coping";
+
+export interface ChatMessageContextHints {
+  current_mood?: string;
+  session_intent?: ChatSessionIntent;
+  enable_mood_context?: boolean;
+  enable_journal_context?: boolean;
+  enable_daily_task_context?: boolean;
+  enable_xp_level_context?: boolean;
+  enable_breathing_context?: boolean;
+  enable_playlist_context?: boolean;
+  enable_rewards_context?: boolean;
+  enable_progress_map_context?: boolean;
+  enable_social_context?: boolean;
+}
+
+export interface SendMessageMetadata {
+  source?: string;
+  prompt_id?: string;
+}
+
+export interface SendMessageOptions {
+  context?: ChatMessageContextHints;
+  metadata?: SendMessageMetadata;
+}
+
+export interface ChatContextPreferences {
+  enable_mood_context: boolean;
+  enable_journal_context: boolean;
+  enable_daily_task_context: boolean;
+  enable_xp_level_context: boolean;
+  enable_breathing_context: boolean;
+  enable_playlist_context: boolean;
+  enable_rewards_context: boolean;
+  enable_progress_map_context: boolean;
+  enable_social_context: boolean;
+  session_intent: ChatSessionIntent;
+}
+
+export interface ChatContextPreferencesUpdate {
+  enable_mood_context?: boolean;
+  enable_journal_context?: boolean;
+  enable_daily_task_context?: boolean;
+  enable_xp_level_context?: boolean;
+  enable_breathing_context?: boolean;
+  enable_playlist_context?: boolean;
+  enable_rewards_context?: boolean;
+  enable_progress_map_context?: boolean;
+  enable_social_context?: boolean;
+  session_intent?: ChatSessionIntent;
+}
+
+export interface ChatContextMood {
+  mood: string;
+  emoji: string;
+}
+
+export interface ChatContextDailyTask {
+  completed: number;
+  pending: number;
+}
+
+export interface ChatContextXPLevel {
+  exp: number;
+  current_streak: number;
+  current_level?: number;
+  next_level?: number;
+}
+
+export interface ChatContextBreathing {
+  sessions_today: number;
+  sessions_last_7_days: number;
+  most_used_technique?: string;
+}
+
+export interface ChatContextPlaylist {
+  total_playlists: number;
+  total_saved_songs: number;
+  latest_playlist_title?: string;
+}
+
+export interface ChatContextRewards {
+  gold_coins: number;
+  claim_count: number;
+  latest_reward_name?: string;
+}
+
+export interface ChatContextProgressMap {
+  unlocked_regions: number;
+  unlocked_landmarks: number;
+  latest_unlock_name?: string;
+}
+
+export interface ChatContextSocial {
+  badge_count: number;
+  guild_name?: string;
+  guild_role?: string;
+  guild_member_count?: number;
+}
+
+export interface ChatContextRuntime {
+  mood?: ChatContextMood;
+  journal_shared_count: number;
+  daily_task?: ChatContextDailyTask;
+  xp_level?: ChatContextXPLevel;
+  breathing?: ChatContextBreathing;
+  playlist?: ChatContextPlaylist;
+  rewards?: ChatContextRewards;
+  progress_map?: ChatContextProgressMap;
+  social?: ChatContextSocial;
+  effective_sources: string[];
+}
+
+export interface ChatContextState {
+  session_uuid: string;
+  preferences: ChatContextPreferences;
+  runtime: ChatContextRuntime;
+}
+
 export interface ChatSessionSummary {
   session_id: number;
   summary: string;

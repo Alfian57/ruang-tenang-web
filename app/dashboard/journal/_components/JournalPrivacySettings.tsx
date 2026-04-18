@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TRUST_CUES } from "@/constants";
 import { cn } from "@/utils";
 
 interface JournalPrivacySettingsProps {
@@ -102,6 +103,15 @@ export function JournalPrivacySettings({
             </CardHeader>
             {isExpanded && (
                 <CardContent className="space-y-6">
+                    <div className="rounded-lg border border-sky-200 bg-sky-50 p-3">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-sky-900">
+                            Privasi & Batasan AI
+                        </p>
+                        <p className="mt-1 text-sm text-sky-800">{TRUST_CUES.PRIVACY}</p>
+                        <p className="text-sm text-sky-800">{TRUST_CUES.CONSENT}</p>
+                        <p className="text-sm text-sky-800">{TRUST_CUES.LIMITATION}</p>
+                    </div>
+
                     {/* Master AI Access Toggle */}
                     <div className="p-4 bg-gray-50 rounded-lg">
                         <div className="flex items-start justify-between gap-3">

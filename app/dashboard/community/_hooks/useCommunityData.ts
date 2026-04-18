@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { communityService, forumService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import type {
@@ -10,6 +10,7 @@ import type {
   UserBadges,
   UserFeatures,
   Forum,
+  DailyTask,
 } from "@/types";
 
 interface CommunityData {
@@ -21,9 +22,11 @@ interface CommunityData {
   maxLevel: number;
   userBadges: UserBadges | null;
   userFeatures: UserFeatures | null;
+  dailyTasks: DailyTask[];
   loading: boolean;
   isLevelChanging: boolean;
   handleLevelChange: (newLevel: number) => void;
+  refreshDailyTasks: () => Promise<void>;
 }
 
 export function useCommunityData(): CommunityData {
@@ -36,8 +39,34 @@ export function useCommunityData(): CommunityData {
   const [maxLevel, setMaxLevel] = useState(10);
   const [userBadges, setUserBadges] = useState<UserBadges | null>(null);
   const [userFeatures, setUserFeatures] = useState<UserFeatures | null>(null);
+  const [dailyTasks, setDailyTasks] = useState<DailyTask[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLevelChanging, setIsLevelChanging] = useState(false);
+
+  const fetchDailyTasks = useCallback(async () => {
+    if (!token) {
+      setDailyTasks([]);
+      return;
+    }
+
+    try {
+      const taskRes = await communityService.getDailyTasks(token);
+      // API can return either an array or object with tasks field
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const raw = taskRes?.data as any;
+      if (Array.isArray(raw)) {
+        setDailyTasks(raw);
+        return;
+      }
+      if (raw?.tasks && Array.isArray(raw.tasks)) {
+        setDailyTasks(raw.tasks);
+        return;
+      }
+      setDailyTasks([]);
+    } catch {
+      setDailyTasks([]);
+    }
+  }, [token]);
 
   useEffect(() => {
     let isMounted = true;
@@ -67,6 +96,7 @@ export function useCommunityData(): CommunityData {
             communityService.getPersonalJourney(token).catch(() => null),
             communityService.getUserBadges(token).catch(() => null),
             communityService.getUserFeatures(token).catch(() => null),
+            fetchDailyTasks(),
           ]);
 
           if (!isMounted) return;
@@ -81,6 +111,7 @@ export function useCommunityData(): CommunityData {
           setPersonalJourney(null);
           setUserBadges(null);
           setUserFeatures(null);
+          setDailyTasks([]);
         }
       } catch {
         // Silently handle - UI will show empty/null states
@@ -94,7 +125,7 @@ export function useCommunityData(): CommunityData {
     return () => {
       isMounted = false;
     };
-  }, [token]);
+  }, [token, fetchDailyTasks]);
 
   useEffect(() => {
     let isMounted = true;
@@ -138,8 +169,10 @@ export function useCommunityData(): CommunityData {
     maxLevel,
     userBadges,
     userFeatures,
+    dailyTasks,
     loading,
     isLevelChanging,
     handleLevelChange,
+    refreshDailyTasks: fetchDailyTasks,
   };
 }

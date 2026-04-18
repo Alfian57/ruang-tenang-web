@@ -62,6 +62,18 @@ export const TIMEOUTS = {
 } as const;
 
 // ============================================
+// Trust & Safety Cues
+// ============================================
+
+export const TRUST_CUES = {
+  PRIVACY: "Privasi kamu tetap utama. Data jurnal dan percakapan diproses sesuai pengaturan izin yang kamu pilih.",
+  CONSENT: "Kamu bisa mengubah persetujuan akses AI kapan saja dari pengaturan.",
+  LIMITATION: "AI ini bersifat pendamping awal dan bukan pengganti tenaga profesional kesehatan mental.",
+  COMBINED:
+    "Privasi kamu tetap utama, persetujuan akses bisa diubah kapan saja, dan AI ini adalah pendamping awal, bukan pengganti profesional.",
+} as const;
+
+// ============================================
 // Roles
 // ============================================
 

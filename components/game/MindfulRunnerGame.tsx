@@ -11,6 +11,8 @@ const JUMP_FORCE = -11;
 const INITIAL_SPEED = 4;
 const MAX_SPEED = 10;
 const SPEED_INCREMENT = 0.001;
+const DIFFICULTY_TIER_SCORE = 500;
+const DIFFICULTY_SCALE_PER_TIER = 0.3;
 
 // Colors (matching red mental-health theme)
 const COLORS = {
@@ -151,6 +153,10 @@ export default function MindfulRunnerGame() {
         // Combo
         combo: 0,
         collected: 0,
+        // Screen feedback
+        shakeX: 0,
+        shakeY: 0,
+        shakeLife: 0,
     });
     const animFrameRef = useRef<number>(0);
     const [gameStatus, setGameStatus] = useState<"idle" | "playing" | "over">("idle");
@@ -161,7 +167,7 @@ export default function MindfulRunnerGame() {
     // ——— Drawing helpers ———
     const drawPlayer = useCallback((ctx: CanvasRenderingContext2D, y: number, frame: number) => {
         const x = 60;
-        const bobY = gameStateRef.current.isJumping ? 0 : Math.sin(frame * 0.15) * 2;
+        const bobY = gameStateRef.current.isJumping ? 0 : Math.sin(frame * 0.1) * 3;
         const pY = y + bobY;
 
         // Shadow
@@ -199,7 +205,7 @@ export default function MindfulRunnerGame() {
 
         // Legs walking animation
         if (!gameStateRef.current.isJumping) {
-            const legAngle = Math.sin(frame * 0.2) * 0.4;
+            const legAngle = Math.sin(frame * 0.25) * 0.5;
             ctx.strokeStyle = COLORS.player;
             ctx.lineWidth = 3;
             ctx.beginPath();
@@ -238,7 +244,7 @@ export default function MindfulRunnerGame() {
             ctx.lineTo(x + 28, pY - 20);
             ctx.stroke();
         } else {
-            const armSwing = Math.sin(frame * 0.2) * 6;
+            const armSwing = Math.sin(frame * 0.25) * 6;
             ctx.beginPath();
             ctx.moveTo(x + 4, pY - 10);
             ctx.lineTo(x - 2 + armSwing, pY + 4);
@@ -356,7 +362,9 @@ export default function MindfulRunnerGame() {
         gs.frameCount++;
 
         // Update speed
-        gs.speed = Math.min(MAX_SPEED, gs.speed + SPEED_INCREMENT);
+        const difficultyTier = Math.floor(gs.score / DIFFICULTY_TIER_SCORE);
+        const scaledSpeedIncrement = SPEED_INCREMENT * (1 + difficultyTier * DIFFICULTY_SCALE_PER_TIER);
+        gs.speed = Math.min(MAX_SPEED, gs.speed + scaledSpeedIncrement);
 
         // ——— Update player ———
         if (gs.isJumping) {
@@ -424,10 +432,25 @@ export default function MindfulRunnerGame() {
 
         // ——— Update collectibles ———
         for (let i = gs.collectibles.length - 1; i >= 0; i--) {
-            gs.collectibles[i].x -= gs.speed;
-            if (gs.collectibles[i].x < -20) {
+            const collectible = gs.collectibles[i];
+            collectible.x -= gs.speed;
+            if (collectible.x < -20) {
+                if (!collectible.collected) {
+                    for (let j = 0; j < 4; j++) {
+                        gs.particles.push({
+                            x: collectible.x,
+                            y: collectible.y,
+                            vx: (Math.random() - 0.5) * 2,
+                            vy: -1 - Math.random(),
+                            life: 15 + Math.random() * 10,
+                            maxLife: 25,
+                            color: "#9CA3AF",
+                            size: 1.5 + Math.random(),
+                        });
+                    }
+                    gs.combo = 0;
+                }
                 gs.collectibles.splice(i, 1);
-                gs.combo = 0;
             }
         }
 
@@ -465,6 +488,9 @@ export default function MindfulRunnerGame() {
         }
 
         // ——— Collision: obstacles ———
+        let collidedWithObstacle = false;
+        let collisionX = 0;
+        let collisionY = 0;
         const playerBox = { x: 52, y: gs.playerY - 32, w: 20, h: 48 };
         for (const obs of gs.obstacles) {
             const obsBox = { x: obs.x, y: GROUND_Y + 24 - obs.height, w: obs.width, h: obs.height };
@@ -474,69 +500,94 @@ export default function MindfulRunnerGame() {
                 playerBox.y + playerBox.h > obsBox.y + 4 &&
                 playerBox.y < obsBox.y + obsBox.h - 4
             ) {
-                // Game over
-                gs.running = false;
-                if (gs.score > gs.highScore) {
-                    gs.highScore = gs.score;
-                    try {
-                        localStorage.setItem("mindful-runner-high-score", String(gs.highScore));
-                    } catch {
-                        // ignore storage errors
-                    }
-                }
-                setDisplayScore(gs.score);
-                setDisplayHighScore(gs.highScore);
-                setOverMessage(GAME_OVER_MESSAGES[Math.floor(Math.random() * GAME_OVER_MESSAGES.length)]);
-                setGameStatus("over");
-                return;
+                collidedWithObstacle = true;
+                collisionX = obsBox.x + obsBox.w / 2;
+                collisionY = obsBox.y + obsBox.h / 2;
+                break;
             }
         }
 
-        // ——— Collision: collectibles ———
-        for (const c of gs.collectibles) {
-            if (c.collected) continue;
-            const dx = 72 - c.x;
-            const dy = gs.playerY - 14 - c.y;
-            if (Math.sqrt(dx * dx + dy * dy) < 22) {
-                c.collected = true;
-                gs.collected++;
-                gs.combo++;
-                const bonus = c.type === "lotus" ? 5 : c.type === "star" ? 3 : 2;
-                gs.score += bonus * Math.min(gs.combo, 5);
+        if (collidedWithObstacle) {
+            gs.shakeLife = 8;
+            gs.shakeX = (Math.random() - 0.5) * 10;
+            gs.shakeY = (Math.random() - 0.5) * 6;
 
-                // Spawn particles
-                for (let i = 0; i < 8; i++) {
-                    gs.particles.push({
-                        x: c.x,
-                        y: c.y,
-                        vx: (Math.random() - 0.5) * 4,
-                        vy: (Math.random() - 0.5) * 4,
-                        life: 20 + Math.random() * 15,
-                        maxLife: 35,
-                        color: c.type === "heart" ? COLORS.heart : c.type === "star" ? COLORS.star : COLORS.flower,
-                        size: 2 + Math.random() * 3,
-                    });
-                }
-
-                // Floating text
-                const label = c.type === "heart" ? "❤️" : c.type === "star" ? "⭐" : "🪷";
-                gs.floatingTexts.push({
-                    x: c.x,
-                    y: c.y - 10,
-                    text: `${label} +${bonus * Math.min(gs.combo, 5)}`,
-                    life: 40,
-                    maxLife: 40,
+            for (let i = 0; i < 14; i++) {
+                gs.particles.push({
+                    x: collisionX,
+                    y: collisionY,
+                    vx: (Math.random() - 0.5) * 7,
+                    vy: (Math.random() - 0.5) * 5,
+                    life: 16 + Math.random() * 10,
+                    maxLife: 26,
+                    color: i % 2 === 0 ? COLORS.player : COLORS.obstacleDark,
+                    size: 2 + Math.random() * 3,
                 });
             }
         }
 
+        // ——— Collision: collectibles ———
+        if (!collidedWithObstacle) {
+            for (const c of gs.collectibles) {
+                if (c.collected) continue;
+                const dx = 72 - c.x;
+                const dy = gs.playerY - 14 - c.y;
+                if (Math.sqrt(dx * dx + dy * dy) < 22) {
+                    c.collected = true;
+                    gs.collected++;
+                    gs.combo++;
+                    const bonus = c.type === "lotus" ? 5 : c.type === "star" ? 3 : 2;
+                    gs.score += bonus * Math.min(gs.combo, 5);
+
+                    // Spawn particles
+                    for (let i = 0; i < 8; i++) {
+                        gs.particles.push({
+                            x: c.x,
+                            y: c.y,
+                            vx: (Math.random() - 0.5) * 4,
+                            vy: (Math.random() - 0.5) * 4,
+                            life: 20 + Math.random() * 15,
+                            maxLife: 35,
+                            color: c.type === "heart" ? COLORS.heart : c.type === "star" ? COLORS.star : COLORS.flower,
+                            size: 2 + Math.random() * 3,
+                        });
+                    }
+
+                    // Floating text
+                    const label = c.type === "heart" ? "❤️" : c.type === "star" ? "⭐" : "🪷";
+                    gs.floatingTexts.push({
+                        x: c.x,
+                        y: c.y - 10,
+                        text: `${label} +${bonus * Math.min(gs.combo, 5)}`,
+                        life: 40,
+                        maxLife: 40,
+                    });
+                }
+            }
+        }
+
         // ——— Score tick ———
-        if (gs.frameCount % 8 === 0) {
+        if (!collidedWithObstacle && gs.frameCount % 8 === 0) {
             gs.score++;
             setDisplayScore(gs.score);
         }
 
+        // Update screen shake
+        if (gs.shakeLife > 0) {
+            gs.shakeLife--;
+            gs.shakeX = (Math.random() - 0.5) * 8;
+            gs.shakeY = (Math.random() - 0.5) * 4;
+        } else {
+            gs.shakeX = 0;
+            gs.shakeY = 0;
+        }
+
         // ——————— DRAW ———————
+        ctx.save();
+        if (gs.shakeLife > 0) {
+            ctx.translate(gs.shakeX, gs.shakeY);
+        }
+
         // Sky
         const skyGrad = ctx.createLinearGradient(0, 0, 0, GROUND_Y);
         skyGrad.addColorStop(0, "#EFF6FF");
@@ -663,6 +714,30 @@ export default function MindfulRunnerGame() {
             ctx.fillText(`Combo x${gs.combo}`, 12, 54);
         }
 
+        if (collidedWithObstacle) {
+            ctx.fillStyle = "rgba(239, 68, 68, 0.14)";
+            ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+        }
+
+        ctx.restore();
+
+        if (collidedWithObstacle) {
+            gs.running = false;
+            if (gs.score > gs.highScore) {
+                gs.highScore = gs.score;
+                try {
+                    localStorage.setItem("mindful-runner-high-score", String(gs.highScore));
+                } catch {
+                    // ignore storage errors
+                }
+            }
+            setDisplayScore(gs.score);
+            setDisplayHighScore(gs.highScore);
+            setOverMessage(GAME_OVER_MESSAGES[Math.floor(Math.random() * GAME_OVER_MESSAGES.length)]);
+            setGameStatus("over");
+            return;
+        }
+
         animFrameRef.current = requestAnimationFrame(gameLoop);
     }, [drawPlayer, drawObstacle, drawCollectible]);
 
@@ -709,6 +784,9 @@ export default function MindfulRunnerGame() {
         gs.affirmationTimer = 0;
         gs.combo = 0;
         gs.collected = 0;
+        gs.shakeX = 0;
+        gs.shakeY = 0;
+        gs.shakeLife = 0;
 
         setDisplayScore(0);
         setGameStatus("playing");

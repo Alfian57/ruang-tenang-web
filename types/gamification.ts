@@ -459,6 +459,19 @@ export interface LeaderboardEntry {
   role?: string;
 }
 
+export interface XPBoostStatus {
+  id: string;
+  multiplier: number;
+  trigger_type: string;
+  started_at: string;
+  expires_at: string;
+  remaining_seconds: number;
+}
+
+export interface XPMultiplierStatus {
+  effective_multiplier: number;
+}
+
 // ==========================================
 // Reward Types
 // ==========================================

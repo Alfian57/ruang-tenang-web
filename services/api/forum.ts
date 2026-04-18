@@ -9,7 +9,7 @@ export const forumService = {
   },
 
   getAll(token: string, limit = 10, offset = 0, search = "", category_id?: number) {
-    return httpClient.get<PaginatedResponse<Forum>>("/forums", { token, params: { limit, offset, search, category_id } as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<Forum>>("/forums", { token, params: { limit, offset, search, category_id } });
   },
 
   getById(token: string, id: number) {
@@ -42,7 +42,7 @@ export const forumService = {
   },
 
   getPosts(token: string, forumId: string | number, limit = 20, offset = 0, sort = "top") {
-    return httpClient.get<PaginatedResponse<ForumPost>>(`/forums/${forumId}/posts`, { token, params: { limit, offset, sort } as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<ForumPost>>(`/forums/${forumId}/posts`, { token, params: { limit, offset, sort } });
   },
 
   deletePost(token: string, postId: number) {

@@ -1,12 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { useJournalEditor } from "../_hooks/useJournalEditor";
 import { JournalEditorHeader } from "./JournalEditorHeader";
 import { JournalMoodPicker } from "./JournalMoodPicker";
 import { JournalTagsInput } from "./JournalTagsInput";
 import { EditorContent } from "@tiptap/react";
 import { Button } from "@/components/ui/button";
-import { Save, Lock, Eye, EyeOff, Info, AlertTriangle, Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Save, Lock, Eye, EyeOff, Info, AlertTriangle, Loader2, WandSparkles, CheckCircle2, ArrowRight } from "lucide-react";
 import {
     Tooltip,
     TooltipContent,
@@ -43,6 +45,7 @@ interface JournalEditorProps {
     initialIsPrivate?: boolean;
     initialShareWithAI?: boolean;
     defaultShareWithAI?: boolean;
+    initialMode?: "brain-dump" | "structured-reflection" | "gratitude" | "action-plan";
     writingPrompt?: string;
     onSave: (data: {
         title: string;
@@ -64,11 +67,13 @@ export function JournalEditor({
     initialIsPrivate,
     initialShareWithAI,
     defaultShareWithAI,
+    initialMode,
     writingPrompt,
     onSave,
     isSaving = false,
     onGeneratePrompt,
 }: JournalEditorProps) {
+    const [showTemplateReplaceConfirm, setShowTemplateReplaceConfirm] = useState(false);
 
     const {
         editor,
@@ -83,6 +88,14 @@ export function JournalEditor({
         setIsPrivate,
         shareWithAI,
         setShareWithAI,
+        journalMode,
+        setJournalMode,
+        modeOptions,
+        activeMode,
+        handleApplyModeTemplate,
+        guidedSteps,
+        completedGuidedSteps,
+        insertGuidedStep,
         showMoodPicker,
         setShowMoodPicker,
         wordCount,
@@ -100,6 +113,7 @@ export function JournalEditor({
         initialIsPrivate,
         initialShareWithAI,
         defaultShareWithAI,
+        initialMode,
         writingPrompt,
         onSave: async (data) => {
             await onSave(data);
@@ -120,14 +134,14 @@ export function JournalEditor({
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-4">
-                    <div className="min-h-[500px] border rounded-lg bg-white shadow-sm flex flex-col">
+                    <div className="min-h-125 border rounded-lg bg-white shadow-sm flex flex-col">
                         <JournalToolbar
                             editor={editor}
                             onGeneratePrompt={onGeneratePrompt ? () => onGeneratePrompt() : undefined}
                         />
                         <EditorContent
                             editor={editor}
-                            className="flex-1 p-6 prose prose-lg max-w-none focus:outline-none min-h-[400px]"
+                            className="flex-1 p-6 prose prose-lg max-w-none focus:outline-none min-h-100"
                         />
                         <div className="px-4 py-2 border-t text-xs text-gray-500 bg-gray-50 rounded-b-lg flex justify-between items-center">
                             <span>{wordCount} kata</span>
@@ -144,7 +158,7 @@ export function JournalEditor({
                         <Button
                             onClick={handleSave}
                             disabled={!title.trim() || isSaving}
-                            className="bg-primary hover:bg-primary/90 text-white min-w-[120px]"
+                            className="bg-primary hover:bg-primary/90 text-white min-w-30"
                         >
                             {isSaving ? (
                                 <>
@@ -163,6 +177,91 @@ export function JournalEditor({
 
                 <div className="space-y-6">
                     <div className="bg-white p-4 rounded-lg border shadow-sm space-y-6">
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                                <Label className="text-sm text-gray-500">Mode Menulis</Label>
+                                <Badge variant="outline" className="text-[10px]">
+                                    JOURNAL-2
+                                </Badge>
+                            </div>
+                            <div className="grid grid-cols-1 gap-2">
+                                {modeOptions.map((mode) => {
+                                    const isActive = mode.id === journalMode;
+                                    return (
+                                        <button
+                                            key={mode.id}
+                                            type="button"
+                                            onClick={() => setJournalMode(mode.id)}
+                                            className={`w-full rounded-lg border px-3 py-2.5 text-left transition ${isActive
+                                                ? "border-primary bg-primary/5"
+                                                : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                                                }`}
+                                        >
+                                            <p className="text-sm font-semibold text-gray-900">{mode.label}</p>
+                                            <p className="text-xs text-gray-500 mt-0.5">{mode.description}</p>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            <Button
+                                type="button"
+                                variant="outline"
+                                className="w-full justify-between"
+                                disabled={isSaving}
+                                onClick={() => {
+                                    const applied = handleApplyModeTemplate();
+                                    if (!applied) {
+                                        setShowTemplateReplaceConfirm(true);
+                                    }
+                                }}
+                            >
+                                <span className="inline-flex items-center gap-2">
+                                    <WandSparkles className="w-4 h-4 text-primary" />
+                                    Gunakan Template Mode
+                                </span>
+                                <ArrowRight className="w-4 h-4" />
+                            </Button>
+                            <p className="text-xs text-gray-500">
+                                Template akan menyiapkan struktur journaling sesuai mode yang kamu pilih.
+                            </p>
+                        </div>
+
+                        <div className="border-t pt-4 space-y-3">
+                            <div className="flex items-center justify-between">
+                                <Label className="text-sm text-gray-500">Guided Path 3 Langkah</Label>
+                                <Badge variant="outline" className="text-[10px]">
+                                    JOURNAL-1
+                                </Badge>
+                            </div>
+
+                            <div className="space-y-2">
+                                {guidedSteps.map((step) => {
+                                    const isDone = completedGuidedSteps.includes(step.id);
+                                    return (
+                                        <button
+                                            key={step.id}
+                                            type="button"
+                                            onClick={() => insertGuidedStep(step.id)}
+                                            className={`w-full rounded-lg border px-3 py-2.5 text-left transition ${isDone
+                                                ? "border-emerald-200 bg-emerald-50"
+                                                : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                                                }`}
+                                        >
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div>
+                                                    <p className="text-sm font-semibold text-gray-900">{step.title}</p>
+                                                    <p className="text-xs text-gray-600 mt-0.5">{step.helper}</p>
+                                                    <p className="text-xs text-gray-500 mt-1 italic">&quot;{step.prompt}&quot;</p>
+                                                </div>
+                                                {isDone && <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />}
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
                         <div>
                             <Label className="text-sm text-gray-500 mb-2 block">Mood Hari Ini</Label>
                             <JournalMoodPicker
@@ -255,8 +354,49 @@ export function JournalEditor({
                             </p>
                         </div>
                     )}
+
+                    {!writingPrompt && activeMode?.prompt && (
+                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                            <h4 className="font-medium text-blue-900 mb-2 text-sm flex items-center gap-2">
+                                <span className="text-lg">🧭</span>
+                                Prompt Mode: {activeMode.label}
+                            </h4>
+                            <p className="text-sm text-blue-800 italic">
+                                &quot;{activeMode.prompt}&quot;
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
+
+            <Dialog open={showTemplateReplaceConfirm} onOpenChange={setShowTemplateReplaceConfirm}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Ganti isi dengan template mode?</DialogTitle>
+                        <DialogDescription>
+                            Konten jurnalmu saat ini sudah berisi teks. Jika lanjut, isi editor akan diganti dengan struktur dari mode <strong>{activeMode.label}</strong>.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setShowTemplateReplaceConfirm(false)}
+                        >
+                            Batal
+                        </Button>
+                        <Button
+                            type="button"
+                            onClick={() => {
+                                handleApplyModeTemplate(true);
+                                setShowTemplateReplaceConfirm(false);
+                            }}
+                        >
+                            Ya, Ganti Konten
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             <Dialog open={showCrisisModal} onOpenChange={setShowCrisisModal}>
                 <DialogContent>

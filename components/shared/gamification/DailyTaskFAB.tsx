@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Check, Gift, Lock, RefreshCw, Trophy, X, ClipboardList } from "lucide-react";
+import { Check, Gift, Lock, RefreshCw, Trophy, X, ClipboardList, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
-import { DailyTask } from "@/types";
+import type { DailyTask, XPBoostStatus } from "@/types";
 import { communityService } from "@/services/api";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/authStore";
@@ -14,9 +14,11 @@ import { CoinIcon } from "@/components/shared/CoinIcon";
 
 interface DailyTaskFABProps {
   className?: string;
+  isSidebarOpen?: boolean;
+  xpBoost: XPBoostStatus | null;
 }
 
-export function DailyTaskFAB({ className }: DailyTaskFABProps) {
+export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: DailyTaskFABProps) {
   const { token, refreshUser } = useAuthStore();
   const [tasks, setTasks] = useState<DailyTask[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -27,6 +29,21 @@ export function DailyTaskFAB({ className }: DailyTaskFABProps) {
   const currentSong = useMusicPlayerStore((s) => s.currentSong);
   const isMinimized = useMusicPlayerStore((s) => s.isMinimized);
   const showMusicPlayer = isPlayerVisible && currentSong;
+  const hasXPBoost = Boolean(xpBoost && xpBoost.remaining_seconds > 0);
+  const boostMultiplier = hasXPBoost ? Math.max(1, xpBoost?.multiplier ?? 1) : 1;
+
+  const formatRemaining = (seconds: number) => {
+    if (seconds <= 0) return "berakhir";
+
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+
+    if (hours > 0) {
+      return `${hours}j ${minutes}m`;
+    }
+
+    return `${Math.max(1, minutes)}m`;
+  };
 
   const loadTasks = useCallback(async () => {
     if (!token) return;
@@ -66,6 +83,12 @@ export function DailyTaskFAB({ className }: DailyTaskFABProps) {
     return () => clearInterval(interval);
   }, [loadTasks]);
 
+  useEffect(() => {
+    if (isSidebarOpen) {
+      setIsOpen(false);
+    }
+  }, [isSidebarOpen]);
+
   const handleClaim = async (task: DailyTask) => {
     if (!token || claimingId !== null) return;
 
@@ -75,6 +98,7 @@ export function DailyTaskFAB({ className }: DailyTaskFABProps) {
       if (response.data) {
         const parts = [`+${response.data.xp_earned} XP`];
         if (response.data.coin_earned) parts.push(`+${response.data.coin_earned} koin`);
+        if (hasXPBoost) parts.push(`Boost x${boostMultiplier}`);
         toast.success(`Berhasil klaim! ${parts.join(", ")}`);
         if (response.data.level_up) {
           toast.success("Level Up!", {
@@ -114,7 +138,8 @@ export function DailyTaskFAB({ className }: DailyTaskFABProps) {
       <div
         className={cn(
           "fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-3 z-40 sm:bottom-6 sm:right-6 transition-all duration-300",
-          showMusicPlayer && (isMinimized ? "max-sm:bottom-[5.5rem] sm:bottom-24" : "max-sm:bottom-[8.5rem] sm:bottom-36"),
+          showMusicPlayer && (isMinimized ? "max-sm:bottom-22 sm:bottom-24" : "max-sm:bottom-34 sm:bottom-36"),
+          isSidebarOpen && "max-lg:opacity-0 max-lg:pointer-events-none",
           className
         )}
       >
@@ -156,10 +181,24 @@ export function DailyTaskFAB({ className }: DailyTaskFABProps) {
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
-              <span className="text-sm font-bold min-w-[40px] text-right">
+              <span className="text-sm font-bold min-w-10 text-right">
                 {claimedTasks}/{totalTasks}
               </span>
             </div>
+
+            {hasXPBoost && (
+              <div className="mt-3 rounded-xl border border-white/30 bg-white/15 px-3 py-2">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-white">
+                    <Rocket className="h-3.5 w-3.5" />
+                    XP Boost x{boostMultiplier}
+                  </span>
+                  <span className="text-[11px] font-medium text-white/90">
+                    {formatRemaining(xpBoost?.remaining_seconds ?? 0)}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Tasks list */}
@@ -170,86 +209,95 @@ export function DailyTaskFAB({ className }: DailyTaskFABProps) {
                 <p className="text-sm text-gray-500">Memuat misi...</p>
               </div>
             ) : (
-              tasks.map((task) => (
-                <div
-                  key={task.id}
-                  className={cn(
-                    "p-3 flex items-center justify-between hover:bg-gray-50 transition-colors",
-                    task.is_claimed && "bg-green-50/50"
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={cn(
-                        "w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-base",
-                        task.is_claimed
-                          ? "bg-green-100 text-green-600"
-                          : task.is_completed
-                            ? "theme-accent-light-bg theme-accent-text"
-                            : "bg-gray-100 text-gray-400"
-                      )}
-                    >
-                      {task.task_icon}
-                    </div>
-                    <div>
-                      <h4
-                        className={cn(
-                          "font-medium text-sm",
-                          task.is_claimed && "text-green-700"
-                        )}
-                      >
-                        {task.task_name}
-                      </h4>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[10px] bg-yellow-50 text-yellow-700 px-1.5 py-0.5 rounded border border-yellow-200 font-medium">
-                          +{task.xp_reward} XP
-                        </span>
-                        {task.coin_reward > 0 && (
-                          <span className="text-[10px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200 font-medium inline-flex items-center gap-0.5">
-                            <CoinIcon className="w-3 h-3" />
-                            +{task.coin_reward}
-                          </span>
-                        )}
-                        <span className="text-[10px] text-gray-400">
-                          {task.current_count}/{task.target_count}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+              tasks.map((task) => {
+                const boostedXP = Math.round(task.xp_reward * boostMultiplier);
 
-                  <div className="shrink-0">
-                    {task.is_claimed ? (
-                      <div className="flex items-center gap-1 text-green-600">
-                        <Check className="w-4 h-4" />
-                      </div>
-                    ) : task.is_completed ? (
-                      <Button
-                        size="sm"
-                        onClick={() => handleClaim(task)}
-                        disabled={claimingId === task.id}
-                        className={cn(
-                          "theme-accent-bg theme-accent-bg-hover text-white rounded-full h-7 px-3 text-xs shadow-sm font-medium",
-                          claimingId === task.id && "opacity-80"
-                        )}
-                        style={{ backgroundColor: `var(--theme-accent)` }}
-                      >
-                        {claimingId === task.id ? (
-                          <RefreshCw className="w-3 h-3 animate-spin" />
-                        ) : (
-                          <>
-                            <Gift className="w-3 h-3 mr-1" />
-                            Klaim
-                          </>
-                        )}
-                      </Button>
-                    ) : (
-                      <div className="w-7 h-7 rounded-full border-2 border-dashed border-gray-200 flex items-center justify-center text-gray-300">
-                        <Lock className="w-3 h-3" />
-                      </div>
+                return (
+                  <div
+                    key={task.id}
+                    className={cn(
+                      "p-3 flex items-center justify-between hover:bg-gray-50 transition-colors",
+                      task.is_claimed && "bg-green-50/50"
                     )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={cn(
+                          "w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-base",
+                          task.is_claimed
+                            ? "bg-green-100 text-green-600"
+                            : task.is_completed
+                              ? "theme-accent-light-bg theme-accent-text"
+                              : "bg-gray-100 text-gray-400"
+                        )}
+                      >
+                        {task.task_icon}
+                      </div>
+                      <div>
+                        <h4
+                          className={cn(
+                            "font-medium text-sm",
+                            task.is_claimed && "text-green-700"
+                          )}
+                        >
+                          {task.task_name}
+                        </h4>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[10px] bg-yellow-50 text-yellow-700 px-1.5 py-0.5 rounded border border-yellow-200 font-medium">
+                            +{boostedXP} XP
+                          </span>
+                          {hasXPBoost && boostedXP !== task.xp_reward && (
+                            <span className="text-[10px] bg-orange-50 text-orange-700 px-1.5 py-0.5 rounded border border-orange-200 font-medium">
+                              x{boostMultiplier}
+                            </span>
+                          )}
+                          {task.coin_reward > 0 && (
+                            <span className="text-[10px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200 font-medium inline-flex items-center gap-0.5">
+                              <CoinIcon className="w-3 h-3" />
+                              +{task.coin_reward}
+                            </span>
+                          )}
+                          <span className="text-[10px] text-gray-400">
+                            {task.current_count}/{task.target_count}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="shrink-0">
+                      {task.is_claimed ? (
+                        <div className="flex items-center gap-1 text-green-600">
+                          <Check className="w-4 h-4" />
+                        </div>
+                      ) : task.is_completed ? (
+                        <Button
+                          size="sm"
+                          onClick={() => handleClaim(task)}
+                          disabled={claimingId === task.id}
+                          className={cn(
+                            "theme-accent-bg theme-accent-bg-hover text-white rounded-full h-7 px-3 text-xs shadow-sm font-medium",
+                            claimingId === task.id && "opacity-80"
+                          )}
+                          style={{ backgroundColor: `var(--theme-accent)` }}
+                        >
+                          {claimingId === task.id ? (
+                            <RefreshCw className="w-3 h-3 animate-spin" />
+                          ) : (
+                            <>
+                              <Gift className="w-3 h-3 mr-1" />
+                              Klaim
+                            </>
+                          )}
+                        </Button>
+                      ) : (
+                        <div className="w-7 h-7 rounded-full border-2 border-dashed border-gray-200 flex items-center justify-center text-gray-300">
+                          <Lock className="w-3 h-3" />
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
 
@@ -268,7 +316,8 @@ export function DailyTaskFAB({ className }: DailyTaskFABProps) {
             "w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 relative group",
             "theme-fab-bg",
             "hover:shadow-xl hover:scale-105 active:scale-95",
-            isOpen && "rotate-180 bg-gradient-to-br from-gray-600 to-gray-700",
+            isOpen && "rotate-180 bg-linear-to-br from-gray-600 to-gray-700",
+            hasXPBoost && !isOpen && "ring-4 ring-orange-300/55 shadow-[0_0_0_8px_rgba(251,146,60,0.14)]",
             claimableTasks > 0 && !isOpen && "animate-bounce"
           )}
         >
@@ -293,12 +342,22 @@ export function DailyTaskFAB({ className }: DailyTaskFABProps) {
             </div>
           )}
 
+          {hasXPBoost && !isOpen && (
+            <div className="absolute -bottom-1 -left-1 min-w-8 h-5 px-1.5 rounded-full bg-orange-500 text-white text-[10px] font-bold inline-flex items-center justify-center gap-0.5 border-2 border-white shadow-md">
+              <Rocket className="h-2.5 w-2.5" />
+              x{boostMultiplier}
+            </div>
+          )}
+
           {/* Tooltip */}
           {!isOpen && (
             <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
               <span className="font-medium">Misi Harian</span>
               {claimableTasks > 0 && (
                 <span className="ml-1" style={{ color: `var(--theme-accent-border)` }}>({claimableTasks} siap klaim)</span>
+              )}
+              {hasXPBoost && (
+                <span className="ml-1 text-orange-300">• Boost x{boostMultiplier}</span>
               )}
               <div className="absolute top-1/2 -translate-y-1/2 right-0 translate-x-full border-8 border-transparent border-l-gray-800" />
             </div>

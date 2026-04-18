@@ -15,6 +15,7 @@ interface Story {
   author_name: string;
   like_count: number;
   created_at: string;
+  href?: string;
 }
 
 const GRADIENT_ACCENTS = [
@@ -22,6 +23,29 @@ const GRADIENT_ACCENTS = [
   "from-blue-500/10 to-cyan-500/5",
   "from-purple-500/10 to-violet-500/5",
   "from-amber-500/10 to-orange-500/5",
+];
+
+const FALLBACK_STORIES: Story[] = [
+  {
+    id: "featured-story-1",
+    title: "Aku berhenti memaksa terlihat kuat setiap saat",
+    content:
+      "Saat semester makin berat, aku belajar bahwa istirahat bukan tanda lemah. Mulai dari jurnal 5 menit dan napas teratur, hariku perlahan lebih stabil.",
+    author_name: "Cerita Pilihan",
+    like_count: 0,
+    created_at: new Date().toISOString(),
+    href: ROUTES.PUBLIC_STORIES,
+  },
+  {
+    id: "featured-story-2",
+    title: "Dari overthinking malam ke rutinitas pulih yang konsisten",
+    content:
+      "Aku sempat sulit tidur karena pikiran tidak berhenti. Setelah rutin check-in mood dan pilih sesi relaksasi sebelum tidur, kualitas istirahatku membaik.",
+    author_name: "Ruang Tenang",
+    like_count: 0,
+    created_at: new Date().toISOString(),
+    href: ROUTES.PUBLIC_STORIES,
+  },
 ];
 
 function truncateContent(content: string, maxLen: number): string {
@@ -56,6 +80,9 @@ export function StorySection() {
     };
     fetchStories();
   }, []);
+
+  const displayedStories = stories.length > 0 ? stories : FALLBACK_STORIES;
+  const usingFallbackStories = stories.length === 0;
 
   return (
     <section id="stories" className="py-24 px-4 bg-white relative overflow-hidden">
@@ -96,53 +123,56 @@ export function StorySection() {
               </div>
             ))}
           </div>
-        ) : stories.length === 0 ? (
-          <div className="mb-10 rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-10 text-center">
-            <p className="text-lg font-semibold text-gray-700 mb-2">Cerita inspiratif belum tersedia</p>
-            <p className="text-sm text-gray-500 max-w-xl mx-auto">
-              Belum ada cerita yang dipublikasikan saat ini. Section ini akan otomatis terisi saat data tersedia.
-            </p>
-          </div>
         ) : (
-          <div className="grid md:grid-cols-2 gap-6 mb-10">
-            {stories.map((story, index) => (
-              <motion.div
-                key={story.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Link href={ROUTES.publicStoryDetail(story.id)}>
-                  <div
-                    className={`group bg-gradient-to-br ${GRADIENT_ACCENTS[index % GRADIENT_ACCENTS.length]} rounded-2xl p-7 border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full`}
-                  >
-                    <Quote className="w-8 h-8 text-primary/20 mb-4" />
-                    <h3 className="font-bold text-gray-900 text-lg mb-3 group-hover:text-primary transition-colors line-clamp-2">
-                      {story.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm leading-relaxed mb-5 line-clamp-3">
-                      {truncateContent(story.content, 150)}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-sm font-bold text-primary">
-                          {story.author_name?.charAt(0)?.toUpperCase() || "A"}
+          <>
+            {usingFallbackStories && (
+              <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-3">
+                <p className="text-sm font-medium text-amber-800">
+                  Menampilkan cerita pilihan sementara sambil menunggu cerita komunitas terbaru.
+                </p>
+              </div>
+            )}
+
+            <div className="grid md:grid-cols-2 gap-6 mb-10">
+              {displayedStories.map((story, index) => (
+                <motion.div
+                  key={story.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Link href={story.href || ROUTES.publicStoryDetail(story.id)}>
+                    <div
+                      className={`group bg-linear-to-br ${GRADIENT_ACCENTS[index % GRADIENT_ACCENTS.length]} rounded-2xl p-7 border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full`}
+                    >
+                      <Quote className="w-8 h-8 text-primary/20 mb-4" />
+                      <h3 className="font-bold text-gray-900 text-lg mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                        {story.title}
+                      </h3>
+                      <p className="text-gray-600 text-sm leading-relaxed mb-5 line-clamp-3">
+                        {truncateContent(story.content, 150)}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-sm font-bold text-primary">
+                            {story.author_name?.charAt(0)?.toUpperCase() || "A"}
+                          </div>
+                          <span className="text-sm font-medium text-gray-700">
+                            {story.author_name || "Anonim"}
+                          </span>
                         </div>
-                        <span className="text-sm font-medium text-gray-700">
-                          {story.author_name || "Anonim"}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1 text-gray-400">
-                        <Heart className="w-4 h-4" />
-                        <span className="text-xs">{story.like_count || 0}</span>
+                        <div className="flex items-center gap-1 text-gray-400">
+                          <Heart className="w-4 h-4" />
+                          <span className="text-xs">{story.like_count || 0}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </>
         )}
 
         {/* CTA */}

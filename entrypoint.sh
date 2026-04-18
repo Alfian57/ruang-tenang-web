@@ -14,12 +14,16 @@ API_BASE_URL="${NEXT_PUBLIC_API_BASE_URL:-${NEXT_PUBLIC_API_URL:-https://ruang-t
 # Cari semua file build artifact yang mungkin menyimpan placeholder.
 find /app/.next -type f \( -name "*.js" -o -name "*.mjs" -o -name "*.json" -o -name "*.html" \) -exec sed -i \
   -e "s|__NEXT_PUBLIC_API_BASE_URL__|${API_BASE_URL}|g" \
+  -e "s|__NEXT_PUBLIC_API_URL__|${API_BASE_URL}|g" \
   {} \;
 
 # Standalone server bundle juga bisa menyimpan placeholder.
 if [ -f /app/server.js ]; then
   SERVER_TMP="$(mktemp)"
-  sed "s|__NEXT_PUBLIC_API_BASE_URL__|${API_BASE_URL}|g" /app/server.js > "${SERVER_TMP}"
+  sed \
+    -e "s|__NEXT_PUBLIC_API_BASE_URL__|${API_BASE_URL}|g" \
+    -e "s|__NEXT_PUBLIC_API_URL__|${API_BASE_URL}|g" \
+    /app/server.js > "${SERVER_TMP}"
   if [ -w /app/server.js ]; then
     cat "${SERVER_TMP}" > /app/server.js
   else

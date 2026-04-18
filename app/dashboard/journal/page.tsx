@@ -28,6 +28,7 @@ import {
     Download,
     Filter,
     X,
+    WandSparkles,
 } from "lucide-react";
 import { cn } from "@/utils";
 import { useJournalPage } from "./_hooks/useJournalPage";
@@ -122,6 +123,36 @@ export default function JournalPage() {
             {isJournalBlocked && (
                 <div className="mb-6 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
                     Akses fitur jurnal kamu sedang diblokir oleh admin. Kamu tidak bisa membuat atau mengubah jurnal sampai blokir dibuka.
+                </div>
+            )}
+
+            {!isJournalBlocked && (
+                <div className="mb-6 rounded-xl border border-primary/20 bg-primary/5 p-4">
+                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <p className="text-sm font-semibold text-gray-900 inline-flex items-center gap-2">
+                                <WandSparkles className="w-4 h-4 text-primary" />
+                                Mulai journaling sesuai kondisimu
+                            </p>
+                            <p className="text-xs text-gray-600 mt-1">
+                                Pilih mode untuk dapat template dan guided path 3 langkah.
+                            </p>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                            <Button asChild variant="outline" size="sm" className="bg-white">
+                                <Link href="/dashboard/journal/create?mode=brain-dump">Brain Dump</Link>
+                            </Button>
+                            <Button asChild variant="outline" size="sm" className="bg-white">
+                                <Link href="/dashboard/journal/create?mode=structured-reflection">Refleksi</Link>
+                            </Button>
+                            <Button asChild variant="outline" size="sm" className="bg-white">
+                                <Link href="/dashboard/journal/create?mode=gratitude">Syukur</Link>
+                            </Button>
+                            <Button asChild variant="outline" size="sm" className="bg-white">
+                                <Link href="/dashboard/journal/create?mode=action-plan">Rencana Aksi</Link>
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             )}
 

@@ -36,14 +36,22 @@ export default function ChatPage() {
     showDisclaimer,
     showCrisisModal,
     setShowCrisisModal,
+    isSafeModeActive,
+    pendingCrisisMessage,
     currentSummary,
     isGeneratingSummary,
     suggestedPrompts,
+    journeyCompanion,
+    reflectionNudge,
+    chatContextState,
+    isContextLoading,
+    isUpdatingContext,
     journalSettings,
     aiContext,
     setFilter,
     setActiveFolderId,
     handleLoadSession,
+    handleResumeJourneySession,
     handleCreateSession,
     handleSendText,
     handleSendAudio,
@@ -59,8 +67,16 @@ export default function ChatPage() {
     handleMoveToFolder,
     handleExport,
     handleGenerateSummary,
+    handleUpdateContextPreferences,
     handleSuggestedPrompt,
+    handleRunReflectionNudge,
+    handleGenerateReflectionSummary,
+    handleDismissReflectionNudge,
     handleAcceptDisclaimer,
+    handleContinueInSafeMode,
+    handleOpenCrisisSupport,
+    handleOpenBreathingSupport,
+    handleDismissSafeMode,
   } = useChatPage();
 
   return (
@@ -86,9 +102,28 @@ export default function ChatPage() {
           isGeneratingSummary={isGeneratingSummary}
           onGenerateSummary={handleGenerateSummary}
           suggestedPrompts={suggestedPrompts}
+          creativeModes={journeyCompanion?.creativeModes}
+          journeyCompanion={journeyCompanion}
+          reflectionNudge={reflectionNudge}
           onSuggestedPromptClick={handleSuggestedPrompt}
+          onCreativeModeClick={handleSuggestedPrompt}
+          onJourneyPromptClick={handleSuggestedPrompt}
+          onResumeJourneySession={handleResumeJourneySession}
+          onRunReflectionNudge={handleRunReflectionNudge}
+          onGenerateReflectionSummary={handleGenerateReflectionSummary}
+          onDismissReflectionNudge={handleDismissReflectionNudge}
           journalAIAccessEnabled={journalSettings?.allow_ai_access}
           journalSharedCount={aiContext?.total_shared ?? 0}
+          contextState={chatContextState}
+          isContextLoading={isContextLoading}
+          isUpdatingContext={isUpdatingContext}
+          onUpdateContextPreferences={handleUpdateContextPreferences}
+          isSafeModeActive={isSafeModeActive}
+          pendingCrisisMessage={pendingCrisisMessage}
+          onContinueInSafeMode={handleContinueInSafeMode}
+          onOpenCrisisSupport={handleOpenCrisisSupport}
+          onOpenBreathingSupport={handleOpenBreathingSupport}
+          onDismissSafeMode={handleDismissSafeMode}
         />
       </div>
 

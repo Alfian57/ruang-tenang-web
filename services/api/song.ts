@@ -25,7 +25,7 @@ export const songService = {
   },
 
   getPublicPlaylists(params?: { page?: number; limit?: number }) {
-    return httpClient.get<PaginatedResponse<Playlist>>("/playlists/public", { params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<Playlist>>("/playlists/public", { params });
   },
 
   createPlaylist(token: string, data: { name: string; description?: string; thumbnail?: string; is_public?: boolean }) {

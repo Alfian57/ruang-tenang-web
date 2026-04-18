@@ -8,6 +8,7 @@ import { formatDistanceToNow } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { cn } from "@/utils";
 import { parseApiDate } from "@/utils/date";
+import { stripForumFormatTag } from "@/utils/forum-content";
 import { BlockUserButton } from "@/components/shared/moderation";
 import {
   DropdownMenu,
@@ -192,7 +193,7 @@ export default function AdminForumTopicPage() {
               </div>
 
               <div className="prose prose-sm max-w-none text-gray-800 whitespace-pre-wrap leading-relaxed">
-                {forum.content}
+                {stripForumFormatTag(forum.content) || "Topik ini belum memiliki isi konten."}
               </div>
 
               <div className="flex items-center gap-4 mt-6 pt-4 border-t">

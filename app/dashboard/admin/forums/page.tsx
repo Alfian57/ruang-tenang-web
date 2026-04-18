@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { formatDate } from "@/utils";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { stripForumFormatTag } from "@/utils/forum-content";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useAdminForums } from "./_hooks/useAdminForums";
 import { Pagination } from "@/components/ui/pagination";
+import { AdminCompactTabs } from "../_components/AdminCompactTabs";
 
 export default function AdminForumsPage() {
   const {
@@ -54,10 +56,13 @@ export default function AdminForumsPage() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="mb-4">
-          <TabsTrigger value="forums">Topik Forum</TabsTrigger>
-          <TabsTrigger value="categories">Kategori</TabsTrigger>
-        </TabsList>
+        <AdminCompactTabs
+          className="mb-4"
+          items={[
+            { value: "forums", label: "Topik Forum" },
+            { value: "categories", label: "Kategori" },
+          ]}
+        />
 
         <TabsContent value="forums" className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
@@ -127,7 +132,9 @@ export default function AdminForumsPage() {
                             </div>
                             <div>
                               <p className="font-medium text-gray-900 line-clamp-1">{forum.title}</p>
-                              <p className="text-xs text-gray-500 line-clamp-1 max-w-xs">{forum.content}</p>
+                              <p className="text-xs text-gray-500 line-clamp-1 max-w-xs">
+                                {stripForumFormatTag(forum.content) || "Tidak ada preview konten"}
+                              </p>
                             </div>
                           </div>
                         </td>

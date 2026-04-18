@@ -15,7 +15,7 @@ const envSchema = z.object({
     .string()
     .default("http://localhost:8080/api/v1")
     .transform((val) =>
-      val === "__NEXT_PUBLIC_API_URL__"
+      val === "__NEXT_PUBLIC_API_URL__" || val === API_BASE_PLACEHOLDER
         ? API_BASE_PLACEHOLDER
         : val
     ),

@@ -142,7 +142,7 @@ export function StoryComments({
                         )}
                       </span>
                     </div>
-                    {token && comment.author?.id !== userId && (
+                    {token && !!comment.author?.id && comment.author.id !== userId && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-6 w-6">

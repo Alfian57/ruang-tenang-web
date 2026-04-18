@@ -121,7 +121,7 @@ export const communityService = {
 
   // Leaderboard
   getLeaderboard(limit: number = 10) {
-    return httpClient.get<ApiResponse<LeaderboardEntry[]>>("/leaderboard", { params: { limit } as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<ApiResponse<LeaderboardEntry[]>>("/leaderboard", { params: { limit } });
   },
 
   // Level configs (public)
@@ -133,7 +133,7 @@ export const communityService = {
   async getExpHistory(token: string, params?: { page?: number; limit?: number; activity_type?: string; start_date?: string; end_date?: string }) {
     const response = await httpClient.get<ApiResponse<ExpHistoryResponse>>("/exp-history", {
       token,
-      params: params as Record<string, string | number | boolean | undefined>,
+      params,
     });
 
     const payload = response.data ?? { data: [], total: 0, page: 1, limit: 10, total_pages: 1 };
@@ -174,6 +174,6 @@ export const communityService = {
   },
 
   getTaskHistory(token: string, params?: { page?: number; limit?: number }) {
-    return httpClient.get<PaginatedResponse<DailyTask>>("/daily-tasks/history", { token, params: params as Record<string, string | number | boolean | undefined> });
+    return httpClient.get<PaginatedResponse<DailyTask>>("/daily-tasks/history", { token, params });
   },
 };
