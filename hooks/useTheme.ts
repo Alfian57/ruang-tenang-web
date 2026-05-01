@@ -71,7 +71,7 @@ const THEME_EXCLUSIVITY: Record<ThemeKey, ThemeExclusivity> = {
 
 export function useTheme() {
   const { user } = useAuthStore();
-  const themeKey = (user?.profile_theme || "default") as ThemeKey;
+  const themeKey = (user?.role === "user" ? user.profile_theme || "default" : "default") as ThemeKey;
   const exclusivity = THEME_EXCLUSIVITY[themeKey] || THEME_EXCLUSIVITY.default;
   const isDefault = themeKey === "default";
 

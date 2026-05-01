@@ -18,17 +18,24 @@ interface NavbarProps {
 }
 
 const LANDING_SECTION_ROUTES = {
+  HOME: `${ROUTES.HOME}#home`,
   FEATURES: `${ROUTES.HOME}#features`,
   GAMIFICATION: `${ROUTES.HOME}#gamification`,
+  COMMUNITY: `${ROUTES.HOME}#community`,
+  STORIES: `${ROUTES.HOME}#stories`,
+  LEADERBOARD: `${ROUTES.HOME}#leaderboard`,
   ARTICLES: `${ROUTES.HOME}#articles`,
 } as const;
 
-type NavSection = "home" | "features" | "gamification" | "articles";
+type NavSection = "home" | "features" | "gamification" | "community" | "stories" | "leaderboard" | "articles";
 
 const NAV_ITEMS: Array<{ key: NavSection; label: string; href: string }> = [
-  { key: "home", label: "Beranda", href: ROUTES.HOME },
-  { key: "gamification", label: "Gamifikasi", href: LANDING_SECTION_ROUTES.GAMIFICATION },
+  { key: "home", label: "Beranda", href: LANDING_SECTION_ROUTES.HOME },
   { key: "features", label: "Fitur", href: LANDING_SECTION_ROUTES.FEATURES },
+  { key: "gamification", label: "Gamifikasi", href: LANDING_SECTION_ROUTES.GAMIFICATION },
+  { key: "community", label: "Komunitas", href: LANDING_SECTION_ROUTES.COMMUNITY },
+  { key: "stories", label: "Cerita", href: LANDING_SECTION_ROUTES.STORIES },
+  { key: "leaderboard", label: "Hall of Fame", href: LANDING_SECTION_ROUTES.LEADERBOARD },
   { key: "articles", label: "Artikel", href: LANDING_SECTION_ROUTES.ARTICLES },
 ];
 
@@ -39,12 +46,12 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
   const [activeSection, setActiveSection] = useState<NavSection>("home");
 
   const activeLinkClass = useMemo(
-    () => "px-4 py-2 text-sm font-medium text-primary bg-primary/5 rounded-full transition-colors",
+    () => "whitespace-nowrap px-3 py-2 text-sm font-medium text-primary bg-primary/5 rounded-full transition-colors xl:px-4",
     []
   );
 
   const inactiveLinkClass = useMemo(
-    () => "px-4 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors",
+    () => "whitespace-nowrap px-3 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full transition-colors xl:px-4",
     []
   );
 
@@ -54,48 +61,71 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
       return;
     }
 
-    const sectionIds: NavSection[] = ["gamification", "features", "articles"];
-    const sectionElements = sectionIds
-      .map((id) => document.getElementById(id))
-      .filter((section): section is HTMLElement => Boolean(section));
-
-    if (sectionElements.length === 0) {
-      setActiveSection("home");
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntries = entries.filter((entry) => entry.isIntersecting);
-
-        if (window.scrollY < 180) {
-          setActiveSection("home");
-          return;
-        }
-
-        if (visibleEntries.length > 0) {
-          const topMost = visibleEntries.reduce((prev, curr) =>
-            curr.boundingClientRect.top < prev.boundingClientRect.top ? curr : prev
-          );
-
-          const sectionId = topMost.target.id as NavSection;
-          if (sectionId === "features" || sectionId === "gamification" || sectionId === "articles") {
-            setActiveSection(sectionId);
-          }
-        }
-      },
-      {
-        root: null,
-        threshold: [0.2, 0.5, 0.8],
-        rootMargin: "-20% 0px -50% 0px",
+    const updateActiveSection = () => {
+      if (window.scrollY < 120) {
+        setActiveSection("home");
+        return;
       }
-    );
 
-    sectionElements.forEach((section) => observer.observe(section));
+      const activationPoint = window.scrollY + Math.min(window.innerHeight * 0.35, 320);
+
+      const nextSection = NAV_ITEMS.reduce<NavSection>((currentSection, item) => {
+        const section = document.getElementById(item.key);
+
+        if (!section) {
+          return currentSection;
+        }
+
+        const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+
+        if (sectionTop <= activationPoint) {
+          return item.key;
+        }
+
+        return currentSection;
+      }, "home");
+
+      setActiveSection((currentSection) => currentSection === nextSection ? currentSection : nextSection);
+    };
+
+    let frameId: number | null = null;
+
+    const requestActiveSectionUpdate = () => {
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId);
+      }
+
+      frameId = window.requestAnimationFrame(() => {
+        frameId = null;
+        updateActiveSection();
+      });
+    };
+
+    const updateActiveSectionFromHash = () => {
+      const hashSection = NAV_ITEMS.find((item) => item.key === window.location.hash.slice(1));
+
+      if (hashSection) {
+        setActiveSection(hashSection.key);
+      }
+
+      window.setTimeout(requestActiveSectionUpdate, 120);
+    };
+
+    updateActiveSectionFromHash();
+    requestActiveSectionUpdate();
+
+    window.addEventListener("scroll", requestActiveSectionUpdate, { passive: true });
+    window.addEventListener("resize", requestActiveSectionUpdate);
+    window.addEventListener("hashchange", updateActiveSectionFromHash);
 
     return () => {
-      sectionElements.forEach((section) => observer.unobserve(section));
-      observer.disconnect();
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId);
+      }
+
+      window.removeEventListener("scroll", requestActiveSectionUpdate);
+      window.removeEventListener("resize", requestActiveSectionUpdate);
+      window.removeEventListener("hashchange", updateActiveSectionFromHash);
     };
   }, [pathname, variant]);
 
@@ -111,17 +141,17 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl"
+      className="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1rem)] max-w-6xl sm:top-4 sm:w-[95%]"
     >
-      <div className="bg-white/95 backdrop-blur-md rounded-[15px] shadow-lg px-4 md:px-6 py-3 flex items-center justify-between">
+      <div className="flex min-w-0 items-center justify-between rounded-[15px] bg-white/95 px-3 py-3 shadow-lg backdrop-blur-md min-[380px]:px-4 md:px-6">
         {/* Logo */}
-        <Link href={ROUTES.HOME} className="flex items-center gap-2">
+        <Link href={ROUTES.HOME} className="flex min-w-0 items-center gap-2">
           <Image
             src="/logo-full.webp"
             alt="Ruang Tenang"
             width={120}
             height={40}
-            className="object-contain h-8 w-auto"
+            className="h-7 w-auto object-contain min-[380px]:h-8"
             style={{ width: "auto" }}
             priority
           />
@@ -131,14 +161,14 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
         <div className="flex">
           {variant === "default" ? (
             <>
-              <div className="hidden md:flex items-center gap-1">
+              <div className="hidden xl:flex items-center gap-1">
                 {NAV_ITEMS.map((item) => {
                   const active = isNavItemActive(item.key);
                   return (
                     <Link
                       key={item.key}
                       href={item.href}
-                      aria-current={active ? "page" : undefined}
+                      aria-current={active ? "location" : undefined}
                       className={active ? activeLinkClass : inactiveLinkClass}
                     >
                       {item.label}
@@ -147,7 +177,7 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
                 })}
               </div>
 
-              <div className="hidden md:flex items-center gap-2 ml-4">
+              <div className="hidden xl:flex items-center gap-2 ml-3">
                 {isAuthenticated ? (
                   <Link href={ROUTES.DASHBOARD}>
                     <Button
@@ -172,10 +202,11 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
             <Link href={backHref}>
               <Button
                 variant="ghost"
-                className="text-gray-600 hover:text-primary hover:bg-primary/5 rounded-full gap-2"
+                className="gap-2 rounded-full px-3 text-gray-600 hover:bg-primary/5 hover:text-primary sm:px-4"
               >
                 <ArrowLeft className="w-4 h-4" />
-                {backLabel}
+                <span className="min-[420px]:hidden">Kembali</span>
+                <span className="hidden min-[420px]:inline">{backLabel}</span>
               </Button>
             </Link>
           )}
@@ -186,7 +217,7 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
         */}
         {variant === "default" && (
           <button
-            className="md:hidden p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="xl:hidden p-2 hover:bg-gray-100 rounded-full transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? (
@@ -203,7 +234,7 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="md:hidden mt-2 bg-white rounded-2xl shadow-lg p-4 space-y-2"
+          className="xl:hidden mt-2 max-h-[calc(100svh-5.5rem)] overflow-y-auto rounded-2xl bg-white p-3 shadow-lg space-y-1.5 min-[380px]:p-4 min-[380px]:space-y-2"
         >
           {NAV_ITEMS.map((item) => {
             const active = isNavItemActive(item.key);
@@ -211,7 +242,7 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
               <Link
                 key={item.key}
                 href={item.href}
-                aria-current={active ? "page" : undefined}
+                aria-current={active ? "location" : undefined}
                 className={`block px-4 py-3 font-medium rounded-xl transition-colors ${active
                   ? "text-primary bg-primary/5"
                   : "text-gray-600 hover:bg-primary/5 hover:text-primary"

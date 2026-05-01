@@ -133,7 +133,7 @@ export default function StoryDetailPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-background">
+            <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-background">
                 <Navbar variant="back" />
                 <div className="container mx-auto px-4 pt-32 pb-20">
                     <div className="max-w-3xl mx-auto space-y-6">
@@ -170,7 +170,7 @@ export default function StoryDetailPage() {
         return (
             <div className="min-h-screen bg-background">
                 <Navbar variant="back" />
-                <div className="container mx-auto px-4 py-40 text-center">
+                <div className="container mx-auto px-4 py-32 text-center sm:py-40">
                     <h1 className="text-2xl font-bold mb-4">Cerita Tidak Ditemukan</h1>
                     <p className="text-muted-foreground mb-6">{error || "Cerita yang kamu cari tidak ada."}</p>
                     <Link href={ROUTES.PUBLIC_STORIES}>
@@ -183,13 +183,10 @@ export default function StoryDetailPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-background">
             <Navbar variant="back" />
 
-            {/* Background Decorations */}
-            <div className="absolute top-0 right-0 w-125 h-125 bg-pink-100/30 rounded-full blur-[120px] -z-10 pointer-events-none" />
-
-            <main className="pt-32 pb-20 container mx-auto px-4">
+            <main className="container mx-auto px-4 pt-28 pb-16 sm:pt-32 sm:pb-20">
                 {/* Story Content */}
                 <StoryDetail
                     story={story}
@@ -200,14 +197,14 @@ export default function StoryDetailPage() {
                 />
 
                 {/* Comments Section */}
-                <section className="max-w-3xl mx-auto mt-12">
-                    <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                <section className="mx-auto mt-10 max-w-3xl sm:mt-12">
+                    <h2 className="mb-5 flex items-center gap-2 text-lg font-semibold sm:mb-6 sm:text-xl">
                         <MessageCircle className="h-5 w-5" />
                         Dukungan & Komentar ({story.comment_count})
                     </h2>
 
                     {token && (
-                        <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
                             Jika menemukan konten berisiko, gunakan menu aksi untuk lapor atau blokir. Tim moderasi meninjau laporan maksimal 1 x 24 jam.
                         </div>
                     )}

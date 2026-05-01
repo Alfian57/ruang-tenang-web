@@ -11,6 +11,7 @@ export default function ModerationReportsPage() {
         searchQuery,
         page,
         reports,
+        focusId,
         isLoading,
         totalPages,
         setStatusFilter,
@@ -39,6 +40,7 @@ export default function ModerationReportsPage() {
                 searchQuery={searchQuery}
                 totalPages={totalPages}
                 page={page}
+                focusId={focusId}
                 setPage={setPage}
             />
         </div>

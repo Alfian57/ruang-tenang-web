@@ -20,7 +20,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const inputType = isPassword && showPassword ? "text" : type;
 
     return (
-      <div className="w-full space-y-1.5">
+      <div className="w-full min-w-0 space-y-1.5">
         {label && (
           <label
             htmlFor={inputId}
@@ -30,12 +30,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {props.required && <span className="text-destructive ml-1" aria-hidden="true">*</span>}
           </label>
         )}
-        <div className="relative">
+        <div className="relative min-w-0">
           <input
             id={inputId}
             type={inputType}
             className={cn(
-              "flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+              "flex h-10 w-full min-w-0 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
               error && "border-destructive focus-visible:ring-destructive",
               isPassword && "pr-10",
               className

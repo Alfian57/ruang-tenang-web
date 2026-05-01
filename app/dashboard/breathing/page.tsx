@@ -25,6 +25,7 @@ import {
     BookOpen,
 } from "lucide-react";
 import { useBreathing } from "./_hooks/useBreathing";
+import { BREATHING_INTENT_PRESETS } from "@/types/breathing";
 
 export default function BreathingPage() {
     const {
@@ -46,10 +47,13 @@ export default function BreathingPage() {
         selectedDuration,
         setSelectedDuration,
         completionResult,
+        pendingCompletion,
+        isSavingCompletion,
         moodBefore,
         setMoodBefore,
         moodAfter,
         setMoodAfter,
+        selectedIntentId,
         voiceGuidance,
         setVoiceGuidance,
         hapticFeedback,
@@ -66,9 +70,12 @@ export default function BreathingPage() {
         infoTechnique,
         preferences,
         handleSelectTechnique,
+        handleApplyIntent,
         handleFavoriteToggle,
         handleStartSession,
         handleCompleteSession,
+        handleSubmitCompletion,
+        handleRepeatSession,
         handleExitSession,
         handleTutorialComplete,
         handleShowInfo,
@@ -97,7 +104,8 @@ export default function BreathingPage() {
             t.slug === "4-7-8-relaxing" || t.name.toLowerCase().includes("4-7-8")
         );
         if (relaxingTechnique) {
-            handleSelectTechnique(relaxingTechnique);
+            const sleepPreset = BREATHING_INTENT_PRESETS.find((preset) => preset.id === "sleep");
+            handleSelectTechnique(relaxingTechnique, sleepPreset);
         }
     };
 
@@ -115,7 +123,7 @@ export default function BreathingPage() {
                         </button>
                     )}
                     <div>
-                        <h1 className="text-2xl font-bold">Pernafasan</h1>
+                        <h1 className="text-2xl font-bold">Pernapasan</h1>
                         <p className="text-muted-foreground">
                             {viewMode === "techniques" && "Pilih teknik untuk memulai"}
                             {viewMode === "session" && selectedTechnique?.name}
@@ -252,6 +260,8 @@ export default function BreathingPage() {
                 selectedTechnique={selectedTechnique}
                 selectedDuration={selectedDuration}
                 setSelectedDuration={setSelectedDuration}
+                selectedIntentId={selectedIntentId}
+                onSelectIntent={handleApplyIntent}
                 moodBefore={moodBefore}
                 setMoodBefore={setMoodBefore}
                 backgroundSound={backgroundSound}
@@ -261,9 +271,13 @@ export default function BreathingPage() {
 
             <CompletionModal
                 isOpen={showCompletionModal}
+                draft={pendingCompletion}
                 result={completionResult}
                 moodAfter={moodAfter}
                 setMoodAfter={setMoodAfter}
+                isSaving={isSavingCompletion}
+                onSubmit={handleSubmitCompletion}
+                onRepeat={handleRepeatSession}
                 onExit={handleExitSession}
             />
 

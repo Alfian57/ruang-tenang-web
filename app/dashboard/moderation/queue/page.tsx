@@ -10,6 +10,7 @@ export default function ModerationQueuePage() {
         isLoading,
         totalPages,
         page,
+        focusId,
         statusFilter,
         searchQuery,
         setPage,
@@ -35,6 +36,7 @@ export default function ModerationQueuePage() {
                 searchQuery={searchQuery}
                 totalPages={totalPages}
                 page={page}
+                focusId={focusId}
                 setPage={setPage}
             />
         </div>

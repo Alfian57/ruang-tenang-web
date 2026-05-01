@@ -3,7 +3,7 @@ import { ApiError, type RequestOptions } from "./types";
 import { toast } from "sonner";
 import { getUploadUrl } from "./upload-url";
 import { normalizeApiTimestampString } from "@/utils/date";
-import { enqueueMutation } from "@/lib/offline";
+import { enqueueMutation } from "@/lib/offline/db";
 
 const DEFAULT_TIMEOUT = 30_000; // 30 seconds
 const RATE_LIMIT_TOAST_COOLDOWN_MS = 5000;
@@ -28,6 +28,55 @@ const VALIDATION_TAG_MESSAGES: Record<string, string> = {
   email: "format email tidak valid.",
   oneof: "memiliki nilai yang tidak valid.",
 };
+
+const OFFLINE_QUEUEABLE_PREFIXES = [
+  "/journals",
+  "/user-moods",
+  "/stories",
+  "/forums",
+  "/breathing",
+];
+
+const OFFLINE_NEVER_QUEUE_PREFIXES = [
+  "/admin",
+  "/auth",
+  "/b2b",
+  "/billing",
+  "/chat",
+  "/chat-sessions",
+  "/chat-messages",
+  "/moderation",
+  "/push",
+  "/rewards",
+];
+
+async function parseResponseBody(response: Response): Promise<unknown> {
+  const text = await response.text();
+  if (!text) return null;
+
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/json")) {
+    return { message: text };
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { message: text };
+  }
+}
+
+function getErrorEnvelope(data: unknown): Record<string, unknown> {
+  return data && typeof data === "object" && !Array.isArray(data)
+    ? data as Record<string, unknown>
+    : {};
+}
+
+function isOfflineQueueableMutation(endpoint: string, method: string): method is "POST" | "PUT" | "DELETE" {
+  if (method !== "POST" && method !== "PUT" && method !== "DELETE") return false;
+  if (OFFLINE_NEVER_QUEUE_PREFIXES.some((prefix) => endpoint === prefix || endpoint.startsWith(`${prefix}/`))) return false;
+  return OFFLINE_QUEUEABLE_PREFIXES.some((prefix) => endpoint === prefix || endpoint.startsWith(`${prefix}/`));
+}
 
 function getFriendlyFieldLabel(rawField: string): string {
   const key = rawField.split(".").pop() || rawField;
@@ -225,19 +274,20 @@ class HttpClient {
         return undefined as T;
       }
 
-      const data = await response.json();
+      const data = await parseResponseBody(response);
 
       if (!response.ok) {
+        const errorData = getErrorEnvelope(data);
         const apiError = new ApiError({
-          message: normalizeApiErrorMessage(data.message || data.error || "An error occurred"),
-          code: data.code,
+          message: normalizeApiErrorMessage(String(errorData.message || errorData.error || "An error occurred")),
+          code: typeof errorData.code === "string" ? errorData.code : undefined,
           status: response.status,
-          details: data.details,
-          requestId: data.requestId,
+          details: errorData.details,
+          requestId: typeof errorData.requestId === "string" ? errorData.requestId : undefined,
         });
 
         // Show toast for rate limiting
-        if (apiError.isRateLimited) {
+        if (apiError.isRateLimited && apiError.code !== "ERR_QUOTA_EXCEEDED") {
           // Retry with exponential backoff before showing error
           if (attempt < MAX_RETRIES) {
             const delay = RETRY_DELAY_MS * Math.pow(2, attempt);
@@ -279,15 +329,11 @@ class HttpClient {
         const method = (fetchOptions.method || "GET").toUpperCase();
 
         // For mutating requests, queue them for later sync
-        if (
-          (method === "POST" || method === "PUT" || method === "DELETE") &&
-          token
-        ) {
+        if (token && isOfflineQueueableMutation(endpoint, method)) {
           await enqueueMutation({
             endpoint,
-            method: method as "POST" | "PUT" | "DELETE",
+            method,
             body,
-            token,
             tag: endpoint.split("/")[1] || "unknown", // e.g. "journals", "user-moods"
           });
 
@@ -323,24 +369,53 @@ class HttpClient {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      method,
-      headers,
-      body: formData,
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT);
 
-    const data = await response.json();
-    if (!response.ok) {
-      throw new ApiError({
-        message: normalizeApiErrorMessage(data.message || data.error || "Upload failed"),
-        code: data.code,
-        status: response.status,
-        details: data.details,
-        requestId: data.requestId,
+    try {
+      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+        method,
+        headers,
+        body: formData,
+        signal: controller.signal,
       });
-    }
 
-    return normalizePagination(normalizeUploadsDeep(data as T));
+      const data = await parseResponseBody(response);
+      if (!response.ok) {
+        const errorData = getErrorEnvelope(data);
+        throw new ApiError({
+          message: normalizeApiErrorMessage(String(errorData.message || errorData.error || "Upload failed")),
+          code: typeof errorData.code === "string" ? errorData.code : undefined,
+          status: response.status,
+          details: errorData.details,
+          requestId: typeof errorData.requestId === "string" ? errorData.requestId : undefined,
+        });
+      }
+
+      return normalizePagination(normalizeUploadsDeep(data as T));
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+
+      if (error instanceof DOMException && error.name === "AbortError") {
+        throw new ApiError({
+          message: "Upload timed out",
+          code: "TIMEOUT",
+          status: 408,
+        });
+      }
+
+      if (error instanceof TypeError) {
+        throw new ApiError({
+          message: "Tidak ada koneksi internet",
+          code: "NETWORK_ERROR",
+          status: 0,
+        });
+      }
+
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
+    }
   }
 
   // ==========================================

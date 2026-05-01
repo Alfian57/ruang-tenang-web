@@ -3,8 +3,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function ProgressMapLoading() {
     return (
         <div className="min-h-screen bg-gray-50/50 p-4 lg:p-6 space-y-6">
-            <Skeleton className="h-16 w-80 rounded-xl" />
-            <div className="grid grid-cols-3 gap-3">
+            <Skeleton className="h-16 w-full max-w-80 rounded-xl" />
+            <div className="grid grid-cols-1 gap-3 xs:grid-cols-3">
                 {[1, 2, 3].map((i) => (
                     <Skeleton key={i} className="h-24 rounded-xl" />
                 ))}

@@ -8,8 +8,8 @@ export default function HallOfFameLoading() {
         {/* Header skeleton */}
         <div className="text-center space-y-3">
           <div className="h-7 w-44 rounded-full bg-gray-100 animate-pulse mx-auto" />
-          <div className="h-10 w-80 rounded bg-gray-100 animate-pulse mx-auto" />
-          <div className="h-5 w-96 rounded bg-gray-100 animate-pulse mx-auto" />
+          <div className="h-10 w-full max-w-80 rounded bg-gray-100 animate-pulse mx-auto" />
+          <div className="h-5 w-full max-w-96 rounded bg-gray-100 animate-pulse mx-auto" />
         </div>
 
         {/* Featured cards skeleton */}

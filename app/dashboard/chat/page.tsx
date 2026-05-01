@@ -38,11 +38,13 @@ export default function ChatPage() {
     setShowCrisisModal,
     isSafeModeActive,
     pendingCrisisMessage,
+    chatQuotaNotice,
     currentSummary,
     isGeneratingSummary,
     suggestedPrompts,
     journeyCompanion,
     reflectionNudge,
+    billingStatus,
     chatContextState,
     isContextLoading,
     isUpdatingContext,
@@ -77,12 +79,13 @@ export default function ChatPage() {
     handleOpenCrisisSupport,
     handleOpenBreathingSupport,
     handleDismissSafeMode,
+    handleOpenBillingFromQuota,
   } = useChatPage();
 
   return (
-    <div className="flex h-[calc(100vh-(--spacing(16)))] overflow-hidden bg-white">
+    <div className="grid h-[calc(100svh-4rem)] min-w-0 grid-cols-1 overflow-hidden bg-white sm:h-[calc(100vh-4rem)] sm:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)]">
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col h-full relative">
+      <div className="min-h-0 min-w-0 flex flex-col overflow-hidden relative">
         <ChatMessagesArea
           activeSession={activeSession}
           messages={messages}
@@ -105,6 +108,7 @@ export default function ChatPage() {
           creativeModes={journeyCompanion?.creativeModes}
           journeyCompanion={journeyCompanion}
           reflectionNudge={reflectionNudge}
+          billingStatus={billingStatus}
           onSuggestedPromptClick={handleSuggestedPrompt}
           onCreativeModeClick={handleSuggestedPrompt}
           onJourneyPromptClick={handleSuggestedPrompt}
@@ -120,14 +124,16 @@ export default function ChatPage() {
           onUpdateContextPreferences={handleUpdateContextPreferences}
           isSafeModeActive={isSafeModeActive}
           pendingCrisisMessage={pendingCrisisMessage}
+          chatQuotaNotice={chatQuotaNotice}
           onContinueInSafeMode={handleContinueInSafeMode}
           onOpenCrisisSupport={handleOpenCrisisSupport}
           onOpenBreathingSupport={handleOpenBreathingSupport}
           onDismissSafeMode={handleDismissSafeMode}
+          onOpenBillingFromQuota={handleOpenBillingFromQuota}
         />
       </div>
 
-      {/* Right Sidebar */}
+      {/* Chat Sidebar: inline on desktop, drawer on mobile */}
       <ChatSidebar
         sessions={sessions}
         activeSessionId={activeSession?.uuid ?? null}
@@ -147,6 +153,8 @@ export default function ChatPage() {
         onFolderSelect={setActiveFolderId}
         isOpen={mobileSidebarOpen}
         onClose={() => setMobileSidebarOpen(false)}
+        isChatLocked={Boolean(chatQuotaNotice)}
+        onOpenBillingFromQuota={handleOpenBillingFromQuota}
       />
 
       {/* New Session Dialog */}

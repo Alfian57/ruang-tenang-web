@@ -88,7 +88,7 @@ export function ExploreTab({
                             Kurasi Tim
                         </span>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-4">
                         {adminPlaylists.map((playlist) => (
                             <PublicPlaylistCard
                                 key={playlist.id}
@@ -104,7 +104,7 @@ export function ExploreTab({
             <div className="space-y-4">
                 <h2 className="font-semibold text-gray-900">Playlist Komunitas</h2>
                 {publicPlaylists.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-4">
                         {publicPlaylists.map((playlist) => (
                             <PublicPlaylistCard
                                 key={playlist.id}

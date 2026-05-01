@@ -1,7 +1,7 @@
 export function CommunitySkeleton() {
     return (
         <div className="space-y-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-4">
                 {[1, 2, 3, 4].map((i) => (
                     <div key={i} className="rounded-xl border bg-card p-5 space-y-3">
                         <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse mx-auto" />

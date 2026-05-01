@@ -13,16 +13,16 @@ import { GlobalMusicPlayer } from "@/components/layout";
 import { DailyTaskFAB } from "@/components/shared/gamification";
 import { OfflineIndicator } from "@/components/pwa/OfflineIndicator";
 import { SkipLink } from "@/components/ui/accessibility";
-import { initAutoSync } from "@/lib/offline";
+import { initAutoSync } from "@/lib/offline/syncOutbox";
 import { cn } from "@/utils";
 import { useAuthStore } from "@/store/authStore";
 import { useMusicPlayerStore } from "@/store/musicPlayerStore";
 import { useBlockStore } from "@/store/blockStore";
 import { Sidebar, MobileHeader, TopHeader } from "@/components/layout/dashboard";
 import { ROUTES } from "@/lib/routes";
-import { xpBoostService } from "@/services/api";
+import { billingService, xpBoostService } from "@/services/api";
 import { ApiError } from "@/services/http/types";
-import type { XPBoostStatus } from "@/types";
+import type { BillingStatus, XPBoostStatus } from "@/types";
 
 type XPBoostUpdatedEventDetail = {
   status?: XPBoostStatus | null;
@@ -47,7 +47,7 @@ function DashboardContent({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isAdmin, isMitra, isUser } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -57,6 +57,7 @@ function DashboardContent({
   const [showExpHistoryModal, setShowExpHistoryModal] = useState(false);
   const [showAppealModal, setShowAppealModal] = useState(false);
   const [xpBoostStatus, setXPBoostStatus] = useState<XPBoostStatus | null>(null);
+  const [billingStatus, setBillingStatus] = useState<BillingStatus | null>(null);
   const { token } = useAuthStore();
   const loadBlockedUsers = useBlockStore((s) => s.loadBlockedUsers);
   const isPlayerVisible = useMusicPlayerStore((s) => s.isPlayerVisible);
@@ -66,13 +67,13 @@ function DashboardContent({
 
   // Load blocked users list on mount
   useEffect(() => {
-    if (token) {
+    if (token && isUser) {
       loadBlockedUsers(token);
     }
-  }, [token, loadBlockedUsers]);
+  }, [token, isUser, loadBlockedUsers]);
 
   const refreshXPBoostStatus = useCallback(async () => {
-    if (!token || isAdmin) {
+    if (!token || !isUser) {
       setXPBoostStatus(null);
       return;
     }
@@ -88,18 +89,53 @@ function DashboardContent({
 
       console.error("Failed to load XP boost status:", error);
     }
-  }, [token, isAdmin]);
+  }, [token, isUser]);
 
   useEffect(() => {
     refreshXPBoostStatus();
   }, [refreshXPBoostStatus]);
 
+  const refreshBillingStatus = useCallback(async () => {
+    if (!token || !isUser) {
+      setBillingStatus(null);
+      return;
+    }
+
+    try {
+      const response = await billingService.getStatus(token);
+      setBillingStatus(response.data);
+    } catch (error) {
+      console.error("Failed to load billing status:", error);
+      setBillingStatus(null);
+    }
+  }, [token, isUser]);
+
   useEffect(() => {
-    if (!token || isAdmin) return;
+    refreshBillingStatus();
+  }, [refreshBillingStatus]);
+
+  useEffect(() => {
+    if (!token || !isUser) return;
+
+    const interval = setInterval(refreshBillingStatus, 60_000);
+    return () => clearInterval(interval);
+  }, [token, isUser, refreshBillingStatus]);
+
+  useEffect(() => {
+    const handleRefresh = () => {
+      refreshBillingStatus();
+    };
+
+    window.addEventListener("billing-status-refresh", handleRefresh);
+    return () => window.removeEventListener("billing-status-refresh", handleRefresh);
+  }, [refreshBillingStatus]);
+
+  useEffect(() => {
+    if (!token || !isUser) return;
 
     const interval = setInterval(refreshXPBoostStatus, 30_000);
     return () => clearInterval(interval);
-  }, [token, isAdmin, refreshXPBoostStatus]);
+  }, [token, isUser, refreshXPBoostStatus]);
 
   useEffect(() => {
     const handleXPBoostUpdated = (event: Event) => {
@@ -182,11 +218,15 @@ function DashboardContent({
     return null;
   }
 
+  const activeDashboardTheme = user.role === "user" && user.profile_theme && user.profile_theme !== "default"
+    ? user.profile_theme
+    : null;
+
   return (
     <div className={cn(
       "min-h-screen",
-      user?.profile_theme && user.profile_theme !== "default"
-        ? `theme-${user.profile_theme} theme-bg`
+      activeDashboardTheme
+        ? `theme-${activeDashboardTheme} theme-bg`
         : "bg-gray-50"
     )}>
       <SkipLink href="#main-content" className="focus:z-70" />
@@ -216,7 +256,7 @@ function DashboardContent({
         isOpen={showAppealModal}
         onClose={() => setShowAppealModal(false)}
       />
-      {!isAdmin && (
+      {isUser && (
         <ExpHistoryModal
           isOpen={showExpHistoryModal}
           onClose={() => setShowExpHistoryModal(false)}
@@ -231,6 +271,8 @@ function DashboardContent({
       <MobileHeader
         user={user}
         isAdmin={isAdmin}
+        isMitra={isMitra}
+        billingStatus={billingStatus}
         xpBoost={xpBoostStatus}
         sidebarOpen={sidebarOpen}
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
@@ -242,7 +284,8 @@ function DashboardContent({
 
       {/* Sidebar */}
       <Sidebar
-        isAdmin={isAdmin}
+        userRole={user.role}
+        billingStatus={billingStatus}
         sidebarOpen={sidebarOpen}
         sidebarCollapsed={sidebarCollapsed}
         onCloseSidebar={() => setSidebarOpen(false)}
@@ -251,13 +294,15 @@ function DashboardContent({
 
       {/* Main Content */}
       <div className={cn(
-        "min-h-screen flex flex-col transition-all duration-200",
+        "min-h-screen min-w-0 max-w-full flex flex-col transition-all duration-200",
         sidebarCollapsed ? "lg:ml-20" : "lg:ml-60"
       )}>
         {/* Top Header (Desktop) */}
         <TopHeader
           user={user}
           isAdmin={isAdmin}
+          isMitra={isMitra}
+          billingStatus={billingStatus}
           xpBoost={xpBoostStatus}
           onEditProfile={() => setShowEditProfileModal(true)}
           onChangePassword={() => setShowChangePasswordModal(true)}
@@ -268,8 +313,8 @@ function DashboardContent({
 
         {/* Suspension/Ban Banner */}
         {(user?.is_suspended || user?.is_banned) && (
-          <div className="bg-red-50 border-b border-red-200 px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <div className="bg-red-50 border-b border-red-200 px-3 py-3 sm:px-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-2">
               <span className="text-red-600 font-medium text-sm">
                 {user.is_banned
                   ? "⛔ Akun Anda telah diblokir permanen."
@@ -278,7 +323,7 @@ function DashboardContent({
             </div>
             <button
               onClick={() => setShowAppealModal(true)}
-              className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline whitespace-nowrap"
+              className="self-start text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline sm:self-auto sm:whitespace-nowrap"
             >
               Ajukan Banding
             </button>
@@ -287,7 +332,7 @@ function DashboardContent({
 
         {/* Page Content */}
         <main className={cn(
-          "focus:outline-none",
+          "focus:outline-none w-full min-w-0 max-w-[120rem] mx-auto overflow-x-clip",
           "flex-1 pt-16 lg:pt-0 transition-[padding-bottom] duration-200",
           showMusicPlayer && (isMinimized ? "pb-16" : "pb-28")
         )}
@@ -298,10 +343,10 @@ function DashboardContent({
         </main>
 
         {/* Mood Check-in Modal (for regular users only) */}
-        {!isAdmin && <MoodCheckinProvider />}
+        {isUser && <MoodCheckinProvider />}
 
         {/* Daily Task FAB (for non-admin users) */}
-        {!isAdmin && <DailyTaskFAB isSidebarOpen={sidebarOpen} xpBoost={xpBoostStatus} />}
+        {isUser && <DailyTaskFAB isSidebarOpen={sidebarOpen} xpBoost={xpBoostStatus} />}
 
         {/* Global Music Player */}
         <GlobalMusicPlayer sidebarCollapsed={sidebarCollapsed} />

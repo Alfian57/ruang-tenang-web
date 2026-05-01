@@ -1,4 +1,5 @@
 export * from "./BreathingCircle";
+export * from "./BreathingVisual";
 export * from "./SessionPlayer";
 export * from "./BreathingStats";
 export * from "./TechniqueCard";

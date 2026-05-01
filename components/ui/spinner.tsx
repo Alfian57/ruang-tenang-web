@@ -36,12 +36,12 @@ function Spinner({ className, size, variant, label, ...props }: SpinnerProps) {
         <div
             className={cn("inline-flex items-center gap-2", className)}
             role="status"
-            aria-label={label || "Loading"}
+            aria-label={label || "Memuat"}
             {...props}
         >
             <Loader2 className={spinnerVariants({ size, variant })} aria-hidden="true" />
             {label && <span className="text-sm text-muted-foreground">{label}</span>}
-            <span className="sr-only">{label || "Loading..."}</span>
+            <span className="sr-only">{label || "Memuat..."}</span>
         </div>
     );
 }

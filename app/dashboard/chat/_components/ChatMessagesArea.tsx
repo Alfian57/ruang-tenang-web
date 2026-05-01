@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   ChatSession,
   ChatMessage,
@@ -8,7 +9,7 @@ import {
   SuggestedPrompt,
   ChatContextPreferencesUpdate,
   ChatContextState,
-  ChatSessionIntent,
+  BillingStatus,
 } from "@/types";
 import {
   ChatMessageBubble,
@@ -17,12 +18,12 @@ import {
   TypingIndicator,
 } from ".";
 import { Button } from "@/components/ui/button";
-import { Compass, HeartHandshake, History, NotebookPen, Phone } from "lucide-react";
+import { ChevronDown, ChevronUp, CreditCard, Crown, HeartHandshake, History, Lock, MessageSquare, NotebookPen, Phone, SlidersHorizontal, Wind } from "lucide-react";
 import { ChatHeader } from "./ChatHeader";
 import { ChatSummaryPanel } from "./ChatSummaryPanel";
 import { JournalContextIndicator } from "./JournalContextIndicator";
 import { AIDisclaimerBanner } from "@/components/ui/ai-disclaimer-banner";
-import { Switch } from "@/components/ui/switch";
+import { ROUTES } from "@/lib/routes";
 
 interface JourneyCompanionData {
   sessionsThisWeek: number;
@@ -75,6 +76,7 @@ export interface ChatMessagesAreaProps {
   creativeModes?: CreativeModePrompt[];
   journeyCompanion?: JourneyCompanionData;
   reflectionNudge?: ReflectionNudgeData | null;
+  billingStatus?: BillingStatus | null;
   onSuggestedPromptClick?: (prompt: string) => void;
   onCreativeModeClick?: (prompt: string) => void;
   onJourneyPromptClick?: (prompt: string) => void;
@@ -90,10 +92,12 @@ export interface ChatMessagesAreaProps {
   journalSharedCount?: number;
   isSafeModeActive?: boolean;
   pendingCrisisMessage?: string | null;
+  chatQuotaNotice?: string | null;
   onContinueInSafeMode?: () => Promise<void>;
   onOpenCrisisSupport?: () => void;
   onOpenBreathingSupport?: () => void;
   onDismissSafeMode?: () => void;
+  onOpenBillingFromQuota?: () => void;
 }
 
 export function ChatMessagesArea({
@@ -118,6 +122,7 @@ export function ChatMessagesArea({
   creativeModes,
   journeyCompanion,
   reflectionNudge,
+  billingStatus,
   onSuggestedPromptClick,
   onCreativeModeClick,
   onJourneyPromptClick,
@@ -125,73 +130,62 @@ export function ChatMessagesArea({
   onRunReflectionNudge,
   onGenerateReflectionSummary,
   onDismissReflectionNudge,
-  contextState,
-  isContextLoading = false,
-  isUpdatingContext = false,
-  onUpdateContextPreferences,
   journalAIAccessEnabled = false,
   journalSharedCount = 0,
   isSafeModeActive = false,
   pendingCrisisMessage,
+  chatQuotaNotice,
   onContinueInSafeMode,
   onOpenCrisisSupport,
   onOpenBreathingSupport,
   onDismissSafeMode,
+  onOpenBillingFromQuota,
 }: ChatMessagesAreaProps) {
   const [showSummary, setShowSummary] = useState(false);
+  const [showMobileAssistPanels, setShowMobileAssistPanels] = useState(false);
   const pinnedMessages = messages.filter(m => m.is_pinned);
-  const contextPrefs = contextState?.preferences;
-  const contextRuntime = contextState?.runtime;
-  const contextDisabled = isContextLoading || isUpdatingContext || !contextPrefs;
-
-  const intentOptions: { value: ChatSessionIntent; label: string }[] = [
-    { value: "general", label: "Umum" },
-    { value: "grounding", label: "Grounding" },
-    { value: "planning", label: "Planning" },
-    { value: "reflection", label: "Refleksi" },
-    { value: "coping", label: "Coping" },
-  ];
-
-  const sourceLabelMap: Record<string, string> = {
-    mood: "Mood",
-    journal: "Jurnal",
-    daily_task: "Tugas harian",
-    xp_level: "XP/Level",
-    breathing: "Napas",
-    playlist: "Playlist",
-    rewards: "Rewards",
-    progress_map: "Progress map",
-    social: "Sosial",
-  };
-
-  const activeSourceLabels = (contextRuntime?.effective_sources ?? [])
-    .map((source) => sourceLabelMap[source] ?? source)
-    .join(", ");
-
-  const updateContextPreference = (updates: ChatContextPreferencesUpdate) => {
-    if (!onUpdateContextPreferences) return;
-    void onUpdateContextPreferences(updates);
-  };
+  const isPremium = Boolean(billingStatus?.is_premium || billingStatus?.chat_quota.is_unlimited);
+  const quota = billingStatus?.chat_quota;
+  const isQuotaExhausted = Boolean(chatQuotaNotice || (quota && !isPremium && quota.remaining <= 0));
+  const quotaPercent = quota && quota.limit > 0
+    ? Math.max(0, Math.min(100, (quota.remaining / quota.limit) * 100))
+    : 100;
+  const quotaResetLabel = quota?.reset_at
+    ? new Date(quota.reset_at).toLocaleString("id-ID", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+    : null;
+  const mobilePanelCount = 1
+    + (journalAIAccessEnabled && journalSharedCount > 0 ? 1 : 0)
+    + (reflectionNudge ? 1 : 0);
 
   if (!activeSession) {
     return (
       <>
-        <div className="lg:hidden flex items-center justify-between p-4 border-b bg-white shrink-0">
+        <div className="sm:hidden flex items-center justify-between p-4 border-b bg-white shrink-0">
           <h3 className="font-semibold text-gray-800">Chat Baru</h3>
           <Button variant="ghost" size="icon" onClick={onOpenMobileSidebar}>
             <History className="w-5 h-5 text-gray-600" />
           </Button>
         </div>
-        <EmptyState
-          onCreateSession={onCreateSession}
-          suggestedPrompts={suggestedPrompts}
-          onSuggestedPromptClick={onSuggestedPromptClick}
-          creativeModes={creativeModes}
-          onCreativeModeClick={onCreativeModeClick}
-          journeyCompanion={journeyCompanion}
-          onJourneyPromptClick={onJourneyPromptClick}
-          onResumeJourneySession={onResumeJourneySession}
-        />
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          <EmptyState
+            onCreateSession={onCreateSession}
+            suggestedPrompts={suggestedPrompts}
+            onSuggestedPromptClick={onSuggestedPromptClick}
+            creativeModes={creativeModes}
+            onCreativeModeClick={onCreativeModeClick}
+            journeyCompanion={journeyCompanion}
+            onJourneyPromptClick={onJourneyPromptClick}
+            onResumeJourneySession={onResumeJourneySession}
+            billingStatus={billingStatus}
+            chatQuotaNotice={chatQuotaNotice}
+            onOpenBillingFromQuota={onOpenBillingFromQuota}
+          />
+        </div>
       </>
     );
   }
@@ -208,7 +202,59 @@ export function ChatMessagesArea({
         onOpenMobileSidebar={onOpenMobileSidebar}
       />
 
+      {quota && (
+        <div className={`shrink-0 border-b px-4 py-2 ${isPremium ? "border-violet-100 bg-violet-50" : isQuotaExhausted ? "border-amber-200 bg-amber-100" : "border-amber-100 bg-amber-50"}`}>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2 text-sm">
+              {isPremium ? (
+                <Crown className="h-4 w-4 text-violet-600" />
+              ) : isQuotaExhausted ? (
+                <Lock className="h-4 w-4 text-amber-700" />
+              ) : (
+                <MessageSquare className="h-4 w-4 text-amber-600" />
+              )}
+              <span className={`font-semibold ${isPremium ? "text-violet-900" : "text-amber-900"}`}>
+                {isPremium ? "Premium aktif: chat tanpa batas" : isQuotaExhausted ? "Limit chat gratis habis" : `Kuota gratis: ${Math.max(0, quota.remaining)} dari ${quota.limit} tersisa`}
+              </span>
+            </div>
+
+            {!isPremium && (
+              <div className="flex items-center gap-2">
+                <div className="h-1.5 w-28 overflow-hidden rounded-full bg-white">
+                  <div className="h-full rounded-full bg-amber-500" style={{ width: `${quotaPercent}%` }} />
+                </div>
+                <Button size="sm" variant="outline" className="h-7 border-amber-300 bg-white text-amber-800 hover:bg-amber-100" onClick={onOpenBillingFromQuota}>
+                  {isQuotaExhausted ? <Lock className="mr-1 h-3.5 w-3.5" /> : <CreditCard className="mr-1 h-3.5 w-3.5" />}
+                  {isQuotaExhausted ? "Buka Premium" : "Upgrade"}
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="flex-1 flex flex-col overflow-hidden relative">
+        <div className="sm:hidden shrink-0 border-b border-gray-100 bg-white px-4 py-2">
+          <button
+            type="button"
+            onClick={() => setShowMobileAssistPanels((prev) => !prev)}
+            className="w-full flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-left"
+          >
+            <span className="inline-flex items-center gap-2 text-xs font-medium text-gray-700">
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              Panel Info Chat ({mobilePanelCount})
+            </span>
+            <span className="inline-flex items-center gap-1 text-xs text-gray-600">
+              {showMobileAssistPanels ? "Sembunyikan" : "Tampilkan"}
+              {showMobileAssistPanels ? (
+                <ChevronUp className="w-3.5 h-3.5" />
+              ) : (
+                <ChevronDown className="w-3.5 h-3.5" />
+              )}
+            </span>
+          </button>
+        </div>
+
         {/* Helper Components placed above scroll area */}
         {showSummary && (
           <div className="shrink-0 z-10 border-b">
@@ -220,158 +266,18 @@ export function ChatMessagesArea({
           </div>
         )}
 
-        <div className="shrink-0 z-10">
+        <div className={`shrink-0 z-10 ${showMobileAssistPanels ? "block" : "hidden"} sm:block`}>
           <AIDisclaimerBanner />
         </div>
 
-        {contextState && (
-          <div className="shrink-0 z-10 border-b border-emerald-200 bg-emerald-50 px-4 py-3">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-emerald-900">Smart Context AI</p>
-                <p className="text-xs text-emerald-800">
-                  {isContextLoading
-                    ? "Memuat preferensi context..."
-                    : activeSourceLabels
-                      ? `Sumber aktif: ${activeSourceLabels}`
-                      : "Belum ada sumber context aktif."}
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {intentOptions.map((intent) => (
-                  <button
-                    key={intent.value}
-                    type="button"
-                    disabled={contextDisabled}
-                    onClick={() => updateContextPreference({ session_intent: intent.value })}
-                    className={`rounded-full px-3 py-1 text-xs transition-colors ${contextPrefs?.session_intent === intent.value
-                      ? "bg-emerald-700 text-white"
-                      : "bg-white text-emerald-800 border border-emerald-200 hover:bg-emerald-100"
-                      } ${contextDisabled ? "cursor-not-allowed opacity-60" : ""}`}
-                  >
-                    {intent.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-              <label className="flex items-center justify-between rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs text-emerald-900">
-                <span>Mood</span>
-                <Switch
-                  checked={Boolean(contextPrefs?.enable_mood_context)}
-                  disabled={contextDisabled}
-                  onCheckedChange={(checked) => updateContextPreference({ enable_mood_context: checked })}
-                />
-              </label>
-              <label className="flex items-center justify-between rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs text-emerald-900">
-                <span>Jurnal ({contextRuntime?.journal_shared_count ?? 0})</span>
-                <Switch
-                  checked={Boolean(contextPrefs?.enable_journal_context)}
-                  disabled={contextDisabled}
-                  onCheckedChange={(checked) => updateContextPreference({ enable_journal_context: checked })}
-                />
-              </label>
-              <label className="flex items-center justify-between rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs text-emerald-900">
-                <span>Tugas</span>
-                <Switch
-                  checked={Boolean(contextPrefs?.enable_daily_task_context)}
-                  disabled={contextDisabled}
-                  onCheckedChange={(checked) => updateContextPreference({ enable_daily_task_context: checked })}
-                />
-              </label>
-              <label className="flex items-center justify-between rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs text-emerald-900">
-                <span>XP/Level</span>
-                <Switch
-                  checked={Boolean(contextPrefs?.enable_xp_level_context)}
-                  disabled={contextDisabled}
-                  onCheckedChange={(checked) => updateContextPreference({ enable_xp_level_context: checked })}
-                />
-              </label>
-              <label className="flex items-center justify-between rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs text-emerald-900">
-                <span>Napas</span>
-                <Switch
-                  checked={Boolean(contextPrefs?.enable_breathing_context)}
-                  disabled={contextDisabled}
-                  onCheckedChange={(checked) => updateContextPreference({ enable_breathing_context: checked })}
-                />
-              </label>
-              <label className="flex items-center justify-between rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs text-emerald-900">
-                <span>Playlist ({contextRuntime?.playlist?.total_playlists ?? 0})</span>
-                <Switch
-                  checked={Boolean(contextPrefs?.enable_playlist_context)}
-                  disabled={contextDisabled}
-                  onCheckedChange={(checked) => updateContextPreference({ enable_playlist_context: checked })}
-                />
-              </label>
-              <label className="flex items-center justify-between rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs text-emerald-900">
-                <span>Rewards ({contextRuntime?.rewards?.claim_count ?? 0})</span>
-                <Switch
-                  checked={Boolean(contextPrefs?.enable_rewards_context)}
-                  disabled={contextDisabled}
-                  onCheckedChange={(checked) => updateContextPreference({ enable_rewards_context: checked })}
-                />
-              </label>
-              <label className="flex items-center justify-between rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs text-emerald-900">
-                <span>Progress Map</span>
-                <Switch
-                  checked={Boolean(contextPrefs?.enable_progress_map_context)}
-                  disabled={contextDisabled}
-                  onCheckedChange={(checked) => updateContextPreference({ enable_progress_map_context: checked })}
-                />
-              </label>
-              <label className="flex items-center justify-between rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs text-emerald-900">
-                <span>Sosial ({contextRuntime?.social?.badge_count ?? 0})</span>
-                <Switch
-                  checked={Boolean(contextPrefs?.enable_social_context)}
-                  disabled={contextDisabled}
-                  onCheckedChange={(checked) => updateContextPreference({ enable_social_context: checked })}
-                />
-              </label>
-            </div>
-          </div>
-        )}
-
         {journalAIAccessEnabled && (
-          <div className="shrink-0 z-10">
+          <div className={`shrink-0 z-10 ${showMobileAssistPanels ? "block" : "hidden"} sm:block`}>
             <JournalContextIndicator journalSharedCount={journalSharedCount} />
           </div>
         )}
 
-        {journeyCompanion && (
-          <div className="shrink-0 z-10 border-b border-sky-200 bg-sky-50 px-4 py-3">
-            <div className="flex flex-wrap items-center gap-2 text-sm text-sky-900">
-              <Compass className="w-4 h-4 text-sky-600" />
-              <span className="font-medium">
-                Journey Companion: {journeyCompanion.sessionsThisWeek} sesi kamu aktif dalam 7 hari terakhir.
-              </span>
-            </div>
-            {journeyCompanion.previousSession && (
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-sky-200 bg-white text-sky-700 hover:bg-sky-100"
-                  onClick={() => {
-                    const session = journeyCompanion.previousSession;
-                    if (!session) return;
-                    void onResumeJourneySession?.(session.uuid);
-                  }}
-                >
-                  Lanjutkan: {journeyCompanion.previousSession.title}
-                </Button>
-                {journeyCompanion.previousSession.lastMessage && (
-                  <p className="text-xs text-sky-700 line-clamp-1 max-w-135">
-                    {journeyCompanion.previousSession.lastMessage}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
         {reflectionNudge && (
-          <div className="shrink-0 z-10 border-b border-violet-200 bg-violet-50 px-4 py-3">
+          <div className={`shrink-0 z-10 border-b border-violet-200 bg-violet-50 px-4 py-3 ${showMobileAssistPanels ? "block" : "hidden"} sm:block`}>
             <div className="flex items-start gap-2">
               <NotebookPen className="w-4 h-4 text-violet-600 mt-0.5 shrink-0" />
               <div className="space-y-2 w-full">
@@ -428,6 +334,39 @@ export function ChatMessagesArea({
           </div>
         )}
 
+        {chatQuotaNotice && !isSafeModeActive && (
+          <div className="shrink-0 z-10 border-b border-amber-200 bg-amber-50 px-4 py-3">
+            <div className="flex items-start gap-2">
+                <Lock className="w-4 h-4 text-amber-700 mt-0.5 shrink-0" />
+              <div className="space-y-2 w-full">
+                <p className="text-sm font-medium text-amber-900">Kuota chat periode ini sudah habis</p>
+                <p className="text-xs text-amber-800">{chatQuotaNotice}</p>
+                {quotaResetLabel && (
+                  <p className="text-xs font-medium text-amber-900">Reset kuota berikutnya: {quotaResetLabel}</p>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  <Button size="sm" className="bg-amber-600 hover:bg-amber-700" onClick={onOpenBillingFromQuota}>
+                    <Lock className="w-3.5 h-3.5 mr-1" />
+                    Upgrade Premium
+                  </Button>
+                  <Button asChild size="sm" variant="outline" className="border-amber-300 bg-white text-amber-800 hover:bg-amber-100">
+                    <Link href={ROUTES.JOURNAL}>
+                      <NotebookPen className="w-3.5 h-3.5 mr-1" />
+                      Tulis Jurnal
+                    </Link>
+                  </Button>
+                  <Button asChild size="sm" variant="outline" className="border-amber-300 bg-white text-amber-800 hover:bg-amber-100">
+                    <Link href={ROUTES.BREATHING}>
+                      <Wind className="w-3.5 h-3.5 mr-1" />
+                      Atur Napas
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Main Scroll Area */}
         <div className="flex-1 overflow-y-auto p-4 lg:p-6 space-y-4">
           {messages.length === 0 && !isSafeModeActive && suggestedPrompts && suggestedPrompts.length > 0 && (
@@ -437,9 +376,18 @@ export function ChatMessagesArea({
                 {suggestedPrompts.slice(0, 4).map((prompt, i) => (
                   <button
                     key={i}
-                    onClick={() => onSuggestedPromptClick?.(prompt.text)}
-                    className="px-3 py-2 text-sm bg-gray-100 hover:bg-primary/10 hover:text-primary rounded-lg transition-colors text-left"
+                    onClick={() => {
+                      if (isQuotaExhausted) {
+                        onOpenBillingFromQuota?.();
+                        return;
+                      }
+
+                      onSuggestedPromptClick?.(prompt.text);
+                    }}
+                    className={`px-3 py-2 text-sm rounded-lg transition-colors text-left ${isQuotaExhausted ? "border border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100" : "bg-gray-100 hover:bg-primary/10 hover:text-primary"}`}
+                    title={isQuotaExhausted ? "Limit chat habis, buka Premium untuk lanjut" : undefined}
                   >
+                    {isQuotaExhausted && <Lock className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />}
                     {prompt.text}
                   </button>
                 ))}
@@ -467,7 +415,8 @@ export function ChatMessagesArea({
       <ChatInput
         onSendText={onSendText}
         onSendAudio={onSendAudio}
-        disabled={isSending || isSafeModeActive}
+        disabled={isSending || isSafeModeActive || isQuotaExhausted}
+        disabledReason={isQuotaExhausted ? "Kuota chat gratis habis. Upgrade Premium atau tunggu reset kuota." : undefined}
       />
     </>
   );

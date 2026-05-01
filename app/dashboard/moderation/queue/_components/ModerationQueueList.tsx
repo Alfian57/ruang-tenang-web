@@ -10,6 +10,7 @@ interface ModerationQueueListProps {
     searchQuery: string;
     totalPages: number;
     page: number;
+    focusId?: string;
     setPage: (page: number) => void;
 }
 
@@ -19,6 +20,7 @@ export function ModerationQueueList({
     searchQuery,
     totalPages,
     page,
+    focusId,
     setPage,
 }: ModerationQueueListProps) {
     return (
@@ -59,7 +61,7 @@ export function ModerationQueueList({
                 ) : (
                     <div className="space-y-3">
                         {items.map((item) => (
-                            <ModerationQueueItem key={item.id} item={item} />
+                            <ModerationQueueItem key={item.id} item={item} isFocused={focusId === String(item.id)} />
                         ))}
                     </div>
                 )}

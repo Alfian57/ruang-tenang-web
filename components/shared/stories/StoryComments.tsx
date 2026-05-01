@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { cn } from "@/utils";
 import { StoryComment as StoryCommentType } from "@/types";
-import { Heart, User, MoreHorizontal, Flag, EyeOff, MessageCircle } from "lucide-react";
+import { Heart, User, MoreHorizontal, Flag, EyeOff, MessageCircle, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { ReportModal, BlockUserButton } from "@/components/shared/moderation";
 import {
@@ -97,15 +97,15 @@ export function StoryComment({
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-                <div className="bg-muted/30 rounded-lg p-3">
-                    <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-2">
+                <div className="rounded-lg bg-muted/30 p-3">
+                    <div className="mb-1 flex items-start justify-between gap-2">
+                        <div className="flex min-w-0 flex-wrap items-center gap-2">
                             <span className="font-medium text-sm">
                                 {comment.author?.name || "Anonim"}
                             </span>
                             {comment.author?.tier_name && (
                                 <span
-                                    className="text-xs px-2 py-0.5 rounded-full"
+                                    className="rounded-full px-2 py-0.5 text-xs"
                                     style={{
                                         backgroundColor: `${comment.author.tier_color}20`,
                                         color: comment.author.tier_color
@@ -166,7 +166,7 @@ export function StoryComment({
                         </DropdownMenu>
                     </div>
 
-                    <p className="text-sm">{comment.content}</p>
+                    <p className="break-words text-sm">{comment.content}</p>
                 </div>
 
                 {/* Actions */}
@@ -225,7 +225,7 @@ export function StoryCommentsList({
     return (
         <div className={cn("space-y-4", className)}>
             {moderationFeedback && (
-                <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                <div className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
                     {moderationFeedback}
                 </div>
             )}
@@ -271,21 +271,26 @@ export function StoryCommentInput({
     };
 
     return (
-        <form onSubmit={handleSubmit} className={cn("flex gap-3", className)}>
+        <form onSubmit={handleSubmit} className={cn("flex flex-col gap-3 sm:flex-row", className)}>
             <input
                 type="text"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder={placeholder}
                 disabled={isLoading}
-                className="flex-1 bg-muted rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                className="min-w-0 flex-1 rounded-lg bg-muted px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <button
                 type="submit"
                 disabled={isLoading || !content.trim()}
-                className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
-                {isLoading ? "..." : "Kirim"}
+                {isLoading ? (
+                    <span className="inline-flex items-center gap-1.5">
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        Mengirim
+                    </span>
+                ) : "Kirim"}
             </button>
         </form>
     );

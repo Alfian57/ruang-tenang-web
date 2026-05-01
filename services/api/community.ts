@@ -18,6 +18,7 @@ import type {
   UserFeatures,
   UserBadges,
   DailyTask,
+  DailyTaskSummary,
   LeaderboardEntry,
   ClaimTaskResponse,
 } from "@/types";
@@ -158,7 +159,7 @@ export const communityService = {
 
   // Daily Tasks
   getDailyTasks(token: string) {
-    return httpClient.get<ApiResponse<DailyTask[]>>("/daily-tasks", { token });
+    return httpClient.get<ApiResponse<DailyTask[] | DailyTaskSummary>>("/daily-tasks", { token });
   },
 
   claimDailyLogin(token: string) {

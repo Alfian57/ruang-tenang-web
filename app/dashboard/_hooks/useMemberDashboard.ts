@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuthStore } from "@/store/authStore";
-import { breathingService, moodService, songService, journalService, articleService, chatService } from "@/services/api";
-import { UserMood, SongCategory, Journal, Article, ChatSession } from "@/types";
+import { breathingService, moodService, songService, journalService, articleService, chatService, billingService } from "@/services/api";
+import { UserMood, SongCategory, Journal, Article, ChatSession, BillingStatus } from "@/types";
 import { BreathingWidgetData } from "@/types/breathing";
 import { useDashboardStore } from "@/store/dashboardStore";
 
@@ -13,6 +13,7 @@ export function useMemberDashboard() {
   const [categories, setCategories] = useState<SongCategory[]>([]);
   const [recentJournals, setRecentJournals] = useState<Journal[]>([]);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+  const [billingStatus, setBillingStatus] = useState<BillingStatus | null>(null);
 
   // Widget States
   const [latestJournal, setLatestJournal] = useState<Journal | null>(null);
@@ -30,16 +31,17 @@ export function useMemberDashboard() {
     if (!token) return;
     setIsLoadingWidgets(true);
     try {
-      const [moodResult, categoriesResult, breathingResult, journalResult, articleResult, chatResult] = await Promise.allSettled([
+      const [moodResult, categoriesResult, breathingResult, journalResult, articleResult, chatResult, billingResult] = await Promise.allSettled([
         moodService.getHistory(token, { limit: 100 }),
         songService.getCategories(),
         breathingService.getWidgetData(token),
         journalService.list(token, { limit: 20 }),
         articleService.getArticles({ limit: 3 }),
         chatService.getSessions(token, { page: 1, limit: 20 }),
+        billingService.getStatus(token),
       ]);
 
-      const failedRequests = [moodResult, categoriesResult, breathingResult, journalResult, articleResult, chatResult].filter(
+      const failedRequests = [moodResult, categoriesResult, breathingResult, journalResult, articleResult, chatResult, billingResult].filter(
         (result) => result.status === "rejected"
       ).length;
       setIsNetworkDegraded(failedRequests > 0);
@@ -98,6 +100,10 @@ export function useMemberDashboard() {
         setChatSessions(sessions);
       }
 
+      if (billingResult.status === "fulfilled" && billingResult.value?.data) {
+        setBillingStatus(billingResult.value.data);
+      }
+
       setLastSyncAt(new Date());
     } catch (error) {
       console.error("Failed to load dashboard data:", error);
@@ -117,6 +123,7 @@ export function useMemberDashboard() {
     categories,
     recentJournals,
     chatSessions,
+    billingStatus,
     latestJournal,
     recommendedArticles,
     isLoadingWidgets,

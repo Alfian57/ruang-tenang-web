@@ -32,6 +32,8 @@ interface ChatSidebarProps {
   onFolderSelect?: (folderId: number | null) => void;
   isOpen?: boolean;
   onClose?: () => void;
+  isChatLocked?: boolean;
+  onOpenBillingFromQuota?: () => void;
 }
 
 export function ChatSidebar({
@@ -53,6 +55,8 @@ export function ChatSidebar({
   onFolderSelect,
   isOpen,
   onClose,
+  isChatLocked = false,
+  onOpenBillingFromQuota,
 }: ChatSidebarProps) {
   const {
     newFolderDialog,
@@ -102,22 +106,24 @@ export function ChatSidebar({
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40 sm:hidden"
           onClick={onClose}
         />
       )}
 
       <div className={cn(
-        "w-80 border-l bg-white flex-col h-full shadow-[-1px_0_10px_rgba(0,0,0,0.02)] z-50",
-        "lg:flex lg:static lg:z-10", // Desktop styles
+        "w-full max-w-80 min-w-0 border-l bg-white flex-col h-full shadow-[-1px_0_10px_rgba(0,0,0,0.02)] z-50 sm:w-80",
+        "sm:flex sm:static sm:z-10", // Desktop styles
         "fixed inset-y-0 right-0 transform transition-transform duration-300 ease-in-out", // Mobile styles
-        isOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
+        isOpen ? "translate-x-0" : "translate-x-full sm:translate-x-0"
       )}>
         <ChatSidebarHeader
           sessionCount={sessions.length}
           onClose={onClose}
           onCreateSession={onCreateSession}
           onCreateFolder={() => setNewFolderDialog(true)}
+          isChatLocked={isChatLocked}
+          onOpenBillingFromQuota={onOpenBillingFromQuota}
         />
 
         <ChatSidebarFilter
@@ -150,7 +156,7 @@ export function ChatSidebar({
         )}
 
         {/* Session list */}
-        <div className="flex-1 overflow-y-auto p-4 min-h-0">
+        <div className="flex-1 overflow-y-auto p-3 min-h-0 sm:p-4">
           <ChatSidebarSessionList
             sessions={displaySessions}
             folders={folders}

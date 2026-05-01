@@ -15,7 +15,8 @@ interface OfflineDB extends DBSchema {
       endpoint: string;
       method: "POST" | "PUT" | "DELETE";
       body?: unknown;
-      token: string;
+      /** Legacy entries may contain a token; new entries must not persist bearer tokens. */
+      token?: string;
       createdAt: number;
       /** Optional tag so the UI can identify pending items, e.g. "journal" */
       tag?: string;
@@ -76,7 +77,8 @@ export interface QueuedMutation {
   endpoint: string;
   method: "POST" | "PUT" | "DELETE";
   body?: unknown;
-  token: string;
+  /** Legacy-only. Do not set for new queued mutations. */
+  token?: string;
   createdAt: number;
   tag?: string;
   tempId?: string;

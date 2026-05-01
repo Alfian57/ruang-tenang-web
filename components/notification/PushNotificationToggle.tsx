@@ -49,8 +49,8 @@ export function PushNotificationToggle() {
                     : permission === "denied"
                         ? "Notifikasi Diblokir"
                         : isSubscribed
-                            ? "Push Aktif"
-                            : "Aktifkan Push"}
+                            ? "Push Notification Aktif"
+                            : "Aktifkan Push Notification"}
             </span>
         </button>
     );

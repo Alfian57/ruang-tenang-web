@@ -1,136 +1,178 @@
 "use client";
 
 import {
+    BreathingSessionDraft,
     MOOD_OPTIONS,
-    formatBreathingDuration,
     MoodId,
-    SessionCompletionResult
+    SessionCompletionResult,
+    formatBreathingDuration,
 } from "@/types/breathing";
-import { Check } from "lucide-react";
+import { CheckCircle2, Flame, Loader2, RotateCcw, Save, Trophy } from "lucide-react";
 import { cn } from "@/utils";
 
 interface CompletionModalProps {
     isOpen: boolean;
+    draft: BreathingSessionDraft | null;
     result: SessionCompletionResult | null;
     moodAfter: MoodId | null;
     setMoodAfter: (mood: MoodId) => void;
+    isSaving: boolean;
+    onSubmit: () => void;
+    onRepeat: () => void;
     onExit: () => void;
 }
 
 export function CompletionModal({
     isOpen,
+    draft,
     result,
     moodAfter,
     setMoodAfter,
+    isSaving,
+    onSubmit,
+    onRepeat,
     onExit,
 }: CompletionModalProps) {
-    if (!isOpen || !result) return null;
+    if (!isOpen || (!draft && !result)) return null;
+
+    const hasResult = Boolean(result);
+    const completed = result?.session.completed ?? draft?.completed ?? false;
+    const durationSeconds = result?.session.duration_seconds ?? draft?.durationSeconds ?? 0;
+    const cyclesCompleted = result?.session.cycles_completed ?? draft?.cyclesCompleted ?? 0;
+    const completedPercentage = result?.session.completed_percentage ?? draft?.completedPercentage ?? 0;
+    const afterMoodOptions = MOOD_OPTIONS.filter((mood) =>
+        ["calm", "happy", "energized", "focused", "neutral"].includes(mood.id)
+    );
 
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-card rounded-xl w-full max-w-md p-6 text-center">
-                <div className={cn(
-                    "w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4",
-                    result.session.completed ? "bg-green-500/20" : "bg-amber-500/20"
-                )}>
-                    <Check className={cn(
-                        "w-10 h-10",
-                        result.session.completed ? "text-green-500" : "text-amber-500"
-                    )} />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="max-h-[88vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-card p-6 text-center shadow-xl">
+                <div
+                    className={cn(
+                        "mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full",
+                        completed ? "bg-green-500/15 text-green-600" : "bg-amber-500/15 text-amber-600"
+                    )}
+                >
+                    {hasResult ? <CheckCircle2 className="h-8 w-8" /> : <Save className="h-8 w-8" />}
                 </div>
 
-                <h3 className="text-2xl font-bold mb-2">
-                    {result.session.completed ? "Sesi Selesai!" : "Sesi Belum Selesai"}
+                <h3 className="text-2xl font-bold">
+                    {hasResult ? (completed ? "Sesi Tersimpan" : "Sesi Dicatat") : "Refleksi Setelah Sesi"}
                 </h3>
-                <p className="text-muted-foreground mb-6">
-                    Kamu telah berlatih selama {formatBreathingDuration(result.session.duration_seconds)}
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    {hasResult
+                        ? "Catatan latihan sudah masuk ke statistik pernapasanmu."
+                        : "Sebelum menyimpan, catat perubahan yang kamu rasakan agar progresnya lebih bermakna."}
                 </p>
 
-                {/* Daily Task Completion - Only show if completed */}
-                {result.session.completed ? (
-                    <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 mb-6">
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                            <span className="text-2xl">✅</span>
-                            <span className="text-lg font-bold text-green-600 dark:text-green-400">
-                                Misi Harian Selesai!
-                            </span>
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                            <p>Klaim poin di menu Daily Tasks</p>
-                            {/* <p className="mt-1 font-medium text-green-600">+{result.xp_earned} XP</p> */}
-                        </div>
+                <div className="mt-6 grid grid-cols-3 gap-2 text-left">
+                    <div className="rounded-xl bg-muted/50 p-3">
+                        <p className="text-xs text-muted-foreground">Durasi</p>
+                        <p className="mt-1 text-sm font-semibold">{formatBreathingDuration(durationSeconds)}</p>
                     </div>
-                ) : (
-                    <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 mb-6">
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                            <span className="text-2xl">⚠️</span>
-                            <span className="text-lg font-bold text-amber-600 dark:text-amber-400">
-                                Belum Memenuhi Target
-                            </span>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                            Selesaikan latihan hingga penuh untuk menyelesaikan daily task
-                        </p>
+                    <div className="rounded-xl bg-muted/50 p-3">
+                        <p className="text-xs text-muted-foreground">Siklus</p>
+                        <p className="mt-1 text-sm font-semibold">{cyclesCompleted}</p>
                     </div>
-                )}
-
-                {/* Streak Info + Milestone Celebration */}
-                {result.session.completed && (
-                    <div className="mb-6">
-                        {result.streak_milestone ? (
-                            <div className="p-4 rounded-xl theme-streak-bg border theme-streak-border animate-pulse">
-                                <div className="text-3xl mb-2">🎉🔥🎉</div>
-                                <h4 className="text-lg font-bold theme-accent-text">
-                                    {result.new_streak >= 30
-                                        ? "🏆 30 Hari Berturut-turut!"
-                                        : "⭐ 7 Hari Berturut-turut!"}
-                                </h4>
-                                <p className="text-sm text-muted-foreground mt-1">
-                                    {result.new_streak >= 30
-                                        ? "Luar biasa! Kamu sudah berlatih selama sebulan penuh!"
-                                        : "Hebat! Kamu sudah berlatih seminggu berturut-turut!"}
-                                </p>
-                                <div className="mt-2 inline-flex items-center gap-1 theme-accent-text-heading font-bold px-3 py-1 rounded-full text-sm" style={{ backgroundColor: `var(--theme-streak-from)` }}>
-                                    +{result.streak_milestone_xp} XP Bonus
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="flex items-center justify-center gap-2">
-                                <div className="text-2xl">🔥</div>
-                                <span className="text-lg font-semibold">{result.new_streak} Hari Streak</span>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {/* Mood After */}
-                <div className="mb-6">
-                    <p className="text-sm font-medium mb-2">Bagaimana perasaanmu sekarang?</p>
-                    <div className="flex flex-wrap justify-center gap-2">
-                        {MOOD_OPTIONS.filter(m => ["calm", "happy", "energized", "focused", "neutral"].includes(m.id)).map((mood) => (
-                            <button
-                                key={mood.id}
-                                onClick={() => setMoodAfter(mood.id as MoodId)}
-                                className={cn(
-                                    "py-1.5 px-3 rounded-full text-sm transition-colors flex items-center gap-1.5",
-                                    moodAfter === mood.id
-                                        ? "bg-primary text-primary-foreground"
-                                        : "bg-muted hover:bg-muted/80"
-                                )}
-                            >
-                                <span>{mood.emoji}</span>
-                                <span>{mood.label}</span>
-                            </button>
-                        ))}
+                    <div className="rounded-xl bg-muted/50 p-3">
+                        <p className="text-xs text-muted-foreground">Progres</p>
+                        <p className="mt-1 text-sm font-semibold">{completedPercentage}%</p>
                     </div>
                 </div>
 
-                <button
-                    onClick={onExit}
-                    className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors"
-                >
-                    Selesai
-                </button>
+                {!hasResult ? (
+                    <>
+                        <div className="mt-6 text-left">
+                            <p className="text-sm font-semibold">Bagaimana perasaanmu sekarang?</p>
+                            <div className="mt-3 flex flex-wrap gap-2">
+                                {afterMoodOptions.map((mood) => (
+                                    <button
+                                        key={mood.id}
+                                        type="button"
+                                        onClick={() => setMoodAfter(mood.id as MoodId)}
+                                        className={cn(
+                                            "flex items-center gap-1.5 rounded-full px-3 py-2 text-sm transition-colors",
+                                            moodAfter === mood.id
+                                                ? "bg-primary text-primary-foreground"
+                                                : "bg-muted text-foreground hover:bg-muted/80"
+                                        )}
+                                    >
+                                        <span>{mood.emoji}</span>
+                                        <span>{mood.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={onSubmit}
+                            disabled={isSaving}
+                            className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                        >
+                            {isSaving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
+                            {isSaving ? "Menyimpan..." : "Simpan Sesi"}
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        {completed ? (
+                            <div className="mt-6 rounded-xl border border-green-500/20 bg-green-500/10 p-4">
+                                <div className="flex items-center justify-center gap-2 font-semibold text-green-700 dark:text-green-300">
+                                    <CheckCircle2 className="h-5 w-5" />
+                                    Misi harian selesai
+                                </div>
+                                <p className="mt-1 text-sm text-muted-foreground">Klaim poin di menu Misi Harian.</p>
+                            </div>
+                        ) : (
+                            <div className="mt-6 rounded-xl border border-amber-500/20 bg-amber-500/10 p-4">
+                                <p className="font-semibold text-amber-700 dark:text-amber-300">Belum memenuhi target</p>
+                                <p className="mt-1 text-sm text-muted-foreground">
+                                    Selesaikan latihan hingga penuh untuk menyelesaikan Misi Harian.
+                                </p>
+                            </div>
+                        )}
+
+                        {completed && result && (
+                            <div className="mt-4 rounded-xl bg-muted/50 p-4">
+                                {result.streak_milestone ? (
+                                    <div>
+                                        <Trophy className="mx-auto h-7 w-7 text-primary" />
+                                        <p className="mt-2 font-semibold">
+                                            {result.new_streak >= 30 ? "30 hari berturut-turut" : "7 hari berturut-turut"}
+                                        </p>
+                                        <p className="mt-1 text-sm text-muted-foreground">
+                                            Bonus streak +{result.streak_milestone_xp} XP.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center justify-center gap-2">
+                                        <Flame className="h-5 w-5 text-primary" />
+                                        <span className="font-semibold">{result.new_streak} hari streak</span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                            <button
+                                type="button"
+                                onClick={onRepeat}
+                                className="flex items-center justify-center gap-2 rounded-xl bg-muted py-3 font-semibold text-foreground transition-colors hover:bg-muted/80"
+                            >
+                                <RotateCcw className="h-5 w-5" />
+                                Ulangi Teknik
+                            </button>
+                            <button
+                                type="button"
+                                onClick={onExit}
+                                className="rounded-xl bg-primary py-3 font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                            >
+                                Kembali
+                            </button>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );

@@ -17,6 +17,7 @@ import { AuthIllustration } from "@/components/shared/auth/AuthIllustration";
 import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
 import { TRUST_CUES } from "@/constants";
 import { toast } from "sonner";
+import { buildPathWithRedirect, getSafeRedirect } from "@/lib/safe-redirect";
 
 const loginSchema = z.object({
   email: z.string().email("Email tidak valid"),
@@ -32,6 +33,8 @@ export default function LoginPage() {
   const { login, isLoading } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
   const [rememberMe, setRememberMe] = useState(false);
+  const redirectTarget = getSafeRedirect(searchParams.get("redirect"), ROUTES.DASHBOARD);
+  const registerHref = buildPathWithRedirect(ROUTES.REGISTER, redirectTarget);
 
   useEffect(() => {
     const isRegistered = searchParams.get("registered") === "1";
@@ -47,7 +50,7 @@ export default function LoginPage() {
       toast.success("Registrasi berhasil! Silakan login.");
     }
 
-    router.replace(ROUTES.LOGIN);
+    router.replace(buildPathWithRedirect(ROUTES.LOGIN, searchParams.get("redirect")));
   }, [searchParams, router]);
 
   const {
@@ -62,7 +65,7 @@ export default function LoginPage() {
     setError(null);
     try {
       await login(data.email, data.password, rememberMe);
-      router.push(ROUTES.DASHBOARD);
+      router.push(redirectTarget);
     } catch (error) {
       const err = error as Error;
       setError(err.message || "Login gagal. Silakan coba lagi.");
@@ -174,7 +177,7 @@ export default function LoginPage() {
             {/* Register Link */}
             <p className="text-center text-gray-600">
               Tidak punya Akun?{" "}
-              <Link href={ROUTES.REGISTER} className="text-primary font-medium hover:underline">
+              <Link href={registerHref} className="text-primary font-medium hover:underline">
                 Registrasi disini
               </Link>
             </p>

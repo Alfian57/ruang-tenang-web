@@ -166,6 +166,7 @@ export function StoryForm({
                         value={coverImage}
                         onChange={(e) => setCoverImage(e.target.value)}
                         placeholder="https://example.com/image.jpg"
+                        className="min-w-0 flex-1"
                     />
                     <Button type="button" variant="outline" size="icon">
                         <ImageIcon className="h-4 w-4" />
@@ -225,6 +226,7 @@ export function StoryForm({
                         }}
                         placeholder="Ketik tag dan tekan Enter"
                         disabled={tags.length >= 5}
+                        className="min-w-0 flex-1"
                     />
                     <Button
                         type="button"
@@ -257,14 +259,14 @@ export function StoryForm({
             </div>
 
             {/* Anonymous Toggle */}
-            <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between gap-3 rounded-lg bg-muted/50 p-4">
+                <div className="flex min-w-0 items-center gap-3">
                     {isAnonymous ? (
                         <EyeOff className="h-5 w-5 text-muted-foreground" />
                     ) : (
                         <Eye className="h-5 w-5 text-primary" />
                     )}
-                    <div>
+                    <div className="min-w-0">
                         <p className="font-medium">Posting Anonim</p>
                         <p className="text-sm text-muted-foreground">
                             {isAnonymous
@@ -277,7 +279,7 @@ export function StoryForm({
                     type="button"
                     onClick={() => setIsAnonymous(!isAnonymous)}
                     className={cn(
-                        "w-12 h-6 rounded-full transition-colors relative",
+                        "relative h-6 w-12 shrink-0 rounded-full transition-colors",
                         isAnonymous ? "bg-primary" : "bg-muted"
                     )}
                 >
@@ -292,10 +294,10 @@ export function StoryForm({
 
             {/* Trigger Warning Toggle */}
             <div className="space-y-3">
-                <div className="flex items-center justify-between p-4 bg-orange-50 dark:bg-orange-950/20 rounded-lg border border-orange-200 dark:border-orange-800">
-                    <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-orange-200 bg-orange-50 p-4 dark:border-orange-800 dark:bg-orange-950/20">
+                    <div className="flex min-w-0 items-center gap-3">
                         <AlertTriangle className="h-5 w-5 text-orange-500" />
-                        <div>
+                        <div className="min-w-0">
                             <p className="font-medium">Trigger Warning</p>
                             <p className="text-sm text-muted-foreground">
                                 Aktifkan jika ceritamu mengandung konten sensitif
@@ -306,7 +308,7 @@ export function StoryForm({
                         type="button"
                         onClick={() => setHasTriggerWarning(!hasTriggerWarning)}
                         className={cn(
-                            "w-12 h-6 rounded-full transition-colors relative",
+                            "relative h-6 w-12 shrink-0 rounded-full transition-colors",
                             hasTriggerWarning ? "bg-orange-500" : "bg-muted"
                         )}
                     >

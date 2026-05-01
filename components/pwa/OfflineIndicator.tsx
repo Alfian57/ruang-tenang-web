@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { WifiOff, RefreshCw, CloudOff, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNetworkStatus, usePendingMutations } from "@/hooks/use-network-status";
-import { syncOutbox } from "@/lib/offline";
+import { syncOutbox } from "@/lib/offline/syncOutbox";
 
 type SyncState = "idle" | "syncing" | "done";
 

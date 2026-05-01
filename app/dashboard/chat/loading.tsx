@@ -1,8 +1,8 @@
 export default function ChatLoading() {
   return (
-    <div className="flex h-[calc(100vh-theme(spacing.16))] overflow-hidden bg-white">
+    <div className="grid h-[calc(100svh-4rem)] min-w-0 grid-cols-1 overflow-hidden bg-white sm:h-[calc(100vh-4rem)] sm:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)]">
       {/* Chat area */}
-      <div className="flex-1 flex flex-col h-full">
+      <div className="min-h-0 min-w-0 flex flex-col overflow-hidden">
         {/* Messages */}
         <div className="flex-1 p-6 space-y-4 overflow-hidden">
           {[1, 2, 3, 4, 5].map((i) => (
@@ -20,7 +20,7 @@ export default function ChatLoading() {
         </div>
       </div>
       {/* Sidebar */}
-      <div className="hidden lg:block w-80 border-l p-4 space-y-3">
+      <div className="hidden sm:block border-l p-4 space-y-3">
         <div className="h-10 w-full rounded-lg bg-gray-200 animate-pulse" />
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div key={i} className="h-16 w-full rounded-lg bg-gray-200 animate-pulse" />

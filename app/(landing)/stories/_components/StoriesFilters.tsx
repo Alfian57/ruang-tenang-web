@@ -39,7 +39,7 @@ export function StoriesFilters({
     onSearchSubmit,
 }: StoriesFiltersProps) {
     return (
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <div className="mb-8 flex flex-col gap-3 md:flex-row md:gap-4">
             {/* Search */}
             <form onSubmit={onSearchSubmit} className="flex-1">
                 <div className="relative">
@@ -56,7 +56,7 @@ export function StoriesFilters({
             {/* Category Filter */}
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-full md:w-auto">
+                    <Button variant="outline" className="w-full justify-start md:w-auto md:justify-center">
                         <Filter className="h-4 w-4 mr-2" />
                         {selectedCategory
                             ? categories.find((c) => c.id === selectedCategory)?.name || "Kategori"
@@ -81,7 +81,7 @@ export function StoriesFilters({
             {/* Sort */}
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-full md:w-auto">
+                    <Button variant="outline" className="w-full justify-start md:w-auto md:justify-center">
                         <TrendingUp className="h-4 w-4 mr-2" />
                         {SORT_OPTIONS.find((o) => o.value === sortBy)?.label}
                     </Button>

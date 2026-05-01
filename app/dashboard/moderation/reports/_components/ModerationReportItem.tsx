@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
 import { Eye, Flag, Clock } from "lucide-react";
-import { formatDate } from "@/utils";
+import { cn, formatDate } from "@/utils";
 import { UserReport, ReportReason } from "@/types/moderation";
 import { STATUS_CONFIG, TYPE_CONFIG } from "./ModerationReportsHeader";
 
@@ -17,14 +17,21 @@ const REASON_LABELS: Record<ReportReason, string> = {
 
 interface ModerationReportItemProps {
     report: UserReport;
+    isFocused?: boolean;
 }
 
-export function ModerationReportItem({ report }: ModerationReportItemProps) {
+export function ModerationReportItem({ report, isFocused = false }: ModerationReportItemProps) {
     const TypeIcon = TYPE_CONFIG[report.report_type]?.icon || Flag;
     const StatusIcon = STATUS_CONFIG[report.status]?.icon || Clock;
 
     return (
-        <div className="flex items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+        <div
+            id={`moderation-report-${report.id}`}
+            className={cn(
+                "flex items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors",
+                isFocused && "border-primary bg-primary/5 ring-2 ring-primary/20"
+            )}
+        >
             <div className="shrink-0">
                 <div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center">
                     <TypeIcon className="h-5 w-5 text-orange-600 dark:text-orange-400" />

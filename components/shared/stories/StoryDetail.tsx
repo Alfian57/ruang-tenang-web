@@ -106,7 +106,7 @@ export function StoryDetail({
                 )}
 
                 {/* Title */}
-                <h1 className="text-3xl md:text-4xl font-bold mb-4">{story.title}</h1>
+                <h1 className="mb-4 break-words text-2xl font-bold leading-tight sm:text-3xl md:text-4xl">{story.title}</h1>
 
                 {/* Meta */}
                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
@@ -195,13 +195,13 @@ export function StoryDetail({
             {/* Content */}
             {showContent && (
                 <div
-                    className="prose prose-lg max-w-none mb-8"
+                    className="prose prose-sm mb-8 max-w-none break-words prose-pre:overflow-x-auto sm:prose-lg"
                     dangerouslySetInnerHTML={{ __html: sanitizeHtml(story.content) }}
                 />
             )}
 
             {/* Actions */}
-            <div className="flex items-center gap-4 py-6 border-t border-b">
+            <div className="flex flex-wrap items-center gap-3 border-t border-b py-5 sm:gap-4 sm:py-6">
                 <button
                     type="button"
                     onClick={onHeart}
@@ -224,7 +224,7 @@ export function StoryDetail({
 
                 <button
                     type="button"
-                    className="ml-auto flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground sm:ml-auto"
                     onClick={async () => {
                         const shareUrl = window.location.href;
 
@@ -282,7 +282,7 @@ export function StoryDetail({
             </div>
 
             {moderationFeedback && (
-                <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
                     {moderationFeedback}
                 </div>
             )}

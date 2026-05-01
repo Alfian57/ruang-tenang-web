@@ -76,7 +76,7 @@ function FeaturedCard({
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.15 + index * 0.12, type: "spring", stiffness: 120 }}
-      className="bg-white/90 backdrop-blur-sm border border-gray-100 rounded-3xl p-6 flex flex-col items-center shadow-xl shadow-red-100/30 hover:shadow-2xl hover:shadow-red-100/40 hover:-translate-y-1 transition-all duration-300"
+      className="flex flex-col items-center rounded-3xl border border-red-100 bg-white/90 p-5 shadow-xl shadow-red-100/30 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-red-100/40 sm:p-6"
     >
       {/* Decorative star */}
       <div className="mb-3">
@@ -259,20 +259,16 @@ export default function HallOfFamePage() {
   }, [allMembersFlat]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-white">
       <Navbar variant="back" />
 
-      {/* Background Decorations */}
-      <div className="absolute top-0 right-0 w-125 h-125 bg-red-100/50 rounded-full blur-[120px] -z-10 pointer-events-none" />
-      <div className="absolute top-20 left-0 w-100 h-100 bg-orange-100/50 rounded-full blur-[100px] -z-10 pointer-events-none" />
-
-      <main className="pt-32 pb-20 container mx-auto px-4 z-10 relative">
+      <main className="container relative z-10 mx-auto px-4 pt-28 pb-16 sm:pt-32 sm:pb-20">
         {/* ── Hero Header ── */}
-        <div className="text-center mb-14">
+        <div className="mb-10 text-center sm:mb-14">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-red-50 rounded-full text-red-600 font-medium text-sm mb-6"
+            className="mb-5 inline-flex items-center gap-2 rounded-full border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-700 shadow-sm"
           >
             <Sparkles className="w-4 h-4" />
             Hall of Fame Komunitas
@@ -282,7 +278,7 @@ export default function HallOfFamePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08 }}
-            className="text-4xl md:text-5xl font-bold text-gray-800 mb-5"
+            className="mb-5 text-3xl font-bold leading-tight text-gray-800 md:text-5xl"
           >
             Hall of <span className="text-primary">Fame</span> Ruang Tenang
           </motion.h1>
@@ -291,7 +287,7 @@ export default function HallOfFamePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.16 }}
-            className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed"
+            className="mx-auto max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg"
           >
             Apresiasi untuk anggota yang aktif berbagi energi positif, dukungan,
             dan inspirasi di komunitas.
@@ -300,13 +296,13 @@ export default function HallOfFamePage() {
 
         {loading ? (
           /* ── Loading Skeleton ── */
-          <div className="max-w-6xl mx-auto space-y-8">
+          <div className="mx-auto max-w-6xl space-y-6 sm:space-y-8">
             {/* Featured skeleton */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
               {Array.from({ length: 3 }).map((_, i) => (
                 <div
                   key={i}
-                  className="bg-white border border-gray-100 rounded-3xl p-6 animate-pulse"
+                  className="animate-pulse rounded-3xl border border-red-100 bg-white p-5 sm:p-6"
                 >
                   <div className="flex flex-col items-center">
                     <div className="w-8 h-8 rounded-full bg-gray-100 mb-3" />
@@ -330,7 +326,7 @@ export default function HallOfFamePage() {
             </div>
 
             {/* List skeleton */}
-            <div className="rounded-3xl border border-gray-100 bg-white overflow-hidden">
+            <div className="overflow-hidden rounded-3xl border border-red-100 bg-white">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
@@ -347,11 +343,11 @@ export default function HallOfFamePage() {
             </div>
           </div>
         ) : levelGroups.length > 0 ? (
-          <div className="max-w-6xl mx-auto space-y-8">
+          <div className="mx-auto max-w-6xl space-y-6 sm:space-y-8">
             {/* ── Featured Members ── */}
             {activeLevel === "all" && featuredMembers.length > 0 && (
               <section className="mb-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
                   {featuredMembers.map((member, index) => (
                     <FeaturedCard
                       key={`featured-${member.user_id ?? index}`}
@@ -364,7 +360,7 @@ export default function HallOfFamePage() {
             )}
 
             {/* ── Level Filter Tabs ── */}
-            <div className="sticky top-20 md:top-24 z-20 rounded-2xl border border-gray-100 bg-white/95 backdrop-blur-md p-3 md:p-4 shadow-sm">
+            <div className="sticky top-20 z-20 rounded-2xl border border-red-100 bg-white/95 p-3 shadow-sm backdrop-blur-md md:top-24 md:p-4">
               <div className="flex items-center gap-2 mb-3">
                 <Layers className="w-4 h-4 text-primary" />
                 <p className="text-sm font-semibold text-gray-700">
@@ -431,12 +427,12 @@ export default function HallOfFamePage() {
                     </div>
 
                     {/* Member rows */}
-                    <div className="rounded-3xl border border-gray-100 bg-white overflow-hidden shadow-sm">
+                    <div className="overflow-hidden rounded-3xl border border-red-100 bg-white shadow-sm">
                       {group.members.length > 0 ? (
                         group.members.map((member, memberIdx) => (
                           <div
                             key={`${group.level}-${member.user_id ?? "anon"}-${member.name}-${memberIdx}`}
-                            className="group relative px-5 py-3 border-b border-gray-50 last:border-b-0 hover:bg-red-50/30 transition-colors duration-200"
+                            className="group relative border-b border-red-50 px-3 py-3 transition-colors duration-200 last:border-b-0 hover:bg-red-50/30 sm:px-5"
                           >
                             {/* Left accent on hover */}
                             <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-red-500 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity rounded-r-full" />
@@ -457,7 +453,7 @@ export default function HallOfFamePage() {
                                 </p>
                               </div>
 
-                              <div className="text-right shrink-0">
+                              <div className="shrink-0 text-right">
                                 <span className="inline-flex items-center px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-semibold">
                                   {Number(member.exp ?? 0).toLocaleString()} EXP
                                 </span>
@@ -481,7 +477,7 @@ export default function HallOfFamePage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 bg-white rounded-3xl border border-gray-100 max-w-4xl mx-auto">
+              <div className="mx-auto max-w-4xl rounded-3xl border border-red-100 bg-white py-12 text-center">
                 <Users className="w-14 h-14 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-500">
                   Tidak ada anggota di level ini
@@ -494,7 +490,7 @@ export default function HallOfFamePage() {
           </div>
         ) : (
           /* ── Global Empty ── */
-          <div className="text-center py-16 bg-white rounded-3xl border border-gray-100 max-w-4xl mx-auto shadow-sm">
+          <div className="mx-auto max-w-4xl rounded-3xl border border-red-100 bg-white py-16 text-center shadow-sm">
             <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-600">
               Belum ada anggota Hall of Fame

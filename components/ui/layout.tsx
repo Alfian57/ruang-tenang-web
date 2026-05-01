@@ -22,7 +22,7 @@ export function Container({
 }: ContainerProps) {
     return (
         <div
-            className={cn("mx-auto w-full px-4 sm:px-6 lg:px-8", containerSizes[size], className)}
+            className={cn("mx-auto w-full min-w-0 px-3 xs:px-4 sm:px-6 lg:px-8", containerSizes[size], className)}
             {...props}
         >
             {children}
@@ -74,11 +74,11 @@ export function PageHeader({
     className,
 }: PageHeaderProps) {
     return (
-        <div className={cn("mb-6 space-y-2", className)}>
+        <div className={cn("mb-6 min-w-0 space-y-2", className)}>
             {backLink && <div className="mb-2">{backLink}</div>}
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="space-y-1">
-                    <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0 space-y-1">
+                    <h1 className="text-xl font-bold tracking-tight text-foreground xs:text-2xl sm:text-3xl">
                         {title}
                     </h1>
                     {description && (
@@ -107,7 +107,7 @@ const gridCols = {
     3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
     4: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
     5: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5",
-    6: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6",
+    6: "grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-6",
 };
 
 const gridGap = {
@@ -125,7 +125,7 @@ export function Grid({
 }: GridProps) {
     return (
         <div
-            className={cn("grid", gridCols[cols], gridGap[gap], className)}
+            className={cn("grid min-w-0", gridCols[cols], gridGap[gap], className)}
             {...props}
         >
             {children}
@@ -185,7 +185,7 @@ export function Flex({
     return (
         <div
             className={cn(
-                "flex",
+                "flex min-w-0",
                 flexDirection[direction],
                 flexAlign[align],
                 flexJustify[justify],

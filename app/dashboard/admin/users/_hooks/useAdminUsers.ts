@@ -30,6 +30,7 @@ export function useAdminUsers() {
   // URL state
   // URL state
   const urlSearch = searchParams.get("search") || "";
+  const urlRole = searchParams.get("role") || "";
   const page = parseInt(searchParams.get("page") || "1", 10);
 
   // Local state
@@ -58,6 +59,7 @@ export function useAdminUsers() {
   }, [debouncedSearch, updateUrl, urlSearch]);
 
   const setSearch = (value: string) => setSearchTerm(value);
+  const setRole = (value: string) => updateUrl({ role: value || null, page: null });
   const setPage = (value: number) => updateUrl({ page: value > 1 ? value.toString() : null });
 
   const [users, setUsers] = useState<UserData[]>([]);
@@ -74,6 +76,7 @@ export function useAdminUsers() {
         token,
         params: {
           search: urlSearch || undefined,
+          role: urlRole || undefined,
           page: page.toString(),
           limit: "10",
         },
@@ -85,7 +88,7 @@ export function useAdminUsers() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, page, urlSearch]);
+  }, [token, page, urlSearch, urlRole]);
 
   useEffect(() => {
     loadUsers();
@@ -144,6 +147,19 @@ export function useAdminUsers() {
     }
   };
 
+  const handleRoleChange = async (userId: number, role: "user" | "mitra") => {
+    if (!token) return;
+    try {
+      await adminService.updateUserRole(token, userId, role);
+      toast.success(role === "mitra" ? "Pengguna dipromosikan menjadi mitra" : "Role mitra dicabut");
+      loadUsers();
+    } catch (error) {
+      console.error("Failed to update user role:", error);
+      toast.error("Gagal memperbarui role pengguna");
+      throw error;
+    }
+  };
+
   const openBlockDialog = (userId: number, action: "block" | "unblock") => {
     setBlockId(userId);
     setBlockAction(action);
@@ -157,13 +173,16 @@ export function useAdminUsers() {
     blockId,
     blockAction,
     search: searchTerm,
+    role: urlRole,
     page,
     setSearch,
+    setRole,
     setPage,
     setBlockId,
     openBlockDialog,
     handleBlockAction,
     handleJournalBlockToggle,
     handleForumBlockToggle,
+    handleRoleChange,
   };
 }

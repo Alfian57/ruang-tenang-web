@@ -131,7 +131,7 @@ export function BadgeShowcase({ badges, className }: BadgeShowcaseProps) {
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
                     <Trophy className="h-5 w-5 text-yellow-500" />
-                    <h3 className="font-semibold">Badge Collection</h3>
+                    <h3 className="font-semibold">Koleksi Badge</h3>
                 </div>
                 <span className="text-sm text-muted-foreground">
                     {Number(badges.earned_badges ?? 0)}/{Number(badges.total_badges ?? 0)} diraih
@@ -140,7 +140,7 @@ export function BadgeShowcase({ badges, className }: BadgeShowcaseProps) {
 
             {/* Category Stats */}
             {categoryNames.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                <div className="mb-6 grid grid-cols-1 gap-3 xs:grid-cols-2 md:grid-cols-4">
                     {categoryNames.map((category) => {
                         const catBadges = badgesByCategory[category] || [];
                         const earned = catBadges.filter(b => b.is_earned).length;

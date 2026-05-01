@@ -71,9 +71,9 @@ export default function CreateStoryPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-background">
+            <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-background">
                 <Navbar variant="back" />
-                <div className="container mx-auto px-4 pt-32 pb-20">
+                <div className="container mx-auto px-4 pt-28 pb-16 sm:pt-32 sm:pb-20">
                     <div className="max-w-2xl mx-auto space-y-6">
                         <div className="h-8 w-48 rounded bg-gray-200 animate-pulse" />
                         <div className="h-4 w-72 rounded bg-gray-200 animate-pulse" />
@@ -94,9 +94,9 @@ export default function CreateStoryPage() {
     // Level restriction
     if (!canCreate) {
         return (
-            <div className="min-h-screen bg-background">
+            <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-background">
                 <Navbar variant="back" />
-                <main className="pt-32 pb-20 container mx-auto px-4">
+                <main className="container mx-auto px-4 pt-28 pb-16 sm:pt-32 sm:pb-20">
                     <div className="max-w-md mx-auto text-center">
                         <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
                             <Lock className="h-10 w-10 text-muted-foreground" />
@@ -125,9 +125,9 @@ export default function CreateStoryPage() {
     // Monthly limit reached
     if (!canSubmitMore) {
         return (
-            <div className="min-h-screen bg-background">
+            <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-background">
                 <Navbar variant="back" />
-                <main className="pt-32 pb-20 container mx-auto px-4">
+                <main className="container mx-auto px-4 pt-28 pb-16 sm:pt-32 sm:pb-20">
                     <div className="max-w-md mx-auto text-center">
                         <div className="w-20 h-20 bg-orange-100 dark:bg-orange-950/30 rounded-full flex items-center justify-center mx-auto mb-6">
                             <AlertTriangle className="h-10 w-10 text-orange-500" />
@@ -155,13 +155,10 @@ export default function CreateStoryPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-background">
             <Navbar variant="back" />
 
-            {/* Background Decorations */}
-            <div className="absolute top-0 right-0 w-125 h-125 bg-pink-100/30 rounded-full blur-[120px] -z-10 pointer-events-none" />
-
-            <main className="pt-32 pb-20 container mx-auto px-4">
+            <main className="container mx-auto px-4 pt-28 pb-16 sm:pt-32 sm:pb-20">
                 <div className="max-w-2xl mx-auto">
                     {/* Back Link */}
                     <Link
@@ -178,7 +175,7 @@ export default function CreateStoryPage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="mb-8"
                     >
-                        <h1 className="text-3xl font-bold mb-2">Bagikan Ceritamu</h1>
+                        <h1 className="mb-2 text-2xl font-bold sm:text-3xl">Bagikan Ceritamu</h1>
                         <p className="text-muted-foreground">
                             Ceritakan perjalananmu. Kamu tidak sendirian, dan ceritamu bisa menginspirasi orang lain.
                         </p>
@@ -190,7 +187,7 @@ export default function CreateStoryPage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="bg-muted/50 rounded-lg p-4 mb-6"
+                            className="mb-6 rounded-lg border border-red-100 bg-white/80 p-4"
                         >
                             <p className="text-sm text-muted-foreground">
                                 📊 Cerita bulan ini: {myStats.stories_this_month}/{myStats.max_stories_per_month}
@@ -216,7 +213,7 @@ export default function CreateStoryPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="bg-card rounded-xl border p-6"
+                            className="rounded-xl border border-red-100 bg-card p-4 sm:p-6"
                     >
                         <StoryForm
                             categories={categories}

@@ -4,16 +4,18 @@ import { useState } from "react";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Mail, Lock, User } from "lucide-react";
+import { Loader2, Mail, Lock, ShieldCheck, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/authStore";
 import { AuthIllustration } from "@/components/shared/auth/AuthIllustration";
+import { buildPathWithRedirect, getSafeRedirect } from "@/lib/safe-redirect";
+import { TRUST_CUES } from "@/constants";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter"),
@@ -29,22 +31,27 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { register: registerUser, isLoading } = useAuthStore();
   const [error, setError] = useState<string | null>(null);
+  const redirectTarget = getSafeRedirect(searchParams.get("redirect"), "");
+  const loginHref = buildPathWithRedirect(ROUTES.LOGIN, redirectTarget);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
-  });
+  } = useForm<RegisterFormData>({ resolver: zodResolver(registerSchema) });
 
   const onSubmit = async (data: RegisterFormData) => {
     setError(null);
     try {
       await registerUser(data.name, data.email, data.password, data.confirmPassword);
-      router.push(`${ROUTES.LOGIN}?registered=1`);
+      const loginParams = new URLSearchParams({ registered: "1" });
+      if (redirectTarget) {
+        loginParams.set("redirect", redirectTarget);
+      }
+      router.push(`${ROUTES.LOGIN}?${loginParams.toString()}`);
     } catch (error) {
       const err = error as Error;
       setError(err.message || "Registrasi gagal. Silakan coba lagi.");
@@ -69,6 +76,18 @@ export default function RegisterPage() {
               />
             </Link>
             <p className="text-gray-500">Buat akun baru untuk memulai</p>
+          </div>
+
+          <div className="mb-6 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3">
+            <div className="flex items-start gap-2">
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-sky-700" />
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-sky-900">
+                  Privasi & Batasan AI
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-sky-800">{TRUST_CUES.COMBINED}</p>
+              </div>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -169,7 +188,7 @@ export default function RegisterPage() {
             {/* Login Link */}
             <p className="text-center text-gray-600">
               Sudah punya akun?{" "}
-              <Link href={ROUTES.LOGIN} className="text-primary font-medium hover:underline">
+              <Link href={loginHref} className="text-primary font-medium hover:underline">
                 Masuk
               </Link>
             </p>

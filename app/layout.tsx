@@ -1,27 +1,26 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Manrope } from "next/font/google";
+import { Nunito, Plus_Jakarta_Sans } from "next/font/google";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
-const manrope = Manrope({
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
+  weight: "variable",
 });
 
-const fraunces = Fraunces({
+const nunito = Nunito({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
-  weight: ["500", "600", "700", "800"],
+  weight: "variable",
 });
 
 export const viewport: Viewport = {
   themeColor: "#EF4444",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
 };
 
 export const metadata: Metadata = {
@@ -50,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`dark ${manrope.variable} ${fraunces.variable}`} suppressHydrationWarning>
+    <html lang="id" className={`dark ${plusJakarta.variable} ${nunito.variable}`} suppressHydrationWarning>
       <body className="font-app" suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>

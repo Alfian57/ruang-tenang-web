@@ -99,7 +99,7 @@ export default function DashboardCommunityPage() {
                                     <div>
                                         <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 inline-flex items-center gap-2">
                                             <HeartHandshake className="w-4 h-4" />
-                                            COMMUNITY-1 · Shared Healing Missions
+                                            COMMUNITY-1 · Misi Pemulihan Bersama
                                         </p>
                                         <h2 className="text-lg font-semibold text-gray-900 mt-1">Misi Harian Komunitasmu</h2>
                                         <p className="text-sm text-gray-600 mt-1">
@@ -124,7 +124,7 @@ export default function DashboardCommunityPage() {
                             )}
 
                             <div className="rounded-xl border border-violet-200 bg-violet-50 p-4">
-                                <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">Creative Mission Board</p>
+                                <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">Papan Misi Kreatif</p>
                                 <p className="text-sm text-gray-700 mt-1">
                                     Variasi misi ini dirancang agar kontribusi komunitas tidak monoton dan tetap terasa personal.
                                 </p>

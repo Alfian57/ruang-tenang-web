@@ -3,13 +3,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { ChevronRight, PanelLeftClose, MessageCircle } from "lucide-react";
+import { AlertTriangle, ChevronRight, Crown, Lock, MessageCircle, PanelLeftClose } from "lucide-react";
 import { cn } from "@/utils";
-import { adminGroups, memberGroups, memberHighlightLink, type NavGroup } from "./nav-config";
+import { adminGroups, memberGroups, memberHighlightLink, mitraGroups, mitraHighlightLink, type NavGroup } from "./nav-config";
 import { ROUTES } from "@/lib/routes";
+import type { BillingStatus } from "@/types";
 
 interface SidebarProps {
-  isAdmin: boolean;
+  userRole: "admin" | "user" | "mitra";
+  billingStatus?: BillingStatus | null;
   sidebarOpen: boolean;
   sidebarCollapsed: boolean;
   onCloseSidebar: () => void;
@@ -17,17 +19,78 @@ interface SidebarProps {
 }
 
 export function Sidebar({
-  isAdmin,
+  userRole,
+  billingStatus,
   sidebarOpen,
   sidebarCollapsed,
   onCloseSidebar,
   onToggleCollapsed,
 }: SidebarProps) {
   const pathname = usePathname();
+  const isAdmin = userRole === "admin";
+  const homeHref = isAdmin
+    ? ROUTES.ADMIN.DASHBOARD
+    : userRole === "mitra"
+      ? ROUTES.MITRA.DASHBOARD
+      : ROUTES.DASHBOARD;
 
-  const groups: NavGroup[] = isAdmin ? adminGroups : memberGroups;
-  const isMember = !isAdmin;
-  const highlightLink = isMember ? memberHighlightLink : null;
+  const groups: NavGroup[] = isAdmin
+    ? adminGroups
+    : userRole === "mitra"
+      ? mitraGroups
+      : memberGroups;
+
+  const highlightLink = userRole === "user"
+    ? memberHighlightLink
+    : userRole === "mitra"
+      ? mitraHighlightLink
+      : null;
+  const quota = billingStatus?.chat_quota;
+  const isPremiumAccess = Boolean(billingStatus?.is_premium || quota?.is_unlimited);
+  const isChatLimitExhausted = userRole === "user" && Boolean(quota && !isPremiumAccess && quota.remaining <= 0);
+  const isChatQuotaLow = userRole === "user" && Boolean(
+    quota &&
+    !isPremiumAccess &&
+    quota.remaining > 0 &&
+    quota.remaining <= Math.max(1, Math.ceil(quota.limit * 0.25))
+  );
+  const chatAccessState = userRole !== "user"
+    ? null
+    : isPremiumAccess
+      ? {
+        tone: "premium" as const,
+        label: "Unlimited",
+        subtitle: "Premium aktif, chat tanpa batas",
+        icon: Crown,
+      }
+      : isChatLimitExhausted
+        ? {
+          tone: "locked" as const,
+          label: "Limit habis",
+          subtitle: "Kuota gratis habis, lihat opsi lanjut",
+          icon: Lock,
+        }
+        : isChatQuotaLow
+          ? {
+            tone: "low" as const,
+            label: `${quota?.remaining ?? 0} sisa`,
+            subtitle: `Sisa ${quota?.remaining ?? 0} chat periode ini`,
+            icon: AlertTriangle,
+          }
+          : quota
+            ? {
+              tone: "available" as const,
+              label: `${quota.remaining}/${quota.limit}`,
+              subtitle: "Kuota chat gratis periode ini",
+              icon: MessageCircle,
+            }
+            : null;
+
+  const getLinkBadge = (href: string) => {
+    if (userRole !== "user" || isPremiumAccess) return null;
+    if (href === ROUTES.BILLING) return { label: "Upgrade", tone: "premium" as const, icon: Crown };
+    return null;
+  };
 
   return (
     <>
@@ -45,7 +108,7 @@ export function Sidebar({
       <aside
         id="dashboard-sidebar"
         className={cn(
-          "sidebar-themed fixed top-0 left-0 h-full bg-white border-r z-40 transform transition-all duration-200",
+          "sidebar-themed fixed top-0 left-0 h-full max-w-[calc(100vw-1rem)] bg-white border-r z-40 transform transition-all duration-200",
           "lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
           sidebarCollapsed ? "lg:w-20" : "lg:w-60",
@@ -53,7 +116,7 @@ export function Sidebar({
         )}>
         {/* Logo */}
         <div className="p-4 h-16 flex items-center justify-between border-b">
-          <Link href={ROUTES.DASHBOARD} className="flex items-center gap-2">
+          <Link href={homeHref} className="flex min-w-0 items-center gap-2">
             {sidebarCollapsed ? (
               <Image src="/logo.webp" alt="Ruang Tenang" width={32} height={32} className="object-contain" />
             ) : (
@@ -92,19 +155,32 @@ export function Sidebar({
         <nav className="py-4 overflow-y-auto h-[calc(100vh-10rem)]" aria-label="Navigasi dashboard">
           {/* AI Chat highlight - rendered before groups */}
           {highlightLink && (() => {
-            const isActive = pathname === highlightLink.href || pathname.startsWith(highlightLink.href);
+            const isActive = userRole === "mitra"
+              ? pathname === highlightLink.href
+              : pathname === highlightLink.href || pathname.startsWith(`${highlightLink.href}/`);
             const Icon = highlightLink.icon;
+            const StatusIcon = chatAccessState?.icon;
+            const highlightTitle = sidebarCollapsed && chatAccessState
+              ? `${highlightLink.label} - ${chatAccessState.label}`
+              : sidebarCollapsed
+                ? highlightLink.label
+                : undefined;
+            const highlightSubtitle = userRole === "mitra"
+              ? "Kelola organisasi & seat"
+              : chatAccessState?.subtitle ?? "Apa pun, kapan pun";
             return (
               <Link
                 href={highlightLink.href}
                 onClick={onCloseSidebar}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "sidebar-ai-card mx-3 px-4 py-3.5 rounded-2xl relative mb-4 block",
+                  "sidebar-ai-card mx-3 min-w-0 px-4 py-3.5 rounded-2xl relative mb-4 block",
+                  chatAccessState?.tone === "locked" && "limited",
+                  chatAccessState?.tone === "low" && "low-quota",
                   isActive && "active",
                   sidebarCollapsed && "lg:mx-2 lg:px-3 lg:py-2.5"
                 )}
-                title={sidebarCollapsed ? highlightLink.label : undefined}
+                title={highlightTitle}
               >
                 <div className={cn("flex items-center gap-3 relative z-10", sidebarCollapsed && "lg:justify-center")}>
                   <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
@@ -112,16 +188,43 @@ export function Sidebar({
                   </div>
                   {!sidebarCollapsed && (
                     <div className="flex-1 min-w-0">
-                      <span className="font-semibold text-sm text-white block">
-                        {highlightLink.label}
+                      <span className="flex items-center justify-between gap-2">
+                        <span className="min-w-0 truncate font-semibold text-sm text-white">
+                          {highlightLink.label}
+                        </span>
+                        {chatAccessState && StatusIcon && (
+                          <span
+                            className={cn(
+                              "inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold",
+                              chatAccessState.tone === "locked" && "border-amber-200 bg-amber-100 text-amber-900",
+                              chatAccessState.tone === "low" && "border-amber-100 bg-white/90 text-amber-700",
+                              chatAccessState.tone === "premium" && "border-violet-100 bg-white/90 text-violet-700",
+                              chatAccessState.tone === "available" && "border-white/25 bg-white/15 text-white"
+                            )}
+                          >
+                            <StatusIcon className="h-3 w-3" />
+                            {chatAccessState.label}
+                          </span>
+                        )}
                       </span>
-                      <span className="text-[10.5px] text-white/60 block mt-0.5 leading-tight">
-                        Apa pun, kapan pun
-                        <MessageCircle className="inline-block w-3 h-3 ml-1 align-[-1px]" />
+                      <span className="mt-1 block truncate text-[10.5px] leading-tight text-white/70">
+                        {highlightSubtitle}
                       </span>
                     </div>
                   )}
                 </div>
+                {sidebarCollapsed && StatusIcon && chatAccessState?.tone !== "available" && (
+                  <span
+                    className={cn(
+                      "absolute -right-1 -top-1 z-20 grid h-5 w-5 place-items-center rounded-full border-2 border-white shadow-sm",
+                      chatAccessState?.tone === "locked" && "bg-amber-500 text-white",
+                      chatAccessState?.tone === "low" && "bg-orange-500 text-white",
+                      chatAccessState?.tone === "premium" && "bg-violet-500 text-white"
+                    )}
+                  >
+                    <StatusIcon className="h-3 w-3" />
+                  </span>
+                )}
               </Link>
             );
           })()}
@@ -143,12 +246,22 @@ export function Sidebar({
 
               {/* Group links */}
               {group.links.map((link) => {
-                const isDashboardLink = link.href === "/dashboard" || link.href === "/dashboard/admin";
-                const isDashboardPath = pathname === "/dashboard" || pathname === "/dashboard/admin";
+                const badge = getLinkBadge(link.href);
+                const BadgeIcon = badge?.icon;
+                const normalizedLinkHref = link.href.split("#")[0];
+                const normalizedPathname = pathname.split("#")[0];
+                const isDashboardLink =
+                  normalizedLinkHref === ROUTES.DASHBOARD ||
+                  normalizedLinkHref === ROUTES.ADMIN.DASHBOARD ||
+                  normalizedLinkHref === ROUTES.MITRA.DASHBOARD;
+                const isDashboardPath =
+                  normalizedPathname === ROUTES.DASHBOARD ||
+                  normalizedPathname === ROUTES.ADMIN.DASHBOARD ||
+                  normalizedPathname === ROUTES.MITRA.DASHBOARD;
 
                 const isActive = isDashboardLink
                   ? isDashboardPath
-                  : pathname === link.href || pathname.startsWith(`${link.href}/`);
+                  : normalizedPathname === normalizedLinkHref || normalizedPathname.startsWith(`${normalizedLinkHref}/`);
 
                 const inactiveClass = link.secondary
                   ? "text-gray-500 hover:bg-gray-50"
@@ -161,7 +274,7 @@ export function Sidebar({
                     onClick={onCloseSidebar}
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
-                      "sidebar-nav-link flex items-center gap-3 mx-3 px-4 py-2.5 rounded-xl transition-all relative mb-0.5",
+                      "sidebar-nav-link flex min-w-0 items-center gap-3 mx-3 px-4 py-2.5 rounded-xl transition-all relative mb-0.5",
                       isActive
                         ? "sidebar-nav-active text-white bg-primary shadow-md"
                         : inactiveClass,
@@ -181,6 +294,12 @@ export function Sidebar({
                         link.secondary && !isActive && "text-sm"
                       )}>
                         {link.label}
+                      </span>
+                    )}
+                    {!sidebarCollapsed && badge && BadgeIcon && (
+                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[10px] font-semibold text-violet-700">
+                        <BadgeIcon className="h-3 w-3" />
+                        {badge.label}
                       </span>
                     )}
                   </Link>

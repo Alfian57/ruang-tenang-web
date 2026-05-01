@@ -3,13 +3,15 @@ import type { ApiResponse } from "@/services/http/types";
 import type { User, LoginResponse } from "@/types";
 import { z } from "zod";
 
+type RegisterRole = "user";
+
 const userSchema: z.ZodType<User, z.ZodTypeDef, unknown> = z
   .object({
     id: z.number(),
     name: z.string(),
     email: z.string().email(),
     avatar: z.string().optional(),
-    role: z.enum(["admin", "member"]).catch("member"),
+    role: z.enum(["admin", "user", "mitra"]).catch("user"),
     exp: z.number().catch(0),
     gold_coins: z.number().catch(0),
     level: z.number().catch(1),
@@ -62,12 +64,19 @@ export const authService = {
     return loginResponseSchema.parse(response);
   },
 
-  async register(name: string, email: string, password: string, passwordConfirmation: string): Promise<ApiResponse<User>> {
+  async register(
+    name: string,
+    email: string,
+    password: string,
+    passwordConfirmation: string,
+    role: RegisterRole = "user"
+  ): Promise<ApiResponse<User>> {
     const response = await httpClient.post<ApiResponse<User>>("/auth/register", {
       name,
       email,
       password,
       password_confirmation: passwordConfirmation,
+      role,
     });
     return userResponseSchema.parse(response);
   },

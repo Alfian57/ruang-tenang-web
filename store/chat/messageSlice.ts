@@ -2,8 +2,29 @@ import { StateCreator } from "zustand";
 import { toast } from "sonner";
 import { ChatStore, ChatMessageState, ChatMessageActions } from "./types";
 import { chatService, uploadService } from "@/services/api";
+import { ApiError } from "@/services/http/types";
 import { ChatMessage, SendMessageOptions } from "@/types";
 import { useAuthStore } from "../authStore";
+
+function isChatQuotaExceededError(error: unknown): error is ApiError {
+  return error instanceof ApiError && (error.code === "ERR_QUOTA_EXCEEDED" || error.message.toLowerCase().includes("kuota chat"));
+}
+
+function dispatchChatQuotaLimited(message: string) {
+  if (typeof window === "undefined") return;
+
+  window.dispatchEvent(new CustomEvent("chat-quota-limited", {
+    detail: { message },
+  }));
+  window.dispatchEvent(new CustomEvent("billing-status-refresh"));
+}
+
+function dispatchBillingStatusRefresh() {
+  if (typeof window === "undefined") return;
+
+  window.dispatchEvent(new CustomEvent("chat-quota-cleared"));
+  window.dispatchEvent(new CustomEvent("billing-status-refresh"));
+}
 
 export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageState & ChatMessageActions> = (set, get) => ({
   messages: [],
@@ -46,6 +67,9 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
         ),
         isSending: false,
       }));
+
+      dispatchBillingStatusRefresh();
+
       // Refresh user to update EXP
       await useAuthStore.getState().refreshUser();
     } catch (error) {
@@ -54,6 +78,19 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
         messages: state.messages.slice(0, -1),
         isSending: false,
       }));
+
+      if (isChatQuotaExceededError(error)) {
+        dispatchChatQuotaLimited(error.message);
+        toast.error("Kuota Chat AI basic hari ini sudah habis", {
+          description: "Upgrade Premium dari menu Billing untuk lanjut ngobrol tanpa batas.",
+        });
+
+        return;
+      }
+
+      toast.error("Pesan belum terkirim", {
+        description: "Silakan coba beberapa saat lagi.",
+      });
     }
   },
 
@@ -86,8 +123,19 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
         isSending: false,
         isRecording: false,
       }));
+
+      dispatchBillingStatusRefresh();
     } catch (error) {
       console.error("ChatStore.sendAudioMessage: failed", error);
+      if (isChatQuotaExceededError(error)) {
+        dispatchChatQuotaLimited(error.message);
+        toast.error("Kuota Chat AI basic hari ini sudah habis", {
+          description: "Upgrade Premium dari menu Billing untuk lanjut kirim pesan suara.",
+        });
+        set({ isSending: false, isRecording: false });
+        return;
+      }
+
       toast.error("Gagal mengirim pesan suara", {
         description: "Silakan coba lagi."
       });

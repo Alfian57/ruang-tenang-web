@@ -9,7 +9,7 @@ import { id as idLocale } from "date-fns/locale";
 const CHALLENGE_TYPE_LABELS: Record<string, string> = {
     total_xp: "Total XP",
     total_tasks: "Total Tugas",
-    total_breathing: "Total Pernafasan",
+    total_breathing: "Total Pernapasan",
     total_journals: "Total Jurnal",
     total_chats: "Total Chat",
     total_streak_days: "Total Hari Streak",

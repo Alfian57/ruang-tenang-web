@@ -151,7 +151,7 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
 
       {/* Categories Grid */}
       <div className="p-4 bg-gray-50/50 flex-1">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 items-start">
+        <div className="grid grid-cols-1 gap-4 items-start xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
           {(categories || []).slice(0, 8).map((cat) => {
             const isExpanded = expandedCategory === cat.id;
 

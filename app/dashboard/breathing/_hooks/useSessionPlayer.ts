@@ -175,12 +175,22 @@ export function useSessionPlayer({
 
     const handleStop = () => {
         const completedPercentage = Math.round((state.elapsedTime / targetDurationSeconds) * 100);
-        return {
+        const completionData = {
             durationSeconds: state.elapsedTime,
             cyclesCompleted: state.currentCycle > 0 ? state.currentCycle - 1 : 0,
             completed: completedPercentage >= 95,
             completedPercentage,
         };
+
+        setState(prev => ({
+            ...prev,
+            isActive: false,
+            isPaused: false,
+            remainingTime: Math.max(0, targetDurationSeconds - prev.elapsedTime),
+            phase: completionData.completed ? "complete" : prev.phase,
+        }));
+
+        return completionData;
     };
 
     const handleReset = () => {

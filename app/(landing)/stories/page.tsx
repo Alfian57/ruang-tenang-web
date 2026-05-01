@@ -32,20 +32,16 @@ export default function StoriesPage() {
   } = useStoriesData();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-background">
       <Navbar variant="back" />
 
-      {/* Background Decorations */}
-      <div className="absolute top-0 right-0 w-125 h-125 bg-pink-100/50 rounded-full blur-[120px] -z-10 pointer-events-none" />
-      <div className="absolute top-20 left-0 w-100 h-100 bg-purple-100/50 rounded-full blur-[100px] -z-10 pointer-events-none" />
-
-      <main className="pt-32 pb-20 container mx-auto px-4">
+      <main className="mx-auto w-full max-w-6xl px-4 pt-28 pb-16 sm:px-6 sm:pt-32 sm:pb-20 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="mx-auto mb-9 max-w-3xl text-center sm:mb-12">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold mb-4"
+            className="mb-4 text-3xl font-bold leading-tight md:text-5xl"
           >
             Cerita <span className="text-primary">Inspiratif</span>
           </motion.h1>
@@ -53,7 +49,7 @@ export default function StoriesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-muted-foreground max-w-2xl mx-auto text-lg"
+            className="mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg"
           >
             Kisah nyata dari perjalanan pemulihan. Ceritamu bisa menginspirasi orang lain
             dan menunjukkan bahwa mereka tidak sendirian.
@@ -106,7 +102,7 @@ export default function StoriesPage() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex justify-center gap-2 mt-8">
+                <div className="mt-8 flex flex-wrap justify-center gap-2">
                   <Button
                     variant="outline"
                     onClick={() => setPage((p) => Math.max(1, p - 1))}

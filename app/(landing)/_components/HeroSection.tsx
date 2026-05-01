@@ -1,197 +1,185 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/routes";
-import { ArrowRight, Map, Trophy, Palette } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
+import {
+  ArrowRight,
+  HeartPulse,
+  LockKeyhole,
+  MessageCircle,
+  Music2,
+  ShieldCheck,
+} from "lucide-react";
+
+const HERO_FLOATING_CARDS = [
+  {
+    icon: HeartPulse,
+    title: "Mood Tracker",
+    description: "Pantau perasaanmu",
+    className: "right-0 top-2 sm:-top-3 lg:right-2",
+    animate: { y: [0, -14, 0] },
+    duration: 4,
+  },
+  {
+    icon: MessageCircle,
+    title: "AI Chat",
+    description: "Teman refleksi 24/7",
+    className: "bottom-12 left-0 sm:bottom-20",
+    animate: { y: [0, 12, 0] },
+    duration: 3.6,
+  },
+  {
+    icon: Music2,
+    title: "Relaksasi",
+    description: "Musik menenangkan",
+    className: "right-0 top-[43%] lg:right-0",
+    animate: { y: [0, -10, 0] },
+    duration: 5,
+  },
+];
 
 export function HeroSection() {
   const shouldReduceMotion = useReducedMotion();
+  const { isAuthenticated } = useAuthStore();
 
   const introTransition = shouldReduceMotion
     ? { duration: 0 }
     : { duration: 0.6, delay: 0.2 };
-  const theaterTransition = shouldReduceMotion
+  const visualTransition = shouldReduceMotion
     ? { duration: 0 }
     : { duration: 0.6, delay: 0.35 };
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden pt-32 sm:pt-36 lg:pt-24 pb-12">
-      {/* Atmospheric background */}
+    <section id="home" className="relative min-h-[88svh] overflow-hidden bg-rose-50 pt-24 pb-10 sm:pt-32 sm:pb-12 lg:pt-28">
       <div
         className="absolute inset-0"
         style={{
-          background: "linear-gradient(180deg, #FFF1F2 0%, #FFE4E6 45%, #FECDD3 100%)",
+          background:
+            "linear-gradient(180deg, #FFF1F2 0%, #FFE4E6 48%, #FFF7F7 100%)",
         }}
-      >
-        <div className="absolute -top-20 -left-20 h-72 w-72 rounded-full bg-red-300/25 blur-3xl" />
-        <div className="absolute top-1/2 -right-16 h-64 w-64 rounded-full bg-amber-300/25 blur-3xl" />
-        <div className="absolute inset-0 opacity-15">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `radial-gradient(circle at 2px 2px, #DC2626 1px, transparent 0)`,
-              backgroundSize: "34px 34px",
-            }}
-          />
-        </div>
+      />
+      <div className="absolute inset-0 bg-linear-to-br from-white/30 via-transparent to-red-100/60" />
+      <div className="absolute inset-0 opacity-[0.16]">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "linear-gradient(0deg, rgba(220,38,38,0.24) 1px, transparent 1px), linear-gradient(90deg, rgba(220,38,38,0.24) 1px, transparent 1px)",
+            backgroundSize: "34px 34px",
+          }}
+        />
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
-          {/* Left Content */}
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="grid min-h-[calc(88svh-6rem)] min-w-0 items-center gap-8 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] lg:gap-10 xl:gap-12">
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={introTransition}
-            className="text-gray-800 order-2 lg:order-1"
+            className="order-2 min-w-0 text-gray-900 lg:order-1"
           >
-            <p className="inline-flex items-center rounded-full border border-red-200 bg-white/80 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-red-700 mb-4">
-              Perjalanan Menata Pikiran
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-red-200 bg-white/85 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-red-700 shadow-sm backdrop-blur">
+              <ShieldCheck className="h-4 w-4" />
+              Ruang aman untuk mahasiswa
             </p>
 
-            <h1 className="font-brand-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6">
-              Dari check-in
-              <span className="text-primary"> emosi </span>
-              ke progres
-              <span className="text-primary"> nyata</span>
+            <h1 className="font-brand-display mb-4 text-3xl font-bold leading-tight min-[380px]:text-4xl sm:mb-5 sm:text-5xl md:text-6xl">
+              Ruang <span className="text-primary">Aman</span> untuk
+              <br />
+              Menata Kembali
+              <br />
+              <span className="text-primary">Pikiranmu</span>
             </h1>
 
-            <p className="text-base md:text-lg text-gray-700 mb-8 max-w-xl leading-relaxed">
-              Ruang Tenang bukan sekadar kumpulan fitur wellness. Kamu masuk, refleksi singkat,
-              menyelesaikan langkah harian, membuka progress map, lalu melihat identitasmu tumbuh
-              lewat reward dan komunitas.
+            <p className="mb-4 max-w-xl text-sm leading-relaxed text-gray-700 sm:mb-5 sm:text-base md:text-lg">
+              Platform kesehatan mental berbasis AI untuk mahasiswa. Mulai dari mood tracker,
+              jurnal refleksi, chat AI, latihan pernapasan, sampai musik relaksasi dalam satu
+              alur yang mudah diikuti.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 max-w-2xl">
-              <div className="rounded-xl border border-red-200/70 bg-white/85 px-4 py-3">
-                <p className="text-xs text-gray-500">Streak Aktif</p>
-                <p className="text-lg font-semibold text-gray-900">7 Hari</p>
-              </div>
-              <div className="rounded-xl border border-red-200/70 bg-white/85 px-4 py-3">
-                <p className="text-xs text-gray-500">Region Terbuka</p>
-                <p className="text-lg font-semibold text-gray-900">3 dari 8</p>
-              </div>
-              <div className="rounded-xl border border-red-200/70 bg-white/85 px-4 py-3">
-                <p className="text-xs text-gray-500">Tema Terbuka</p>
-                <p className="text-lg font-semibold text-gray-900">Ocean Calm</p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2 mb-8">
-              <span className="inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
-                Wow #1 Mood to Action
+            <div className="mb-5 flex flex-wrap gap-2 text-xs text-gray-700 sm:mb-7 sm:text-sm">
+              <span className="inline-flex items-center gap-2 rounded-lg border border-red-100 bg-white/80 px-2.5 py-2 shadow-sm backdrop-blur sm:px-3">
+                <LockKeyhole className="h-4 w-4 text-red-600" />
+                Data pribadi baru muncul setelah login
               </span>
-              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                Wow #2 Theme Shift
+              <span className="inline-flex items-center gap-2 rounded-lg border border-red-100 bg-white/80 px-2.5 py-2 shadow-sm backdrop-blur sm:px-3">
+                <MessageCircle className="h-4 w-4 text-red-600" />
+                AI untuk refleksi, bukan diagnosis
               </span>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row">
               <Link href={ROUTES.REGISTER}>
                 <Button
                   size="lg"
-                  className="bg-primary text-white hover:bg-red-600 font-semibold px-8 py-6 text-base rounded-[15px] shadow-lg hover:shadow-xl transition-all group"
+                  className="h-12 w-full rounded-[15px] bg-primary px-6 text-base font-semibold text-white shadow-lg shadow-red-500/25 transition-all hover:bg-red-600 hover:shadow-xl sm:w-auto sm:px-8"
                 >
-                  Mulai Perjalananmu
-                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  Masuk ke Ruang Tenang
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link href={ROUTES.LOGIN}>
+              <Link href={isAuthenticated ? ROUTES.DASHBOARD : ROUTES.LOGIN}>
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-red-300 text-red-700 hover:bg-red-50 px-8 py-6 text-base rounded-[15px]"
+                  className="h-12 w-full rounded-[15px] border-red-200 bg-white/75 px-6 text-base font-semibold text-red-700 hover:bg-red-50 sm:w-auto sm:px-8"
                 >
-                  Lihat Dashboard Demo
+                  {isAuthenticated ? "Buka Dashboard" : "Sudah Punya Akun"}
                 </Button>
               </Link>
             </div>
 
-            <p className="text-sm text-gray-600 mt-4">
-              Platform ini membantu refleksi diri, bukan pengganti layanan profesional.
+            <p className="mt-4 max-w-lg text-sm leading-relaxed text-gray-600">
+              Landing page ini hanya pengantar fitur. Mood, jurnal, dan percakapan Anda tidak
+              dibaca atau ditampilkan sebelum login.
             </p>
           </motion.div>
 
-          {/* Right Content - Product theater */}
           <motion.div
-            initial={{ opacity: 0, x: 50, scale: 0.96 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={theaterTransition}
-            className="relative order-1 lg:order-2"
+            initial={{ opacity: 0, y: 24, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={visualTransition}
+            className="order-1 flex min-w-0 justify-center lg:order-2 lg:justify-end"
           >
-            <div className="relative rounded-3xl border border-red-200/70 bg-white/90 backdrop-blur-sm p-5 sm:p-6 shadow-2xl">
-              <div className="flex items-center justify-between gap-3 pb-4 border-b border-red-100">
-                <div>
-                  <p className="text-xs uppercase tracking-wide text-red-500 font-semibold">Hari Ini</p>
-                  <h2 className="font-brand-display text-lg font-semibold text-gray-900">Journey Checkpoint</h2>
-                </div>
-                <div className="rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700">
-                  Lv 3 • 1240 EXP
-                </div>
-              </div>
+            <div className="relative w-full max-w-[258px] min-[380px]:max-w-[310px] sm:max-w-md lg:max-w-[500px] xl:max-w-[540px]">
+              <Image
+                src="/images/landing/about-doctor.png"
+                alt="Ilustrasi aplikasi Ruang Tenang dengan pendamping kesehatan di layar ponsel."
+                width={500}
+                height={600}
+                className="relative z-10 h-auto w-full drop-shadow-2xl"
+                sizes="(max-width: 640px) 330px, (max-width: 1024px) 448px, 560px"
+                priority
+              />
 
-              <div className="mt-4 space-y-4">
-                <div className="rounded-2xl border border-gray-200 bg-gray-50/70 p-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-gray-700">Progress Region Minggu Ini</span>
-                    <span className="text-gray-500">68%</span>
+              {HERO_FLOATING_CARDS.map((card) => (
+                <motion.div
+                  key={card.title}
+                  animate={shouldReduceMotion ? undefined : card.animate}
+                  transition={
+                    shouldReduceMotion
+                      ? undefined
+                      : { duration: card.duration, repeat: Infinity, ease: "easeInOut" }
+                  }
+                  className={`absolute z-20 ${card.className}`}
+                >
+                  <div className="rounded-2xl border border-red-100 bg-white/95 p-2.5 shadow-xl shadow-red-900/10 backdrop-blur sm:p-3">
+                    <div className="flex items-center gap-2.5 sm:gap-3">
+                      <div className="grid h-9 w-9 place-items-center rounded-full bg-red-50 text-red-600 sm:h-12 sm:w-12">
+                        <card.icon className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-gray-900 sm:text-sm">{card.title}</p>
+                        <p className="text-[11px] text-gray-500 sm:text-xs">{card.description}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="mt-2 h-2.5 w-full rounded-full bg-gray-200 overflow-hidden">
-                    <div className="h-full w-[68%] rounded-full bg-linear-to-r from-red-500 via-orange-500 to-amber-500" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <motion.div
-                    animate={shouldReduceMotion ? undefined : { y: [0, -4, 0] }}
-                    transition={shouldReduceMotion ? undefined : { duration: 3.6, repeat: Infinity, ease: "easeInOut" }}
-                    className="rounded-2xl border border-gray-200 bg-white p-3"
-                  >
-                    <p className="text-xs text-gray-500">Check-in Mood</p>
-                    <p className="text-sm font-semibold text-gray-900 mt-1">Tenang Fokus</p>
-                  </motion.div>
-
-                  <motion.div
-                    animate={shouldReduceMotion ? undefined : { y: [0, 4, 0] }}
-                    transition={shouldReduceMotion ? undefined : { duration: 4.1, repeat: Infinity, ease: "easeInOut" }}
-                    className="rounded-2xl border border-gray-200 bg-white p-3"
-                  >
-                    <p className="text-xs text-gray-500">Task Selesai</p>
-                    <p className="text-sm font-semibold text-gray-900 mt-1">+120 EXP • +40 Koin</p>
-                  </motion.div>
-
-                  <motion.div
-                    animate={shouldReduceMotion ? undefined : { y: [0, -3, 0] }}
-                    transition={shouldReduceMotion ? undefined : { duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
-                    className="rounded-2xl border border-gray-200 bg-white p-3"
-                  >
-                    <p className="text-xs text-gray-500">Theme Unlock</p>
-                    <p className="text-sm font-semibold text-gray-900 mt-1">Sunset Warmth</p>
-                  </motion.div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="rounded-xl bg-red-50 border border-red-200 p-3 flex items-center gap-2">
-                    <Map className="w-4 h-4 text-red-600" />
-                    <p className="text-sm text-red-800">Region &quot;Ruang Hening&quot; terbuka</p>
-                  </div>
-                  <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 flex items-center gap-2">
-                    <Trophy className="w-4 h-4 text-amber-600" />
-                    <p className="text-sm text-amber-800">Misi guild: 3 dari 5 selesai</p>
-                  </div>
-                </div>
-              </div>
-
-              <motion.div
-                animate={shouldReduceMotion ? undefined : { y: [0, -6, 0] }}
-                transition={shouldReduceMotion ? undefined : { duration: 4.6, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -right-4 top-20 hidden sm:flex items-center gap-2 rounded-full border border-red-200 bg-white px-3 py-2 shadow-lg"
-              >
-                <Palette className="w-4 h-4 text-red-500" />
-                <span className="text-xs font-medium text-gray-700">Atmosfer berubah seiring progres</span>
-              </motion.div>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
         </div>

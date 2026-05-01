@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useSyncExternalStore } from "react";
-import { countPendingMutations } from "@/lib/offline";
+import { countPendingMutations } from "@/lib/offline/db";
 
 // ─── useNetworkStatus ────────────────────────────────────────────────
 function subscribe(callback: () => void) {

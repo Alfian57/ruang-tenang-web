@@ -1,11 +1,12 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { User, LoginResponse } from "@/types";
-import type { ApiResponse } from "@/services/http/types";
+import type { User } from "@/types";
 import { authService } from "@/services/api";
 import Cookies from "js-cookie";
 import { STORAGE_KEYS } from "@/constants";
 import { env } from "@/config/env";
+
+type RegisterRole = "user";
 
 // Cookie configuration
 const COOKIE_OPTIONS = {
@@ -40,7 +41,13 @@ interface AuthState {
   
   // Actions
   login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
-  register: (name: string, email: string, password: string, passwordConfirmation: string) => Promise<void>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    passwordConfirmation: string,
+    role?: RegisterRole
+  ) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
   setLoading: (loading: boolean) => void;
@@ -74,10 +81,16 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      register: async (name: string, email: string, password: string, passwordConfirmation: string) => {
+      register: async (
+        name: string,
+        email: string,
+        password: string,
+        passwordConfirmation: string,
+        role: RegisterRole = "user"
+      ) => {
         set({ isLoading: true });
         try {
-          await authService.register(name, email, password, passwordConfirmation);
+          await authService.register(name, email, password, passwordConfirmation, role);
           set({ isLoading: false });
         } catch (error) {
           set({ isLoading: false });

@@ -18,10 +18,10 @@ export function CreateStoryCTA({ myStats }: CreateStoryCTAProps) {
     const canSubmitMore = myStats?.can_submit_more ?? true;
 
     return (
-        <div className="bg-card rounded-xl border p-6 mb-8">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                    <div className="p-3 bg-primary/10 rounded-full">
+        <div className="mb-8 rounded-xl border border-red-100 bg-card p-4 sm:p-6">
+            <div className="flex flex-col items-stretch justify-between gap-4 md:flex-row md:items-center">
+                <div className="flex items-start gap-3 sm:gap-4">
+                    <div className="rounded-full bg-primary/10 p-3">
                         <BookOpen className="h-6 w-6 text-primary" />
                     </div>
                     <div>
@@ -39,8 +39,8 @@ export function CreateStoryCTA({ myStats }: CreateStoryCTAProps) {
                 </div>
 
                 {!token ? (
-                    <Link href={ROUTES.LOGIN}>
-                        <Button>
+                    <Link href={ROUTES.LOGIN} className="w-full md:w-auto">
+                        <Button className="w-full md:w-auto">
                             <LogIn className="h-4 w-4 mr-2" />
                             Masuk
                         </Button>
@@ -56,8 +56,8 @@ export function CreateStoryCTA({ myStats }: CreateStoryCTAProps) {
                         Batas Tercapai
                     </Button>
                 ) : (
-                    <Link href={ROUTES.PUBLIC_STORY_CREATE}>
-                        <Button>
+                    <Link href={ROUTES.PUBLIC_STORY_CREATE} className="w-full md:w-auto">
+                        <Button className="w-full md:w-auto">
                             <Plus className="h-4 w-4 mr-2" />
                             Tulis Cerita
                         </Button>

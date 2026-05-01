@@ -16,6 +16,8 @@ import {
     BreathingCalendar,
     TechniqueUsageStats,
     BreathingPreferences,
+    BreathingIntentPreset,
+    BreathingSessionDraft,
 } from "@/types/breathing";
 import type { Song } from "@/types";
 import { toast } from "sonner";
@@ -23,6 +25,10 @@ import { toast } from "sonner";
 export type ViewMode = "techniques" | "session" | "history" | "stats" | "faq";
 
 const BREATHING_TUTORIAL_SEEN_KEY = "rt_breathing_tutorial_seen";
+
+type SelectTechniqueOptions = Partial<
+    Pick<BreathingIntentPreset, "id" | "durationSeconds" | "moodBefore" | "backgroundSound">
+>;
 
 export function useBreathing() {
     const router = useRouter();
@@ -89,11 +95,14 @@ export function useBreathing() {
     const [selectedDuration, setSelectedDuration] = useState(300); // 5 minutes default
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [completionResult, setCompletionResult] = useState<SessionCompletionResult | null>(null);
+    const [pendingCompletion, setPendingCompletion] = useState<BreathingSessionDraft | null>(null);
+    const [isSavingCompletion, setIsSavingCompletion] = useState(false);
     const [sessionSong, setSessionSong] = useState<Song | null>(null);
 
     // Settings
     const [moodBefore, setMoodBefore] = useState<MoodId | null>(null);
     const [moodAfter, setMoodAfter] = useState<MoodId | null>(null);
+    const [selectedIntentId, setSelectedIntentId] = useState<BreathingIntentPreset["id"] | null>(null);
     const [voiceGuidance, setVoiceGuidance] = useState(false);
     const [hapticFeedback, setHapticFeedback] = useState(true);
     const [backgroundSound, setBackgroundSound] = useState<BackgroundSoundId>("none");
@@ -205,9 +214,30 @@ export function useBreathing() {
     }, [viewMode, token]);
 
     // Handle technique selection
-    const handleSelectTechnique = (technique: BreathingTechnique) => {
+    const handleSelectTechnique = (technique: BreathingTechnique, options?: SelectTechniqueOptions) => {
         setSelectedTechnique(technique);
+        setSelectedIntentId(options?.id || null);
+        setMoodBefore(options?.moodBefore || null);
+        setMoodAfter(null);
+        setCompletionResult(null);
+        setPendingCompletion(null);
+
+        if (options?.durationSeconds) {
+            setSelectedDuration(options.durationSeconds);
+        }
+
+        if (options?.backgroundSound) {
+            setBackgroundSound(options.backgroundSound);
+        }
+
         setShowMoodSelector(true);
+    };
+
+    const handleApplyIntent = (preset: BreathingIntentPreset) => {
+        setSelectedIntentId(preset.id);
+        setSelectedDuration(preset.durationSeconds);
+        setMoodBefore(preset.moodBefore);
+        setBackgroundSound(preset.backgroundSound);
     };
 
     // Handle favorite toggle
@@ -241,6 +271,10 @@ export function useBreathing() {
         if (!token || !selectedTechnique) return;
 
         try {
+            setCompletionResult(null);
+            setPendingCompletion(null);
+            setMoodAfter(null);
+
             let randomSong: Song | null = null;
 
             if (backgroundSound !== "none") {
@@ -284,26 +318,32 @@ export function useBreathing() {
         }
     };
 
-    // Complete session
-    const handleCompleteSession = async (data: {
-        durationSeconds: number;
-        cyclesCompleted: number;
-        completed: boolean;
-        completedPercentage: number;
-    }) => {
-        if (!token || !sessionId) return;
+    // Open the reflection step before saving the completed session.
+    const handleCompleteSession = (data: BreathingSessionDraft) => {
+        if (!sessionId) {
+            toast.error("Sesi belum siap untuk disimpan");
+            return;
+        }
+
+        setPendingCompletion(data);
+        setCompletionResult(null);
+        setShowCompletionModal(true);
+    };
+
+    const handleSubmitCompletion = async () => {
+        if (!token || !sessionId || !pendingCompletion) return;
 
         try {
+            setIsSavingCompletion(true);
             const res = await breathingService.completeSession(token, sessionId, {
-                duration_seconds: data.durationSeconds,
-                cycles_completed: data.cyclesCompleted,
-                completed: data.completed,
-                completed_percentage: data.completedPercentage,
+                duration_seconds: pendingCompletion.durationSeconds,
+                cycles_completed: pendingCompletion.cyclesCompleted,
+                completed: pendingCompletion.completed,
+                completed_percentage: pendingCompletion.completedPercentage,
                 mood_after: moodAfter || undefined,
             });
 
             setCompletionResult(res.data);
-            setShowCompletionModal(true);
 
             // Refresh stats
             const statsRes = await breathingService.getStats(token);
@@ -311,6 +351,8 @@ export function useBreathing() {
         } catch (error) {
             console.error("Failed to complete session:", error);
             toast.error("Gagal menyimpan sesi");
+        } finally {
+            setIsSavingCompletion(false);
         }
     };
 
@@ -321,9 +363,29 @@ export function useBreathing() {
         setSessionId(null);
         setMoodBefore(null);
         setMoodAfter(null);
+        setSelectedIntentId(null);
         setCompletionResult(null);
+        setPendingCompletion(null);
+        setIsSavingCompletion(false);
         setSessionSong(null);
         setShowCompletionModal(false);
+    };
+
+    const handleRepeatSession = () => {
+        if (!selectedTechnique) {
+            handleExitSession();
+            return;
+        }
+
+        setViewMode("techniques");
+        setSessionId(null);
+        setMoodAfter(null);
+        setCompletionResult(null);
+        setPendingCompletion(null);
+        setIsSavingCompletion(false);
+        setSessionSong(null);
+        setShowCompletionModal(false);
+        setShowMoodSelector(true);
     };
 
     // Group techniques
@@ -423,12 +485,15 @@ export function useBreathing() {
         selectedDuration,
         setSelectedDuration,
         completionResult,
+        pendingCompletion,
+        isSavingCompletion,
 
         // Settings
         moodBefore,
         setMoodBefore,
         moodAfter,
         setMoodAfter,
+        selectedIntentId,
         voiceGuidance,
         setVoiceGuidance,
         hapticFeedback,
@@ -449,9 +514,12 @@ export function useBreathing() {
 
         // Handlers
         handleSelectTechnique,
+        handleApplyIntent,
         handleFavoriteToggle,
         handleStartSession,
         handleCompleteSession,
+        handleSubmitCompletion,
+        handleRepeatSession,
         handleExitSession,
         handleTutorialComplete,
         handleShowInfo,

@@ -5,9 +5,9 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { useChatStore } from "@/store/chatStore";
 import { useJournalStore } from "@/store/journalStore";
-import { moderationService, chatService } from "@/services/api";
+import { billingService, moderationService, chatService } from "@/services/api";
 import { ROUTES } from "@/lib/routes";
-import { ChatContextPreferencesUpdate, ChatContextState, SendMessageOptions, SuggestedPrompt } from "@/types";
+import { BillingStatus, ChatContextPreferencesUpdate, ChatContextState, SendMessageOptions, SuggestedPrompt } from "@/types";
 
 interface JourneyQuickPrompt {
   id: string;
@@ -39,6 +39,10 @@ interface ChatReflectionNudge {
   checkpoint: number;
   userMessageCount: number;
   prompt: string;
+}
+
+interface ChatQuotaLimitedEventDetail {
+  message?: string;
 }
 
 const CRISIS_KEYWORDS = [
@@ -83,6 +87,33 @@ const SITUATIONAL_STARTER_PROMPTS: SuggestedPrompt[] = [
 
 const REFLECTION_EVERY_N_USER_MESSAGES = 4;
 const REFLECTION_DISMISSED_STORAGE_KEY = "chat_reflection_dismissed";
+const ALWAYS_ON_CONTEXT_PREFERENCES: ChatContextPreferencesUpdate = {
+  enable_mood_context: true,
+  enable_journal_context: true,
+  enable_daily_task_context: true,
+  enable_xp_level_context: true,
+  enable_breathing_context: true,
+  enable_playlist_context: true,
+  enable_rewards_context: true,
+  enable_progress_map_context: true,
+  enable_social_context: true,
+};
+
+function hasAllContextSourcesEnabled(preferences: ChatContextState["preferences"] | null | undefined): boolean {
+  if (!preferences) return false;
+
+  return Boolean(
+    preferences.enable_mood_context
+      && preferences.enable_journal_context
+      && preferences.enable_daily_task_context
+      && preferences.enable_xp_level_context
+      && preferences.enable_breathing_context
+      && preferences.enable_playlist_context
+      && preferences.enable_rewards_context
+      && preferences.enable_progress_map_context
+      && preferences.enable_social_context,
+  );
+}
 
 function truncateText(value: string, maxLength = 140): string {
   const normalized = value.replace(/\s+/g, " ").trim();
@@ -243,9 +274,89 @@ export function useChatPage() {
   const [isSafeModeActive, setIsSafeModeActive] = useState(false);
   const [pendingCrisisMessage, setPendingCrisisMessage] = useState<string | null>(null);
   const [safeModeSessionId, setSafeModeSessionId] = useState<string | null>(null);
+  const [chatQuotaNotice, setChatQuotaNotice] = useState<string | null>(null);
+  const [billingStatus, setBillingStatus] = useState<BillingStatus | null>(null);
   const [chatContextState, setChatContextState] = useState<ChatContextState | null>(null);
   const [isContextLoading, setIsContextLoading] = useState(false);
   const [isUpdatingContext, setIsUpdatingContext] = useState(false);
+
+  const applyBillingQuotaNotice = useCallback((status: BillingStatus | null) => {
+    if (!status || status.is_premium || status.chat_quota.is_unlimited) {
+      setChatQuotaNotice(null);
+      return;
+    }
+
+    if (status.chat_quota.remaining <= 0) {
+      setChatQuotaNotice("Kuota chat gratis periode ini sudah habis. Kuota akan refresh otomatis sesuai jadwal reset, atau lanjutkan dengan jurnal dan latihan napas.");
+      return;
+    }
+
+    setChatQuotaNotice(null);
+  }, []);
+
+  const refreshBillingStatus = useCallback(async () => {
+    if (!token) {
+      setBillingStatus(null);
+      return;
+    }
+
+    try {
+      const response = await billingService.getStatus(token);
+      setBillingStatus(response.data);
+      applyBillingQuotaNotice(response.data);
+    } catch (error) {
+      console.error("Failed to load billing status:", error);
+    }
+  }, [applyBillingQuotaNotice, token]);
+
+  useEffect(() => {
+    const handleQuotaLimited = (event: Event) => {
+      const detail = (event as CustomEvent<ChatQuotaLimitedEventDetail>).detail;
+      const message = detail?.message?.trim();
+      setChatQuotaNotice(message || "Kuota chat gratis periode ini sudah habis. Kuota akan refresh otomatis sesuai jadwal reset.");
+    };
+
+    const handleQuotaCleared = () => {
+      setChatQuotaNotice(null);
+    };
+
+    window.addEventListener("chat-quota-limited", handleQuotaLimited);
+    window.addEventListener("chat-quota-cleared", handleQuotaCleared);
+    window.addEventListener("billing-status-refresh", refreshBillingStatus);
+
+    return () => {
+      window.removeEventListener("chat-quota-limited", handleQuotaLimited);
+      window.removeEventListener("chat-quota-cleared", handleQuotaCleared);
+      window.removeEventListener("billing-status-refresh", refreshBillingStatus);
+    };
+  }, [refreshBillingStatus]);
+
+  useEffect(() => {
+    void refreshBillingStatus();
+  }, [refreshBillingStatus]);
+
+  useEffect(() => {
+    if (!token) return;
+
+    const interval = window.setInterval(refreshBillingStatus, 60_000);
+    return () => window.clearInterval(interval);
+  }, [token, refreshBillingStatus]);
+
+  useEffect(() => {
+    if (!token || !billingStatus) return;
+    if (billingStatus.is_premium || billingStatus.chat_quota.is_unlimited) return;
+
+    const resetAtMs = new Date(billingStatus.chat_quota.reset_at).getTime();
+    if (!Number.isFinite(resetAtMs)) return;
+
+    const delay = Math.max(1_000, resetAtMs - Date.now() + 1_000);
+    const timeout = window.setTimeout(refreshBillingStatus, delay);
+    return () => window.clearTimeout(timeout);
+  }, [
+    billingStatus,
+    refreshBillingStatus,
+    token,
+  ]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -465,28 +576,40 @@ export function useChatPage() {
     }
   }, [token, activeSession?.uuid]);
 
-  const buildMessageOptions = useCallback((source: string): SendMessageOptions | undefined => {
-    if (!chatContextState?.preferences) return undefined;
+  useEffect(() => {
+    if (!activeSession?.uuid || !chatContextState?.preferences) return;
+    if (isUpdatingContext) return;
+    if (hasAllContextSourcesEnabled(chatContextState.preferences)) return;
 
-    const prefs = chatContextState.preferences;
+    void handleUpdateContextPreferences(ALWAYS_ON_CONTEXT_PREFERENCES);
+  }, [
+    activeSession?.uuid,
+    chatContextState?.preferences,
+    handleUpdateContextPreferences,
+    isUpdatingContext,
+  ]);
+
+  const buildMessageOptions = useCallback((source: string): SendMessageOptions => {
+    const sessionIntent = chatContextState?.preferences?.session_intent ?? "general";
+
     return {
       context: {
-        enable_mood_context: prefs.enable_mood_context,
-        enable_journal_context: prefs.enable_journal_context,
-        enable_daily_task_context: prefs.enable_daily_task_context,
-        enable_xp_level_context: prefs.enable_xp_level_context,
-        enable_breathing_context: prefs.enable_breathing_context,
-        enable_playlist_context: prefs.enable_playlist_context,
-        enable_rewards_context: prefs.enable_rewards_context,
-        enable_progress_map_context: prefs.enable_progress_map_context,
-        enable_social_context: prefs.enable_social_context,
-        session_intent: prefs.session_intent,
+        enable_mood_context: true,
+        enable_journal_context: true,
+        enable_daily_task_context: true,
+        enable_xp_level_context: true,
+        enable_breathing_context: true,
+        enable_playlist_context: true,
+        enable_rewards_context: true,
+        enable_progress_map_context: true,
+        enable_social_context: true,
+        session_intent: sessionIntent,
       },
       metadata: {
         source,
       },
     };
-  }, [chatContextState?.preferences]);
+  }, [chatContextState?.preferences?.session_intent]);
 
   const handleLoadSession = (sessionId: string) => {
     if (token) loadSession(token, sessionId);
@@ -545,6 +668,10 @@ export function useChatPage() {
     setIsSafeModeActive(false);
     setPendingCrisisMessage(null);
     setSafeModeSessionId(null);
+  };
+
+  const handleOpenBillingFromQuota = () => {
+    router.push(ROUTES.BILLING);
   };
 
   const isSafeModeVisible = isSafeModeActive && (!safeModeSessionId || safeModeSessionId === activeSession?.uuid);
@@ -680,11 +807,13 @@ export function useChatPage() {
     setShowCrisisModal,
     isSafeModeActive: isSafeModeVisible,
     pendingCrisisMessage,
+    chatQuotaNotice,
     currentSummary,
     isGeneratingSummary,
     suggestedPrompts,
     journeyCompanion,
     reflectionNudge,
+    billingStatus,
     chatContextState,
     isContextLoading,
     isUpdatingContext,
@@ -719,5 +848,6 @@ export function useChatPage() {
     handleOpenCrisisSupport,
     handleOpenBreathingSupport,
     handleDismissSafeMode,
+    handleOpenBillingFromQuota,
   };
 }

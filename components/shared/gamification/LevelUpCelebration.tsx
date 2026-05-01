@@ -110,7 +110,7 @@ export function LevelUpCelebration({ celebration, onClose, className }: LevelUpC
                 </div>
 
                 {/* Title */}
-                <h2 className="text-3xl font-bold mb-2">Level Up! 🎉</h2>
+                <h2 className="text-3xl font-bold mb-2">Naik Level! 🎉</h2>
                 <p
                     className="text-xl font-semibold mb-2"
                     style={{ color: celebration.tier_color }}

@@ -22,6 +22,8 @@ export const ROUTES = {
   DASHBOARD_COMMUNITY: "/dashboard/community",
   PROFILE: "/dashboard/profile",
   SETTINGS: "/dashboard/settings",
+  TOPUP: "/dashboard/topup",
+  BILLING: "/dashboard/billing",
   
   // Features
   BREATHING: "/dashboard/breathing",
@@ -56,6 +58,16 @@ export const ROUTES = {
     BROADCASTS: "/dashboard/admin/broadcasts",
   },
 
+  // Mitra
+  MITRA: {
+    DASHBOARD: "/dashboard/mitra",
+    ORGANIZATIONS: "/dashboard/mitra/organizations",
+    SUBSCRIPTION: "/dashboard/mitra/subscription",
+    INSIGHTS: "/dashboard/mitra/insights",
+    PAYMENTS: "/dashboard/mitra/payments",
+    SETTINGS: "/dashboard/mitra/settings",
+  },
+
   // Dynamic Builders
   articleDetail: (slug: string) => `/dashboard/articles/${slug}`,
   articleRead: (slug: string) => `/dashboard/articles/read/${slug}`,
@@ -64,7 +76,7 @@ export const ROUTES = {
   publicStoryDetail: (id: string | number) => `/stories/${id}`,
   forumDetail: (id: string | number) => `/dashboard/forum/${id}`,
   adminForumDetail: (id: string | number) => `/dashboard/admin/forums/${id}`,
-  moderationArticle: (id: string | number) => `/dashboard/moderation/articles/${id}`,
-  moderationReport: (id: string | number) => `/dashboard/moderation/reports/${id}`,
+  moderationArticle: (id: string | number) => `/dashboard/moderation/queue?focus=${encodeURIComponent(String(id))}`,
+  moderationReport: (id: string | number) => `/dashboard/moderation/reports?focus=${encodeURIComponent(String(id))}`,
   guildDetail: (id: string | number) => `/dashboard/guilds/${id}`,
 } as const;

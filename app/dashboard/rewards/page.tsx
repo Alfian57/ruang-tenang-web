@@ -100,6 +100,7 @@ export default function RewardsPage() {
   const [ownedThemes, setOwnedThemes] = useState<string[]>(["default"]);
   const [activeTheme, setActiveTheme] = useState<string>("default");
   const [activatingTheme, setActivatingTheme] = useState<string | null>(null);
+  const canCustomizeThemes = user?.role === "user";
 
   const fetchData = useCallback(async () => {
     if (!token) return;
@@ -114,7 +115,7 @@ export default function RewardsPage() {
       if (rewardsRes.data) setRewards(rewardsRes.data);
       if (balanceRes.data) setBalance(balanceRes.data.gold_coins);
       if (claimsRes.data) setClaims(claimsRes.data.claims || []);
-      if (themesRes.data) {
+      if (themesRes.data && canCustomizeThemes) {
         setOwnedThemes(themesRes.data.owned_themes || ["default"]);
         setActiveTheme(themesRes.data.active_theme || "default");
       }
@@ -123,7 +124,7 @@ export default function RewardsPage() {
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [canCustomizeThemes, token]);
 
   useEffect(() => {
     fetchData();
@@ -133,9 +134,12 @@ export default function RewardsPage() {
     if (user?.gold_coins !== undefined) {
       setBalance(user.gold_coins);
     }
-    if (user?.profile_theme) {
+    if (user?.role === "user" && user.profile_theme) {
       setActiveTheme(user.profile_theme);
+      return;
     }
+    setOwnedThemes(["default"]);
+    setActiveTheme("default");
   }, [user]);
 
   const formatThemeLabel = (theme: string) =>
@@ -144,7 +148,7 @@ export default function RewardsPage() {
       .replace(/\b\w/g, (char) => char.toUpperCase());
 
   const handleActivateTheme = async (theme: string) => {
-    if (!token || activatingTheme) return;
+    if (!token || activatingTheme || !canCustomizeThemes) return;
 
     setActivatingTheme(theme);
     try {
@@ -292,13 +296,13 @@ export default function RewardsPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+        {canCustomizeThemes && <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
           <div className="flex items-center justify-between gap-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Theme Locker</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-red-700">Theme Locker</p>
               <h3 className="text-lg font-semibold text-gray-900 mt-1">Tema Aktif: {formatThemeLabel(activeTheme)}</h3>
             </div>
-            <div className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs font-medium text-emerald-700">
+            <div className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-white px-3 py-1 text-xs font-medium text-red-700">
               <Palette className="w-3.5 h-3.5" />
               {ownedThemes.length} tema dimiliki
             </div>
@@ -325,7 +329,7 @@ export default function RewardsPage() {
               );
             })}
           </div>
-        </div>
+        </div>}
       </div>
 
       {/* Tabs */}

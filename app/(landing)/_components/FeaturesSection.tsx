@@ -14,6 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LandingDataNotice } from "./LandingDataNotice";
 
 const SIGNATURE_LOOP = [
   {
@@ -21,7 +22,7 @@ const SIGNATURE_LOOP = [
     icon: BookOpen,
     title: "Refleksi",
     description: "Mulai dari check-in emosi, lalu tulis 3 menit agar pikiran tidak berputar sendiri.",
-    highlight: "Mood + Journal",
+    highlight: "Mood + Jurnal",
     href: `${ROUTES.JOURNAL}/create?mode=structured-reflection`,
     style: "from-rose-500 to-red-500",
   },
@@ -30,7 +31,7 @@ const SIGNATURE_LOOP = [
     icon: Compass,
     title: "Progres",
     description: "Langkah harian mengalir ke peta perjalanan sehingga kemajuan terasa nyata, bukan abstrak.",
-    highlight: "Daily Task + Progress Map",
+    highlight: "Misi Harian + Peta Perjalanan",
     href: ROUTES.PROGRESS_MAP,
     style: "from-amber-500 to-orange-500",
   },
@@ -39,40 +40,40 @@ const SIGNATURE_LOOP = [
     icon: Gift,
     title: "Reward Identitas",
     description: "Koin ditukar menjadi perubahan atmosfer dashboard, sehingga reward terasa hidup setiap hari.",
-    highlight: "Theme Activation",
+    highlight: "Tema Dashboard",
     href: ROUTES.REWARDS,
-    style: "from-indigo-500 to-sky-500",
+    style: "from-red-500 to-rose-600",
   },
   {
     id: "04",
     icon: Users,
     title: "Komunitas",
     description: "Misi bersama dan diskusi aman menjaga momentum agar pemulihan tidak berjalan sendirian.",
-    highlight: "Shared Mission + Forum",
+    highlight: "Misi Bersama + Forum",
     href: ROUTES.DASHBOARD_COMMUNITY,
-    style: "from-emerald-500 to-teal-500",
+    style: "from-rose-600 to-red-700",
   },
 ];
 
 const WOW_MOMENTS = [
   {
-    title: "Wow Moment #1: Mood jadi arahan, bukan angka",
-    description: "Setelah check-in, user langsung mendapat next step kontekstual ke jurnal, napas, atau chat.",
+    title: "Momen utama #1: Mood jadi arahan, bukan angka",
+    description: "Setelah check-in, pengguna langsung mendapat langkah berikutnya yang relevan ke jurnal, napas, atau chat.",
     cta: "Lihat Mood Insight",
     href: ROUTES.DASHBOARD,
   },
   {
-    title: "Wow Moment #2: Reward mengubah suasana real-time",
-    description: "Setelah claim theme, seluruh atmosfer dashboard berubah agar progres terasa personal.",
-    cta: "Coba Klaim Theme",
+    title: "Momen utama #2: Reward mengubah suasana dashboard",
+    description: "Setelah klaim tema, atmosfer dashboard berubah agar progres terasa personal.",
+    cta: "Coba Klaim Tema",
     href: ROUTES.REWARDS,
   },
 ];
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="py-24 px-4 bg-white relative overflow-hidden">
-      <div className="absolute inset-0 opacity-30">
+    <section id="features" className="relative overflow-hidden bg-linear-to-b from-white via-rose-50/40 to-white px-4 py-14 sm:py-16 md:py-20">
+      <div className="absolute inset-0 opacity-25">
         <div
           className="absolute inset-0"
           style={{
@@ -82,47 +83,48 @@ export function FeaturesSection() {
           }}
         />
       </div>
-      <div className="absolute -top-20 -right-12 h-72 w-72 rounded-full bg-rose-100/70 blur-3xl" />
-      <div className="absolute -bottom-16 -left-10 h-72 w-72 rounded-full bg-orange-100/65 blur-3xl" />
 
       <div className="container mx-auto max-w-6xl relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="mb-10 text-center md:mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-rose-200 bg-white text-rose-700 font-semibold text-sm mb-6">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white px-4 py-2 text-sm font-semibold text-rose-700 shadow-sm">
             <Sparkles className="w-4 h-4" />
-            Signature Loop Experience
+            Alur Utama Ruang Tenang
           </div>
-          <h2 className="font-brand-display text-3xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="font-brand-display mb-4 text-2xl font-bold leading-tight text-gray-900 sm:text-3xl md:text-5xl">
             Bukan daftar fitur,
             <span className="text-primary"> tapi alur pemulihan yang menyatu</span>
           </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="mx-auto max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">
             Empat tahap inti ini didesain sebagai satu siklus berulang: refleksi, progres, reward identitas, lalu dukungan komunitas.
           </p>
+          <div className="mt-5">
+            <LandingDataNotice variant="demo" />
+          </div>
         </motion.div>
 
-        <div className="grid lg:grid-cols-12 gap-8 items-start">
-          <div className="lg:col-span-7 rounded-3xl border border-rose-200/80 bg-white/90 p-5 md:p-7 shadow-xl">
-            <div className="mb-6 flex items-start justify-between gap-4">
+        <div className="grid items-start gap-5 lg:grid-cols-12 lg:gap-8">
+          <div className="lg:col-span-7 rounded-3xl border border-rose-200/80 bg-white/95 p-5 shadow-xl shadow-red-950/5 md:p-7">
+            <div className="mb-6 flex flex-col items-start gap-3 sm:flex-row sm:justify-between">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-rose-600">Core Loop</p>
-                <h3 className="font-brand-display text-2xl font-bold text-gray-900 mt-1">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-rose-600">Alur Utama</p>
+                <h3 className="font-brand-display mt-1 text-xl font-bold leading-snug text-gray-900 sm:text-2xl">
                   Refleksi {"->"} Progres {"->"} Reward {"->"} Komunitas
                 </h3>
               </div>
-              <div className="rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">30-90 detik demo</div>
+              <div className="rounded-lg bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">Simulasi alur</div>
             </div>
 
             <div className="space-y-4">
               {SIGNATURE_LOOP.map((stage, index) => (
                 <motion.div
                   key={stage.id}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? -24 : 24 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.08 }}
                   className="relative"
@@ -131,7 +133,7 @@ export function FeaturesSection() {
                     <div className="absolute left-7 top-16 h-8 w-0.5 bg-linear-to-b from-rose-200 to-transparent" />
                   )}
 
-                  <div className="flex items-start gap-4 rounded-2xl border border-gray-100 bg-white p-4 hover:border-rose-200 hover:shadow-md transition-all">
+                  <div className="flex items-start gap-3 rounded-2xl border border-gray-100 bg-white p-4 transition-all hover:border-rose-200 hover:shadow-md sm:gap-4">
                     <div className={`h-11 w-11 rounded-2xl bg-linear-to-br ${stage.style} text-white shrink-0 grid place-items-center`}>
                       <stage.icon className="w-5 h-5" />
                     </div>
@@ -142,9 +144,9 @@ export function FeaturesSection() {
                       </div>
                       <p className="text-sm text-gray-600 mt-1 leading-relaxed">{stage.description}</p>
                       <div className="mt-3 flex items-center justify-between gap-3">
-                        <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">{stage.highlight}</span>
+                        <span className="min-w-0 text-xs font-semibold uppercase tracking-wide text-gray-500">{stage.highlight}</span>
                         <Link href={stage.href} className="text-sm font-semibold text-rose-700 hover:text-rose-600 inline-flex items-center gap-1">
-                          Buka
+                          Lihat
                           <ArrowRight className="w-3.5 h-3.5" />
                         </Link>
                       </div>
@@ -163,15 +165,15 @@ export function FeaturesSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.12 }}
-                className="rounded-3xl border border-gray-200 bg-white p-5 md:p-6 shadow-sm"
+                className="rounded-3xl border border-rose-100 bg-white p-5 shadow-sm shadow-red-950/5 md:p-6"
               >
-                <div className="flex items-center gap-2 text-indigo-700">
+                <div className="flex items-center gap-2 text-rose-700">
                   <Trophy className="w-4 h-4" />
-                  <p className="text-[11px] font-semibold uppercase tracking-wider">Showcase Peak</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wider">Momen Utama</p>
                 </div>
                 <h4 className="font-brand-display text-xl font-bold text-gray-900 mt-2 leading-tight">{moment.title}</h4>
                 <p className="text-sm text-gray-600 mt-2 leading-relaxed">{moment.description}</p>
-                <Link href={moment.href} className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-700 mt-4 hover:text-indigo-600">
+                <Link href={moment.href} className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-rose-700 hover:text-red-600">
                   {moment.cta}
                   <ArrowRight className="w-4 h-4" />
                 </Link>
@@ -183,20 +185,20 @@ export function FeaturesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.32 }}
-              className="rounded-3xl border border-emerald-200 bg-linear-to-br from-emerald-50 via-white to-cyan-50 p-5 md:p-6"
+              className="rounded-3xl border border-rose-200 bg-linear-to-br from-rose-50 via-white to-red-50 p-5 md:p-6"
             >
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs font-semibold text-emerald-700">
+              <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white px-3 py-1 text-xs font-semibold text-rose-700">
                 <MessageCircle className="w-3.5 h-3.5" />
-                Fast Entry Point
+                Mulai Cepat
               </div>
               <h4 className="font-brand-display text-lg font-bold text-gray-900 mt-3">Masuk lewat satu pertanyaan sederhana</h4>
               <p className="text-sm text-gray-600 mt-1 leading-relaxed">
                 User tidak perlu memahami semua menu. Cukup pilih kondisi saat ini, lalu sistem mengantar ke langkah paling relevan.
               </p>
 
-              <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="mt-4 grid gap-2 sm:grid-cols-2">
                 <Link href={ROUTES.LOGIN}>
-                  <Button className="w-full">Lihat Demo</Button>
+                  <Button className="w-full">Masuk untuk mencoba</Button>
                 </Link>
                 <Link href={ROUTES.REGISTER}>
                   <Button variant="outline" className="w-full">Mulai Gratis</Button>

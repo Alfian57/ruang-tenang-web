@@ -36,10 +36,10 @@ export function ChatHeader({
     onOpenMobileSidebar,
 }: ChatHeaderProps) {
     return (
-        <div className="flex items-center justify-between p-4 border-b bg-white shrink-0">
-            <h3 className="font-semibold text-gray-800 line-clamp-1 flex-1">{activeSession.title}</h3>
+        <div className="flex min-w-0 items-center justify-between gap-2 p-3 border-b bg-white shrink-0 sm:p-4">
+            <h3 className="min-w-0 flex-1 line-clamp-1 font-semibold text-gray-800">{activeSession.title}</h3>
 
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-1 sm:gap-2">
                 {/* Summary Button */}
                 {messageCount >= 4 && (
                     <Button
@@ -91,7 +91,7 @@ export function ChatHeader({
                 </DropdownMenu>
 
                 {/* Mobile sidebar toggle */}
-                <Button variant="ghost" size="icon" onClick={onOpenMobileSidebar} className="lg:hidden">
+                <Button variant="ghost" size="icon" onClick={onOpenMobileSidebar} className="sm:hidden">
                     <History className="w-5 h-5 text-gray-600" />
                 </Button>
             </div>

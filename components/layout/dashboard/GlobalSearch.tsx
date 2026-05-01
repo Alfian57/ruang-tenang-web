@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search, Loader2, Music, FileText } from "lucide-react";
+import { Search, Loader2, Music, FileText, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { searchService } from "@/services/api";
 import { getUploadUrl } from "@/services/http/upload-url";
@@ -135,18 +135,11 @@ export function GlobalSearch() {
           {results.songs.length > 0 && (
             <div>
               <h3 className="text-xs font-semibold text-gray-500 px-3 py-2 uppercase tracking-wider flex items-center gap-2">
-                <Music className="w-3 h-3" /> Lagu (Segera Hadir)
+                <Music className="w-3 h-3" /> Musik
               </h3>
               {results.songs.map((song) => (
                 <div
                   key={song.id}
-                  // For now, maybe just show a toast or nothing since songs might not have a dedicated detail page in dashboard yet?
-                  // Or maybe navigate to songs list with search param?
-                  // Let's assume we can navigate to a hypothetical song detail or just category
-                  // For this implementation, I'll allow clicking but it might effectively do nothing significant if page doesn't exist.
-                  // Wait, "Songs (Segera Hadir)" suggests maybe I shouldn't link it?
-                  // But the user asked for global search.
-                  // I'll make it clickable to "/dashboard/songs" for now.
                   onClick={() => handleSelect(ROUTES.MUSIC)}
                   className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-md cursor-pointer group"
                 >
@@ -163,9 +156,10 @@ export function GlobalSearch() {
                       {song.title}
                     </p>
                     <p className="text-xs text-gray-500 line-clamp-1">
-                      {song.category?.name}
+                      {song.category?.name || "Buka di halaman Musik"}
                     </p>
                   </div>
+                  <ArrowRight className="ml-auto h-3.5 w-3.5 text-gray-300 transition-colors group-hover:text-primary" />
                 </div>
               ))}
             </div>
@@ -175,7 +169,8 @@ export function GlobalSearch() {
 
       {isOpen && query && !isLoading && (!results || (results.articles.length === 0 && results.songs.length === 0)) && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 z-50 p-4 text-center text-sm text-gray-500">
-          Tidak ada hasil ditemukan
+          <p className="font-medium text-gray-700">Tidak ada hasil untuk kata kunci ini</p>
+          <p className="mt-1 text-xs text-gray-500">Coba kata kunci lain atau buka menu Artikel dan Musik.</p>
         </div>
       )}
     </div>

@@ -57,7 +57,7 @@ const MOOD_ACTION_PLANS: Record<
   angry: {
     title: "Turunkan intensitas emosi dulu",
     description: "Saat marah, jeda singkat membantu mencegah keputusan yang menyesal belakangan.",
-    primaryAction: { label: "Grounding lewat Pernafasan", href: ROUTES.BREATHING },
+    primaryAction: { label: "Grounding lewat Pernapasan", href: ROUTES.BREATHING },
     secondaryAction: { label: "Rilis Emosi ke Chat", href: ROUTES.CHAT },
   },
   crying: {

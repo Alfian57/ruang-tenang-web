@@ -96,15 +96,6 @@ export default function ProgressMapPage() {
                 />
             </div>
 
-            <div
-                className="pointer-events-none absolute -top-28 -right-20 h-72 w-72 rounded-full blur-3xl"
-                style={{ backgroundColor: "color-mix(in srgb, var(--color-primary) 28%, transparent)" }}
-            />
-            <div
-                className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full blur-3xl"
-                style={{ backgroundColor: "color-mix(in srgb, var(--theme-accent) 25%, transparent)" }}
-            />
-
             <div className="relative w-full space-y-6">
                 {/* Header */}
                 <motion.div

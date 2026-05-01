@@ -15,6 +15,10 @@ import {
   Map,
   Gamepad2,
   Bell,
+  Building2,
+  CreditCard,
+  Wallet,
+  BarChart3,
   type LucideIcon,
 } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
@@ -38,6 +42,11 @@ export const memberHighlightLink: NavLink = {
   href: ROUTES.CHAT, icon: MessageSquare, label: "Teman Cerita AI", highlight: true,
 };
 
+// Highlighted mitra dashboard link
+export const mitraHighlightLink: NavLink = {
+  href: ROUTES.MITRA.DASHBOARD, icon: Building2, label: "Dashboard Mitra", highlight: true,
+};
+
 // Member menu items (for regular users) - grouped
 export const memberGroups: NavGroup[] = [
   {
@@ -50,7 +59,7 @@ export const memberGroups: NavGroup[] = [
     title: "Aktivitas",
     links: [
       { href: ROUTES.JOURNAL, icon: BookOpen, label: "Jurnal" },
-      { href: ROUTES.BREATHING, icon: Wind, label: "Pernafasan" },
+      { href: ROUTES.BREATHING, icon: Wind, label: "Pernapasan" },
     ],
   },
   {
@@ -68,6 +77,13 @@ export const memberGroups: NavGroup[] = [
     links: [
       { href: ROUTES.GUILDS, icon: Swords, label: "Guild" },
       { href: ROUTES.DASHBOARD_COMMUNITY, icon: Trophy, label: "Community Stats" },
+    ],
+  },
+  {
+    title: "Akun",
+    links: [
+      { href: ROUTES.TOPUP, icon: Wallet, label: "Top Up Koin" },
+      { href: ROUTES.BILLING, icon: CreditCard, label: "Premium & Billing" },
     ],
   },
   {
@@ -103,6 +119,25 @@ export const adminGroups: NavGroup[] = [
     title: "Moderasi",
     links: [
       { href: ROUTES.ADMIN.MODERATION, icon: Shield, label: "Moderasi" },
+    ],
+  },
+];
+
+// Mitra menu items (for business users) - grouped
+export const mitraGroups: NavGroup[] = [
+  {
+    title: "Utama",
+    links: [
+      { href: ROUTES.MITRA.DASHBOARD, icon: Building2, label: "Dashboard Mitra" },
+    ],
+  },
+  {
+    title: "Operasional",
+    links: [
+      { href: ROUTES.MITRA.ORGANIZATIONS, icon: Users, label: "Organisasi" },
+      { href: ROUTES.MITRA.SUBSCRIPTION, icon: CreditCard, label: "Langganan" },
+      { href: ROUTES.MITRA.INSIGHTS, icon: BarChart3, label: "Analitik Seat" },
+      { href: ROUTES.MITRA.PAYMENTS, icon: Wallet, label: "Pembayaran" },
     ],
   },
 ];

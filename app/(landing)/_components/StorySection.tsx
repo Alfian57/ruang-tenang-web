@@ -7,6 +7,7 @@ import { storyService } from "@/services/api";
 import { ROUTES } from "@/lib/routes";
 import { ArrowRight, BookHeart, Heart, Quote } from "lucide-react";
 import type { StoryCard } from "@/types";
+import { LandingDataNotice } from "./LandingDataNotice";
 
 interface Story {
   id: string;
@@ -20,9 +21,9 @@ interface Story {
 
 const GRADIENT_ACCENTS = [
   "from-rose-500/10 to-pink-500/5",
-  "from-blue-500/10 to-cyan-500/5",
-  "from-purple-500/10 to-violet-500/5",
-  "from-amber-500/10 to-orange-500/5",
+  "from-red-500/10 to-rose-500/5",
+  "from-rose-600/10 to-red-500/5",
+  "from-pink-500/10 to-red-500/5",
 ];
 
 const FALLBACK_STORIES: Story[] = [
@@ -85,37 +86,36 @@ export function StorySection() {
   const usingFallbackStories = stories.length === 0;
 
   return (
-    <section id="stories" className="py-24 px-4 bg-white relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute top-0 left-1/2 w-96 h-96 bg-pink-50 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-
+    <section id="stories" className="relative overflow-hidden bg-linear-to-b from-white via-rose-50/45 to-white px-4 py-14 sm:py-16 md:py-20">
       <div className="container mx-auto max-w-6xl relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-14"
+          className="mb-10 text-center md:mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-pink-50 rounded-full text-pink-600 font-medium text-sm mb-6">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-700 shadow-sm">
             <BookHeart className="w-4 h-4" />
             Cerita Inspiratif
           </div>
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="mb-4 text-2xl font-bold leading-tight text-gray-900 sm:text-3xl md:text-5xl">
             Kisah Nyata dari{" "}
             <span className="text-primary">Komunitas Kita</span>
           </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
-            Cerita inspiratif dari mereka yang sudah melewati masa sulit.
-            Kamu tidak sendirian.
+          <p className="mx-auto max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">
+            Cerita yang tampil di sini adalah cerita publik komunitas atau contoh pilihan saat data terbaru belum tersedia.
           </p>
+          <div className="mt-5">
+            <LandingDataNotice variant="public" />
+          </div>
         </motion.div>
 
         {/* Story Cards */}
         {loading ? (
-          <div className="grid md:grid-cols-2 gap-6 mb-10">
+          <div className="mb-8 grid gap-5 md:grid-cols-2">
             {Array.from({ length: 2 }).map((_, index) => (
-              <div key={index} className="rounded-2xl border border-gray-100 p-7 bg-white animate-pulse">
+              <div key={index} className="animate-pulse rounded-2xl border border-rose-100 bg-white p-7">
                 <div className="h-6 bg-gray-100 rounded w-1/2 mb-4" />
                 <div className="h-5 bg-gray-100 rounded w-4/5 mb-3" />
                 <div className="h-4 bg-gray-100 rounded w-full mb-2" />
@@ -126,14 +126,14 @@ export function StorySection() {
         ) : (
           <>
             {usingFallbackStories && (
-              <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-3">
-                <p className="text-sm font-medium text-amber-800">
+              <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50/80 px-4 py-3">
+                <p className="text-sm font-medium text-rose-800">
                   Menampilkan cerita pilihan sementara sambil menunggu cerita komunitas terbaru.
                 </p>
               </div>
             )}
 
-            <div className="grid md:grid-cols-2 gap-6 mb-10">
+            <div className="mb-8 grid gap-5 md:grid-cols-2">
               {displayedStories.map((story, index) => (
                 <motion.div
                   key={story.id}
@@ -144,7 +144,7 @@ export function StorySection() {
                 >
                   <Link href={story.href || ROUTES.publicStoryDetail(story.id)}>
                     <div
-                      className={`group bg-linear-to-br ${GRADIENT_ACCENTS[index % GRADIENT_ACCENTS.length]} rounded-2xl p-7 border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full`}
+                      className={`group h-full rounded-2xl border border-rose-100 bg-linear-to-br ${GRADIENT_ACCENTS[index % GRADIENT_ACCENTS.length]} p-7 shadow-sm shadow-red-950/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
                     >
                       <Quote className="w-8 h-8 text-primary/20 mb-4" />
                       <h3 className="font-bold text-gray-900 text-lg mb-3 group-hover:text-primary transition-colors line-clamp-2">

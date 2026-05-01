@@ -26,11 +26,36 @@ const ALLOWED_ATTR = [
     "href", "target", "rel",
     // Images
     "src", "alt", "width", "height", "loading",
-    // General
-    "class", "id", "style",
     // Tables
     "colspan", "rowspan",
 ];
+
+let hooksInstalled = false;
+
+function installSanitizeHooks() {
+    if (hooksInstalled) return;
+
+    DOMPurify.addHook("afterSanitizeAttributes", (node) => {
+        const element = node as Element;
+        if (!element || typeof element.tagName !== "string") return;
+
+        if (element.tagName === "A") {
+            const href = element.getAttribute("href") ?? "";
+            const isExternal = /^https?:\/\//i.test(href);
+
+            if (isExternal || element.getAttribute("target") === "_blank") {
+                element.setAttribute("target", "_blank");
+                element.setAttribute("rel", "noopener noreferrer");
+            }
+        }
+
+        if (element.tagName === "IMG" && !element.getAttribute("loading")) {
+            element.setAttribute("loading", "lazy");
+        }
+    });
+
+    hooksInstalled = true;
+}
 
 /**
  * Sanitize HTML content to prevent XSS attacks.
@@ -38,11 +63,12 @@ const ALLOWED_ATTR = [
  */
 export function sanitizeHtml(html: string): string {
     if (!html) return "";
+    installSanitizeHooks();
 
     return DOMPurify.sanitize(html, {
         ALLOWED_TAGS,
         ALLOWED_ATTR,
         ALLOW_DATA_ATTR: false,
-        ADD_ATTR: ["target"],
+        ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto|tel):|\/(?!\/)|#)/i,
     });
 }

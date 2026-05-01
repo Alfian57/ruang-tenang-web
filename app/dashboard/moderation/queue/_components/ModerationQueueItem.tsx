@@ -2,17 +2,24 @@ import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
 import { FileText, Eye } from "lucide-react";
-import { formatDate } from "@/utils";
+import { cn, formatDate } from "@/utils";
 import { ModerationQueueItem as ModerationQueueItemType } from "@/types/moderation";
 import { STATUS_LABELS } from "./ModerationQueueHeader";
 
 interface ModerationQueueItemProps {
     item: ModerationQueueItemType;
+    isFocused?: boolean;
 }
 
-export function ModerationQueueItem({ item }: ModerationQueueItemProps) {
+export function ModerationQueueItem({ item, isFocused = false }: ModerationQueueItemProps) {
     return (
-        <div className="flex items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+        <div
+            id={`moderation-article-${item.id}`}
+            className={cn(
+                "flex items-center gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors",
+                isFocused && "border-primary bg-primary/5 ring-2 ring-primary/20"
+            )}
+        >
             <div className="shrink-0">
                 <div className="h-12 w-12 rounded bg-muted flex items-center justify-center">
                     <FileText className="h-6 w-6 text-muted-foreground" />

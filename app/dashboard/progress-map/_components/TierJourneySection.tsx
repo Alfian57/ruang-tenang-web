@@ -177,7 +177,7 @@ function buildTierLandmarks(tier: TierGroup, regions: MapRegion[]): TierLandmark
 }
 
 export function TierJourneySection() {
-    const { user, token } = useAuthStore();
+    const { user, token, refreshUser } = useAuthStore();
     const [loading, setLoading] = useState(false);
     const [levelConfigs, setLevelConfigs] = useState<LevelConfig[]>([]);
     const [mapData, setMapData] = useState<FullMapResponse | null>(null);
@@ -255,8 +255,14 @@ export function TierJourneySection() {
                     setCelebratingLandmarkId(null);
                 }, 1100);
             }
-            const refreshedMap = await progressMapService.getFullMap(token);
-            setMapData(refreshedMap.data);
+            const [refreshedMapResult] = await Promise.allSettled([
+                progressMapService.getFullMap(token),
+                refreshUser(),
+            ]);
+
+            if (refreshedMapResult.status === "fulfilled") {
+                setMapData(refreshedMapResult.value.data);
+            }
         } catch {
             toast.error("Gagal mengklaim reward");
         } finally {

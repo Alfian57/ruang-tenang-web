@@ -107,6 +107,7 @@ export const registerSchema = z
     email: emailSchema,
     password: passwordSchema,
     password_confirmation: z.string().min(1, "Konfirmasi password harus diisi"),
+    role: z.enum(["user"]).optional(),
   })
   .refine((data) => data.password === data.password_confirmation, {
     message: "Password tidak cocok",

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Settings, KeyRound, LogOut, Ban, MapIcon, Rocket } from "lucide-react";
+import { ChevronDown, Settings, KeyRound, LogOut, Ban, MapIcon, Rocket, Building2, Crown, CreditCard, Lock } from "lucide-react";
 import { GlobalSearch, ThemeSwitcher } from "@/components/layout/dashboard";
 import {
   DropdownMenu,
@@ -14,11 +14,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { getUploadUrl } from "@/services/http/upload-url";
 import { ROUTES } from "@/lib/routes";
-import type { User, XPBoostStatus } from "@/types";
+import type { BillingStatus, User, XPBoostStatus } from "@/types";
 
 interface TopHeaderProps {
   user: User;
   isAdmin: boolean;
+  isMitra: boolean;
+  billingStatus?: BillingStatus | null;
   xpBoost: XPBoostStatus | null;
   onEditProfile: () => void;
   onChangePassword: () => void;
@@ -30,6 +32,8 @@ interface TopHeaderProps {
 export function TopHeader({
   user,
   isAdmin,
+  isMitra,
+  billingStatus,
   xpBoost,
   onEditProfile,
   onChangePassword,
@@ -38,8 +42,17 @@ export function TopHeader({
   onShowExpHistory,
 }: TopHeaderProps) {
   const router = useRouter();
+  const isUser = !isAdmin && !isMitra;
 
-  const hasXPBoost = Boolean(xpBoost && xpBoost.remaining_seconds > 0);
+  const hasXPBoost = isUser && Boolean(xpBoost && xpBoost.remaining_seconds > 0);
+  const isPremium = Boolean(billingStatus?.is_premium || user.is_premium);
+  const chatQuota = billingStatus?.chat_quota;
+  const isChatLimitExhausted = isUser && Boolean(chatQuota && !isPremium && !chatQuota.is_unlimited && chatQuota.remaining <= 0);
+  const quotaLabel = !chatQuota
+    ? "cek kuota"
+    : chatQuota.is_unlimited
+    ? "Tanpa batas"
+    : `${Math.max(0, chatQuota?.remaining ?? 0)}/${chatQuota?.limit ?? 0}`;
 
   const formatRemaining = (seconds: number) => {
     if (seconds <= 0) return "berakhir";
@@ -55,14 +68,14 @@ export function TopHeader({
   };
 
   return (
-    <header className="header-themed hidden lg:flex h-16 bg-white border-b items-center px-6 sticky top-0 z-40">
+    <header className="header-themed hidden lg:flex h-16 min-w-0 bg-white border-b items-center px-4 xl:px-6 sticky top-0 z-40">
       {/* Search & Actions */}
-      <div className="w-full flex items-center justify-between gap-4">
-        <div className="flex-1 max-w-xl">
+      <div className="w-full min-w-0 flex items-center justify-between gap-3 xl:gap-4">
+        <div className="min-w-0 flex-1 max-w-xl">
           <GlobalSearch />
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 shrink-0 items-center gap-2 xl:gap-3">
           {/* Gamification Info */}
           {isAdmin ? (
             <div className="hidden md:flex items-center bg-linear-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-full px-4 py-1.5 shadow-sm">
@@ -71,8 +84,37 @@ export function TopHeader({
                 <span className="text-purple-600 font-semibold">Admin</span>
               </div>
             </div>
+          ) : isMitra ? (
+            <div className="hidden md:flex items-center bg-linear-to-r from-red-50 to-rose-50 border border-red-200 rounded-full px-4 py-1.5 shadow-sm">
+              <div className="flex items-center gap-2">
+                <Building2 className="h-4 w-4 text-red-600" />
+                <span className="text-red-700 font-semibold">Mitra</span>
+              </div>
+            </div>
           ) : (
             <>
+              <button
+                type="button"
+                onClick={() => router.push(ROUTES.BILLING)}
+                className={`hidden md:flex items-center gap-2 rounded-full border px-3 py-1.5 shadow-sm transition-all hover:shadow-md ${
+                  isPremium
+                    ? "border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100"
+                    : isChatLimitExhausted
+                      ? "border-amber-300 bg-amber-100 text-amber-800 hover:bg-amber-200"
+                    : "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100"
+                }`}
+                title={isPremium ? "Premium aktif" : isChatLimitExhausted ? "Limit chat habis, buka Billing" : "Buka Billing & Paket"}
+                aria-label={isPremium ? "Premium aktif" : isChatLimitExhausted ? "Limit chat habis, buka Billing" : "Buka Billing dan Paket"}
+              >
+                {isPremium ? <Crown className="h-3.5 w-3.5" /> : isChatLimitExhausted ? <Lock className="h-3.5 w-3.5" /> : <CreditCard className="h-3.5 w-3.5" />}
+                <span className="text-xs font-semibold whitespace-nowrap">
+                  {isPremium ? "Premium" : isChatLimitExhausted ? "Limit habis" : "Gratis"}
+                </span>
+                <span className="text-[11px] opacity-80 whitespace-nowrap">
+                  {isPremium ? "Chat tanpa batas" : chatQuota ? `${quotaLabel} chat` : quotaLabel}
+                </span>
+              </button>
+
               {hasXPBoost && (
                 <div
                   className="hidden md:flex items-center gap-2 rounded-full border border-orange-200 bg-linear-to-r from-orange-50 to-amber-50 px-3 py-1.5 shadow-sm"
@@ -131,7 +173,7 @@ export function TopHeader({
           )}
 
           {/* Theme Switcher */}
-          {!isAdmin && <ThemeSwitcher />}
+          {isUser && <ThemeSwitcher />}
 
           {/* Profile dropdown */}
           <DropdownMenu>
@@ -169,7 +211,7 @@ export function TopHeader({
                 <KeyRound className="mr-2 h-4 w-4" />
                 <span>Ganti Password</span>
               </DropdownMenuItem>
-              {!isAdmin && (
+              {isUser && (
                 <DropdownMenuItem onClick={onShowBlockedUsers} className="cursor-pointer">
                   <Ban className="mr-2 h-4 w-4" />
                   <span>Pengguna Diblokir</span>

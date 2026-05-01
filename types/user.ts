@@ -1,15 +1,19 @@
 // User types
+export type UserRole = "admin" | "user" | "mitra";
+
 export interface User {
   id: number;
   name: string;
   email: string;
   avatar?: string;
-  role: "admin" | "member";
+  role: UserRole;
   exp: number;
   gold_coins: number;
   level: number;
   badge_name: string;
   badge_icon: string;
+  is_premium?: boolean;
+  premium_until?: string;
   // Moderation-related fields
   has_accepted_ai_disclaimer?: boolean;
   content_warning_preference?: "show" | "hide_all" | "ask_each_time";

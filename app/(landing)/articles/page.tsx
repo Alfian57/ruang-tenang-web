@@ -4,7 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { Search, ArrowLeft, BookOpen } from "lucide-react";
+import { Search, BookOpen } from "lucide-react";
+import { Navbar, Footer } from "@/components/layout";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,14 +28,6 @@ function ArticlesContent() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [categories, setCategories] = useState<ArticleCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  const handleBack = () => {
-    if (window.history.length > 1) {
-      router.back();
-    } else {
-      router.push(ROUTES.HOME);
-    }
-  };
 
   const updateUrl = useCallback((updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -83,23 +76,21 @@ function ArticlesContent() {
   }, [loadArticles]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="container mx-auto max-w-6xl px-4 py-4">
-          <div className="flex items-center gap-4">
-            <button onClick={handleBack} className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-              <span className="hidden sm:inline">Kembali</span>
-            </button>
-            <div className="h-6 w-px bg-gray-200" />
-            <h1 className="text-xl font-bold text-gray-900">Artikel Kesehatan Mental</h1>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-white">
+      <Navbar variant="back" backHref={ROUTES.HOME} backLabel="Kembali ke Beranda" />
 
-      <main className="container mx-auto max-w-6xl px-4 py-8">
-        <div className="grid lg:grid-cols-12 gap-8">
+      <main className="mx-auto w-full max-w-6xl px-4 pt-28 pb-16 sm:px-6 sm:pt-32 sm:pb-20 lg:px-8">
+        <div className="mx-auto mb-9 max-w-3xl text-center sm:mb-12">
+          <h1 className="mb-4 text-3xl font-bold leading-tight md:text-5xl">
+            Artikel <span className="text-primary">Kesehatan Mental</span>
+          </h1>
+          <p className="mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
+            Kumpulan bacaan praktis untuk memahami emosi, menjaga rutinitas sehat,
+            dan mengenali langkah awal saat butuh dukungan.
+          </p>
+        </div>
+
+        <div className="grid gap-5 lg:grid-cols-12 lg:gap-8">
           {/* Main Content */}
           <div className="lg:col-span-8">
             {/* Search */}
@@ -141,8 +132,8 @@ function ArticlesContent() {
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
                   <Card key={i} className="overflow-hidden bg-white">
-                    <div className="flex gap-4 p-4">
-                      <div className="w-32 h-24 bg-gray-200 rounded-lg animate-pulse" />
+                    <div className="flex flex-col gap-3 p-3 sm:flex-row sm:gap-4 sm:p-4">
+                      <div className="h-36 w-full animate-pulse rounded-lg bg-gray-200 sm:h-24 sm:w-32" />
                       <div className="flex-1 space-y-2">
                         <div className="h-5 bg-gray-200 rounded animate-pulse" />
                         <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
@@ -153,12 +144,16 @@ function ArticlesContent() {
                 ))}
               </div>
             ) : articles.length > 0 ? (
-              <div className="space-y-4">
+              <div className="flex flex-col gap-4">
                 {articles.map((article) => (
-                  <Link key={article.id} href={ROUTES.publicArticleDetail(article.slug)}>
-                    <Card className="overflow-hidden hover:shadow-md transition-shadow bg-white">
-                      <div className="flex gap-4 p-4">
-                        <div className="w-32 h-24 rounded-lg overflow-hidden shrink-0 bg-gray-100">
+                  <Link
+                    key={article.id}
+                    href={ROUTES.publicArticleDetail(article.slug)}
+                    className="block group"
+                  >
+                    <Card className="overflow-hidden bg-white transition-shadow group-hover:shadow-md">
+                      <div className="flex flex-col gap-3 p-3 sm:flex-row sm:gap-4 sm:p-4">
+                        <div className="h-40 w-full shrink-0 overflow-hidden rounded-lg bg-gray-100 sm:h-24 sm:w-32">
                           {article.thumbnail ? (
                             <Image
                               src={article.thumbnail}
@@ -168,7 +163,7 @@ function ArticlesContent() {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-3xl">
+                            <div className="flex h-full w-full items-center justify-center text-3xl">
                               📄
                             </div>
                           )}
@@ -180,7 +175,7 @@ function ArticlesContent() {
                           <p className="text-sm text-gray-600 line-clamp-2 mb-2">
                             {getHtmlExcerpt(article.excerpt || article.content || "", 120)}
                           </p>
-                          <div className="flex items-center gap-3 text-xs text-gray-400">
+                          <div className="flex flex-wrap items-center gap-2 text-xs text-gray-400 sm:gap-3">
                             <span className="text-primary">{article.category?.name}</span>
                             <span>•</span>
                             <span>{formatDate(article.created_at)}</span>
@@ -231,7 +226,7 @@ function ArticlesContent() {
                     >
                       <Card className="overflow-hidden border-gray-100 group-hover:shadow-md transition-all bg-white">
                         <div className="flex gap-3 p-4 items-start">
-                          <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-gray-100">
+                          <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-gray-100 sm:h-20 sm:w-20">
                             {article.thumbnail ? (
                               <Image
                                 src={article.thumbnail}
@@ -277,13 +272,32 @@ function ArticlesContent() {
           </div>
         </div>
       </main>
+
+      <Footer />
+    </div>
+  );
+}
+
+function ArticlesFallback() {
+  return (
+    <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-white">
+      <Navbar variant="back" backHref={ROUTES.HOME} backLabel="Kembali ke Beranda" />
+      <main className="mx-auto w-full max-w-6xl px-4 pt-28 pb-16 sm:px-6 sm:pt-32 sm:pb-20 lg:px-8">
+        <div className="animate-pulse space-y-4">
+          <div className="h-10 w-full rounded-full bg-gray-200" />
+          <div className="h-28 rounded-xl bg-gray-200" />
+          <div className="h-28 rounded-xl bg-gray-200" />
+          <div className="h-28 rounded-xl bg-gray-200" />
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }
 
 export default function ArticlesPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<ArticlesFallback />}>
       <ArticlesContent />
     </Suspense>
   );

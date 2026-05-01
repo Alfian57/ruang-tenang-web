@@ -9,6 +9,7 @@ import { ROUTES } from "@/lib/routes";
 import { ArrowRight, BookOpen, Calendar } from "lucide-react";
 import type { PaginatedResponse } from "@/services/http/types";
 import { getHtmlExcerpt } from "@/utils";
+import { LandingDataNotice } from "./LandingDataNotice";
 
 interface Article {
   id: number;
@@ -33,7 +34,7 @@ function formatDate(dateString: string): string {
   });
 }
 
-const DEFAULT_IMAGE = "/images/dummy-article-1.png";
+const DEFAULT_IMAGE = "/images/landing/about-illustration.png";
 
 function getArticleImage(thumbnail: string | undefined): string {
   if (thumbnail && thumbnail.trim() !== "") return thumbnail;
@@ -62,38 +63,38 @@ export function ArticleSection() {
   }, []);
 
   return (
-    <section id="articles" className="py-24 px-4 bg-white relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-50 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
-
+    <section id="articles" className="relative overflow-hidden bg-linear-to-b from-white via-red-50/30 to-white px-4 py-14 sm:py-16 md:py-20">
       <div className="container mx-auto max-w-6xl relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-14"
+          className="mb-10 text-center md:mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 rounded-full text-emerald-600 font-medium text-sm mb-6">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-700 shadow-sm">
             <BookOpen className="w-4 h-4" />
             Artikel Kesehatan Mental
           </div>
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="mb-4 text-2xl font-bold leading-tight text-gray-900 sm:text-3xl md:text-5xl">
             Wawasan untuk{" "}
             <span className="text-primary">Kesejahteraan</span>
           </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
-            Artikel pilihan seputar kesehatan mental, tips mengelola stres, dan
+          <p className="mx-auto max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">
+            Artikel publik seputar kesehatan mental, tips mengelola stres, dan
             panduan untuk hidup lebih seimbang.
           </p>
+          <div className="mt-5">
+            <LandingDataNotice variant="public" />
+          </div>
         </motion.div>
 
         {/* Article Cards */}
         {loading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+          <div className="mb-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse">
-                <div className="w-full aspect-16/10 bg-gray-100" />
+              <div key={index} className="animate-pulse overflow-hidden rounded-2xl border border-rose-100 bg-white">
+                <div className="aspect-16/10 w-full bg-rose-50" />
                 <div className="p-5 space-y-3">
                   <div className="h-5 bg-gray-100 rounded w-4/5" />
                   <div className="h-4 bg-gray-100 rounded w-full" />
@@ -103,14 +104,14 @@ export function ArticleSection() {
             ))}
           </div>
         ) : articles.length === 0 ? (
-          <div className="mb-10 rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-10 text-center">
+          <div className="mb-8 rounded-2xl border border-dashed border-rose-200 bg-white/80 px-6 py-10 text-center">
             <p className="text-lg font-semibold text-gray-700 mb-2">Artikel belum tersedia</p>
             <p className="text-sm text-gray-500 max-w-xl mx-auto">
               Konten edukasi sedang dipersiapkan. Silakan cek kembali beberapa saat lagi.
             </p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+          <div className="mb-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {articles.map((article, index) => (
               <motion.div
                 key={article.id}
@@ -120,7 +121,7 @@ export function ArticleSection() {
                 transition={{ delay: index * 0.1 }}
               >
                 <Link href={ROUTES.publicArticleDetail(article.slug)}>
-                  <div className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
+                  <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-rose-100 bg-white shadow-sm shadow-red-950/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                     {/* Thumbnail */}
                     <div className="relative w-full aspect-16/10 overflow-hidden bg-gray-100">
                       <Image

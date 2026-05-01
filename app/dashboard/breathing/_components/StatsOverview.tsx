@@ -7,7 +7,7 @@ interface StatsOverviewProps {
 
 export function StatsOverview({ stats }: StatsOverviewProps) {
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-4">
             {/* Current Streak */}
             <div className="p-4 rounded-xl theme-streak-bg border theme-streak-border">
                 <div className="flex items-center gap-2 mb-2">

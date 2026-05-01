@@ -96,7 +96,7 @@ export default function LevelsManagementPage() {
           {mode === "add" ? "✨ Tambah Level Baru" : `✏️ Edit Level ${formData.level}`}
         </h3>
         <p className="text-sm text-gray-500 mt-0.5">
-          Konfigurasi level, badge, dan tugas yang akan muncul di Progress Map member.
+          Konfigurasi level, badge, dan tugas yang akan muncul di Peta Perjalanan member.
         </p>
       </div>
 
@@ -173,7 +173,7 @@ export default function LevelsManagementPage() {
             <div>
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Daftar Tugas Level</p>
               <p className="text-xs text-gray-400 mt-0.5">
-                Konfigurasi tugas yang dipakai untuk validasi klaim reward member di Progress Map.
+                Konfigurasi tugas yang dipakai untuk validasi klaim reward member di Peta Perjalanan.
               </p>
             </div>
             <Button type="button" size="sm" variant="outline" onClick={addTaskField}>
@@ -517,11 +517,11 @@ export default function LevelsManagementPage() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0" />
-                <span><strong>Tugas Level</strong> — Otomatis tersinkron ke <strong>Progress Map</strong> sebagai landmark yang bisa diklaim member.</span>
+                <span><strong>Tugas Level</strong> — Otomatis tersinkron ke <strong>Peta Perjalanan</strong> sebagai landmark yang bisa diklaim member.</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0" />
-                <span><strong>Reward EXP & Coin</strong> — Diberikan saat member mengklaim tugas yang sudah selesai di Progress Map.</span>
+                <span><strong>Reward EXP & Koin</strong> — Diberikan saat member mengklaim tugas yang sudah selesai di Peta Perjalanan.</span>
               </li>
             </ul>
           </div>

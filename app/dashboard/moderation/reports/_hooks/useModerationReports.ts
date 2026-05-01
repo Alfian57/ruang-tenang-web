@@ -18,6 +18,7 @@ export function useModerationReports() {
   const statusFilter = searchParams.get("status") || "pending";
   const typeFilter = searchParams.get("type") || "all";
   const urlSearchQuery = searchParams.get("search") || "";
+  const focusId = searchParams.get("focus") || "";
   const page = parseInt(searchParams.get("page") || "1", 10);
 
   // Local state
@@ -92,6 +93,7 @@ export function useModerationReports() {
     searchQuery: searchTerm,
     page,
     reports: filteredReports,
+    focusId,
     isLoading,
     totalPages,
     setStatusFilter,

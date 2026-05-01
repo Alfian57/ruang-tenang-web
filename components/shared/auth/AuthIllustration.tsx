@@ -12,9 +12,6 @@ interface AuthIllustrationProps {
 export function AuthIllustration({ title, description, visual, floatingElements }: AuthIllustrationProps & { visual?: React.ReactNode; floatingElements?: React.ReactNode }) {
   return (
     <div className="hidden lg:flex w-1/2 relative overflow-hidden bg-gradient-to-br from-red-600 via-rose-500 to-orange-400">
-      {/* Decorative circles/blobs */}
-      <div className="absolute top-20 right-20 w-80 h-80 bg-white/10 rounded-full blur-3xl animate-pulse-slow" />
-      <div className="absolute bottom-32 left-20 w-64 h-64 bg-white/10 rounded-full blur-2xl animate-pulse-slow delay-700" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-linear-to-b from-transparent to-black/10 pointer-events-none" />
 
       {/* Content */}

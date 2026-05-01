@@ -10,6 +10,7 @@ interface ModerationReportsListProps {
     searchQuery: string;
     totalPages: number;
     page: number;
+    focusId?: string;
     setPage: (page: number) => void;
 }
 
@@ -19,6 +20,7 @@ export function ModerationReportsList({
     searchQuery,
     totalPages,
     page,
+    focusId,
     setPage,
 }: ModerationReportsListProps) {
     return (
@@ -59,7 +61,7 @@ export function ModerationReportsList({
                 ) : (
                     <div className="space-y-3">
                         {reports.map((report) => (
-                            <ModerationReportItem key={report.id} report={report} />
+                            <ModerationReportItem key={report.id} report={report} isFocused={focusId === String(report.id)} />
                         ))}
                     </div>
                 )}

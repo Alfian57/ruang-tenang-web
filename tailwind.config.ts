@@ -10,6 +10,16 @@ const config: Config = {
 		"./store/**/*.{ts,tsx}",
 	],
 	theme: {
+		screens: {
+			xxs: "320px",
+			xs: "375px",
+			sm: "640px",
+			md: "768px",
+			lg: "1024px",
+			xl: "1280px",
+			"2xl": "1536px",
+			"3xl": "1920px",
+		},
 		extend: {
 			colors: {
 				border: "var(--color-border)",
@@ -57,6 +67,31 @@ const config: Config = {
 				sm: "var(--shadow-sm)",
 				md: "var(--shadow-md)",
 				lg: "var(--shadow-lg)",
+			},
+			fontFamily: {
+				sans: [
+					"var(--font-sans)",
+					"ui-sans-serif",
+					"system-ui",
+					"-apple-system",
+					"BlinkMacSystemFont",
+					"Segoe UI",
+					"sans-serif",
+				],
+				display: [
+					"var(--font-display)",
+					"var(--font-sans)",
+					"ui-sans-serif",
+					"system-ui",
+					"sans-serif",
+				],
+				mono: [
+					"ui-monospace",
+					"SFMono-Regular",
+					"Consolas",
+					"Liberation Mono",
+					"monospace",
+				],
 			},
 		},
 	},

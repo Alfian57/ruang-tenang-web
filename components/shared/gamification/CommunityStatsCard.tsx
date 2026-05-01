@@ -62,7 +62,7 @@ export function CommunityStatsCard({ stats, className }: CommunityStatsCardProps
     ];
 
     return (
-        <div className={cn("grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3", className)}>
+        <div className={cn("grid grid-cols-1 gap-2 xs:grid-cols-2 sm:gap-3 md:grid-cols-3 lg:grid-cols-6", className)}>
             {statItems.map((item, index) => (
                 <div
                     key={index}

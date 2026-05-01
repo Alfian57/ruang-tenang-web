@@ -16,6 +16,7 @@ export function useModerationQueue() {
     // URL state
     const statusFilter = searchParams.get("status") || "pending";
     const urlSearchQuery = searchParams.get("search") || "";
+    const focusId = searchParams.get("focus") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
 
     // Local state
@@ -92,6 +93,7 @@ export function useModerationQueue() {
 
     return {
         items: filteredItems,
+        focusId,
         isLoading,
         totalPages,
         page,

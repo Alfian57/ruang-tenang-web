@@ -34,13 +34,18 @@ export function TechniqueCard({
         technique.exhale_hold_duration
     );
 
-    // Generate timing pattern display
     const pattern = [
         technique.inhale_duration,
         technique.inhale_hold_duration,
         technique.exhale_duration,
         technique.exhale_hold_duration,
     ].filter(d => d > 0).join("-");
+    const patternLabel = [
+        `${technique.inhale_duration}s tarik`,
+        technique.inhale_hold_duration > 0 ? `${technique.inhale_hold_duration}s tahan` : null,
+        `${technique.exhale_duration}s hembus`,
+        technique.exhale_hold_duration > 0 ? `${technique.exhale_hold_duration}s jeda` : null,
+    ].filter(Boolean).join(" · ");
 
     if (compact) {
         return (
@@ -63,7 +68,7 @@ export function TechniqueCard({
                     </div>
                     <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-sm truncate">{technique.name}</h4>
-                        <p className="text-xs text-muted-foreground">{pattern}</p>
+                        <p className="truncate text-xs text-muted-foreground">{patternLabel}</p>
                     </div>
                     {onFavoriteToggle ? (
                         <button
@@ -171,11 +176,11 @@ export function TechniqueCard({
                         >
                             {pattern}
                         </span>
-                        <span className="text-muted-foreground whitespace-nowrap">pattern</span>
+                        <span className="text-muted-foreground whitespace-nowrap">ritme</span>
                     </div>
                     <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                         <Clock className="w-4 h-4" />
-                        <span>{totalCycle}s / cycle</span>
+                        <span>{totalCycle}s / siklus</span>
                     </div>
                 </div>
 

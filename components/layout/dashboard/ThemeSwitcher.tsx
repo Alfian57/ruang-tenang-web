@@ -59,7 +59,7 @@ export function ThemeSwitcher() {
     const [open, setOpen] = useState(false);
 
     const fetchThemes = useCallback(async () => {
-        if (!token) return;
+        if (!token || user?.role !== "user") return;
         try {
             const res = await rewardService.getOwnedThemes(token);
             if (res.data) {
@@ -69,20 +69,20 @@ export function ThemeSwitcher() {
         } catch {
             // silently fail
         }
-    }, [token]);
+    }, [token, user?.role]);
 
     useEffect(() => {
         fetchThemes();
     }, [fetchThemes]);
 
     useEffect(() => {
-        if (user?.profile_theme) {
+        if (user?.role === "user" && user.profile_theme) {
             setActiveTheme(user.profile_theme);
         }
-    }, [user?.profile_theme]);
+    }, [user?.profile_theme, user?.role]);
 
     const handleActivate = async (themeKey: string) => {
-        if (!token || activating || themeKey === activeTheme) return;
+        if (!token || user?.role !== "user" || activating || themeKey === activeTheme) return;
         const isOwned = ownedThemes.includes(themeKey);
         if (!isOwned) {
             toast.error("Tema ini belum dibuka. Tukarkan koin di halaman Hadiah.");
@@ -106,6 +106,10 @@ export function ThemeSwitcher() {
 
     const currentTheme = THEMES.find((t) => t.key === activeTheme) || THEMES[0];
     const CurrentThemeIcon = currentTheme.icon;
+
+    if (user?.role !== "user") {
+        return null;
+    }
 
     return (
         <DropdownMenu open={open} onOpenChange={setOpen}>

@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Search, Shield, Users, Ban, CheckCircle, BookX, BookOpen, MessageSquareOff, MessageSquare } from "lucide-react";
+import { Search, Shield, Users, Ban, CheckCircle, BookX, BookOpen, MessageSquareOff, MessageSquare, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getUploadUrl } from "@/services/http/upload-url";
 import { formatDate } from "@/utils";
 import { useAdminUsers } from "./_hooks/useAdminUsers";
@@ -26,14 +27,17 @@ export default function AdminUsersPage() {
     blockId,
     blockAction,
     search,
+    role,
     page,
     setSearch,
+    setRole,
     setPage,
     setBlockId,
     openBlockDialog,
     handleBlockAction,
     handleJournalBlockToggle,
     handleForumBlockToggle,
+    handleRoleChange,
   } = useAdminUsers();
 
   if (user?.role !== "admin") {
@@ -48,6 +52,9 @@ export default function AdminUsersPage() {
   const getRoleBadge = (role: string) => {
     if (role === "admin") {
       return <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700">Admin</span>;
+    }
+    if (role === "mitra") {
+      return <span className="px-2 py-1 text-xs rounded-full bg-sky-100 text-sky-700">Mitra</span>;
     }
     return <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">User</span>;
   };
@@ -94,7 +101,7 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Search */}
-      <div className="mb-6">
+      <div className="mb-6 flex flex-col gap-3 md:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
           <Input
@@ -104,6 +111,17 @@ export default function AdminUsersPage() {
             className="pl-10 bg-white"
           />
         </div>
+        <Select value={role || "all"} onValueChange={(value) => setRole(value === "all" ? "" : value)}>
+          <SelectTrigger className="w-full md:w-48 bg-white">
+            <SelectValue placeholder="Filter role" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Semua role</SelectItem>
+            <SelectItem value="user">User</SelectItem>
+            <SelectItem value="mitra">Mitra</SelectItem>
+            <SelectItem value="admin">Admin</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Users Table */}
@@ -171,6 +189,7 @@ export default function AdminUsersPage() {
                           <p className="font-medium truncate flex items-center gap-1.5">
                             {u.name}
                             {u.role === "admin" && <Shield className="w-3.5 h-3.5 text-purple-600 shrink-0" />}
+                            {u.role === "mitra" && <Building2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />}
                           </p>
                           <p className="text-xs text-gray-500 md:hidden truncate">{u.email}</p>
                         </div>
@@ -245,6 +264,21 @@ export default function AdminUsersPage() {
                                 <MessageSquare className="w-4 h-4" />
                               ) : (
                                 <MessageSquareOff className="w-4 h-4" />
+                              )}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleRoleChange(u.id, u.role === "mitra" ? "user" : "mitra")}
+                              className={u.role === "mitra"
+                                ? "text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+                                : "text-sky-600 hover:text-sky-700 hover:bg-sky-50"}
+                              title={u.role === "mitra" ? "Cabut role mitra" : "Promosikan menjadi mitra"}
+                            >
+                              {u.role === "mitra" ? (
+                                <Users className="w-4 h-4" />
+                              ) : (
+                                <Building2 className="w-4 h-4" />
                               )}
                             </Button>
                           </>

@@ -79,5 +79,7 @@ export const TRUST_CUES = {
 
 export const ROLES = {
   ADMIN: "admin",
-  MEMBER: "member",
+  USER: "user",
+  MITRA: "mitra",
+  MEMBER: "user",
 } as const;

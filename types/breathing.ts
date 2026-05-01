@@ -82,6 +82,13 @@ export interface CompleteSessionRequest {
   mood_after?: string;
 }
 
+export interface BreathingSessionDraft {
+  durationSeconds: number;
+  cyclesCompleted: number;
+  completed: boolean;
+  completedPercentage: number;
+}
+
 export interface SessionCompletionResult {
   session: BreathingSession;
   xp_earned: number;
@@ -278,6 +285,62 @@ export const MOOD_OPTIONS = [
 ] as const;
 
 export type MoodId = typeof MOOD_OPTIONS[number]['id'];
+
+export type BreathingIntentId = 'calm' | 'focus' | 'sleep' | 'energy';
+
+export interface BreathingIntentPreset {
+  id: BreathingIntentId;
+  label: string;
+  description: string;
+  durationSeconds: number;
+  moodBefore: MoodId;
+  backgroundSound: BackgroundSoundId;
+  preferredCategory: BreathingTechnique['category'];
+  preferredSlugs: string[];
+}
+
+export const BREATHING_INTENT_PRESETS: BreathingIntentPreset[] = [
+  {
+    id: 'calm',
+    label: 'Tenangkan cemas',
+    description: 'Mulai pendek untuk menurunkan tegang tanpa terasa berat.',
+    durationSeconds: 120,
+    moodBefore: 'anxious',
+    backgroundSound: 'rain',
+    preferredCategory: 'relaxation',
+    preferredSlugs: ['deep-calm', 'coherent-breathing', 'box-breathing'],
+  },
+  {
+    id: 'focus',
+    label: 'Fokus lembut',
+    description: 'Ritme stabil untuk kembali ke tugas tanpa memaksa.',
+    durationSeconds: 300,
+    moodBefore: 'neutral',
+    backgroundSound: 'white_noise',
+    preferredCategory: 'focus',
+    preferredSlugs: ['box-breathing', 'coherent-breathing'],
+  },
+  {
+    id: 'sleep',
+    label: 'Siap tidur',
+    description: 'Pola lambat untuk memberi sinyal istirahat ke tubuh.',
+    durationSeconds: 300,
+    moodBefore: 'tired',
+    backgroundSound: 'ocean',
+    preferredCategory: 'sleep',
+    preferredSlugs: ['4-7-8-breathing', '4-7-8-relaxing'],
+  },
+  {
+    id: 'energy',
+    label: 'Pulihkan energi',
+    description: 'Sesi ringkas untuk bangun pelan tanpa terburu-buru.',
+    durationSeconds: 120,
+    moodBefore: 'tired',
+    backgroundSound: 'wind',
+    preferredCategory: 'energy',
+    preferredSlugs: ['energizing-breath'],
+  },
+];
 
 // XP Configuration (matching backend)
 export const BREATHING_XP_CONFIG = {

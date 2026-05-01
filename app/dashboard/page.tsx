@@ -3,16 +3,17 @@
 import { useAuthStore } from "@/store/authStore";
 import { AdminDashboard } from "./_components/AdminDashboard";
 import { MemberDashboard } from "./_components/MemberDashboard";
+import { MitraDashboard } from "./_components/MitraDashboard";
 
 export default function DashboardPage() {
   const { user } = useAuthStore();
 
-  // Check if user is admin
-  // user?.role might be undefined initially, but auth protection usually handles this
-  const isAdminOrMod = user?.role === "admin";
-
-  if (isAdminOrMod) {
+  if (user?.role === "admin") {
     return <AdminDashboard />;
+  }
+
+  if (user?.role === "mitra") {
+    return <MitraDashboard />;
   }
 
   return <MemberDashboard />;

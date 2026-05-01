@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, FormEvent, useEffect, useCallback } from "react";
-import { Send, Mic, Square, Keyboard } from "lucide-react";
+import { Keyboard, Lock, Mic, Send, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
 import { VoiceInput } from "./VoiceInput";
@@ -11,9 +11,10 @@ interface ChatInputProps {
   onSendText: (content: string) => Promise<void>;
   onSendAudio: (audioBlob: Blob) => Promise<void>;
   disabled?: boolean;
+  disabledReason?: string;
 }
 
-export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInputProps) {
+export function ChatInput({ onSendText, onSendAudio, disabled = false, disabledReason }: ChatInputProps) {
   const [input, setInput] = useState("");
   const [isSendingText, setIsSendingText] = useState(false);
   const [showVoiceInput, setShowVoiceInput] = useState(false);
@@ -75,10 +76,16 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
   const isInputDisabled = isSendingText || isSendingAudio || disabled;
 
   return (
-    <div className="p-3 bg-white border-t">
-      <div className="max-w-4xl mx-auto flex items-end gap-2">
+    <div className="p-2 bg-white border-t sm:p-3">
+      {disabledReason && (
+        <div className="mx-auto mb-2 flex max-w-4xl min-w-0 items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-900">
+          <Lock className="h-3.5 w-3.5 shrink-0" />
+          <span>{disabledReason}</span>
+        </div>
+      )}
+      <div className="max-w-4xl mx-auto flex min-w-0 items-end gap-2">
         {isRecording ? (
-          <div className="flex-1 bg-red-50 rounded-2xl border border-red-100 p-2 flex items-center justify-between animate-pulse">
+          <div className="flex-1 min-w-0 bg-red-50 rounded-2xl border border-red-100 p-2 flex flex-col gap-2 animate-pulse xs:flex-row xs:items-center xs:justify-between">
             <div className="flex items-center gap-3 px-2">
               <div className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
               <span className="text-sm font-bold text-red-600 tabular-nums">
@@ -89,15 +96,16 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
               onClick={stopRecording}
               variant="destructive"
               size="sm"
-              className="rounded-xl h-8 px-4"
+              className="h-8 rounded-xl px-3 xs:px-4"
             >
               <Square className="w-3 h-3 mr-2" />
-              Hentikan & Kirim
+              <span className="hidden xs:inline">Hentikan & Kirim</span>
+              <span className="xs:hidden">Kirim</span>
             </Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex-1 flex items-end gap-2">
-            <div className="flex-1 bg-gray-50 rounded-2xl border border-gray-200 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all p-1.5 flex items-center">
+          <form onSubmit={handleSubmit} className="flex-1 flex min-w-0 items-end gap-2">
+            <div className="flex-1 min-w-0 bg-gray-50 rounded-2xl border border-gray-200 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all p-1.5 flex items-center">
               <textarea
                 ref={textareaRef}
                 value={input}
@@ -111,7 +119,7 @@ export function ChatInput({ onSendText, onSendAudio, disabled = false }: ChatInp
                 placeholder="Ketik pesanmu disini..."
                 disabled={isInputDisabled}
                 rows={1}
-                className="flex-1 border-0 bg-transparent focus:outline-none focus:ring-0 resize-none px-3 py-2 text-sm min-h-[36px] max-h-[150px] overflow-y-auto"
+                className="min-w-0 flex-1 border-0 bg-transparent focus:outline-none focus:ring-0 resize-none px-2 py-2 text-sm min-h-[36px] max-h-[150px] overflow-y-auto sm:px-3"
                 autoComplete="off"
               />
 

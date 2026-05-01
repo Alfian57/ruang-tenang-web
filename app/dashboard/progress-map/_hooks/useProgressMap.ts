@@ -7,7 +7,7 @@ import type { FullMapResponse, MapRegion } from "@/types/progress-map";
 import { toast } from "sonner";
 
 export function useProgressMap() {
-  const { token } = useAuthStore();
+  const { token, refreshUser } = useAuthStore();
   const [mapData, setMapData] = useState<FullMapResponse | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<MapRegion | null>(null);
   const [loading, setLoading] = useState(true);
@@ -60,6 +60,7 @@ export function useProgressMap() {
         await progressMapService.claimLandmarkReward(token, landmarkId);
         toast.success("Reward berhasil diklaim!");
         const freshMap = await fetchMap();
+        await refreshUser();
         // Update selected region if open
         if (selectedRegion && freshMap) {
           const updated = freshMap.regions.find(
@@ -73,7 +74,7 @@ export function useProgressMap() {
         setClaimingLandmark(null);
       }
     },
-    [token, claimingLandmark, fetchMap, selectedRegion]
+    [token, claimingLandmark, fetchMap, selectedRegion, refreshUser]
   );
 
   return {

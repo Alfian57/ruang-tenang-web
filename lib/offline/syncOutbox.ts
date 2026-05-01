@@ -1,5 +1,6 @@
 import { getAllMutations, deleteMutation, countPendingMutations } from "./db";
 import { env } from "@/config/env";
+import { useAuthStore } from "@/store/authStore";
 
 /**
  * Replay every queued mutation against the real API, oldest-first.
@@ -12,6 +13,9 @@ export async function syncOutbox(): Promise<number> {
   const mutations = await getAllMutations();
   if (mutations.length === 0) return 0;
 
+  const token = useAuthStore.getState().token;
+  if (!token) return 0;
+
   let synced = 0;
 
   for (const m of mutations) {
@@ -19,7 +23,7 @@ export async function syncOutbox(): Promise<number> {
       const url = `${env.NEXT_PUBLIC_API_BASE_URL}${m.endpoint}`;
       const headers: HeadersInit = {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${m.token}`,
+        Authorization: `Bearer ${token}`,
       };
 
       const response = await fetch(url, {

@@ -23,9 +23,9 @@ const maxWidthClasses = {
 
 const paddingClasses = {
     none: "px-0",
-    sm: "px-4 sm:px-6",
-    md: "px-4 sm:px-6 lg:px-8",
-    lg: "px-4 sm:px-8 lg:px-12",
+    sm: "px-3 xs:px-4 sm:px-6",
+    md: "px-3 xs:px-4 sm:px-6 lg:px-8",
+    lg: "px-3 xs:px-4 sm:px-8 lg:px-12",
 };
 
 /**
@@ -37,7 +37,7 @@ export const ResponsiveContainer = forwardRef<HTMLDivElement, ResponsiveContaine
             <div
                 ref={ref}
                 className={cn(
-                    "w-full",
+                    "w-full min-w-0",
                     maxWidthClasses[maxWidth],
                     paddingClasses[padding],
                     centered && "mx-auto",
@@ -91,7 +91,7 @@ export const ResponsiveGrid = forwardRef<HTMLDivElement, ResponsiveGridProps>(
         return (
             <div
                 ref={ref}
-                className={cn("grid", gapClasses[gap], colClasses, className)}
+                className={cn("grid min-w-0", gapClasses[gap], colClasses, className)}
                 style={
                     minColWidth
                         ? {
@@ -253,12 +253,14 @@ export function DesktopOnly({
  * Breakpoint utility classes
  */
 export const breakpoints = {
-    xs: 320,
+    xxs: 320,
+    xs: 375,
     sm: 640,
     md: 768,
     lg: 1024,
     xl: 1280,
     "2xl": 1536,
+    "3xl": 1920,
 } as const;
 
 /**

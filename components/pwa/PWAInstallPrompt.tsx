@@ -75,7 +75,7 @@ export function PWAInstallPrompt() {
 
                     <div className="flex-1 min-w-0">
                         <h4 className="font-semibold text-gray-900 text-sm">
-                            Install Ruang Tenang
+                            Pasang Ruang Tenang
                         </h4>
                         <p className="text-xs text-gray-500 mt-0.5">
                             Akses lebih cepat langsung dari layar utama perangkatmu
@@ -85,7 +85,7 @@ export function PWAInstallPrompt() {
                                 onClick={handleInstall}
                                 className="px-3 py-1.5 text-xs font-medium bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
                             >
-                                Install
+                                Pasang
                             </button>
                             <button
                                 onClick={handleDismiss}

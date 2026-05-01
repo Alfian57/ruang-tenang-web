@@ -108,7 +108,7 @@ export function BrowseTab({
                 </div>
             ) : (
                 // Category Grid
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-4">
                     {categories.map((category, index) => (
                         <motion.div
                             key={category.id}

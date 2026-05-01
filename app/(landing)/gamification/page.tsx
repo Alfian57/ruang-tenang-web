@@ -20,7 +20,7 @@ import {
 const GAME_LOOP_STEPS = [
     {
         icon: CalendarCheck,
-        title: "Daily Task",
+        title: "Misi Harian",
         description:
             "Misi harian punya target dan progress count. Setelah selesai, reward XP dan koin diklaim langsung dari widget.",
         metric: "Sumber progres harian utama",
@@ -56,7 +56,7 @@ const THIRTY_DAY_PLAN = [
         target: "Selesaikan challenge guild bersama: XP, tugas harian, breathing, jurnal, chat, dan streak.",
     },
     {
-        week: "Progress Map",
+        week: "Peta Perjalanan",
         title: "Unlock Region dan Landmark",
         focus: "Peta perjalanan berisi region + landmark dengan syarat unlock, progress persen, dan status reward claimed.",
         target: "Setiap landmark dapat memberi XP dan koin",
@@ -97,38 +97,35 @@ const FAQ_ITEMS = [
         a: "Koin dipakai untuk klaim hadiah di halaman Rewards. Sistem mengecek saldo, stok item, dan menyimpan riwayat klaim.",
     },
     {
-        q: "Apa bedanya Progress Map dengan Leaderboard?",
-        a: "Progress Map fokus ke progres personal (unlock area/landmark + claim reward), sedangkan leaderboard fokus ranking XP antar pengguna.",
+        q: "Apa bedanya Peta Perjalanan dengan Leaderboard?",
+        a: "Peta Perjalanan fokus ke progres personal seperti membuka area, landmark, dan klaim reward. Leaderboard fokus ke ranking XP antar pengguna.",
     },
 ];
 
 export default function GamificationPage() {
     return (
-        <div className="min-h-screen bg-white relative overflow-hidden">
+        <div className="relative min-h-screen overflow-hidden bg-linear-to-b from-red-50/50 via-white to-white">
             <Navbar variant="back" />
 
-            <div className="absolute top-0 right-0 w-125 h-125 bg-yellow-100/45 rounded-full blur-[120px] -z-10 pointer-events-none" />
-            <div className="absolute top-24 left-0 w-100 h-100 bg-orange-100/35 rounded-full blur-[100px] -z-10 pointer-events-none" />
-
-            <main className="pt-32 pb-20 container mx-auto px-4 relative z-10">
-                <section className="text-center mb-14">
+            <main className="container relative z-10 mx-auto px-4 pt-28 pb-16 sm:pt-32 sm:pb-20">
+                <section className="mb-10 text-center sm:mb-14">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-100 rounded-full text-yellow-700 font-medium text-sm mb-6"
+                        className="mb-5 inline-flex items-center gap-2 rounded-full border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-700 shadow-sm"
                     >
                         <Trophy className="w-4 h-4" />
-                        Blueprint Gamifikasi
+                        Panduan Gamifikasi
                     </motion.div>
 
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.08 }}
-                        className="text-4xl md:text-5xl font-bold text-gray-900 mb-5"
+                        className="mb-5 text-3xl font-bold leading-tight text-gray-900 md:text-5xl"
                     >
                         Cara Kerja Gamifikasi{" "}
-                        <span className="text-transparent bg-clip-text bg-linear-to-r from-yellow-500 to-orange-500">
+                        <span className="bg-linear-to-r from-red-600 to-rose-500 bg-clip-text text-transparent">
                             Ruang Tenang
                         </span>
                     </motion.h1>
@@ -137,7 +134,7 @@ export default function GamificationPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.16 }}
-                        className="text-gray-600 max-w-2xl mx-auto text-lg leading-relaxed"
+                        className="mx-auto max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg"
                     >
                         Semua poin di halaman ini merujuk ke fitur yang sudah aktif di
                         dashboard: guild, progress map, coin rewards, breathing streak,
@@ -145,13 +142,13 @@ export default function GamificationPage() {
                     </motion.p>
                 </section>
 
-                <section className="max-w-6xl mx-auto mb-16">
+                <section className="mx-auto mb-10 max-w-6xl sm:mb-14">
                     <div className="flex items-center gap-2 mb-5">
-                        <Sparkles className="w-5 h-5 text-amber-500" />
-                        <h2 className="text-2xl font-bold text-gray-900">Loop Progres yang Aktif di Produk</h2>
+                        <Sparkles className="h-5 w-5 text-red-500" />
+                        <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">Loop Progres yang Aktif di Produk</h2>
                     </div>
 
-                    <div className="grid sm:grid-cols-2 gap-4 md:gap-5">
+                    <div className="grid gap-4 sm:grid-cols-2 md:gap-5">
                         {GAME_LOOP_STEPS.map((step, index) => (
                             <motion.article
                                 key={step.title}
@@ -159,16 +156,16 @@ export default function GamificationPage() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: Math.min(index * 0.06, 0.24) }}
-                                className="rounded-3xl border border-amber-200/80 bg-white p-6 shadow-sm hover:shadow-lg transition-all duration-300"
+                                className="rounded-3xl border border-red-100 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-lg sm:p-6"
                             >
                                 <div className="flex items-start gap-4">
-                                    <div className="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
-                                        <step.icon className="w-5 h-5 text-amber-600" />
+                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50">
+                                        <step.icon className="h-5 w-5 text-red-600" />
                                     </div>
                                     <div className="min-w-0">
                                         <h3 className="text-lg font-bold text-gray-900 mb-1">{step.title}</h3>
                                         <p className="text-gray-600 text-sm leading-relaxed mb-3">{step.description}</p>
-                                        <span className="inline-flex px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
+                                        <span className="inline-flex rounded-full bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-700">
                                             {step.metric}
                                         </span>
                                     </div>
@@ -178,36 +175,36 @@ export default function GamificationPage() {
                     </div>
                 </section>
 
-                <section className="max-w-6xl mx-auto mb-16">
-                    <div className="grid lg:grid-cols-12 gap-5">
-                        <div className="lg:col-span-7 rounded-3xl border border-gray-200 bg-white p-6 md:p-7">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">Fitur Mencolok di Ekosistem Gamifikasi</h2>
+                <section className="mx-auto mb-10 max-w-6xl sm:mb-14">
+                    <div className="grid gap-5 lg:grid-cols-12">
+                        <div className="rounded-3xl border border-red-100 bg-white p-4 lg:col-span-7 md:p-7">
+                            <h2 className="mb-4 text-xl font-bold text-gray-900 sm:text-2xl">Fitur Mencolok di Ekosistem Gamifikasi</h2>
                             <div className="space-y-3">
                                 {THIRTY_DAY_PLAN.map((plan, index) => (
                                     <motion.div
                                         key={plan.week}
-                                        initial={{ opacity: 0, x: -16 }}
-                                        whileInView={{ opacity: 1, x: 0 }}
+                                        initial={{ opacity: 0, y: 16 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
                                         viewport={{ once: true }}
                                         transition={{ delay: Math.min(index * 0.08, 0.2) }}
-                                        className="rounded-2xl border border-gray-200 p-4"
+                                        className="rounded-2xl border border-red-100 p-4"
                                     >
                                         <p className="text-xs font-semibold text-primary mb-1">{plan.week}</p>
                                         <h3 className="font-bold text-gray-900 mb-1">{plan.title}</h3>
                                         <p className="text-sm text-gray-600 mb-2">{plan.focus}</p>
-                                        <p className="text-xs text-emerald-700 font-semibold">{plan.target}</p>
+                                        <p className="text-xs font-semibold text-red-700">{plan.target}</p>
                                     </motion.div>
                                 ))}
                             </div>
                         </div>
 
-                        <div className="lg:col-span-5 rounded-3xl border border-cyan-200 bg-linear-to-b from-cyan-50 to-sky-50 p-6 md:p-7">
+                        <div className="rounded-3xl border border-red-200 bg-linear-to-b from-red-50 to-rose-50 p-4 lg:col-span-5 md:p-7">
                             <h3 className="text-xl font-bold text-gray-900 mb-4">Strategi Main Berdasarkan Fitur Nyata</h3>
                             <div className="space-y-3">
                                 {STRATEGY_CARDS.map((item) => (
                                     <div key={item.title} className="rounded-2xl bg-white/80 border border-white p-4">
                                         <div className="flex items-start gap-3">
-                                            <item.icon className="w-5 h-5 text-cyan-700 mt-0.5" />
+                                            <item.icon className="mt-0.5 h-5 w-5 text-red-700" />
                                             <div>
                                                 <h4 className="font-semibold text-gray-900 mb-1">{item.title}</h4>
                                                 <p className="text-sm text-gray-600">{item.description}</p>
@@ -220,8 +217,8 @@ export default function GamificationPage() {
                     </div>
                 </section>
 
-                <section className="max-w-5xl mx-auto mb-16">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">Pertanyaan Umum</h2>
+                <section className="mx-auto mb-10 max-w-5xl sm:mb-14">
+                    <h2 className="mb-4 text-center text-xl font-bold text-gray-900 sm:text-2xl">Pertanyaan Umum</h2>
                     <div className="space-y-3">
                         {FAQ_ITEMS.map((item) => (
                             <details key={item.q} className="group rounded-2xl border border-gray-200 bg-white p-4 open:shadow-sm">
@@ -239,10 +236,10 @@ export default function GamificationPage() {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="max-w-4xl mx-auto rounded-3xl border border-yellow-200 bg-linear-to-r from-yellow-50 to-orange-50 px-6 py-8 md:px-10 md:py-10"
+                    className="mx-auto max-w-4xl rounded-3xl border border-red-200 bg-linear-to-r from-red-50 to-rose-50 px-5 py-7 md:px-10 md:py-10"
                 >
                     <div className="text-center">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-full text-gray-700 text-sm font-medium border border-yellow-200 mb-4">
+                        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-red-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700">
                             <Users className="w-4 h-4 text-primary" />
                             Langkah Berikutnya
                         </div>

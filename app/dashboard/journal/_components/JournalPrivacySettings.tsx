@@ -173,7 +173,7 @@ export function JournalPrivacySettings({
                             </div>
 
                             {/* Context Settings */}
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 gap-4 xs:grid-cols-2">
                                 <div>
                                     <Label className="font-medium">Rentang Waktu Konteks</Label>
                                     <p className="text-xs text-gray-500 mb-2">

@@ -38,9 +38,9 @@ export function StoryCard({ story, className }: StoryCardProps) {
 
                     {/* Featured Badge */}
                     {story.is_featured && (
-                        <div className="absolute top-3 left-3 bg-yellow-500 text-white text-xs font-medium px-2 py-1 rounded-full flex items-center gap-1">
+                        <div className="absolute top-3 left-3 flex items-center gap-1 rounded-full bg-primary px-2 py-1 text-xs font-medium text-white">
                             <Star className="h-3 w-3" />
-                            Featured
+                            Pilihan
                         </div>
                     )}
 
@@ -85,7 +85,7 @@ export function StoryCard({ story, className }: StoryCardProps) {
                     </p>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-3">
                         {/* Author */}
                         <div className="flex items-center gap-2">
                             {story.is_anonymous || !story.author ? (
@@ -104,7 +104,7 @@ export function StoryCard({ story, className }: StoryCardProps) {
                                         height={24}
                                         className="rounded-full"
                                     />
-                                    <span className="text-xs text-muted-foreground truncate max-w-25">
+                                    <span className="max-w-24 truncate text-xs text-muted-foreground">
                                         {story.author.name}
                                     </span>
                                 </>
@@ -148,7 +148,7 @@ export function StoryList({ stories, className }: StoryListProps) {
     }
 
     return (
-        <div className={cn("grid gap-6 md:grid-cols-2 lg:grid-cols-3", className)}>
+        <div className={cn("grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6", className)}>
             {stories.map((story) => (
                 <StoryCard key={story.id} story={story} />
             ))}

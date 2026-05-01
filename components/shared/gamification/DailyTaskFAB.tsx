@@ -1,16 +1,18 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
-import { Check, Gift, Lock, RefreshCw, Trophy, X, ClipboardList, Rocket } from "lucide-react";
+import { Check, Gift, Lock, RefreshCw, Trophy, X, ClipboardList, Rocket, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
-import type { DailyTask, XPBoostStatus } from "@/types";
+import type { DailyTask, DailyTaskSummary, XPBoostStatus } from "@/types";
 import { communityService } from "@/services/api";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/authStore";
 import { useDashboardStore } from "@/store/dashboardStore";
 import { useMusicPlayerStore } from "@/store/musicPlayerStore";
 import { CoinIcon } from "@/components/shared/CoinIcon";
+import { ROUTES } from "@/lib/routes";
 
 interface DailyTaskFABProps {
   className?: string;
@@ -18,8 +20,14 @@ interface DailyTaskFABProps {
   xpBoost: XPBoostStatus | null;
 }
 
+function extractDailyTasks(payload: DailyTask[] | DailyTaskSummary | null | undefined): DailyTask[] {
+  if (Array.isArray(payload)) return payload;
+  if (payload && Array.isArray(payload.tasks)) return payload.tasks;
+  return [];
+}
+
 export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: DailyTaskFABProps) {
-  const { token, refreshUser } = useAuthStore();
+  const { token, user, refreshUser } = useAuthStore();
   const [tasks, setTasks] = useState<DailyTask[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [claimingId, setClaimingId] = useState<number | null>(null);
@@ -50,15 +58,7 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
     setIsLoading(true);
     try {
       const response = await communityService.getDailyTasks(token);
-      // API returns DailyTaskSummary which has tasks property
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const data = response?.data as any;
-      if (data?.tasks && Array.isArray(data.tasks)) {
-        setTasks(data.tasks);
-      } else if (Array.isArray(data)) {
-        // Fallback if API returns array directly
-        setTasks(data);
-      }
+      setTasks(extractDailyTasks(response.data));
     } catch (error) {
       console.error("Failed to load daily tasks:", error);
     } finally {
@@ -101,7 +101,7 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
         if (hasXPBoost) parts.push(`Boost x${boostMultiplier}`);
         toast.success(`Berhasil klaim! ${parts.join(", ")}`);
         if (response.data.level_up) {
-          toast.success("Level Up!", {
+          toast.success("Naik Level!", {
             description: "Selamat! Kamu naik level 🎉",
           });
         }
@@ -122,6 +122,7 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
   const claimableTasks = tasks.filter((t) => t.is_completed && !t.is_claimed).length;
   const claimedTasks = tasks.filter((t) => t.is_claimed).length;
   const progressPercent = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+  const showPremiumTeasers = user?.role === "user" && !user?.is_premium && !tasks.some((task) => task.premium_only);
 
   if (!token || totalTasks === 0) return null;
 
@@ -251,6 +252,12 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
                               x{boostMultiplier}
                             </span>
                           )}
+                          {task.premium_only && (
+                            <span className="text-[10px] bg-violet-50 text-violet-700 px-1.5 py-0.5 rounded border border-violet-200 font-medium inline-flex items-center gap-0.5">
+                              <Crown className="w-3 h-3" />
+                              Premium
+                            </span>
+                          )}
                           {task.coin_reward > 0 && (
                             <span className="text-[10px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200 font-medium inline-flex items-center gap-0.5">
                               <CoinIcon className="w-3 h-3" />
@@ -298,6 +305,61 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
                   </div>
                 );
               })
+            )}
+
+            {showPremiumTeasers && (
+              <>
+                {[
+                  {
+                    name: "Deep Chat Premium",
+                    description: "6 pesan reflektif dengan AI",
+                    xp: 55,
+                    coins: 8,
+                    icon: "✨",
+                  },
+                  {
+                    name: "Breathing Pro",
+                    description: "2 sesi pernafasan fokus",
+                    xp: 45,
+                    coins: 7,
+                    icon: "✦",
+                  },
+                ].map((task) => (
+                  <div key={task.name} className="p-3 flex items-center justify-between bg-violet-50/50">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-base bg-violet-100 text-violet-600">
+                        {task.icon}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-medium text-sm text-violet-950">{task.name}</h4>
+                          <span className="text-[10px] bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded border border-violet-200 font-medium inline-flex items-center gap-0.5">
+                            <Crown className="w-3 h-3" />
+                            Premium
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                          <span className="text-[10px] text-violet-700">{task.description}</span>
+                          <span className="text-[10px] bg-yellow-50 text-yellow-700 px-1.5 py-0.5 rounded border border-yellow-200 font-medium">
+                            +{task.xp} XP
+                          </span>
+                          <span className="text-[10px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded border border-amber-200 font-medium inline-flex items-center gap-0.5">
+                            <CoinIcon className="w-3 h-3" />
+                            +{task.coins}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button asChild size="sm" variant="outline" className="h-7 shrink-0 rounded-full border-violet-200 bg-white px-3 text-xs text-violet-700 hover:bg-violet-100">
+                      <Link href={ROUTES.BILLING}>
+                        <Lock className="w-3 h-3 mr-1" />
+                        Unlock
+                      </Link>
+                    </Button>
+                  </div>
+                ))}
+              </>
             )}
           </div>
 

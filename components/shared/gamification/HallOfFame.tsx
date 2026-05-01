@@ -23,10 +23,6 @@ export function HallOfFame({ data, className, hideTierName = false }: HallOfFame
                     backgroundImage: "linear-gradient(to right, var(--theme-gradient-from, #ef4444), var(--theme-gradient-to, #f97316))"
                 }}
             >
-                {/* Decorative background elements matching the landing page theme */}
-                <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white/10 blur-2xl" />
-                <div className="absolute bottom-0 left-0 -ml-8 -mb-8 w-24 h-24 rounded-full bg-white/5 blur-xl" />
-
                 <div className="relative z-10 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">

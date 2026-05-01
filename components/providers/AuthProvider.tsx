@@ -1,14 +1,18 @@
 "use client";
 
 import { useEffect, useState, ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { ROUTES } from "@/lib/routes";
+import { buildPathWithRedirect } from "@/lib/safe-redirect";
 
 interface AuthProviderProps {
   children: ReactNode;
   requireAuth?: boolean;
   requireAdmin?: boolean;
+  requireUser?: boolean;
+  requireMitra?: boolean;
+  // Backward-compatible alias for requireUser.
   requireMember?: boolean;
   redirectTo?: string;
 }
@@ -17,10 +21,14 @@ export function AuthProvider({
   children,
   requireAuth = false,
   requireAdmin = false,
+  requireUser = false,
+  requireMitra = false,
   requireMember = false,
   redirectTo = ROUTES.LOGIN,
 }: AuthProviderProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { isAuthenticated, refreshUser, isHydrated } = useAuthStore();
   const [isChecking, setIsChecking] = useState(true);
 
@@ -46,7 +54,9 @@ export function AuthProvider({
 
       // Check authentication requirements
       if (requireAuth && !freshState.isAuthenticated) {
-        router.replace(redirectTo);
+        const currentQuery = searchParams.toString();
+        const currentPath = `${pathname}${currentQuery ? `?${currentQuery}` : ""}`;
+        router.replace(buildPathWithRedirect(redirectTo, currentPath));
         return;
       }
 
@@ -56,7 +66,13 @@ export function AuthProvider({
         return;
       }
 
-      if (requireMember && freshState.user?.role !== "member") {
+      const userRoleRequired = requireUser || requireMember;
+      if (userRoleRequired && freshState.user?.role !== "user") {
+        router.replace(ROUTES.DASHBOARD);
+        return;
+      }
+
+      if (requireMitra && freshState.user?.role !== "mitra") {
         router.replace(ROUTES.DASHBOARD);
         return;
       }
@@ -65,7 +81,7 @@ export function AuthProvider({
     };
 
     checkAuth();
-  }, [isHydrated, requireAuth, requireAdmin, requireMember, redirectTo, router, refreshUser]);
+  }, [isHydrated, requireAuth, requireAdmin, requireUser, requireMitra, requireMember, redirectTo, router, refreshUser, pathname, searchParams]);
 
   // Show loading while hydrating or checking auth
   if (!isHydrated || isChecking) {
@@ -97,7 +113,9 @@ export function useAuth() {
     isAuthenticated: isHydrated && isAuthenticated,
     isLoading: !isHydrated,
     isAdmin: user?.role === "admin",
-    isMember: user?.role === "member",
+    isUser: user?.role === "user",
+    isMitra: user?.role === "mitra",
+    isMember: user?.role === "user",
     logout,
     refreshUser,
   };

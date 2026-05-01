@@ -89,7 +89,7 @@ export function MapProgressWidget() {
                 </div>
 
                 {/* Mini stats */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2 xs:grid-cols-2">
                     <div className="bg-white/70 border border-emerald-100/60 rounded-lg px-2.5 py-2 text-center">
                         <div className="flex items-center justify-center mb-0.5">
                             <Compass className="h-3.5 w-3.5 text-emerald-500" />

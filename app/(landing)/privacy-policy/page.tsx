@@ -43,17 +43,17 @@ const sections = [
 
 export default function PrivacyPolicyPage() {
     return (
-        <div className="min-h-screen bg-background overflow-x-hidden">
+        <div className="min-h-screen overflow-x-hidden bg-linear-to-b from-red-50/50 via-white to-background">
             <Navbar variant="back" backHref={ROUTES.HOME} backLabel="Kembali ke Beranda" />
 
             <main className="pt-28 pb-16">
                 <section className="px-4">
                     <div className="container mx-auto max-w-4xl">
-                        <div className="rounded-3xl border border-primary/10 bg-gradient-to-br from-primary/5 via-orange-50 to-amber-50 p-8 md:p-12 shadow-sm">
+                        <div className="rounded-3xl border border-primary/10 bg-gradient-to-br from-primary/5 via-red-50 to-rose-50 p-5 shadow-sm md:p-12">
                             <p className="inline-flex items-center rounded-full bg-white/80 px-4 py-2 text-sm font-medium text-primary mb-5">
                                 Kebijakan Privasi
                             </p>
-                            <h1 className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight mb-4">
+                            <h1 className="mb-4 text-3xl font-bold leading-tight text-gray-900 md:text-5xl">
                                 Privasi Kamu adalah Prioritas Kami
                             </h1>
                             <p className="text-gray-600 text-base md:text-lg leading-relaxed max-w-3xl">
@@ -70,7 +70,7 @@ export default function PrivacyPolicyPage() {
                         {sections.map((section) => (
                             <article
                                 key={section.title}
-                                className="rounded-2xl border border-gray-100 bg-white p-6 md:p-7 shadow-sm hover:shadow-md transition-shadow"
+                                className="rounded-2xl border border-red-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md md:p-7"
                             >
                                 <div className="flex items-start gap-4 mb-4">
                                     <div className="w-11 h-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
@@ -93,8 +93,8 @@ export default function PrivacyPolicyPage() {
 
                 <section className="px-4 mt-10">
                     <div className="container mx-auto max-w-4xl">
-                        <div className="rounded-2xl border border-gray-100 bg-white p-6 md:p-8 shadow-sm flex items-start gap-4">
-                            <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                        <div className="flex items-start gap-4 rounded-2xl border border-red-100 bg-white p-5 shadow-sm md:p-8">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600">
                                 <Mail className="w-5 h-5" />
                             </div>
                             <div>

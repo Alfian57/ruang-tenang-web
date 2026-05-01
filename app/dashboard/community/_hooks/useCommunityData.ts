@@ -11,6 +11,7 @@ import type {
   UserFeatures,
   Forum,
   DailyTask,
+  DailyTaskSummary,
 } from "@/types";
 
 interface CommunityData {
@@ -27,6 +28,12 @@ interface CommunityData {
   isLevelChanging: boolean;
   handleLevelChange: (newLevel: number) => void;
   refreshDailyTasks: () => Promise<void>;
+}
+
+function extractDailyTasks(payload: DailyTask[] | DailyTaskSummary | null | undefined): DailyTask[] {
+  if (Array.isArray(payload)) return payload;
+  if (payload && Array.isArray(payload.tasks)) return payload.tasks;
+  return [];
 }
 
 export function useCommunityData(): CommunityData {
@@ -51,18 +58,7 @@ export function useCommunityData(): CommunityData {
 
     try {
       const taskRes = await communityService.getDailyTasks(token);
-      // API can return either an array or object with tasks field
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const raw = taskRes?.data as any;
-      if (Array.isArray(raw)) {
-        setDailyTasks(raw);
-        return;
-      }
-      if (raw?.tasks && Array.isArray(raw.tasks)) {
-        setDailyTasks(raw.tasks);
-        return;
-      }
-      setDailyTasks([]);
+      setDailyTasks(extractDailyTasks(taskRes.data));
     } catch {
       setDailyTasks([]);
     }

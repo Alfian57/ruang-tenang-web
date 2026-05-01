@@ -426,6 +426,7 @@ export interface DailyTask {
   task_type: string;
   task_name: string;
   task_description: string;
+  premium_only?: boolean;
   xp_reward: number;
   coin_reward: number;
   task_icon: string;
@@ -436,6 +437,13 @@ export interface DailyTask {
   task_date: string;
   completed_at?: string;
   claimed_at?: string;
+}
+
+export interface DailyTaskSummary {
+  tasks: DailyTask[];
+  completed_count?: number;
+  claimable_count?: number;
+  total_count?: number;
 }
 
 export interface ClaimTaskResponse {

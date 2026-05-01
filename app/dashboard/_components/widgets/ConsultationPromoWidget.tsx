@@ -27,9 +27,6 @@ export function ConsultationPromoWidget() {
         </Link>
       </CardContent>
       
-      {/* Decorative circles */}
-      <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 rounded-full bg-white/10 blur-3xl" />
-      <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-32 h-32 rounded-full bg-white/10 blur-2xl" />
     </Card>
   );
 }

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { moodService } from "@/services/api";
 import { MoodType } from "@/types";
+import { ApiError } from "@/services/http/types";
 import { toast } from "sonner";
 import { MoodCheckinModal } from "@/app/dashboard/_components/MoodCheckinModal";
 import { useDashboardStore } from "@/store/dashboardStore";
@@ -19,16 +20,14 @@ export function MoodCheckinProvider() {
     if (!token || hasChecked) return;
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const response = await moodService.checkToday(token) as any;
-      const data = response?.data;
+      const response = await moodService.checkToday(token);
+      const data = response.data;
 
       if (data && !data.has_checked) {
         setShowModal(true);
       }
     } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const errMsg = (error as any)?.message || "Unknown error";
+      const errMsg = error instanceof ApiError || error instanceof Error ? error.message : "Unknown error";
       toast.error(`Gagal memuat status mood: ${errMsg}`);
     } finally {
       setHasChecked(true);
@@ -44,9 +43,8 @@ export function MoodCheckinProvider() {
     setIsSubmitting(true);
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const response = await moodService.record(token, mood) as any;
-      if (response?.data) {
+      const response = await moodService.record(token, mood);
+      if (response.data) {
         toast.success("Mood berhasil dicatat!", {
           description: "Semoga harimu menyenangkan 😊",
         });
