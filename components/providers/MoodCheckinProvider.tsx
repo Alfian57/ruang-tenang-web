@@ -14,10 +14,11 @@ export function MoodCheckinProvider() {
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasChecked, setHasChecked] = useState(false);
+  const [isWellnessOnboardingOpen, setIsWellnessOnboardingOpen] = useState(false);
   const { triggerMoodRefresh, triggerTaskRefresh } = useDashboardStore();
 
   const checkTodayMood = useCallback(async () => {
-    if (!token || hasChecked) return;
+    if (!token || hasChecked || isWellnessOnboardingOpen) return;
 
     try {
       const response = await moodService.checkToday(token);
@@ -32,11 +33,29 @@ export function MoodCheckinProvider() {
     } finally {
       setHasChecked(true);
     }
-  }, [token, hasChecked]);
+  }, [token, hasChecked, isWellnessOnboardingOpen]);
 
   useEffect(() => {
     checkTodayMood();
   }, [checkTodayMood]);
+
+  useEffect(() => {
+    const handleWellnessOnboardingState = (event: Event) => {
+      const detail = (event as CustomEvent<{ isOpen?: boolean }>).detail;
+      const isOpen = Boolean(detail?.isOpen);
+      setIsWellnessOnboardingOpen(isOpen);
+
+      if (isOpen) {
+        setShowModal(false);
+        return;
+      }
+
+      setHasChecked(false);
+    };
+
+    window.addEventListener("wellness-onboarding-state", handleWellnessOnboardingState);
+    return () => window.removeEventListener("wellness-onboarding-state", handleWellnessOnboardingState);
+  }, []);
 
   const handleMoodSelected = async (mood: MoodType) => {
     if (!token || isSubmitting) return;

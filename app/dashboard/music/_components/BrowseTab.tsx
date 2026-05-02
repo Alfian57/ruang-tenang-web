@@ -63,38 +63,72 @@ export function BrowseTab({
             ) : debouncedSearch ? (
                 // Search Results
                 <div className="space-y-3">
-                    <h2 className="text-sm font-medium text-gray-500">Hasil Pencarian</h2>
+                    <div className="flex items-center justify-between gap-3">
+                        <h2 className="text-sm font-medium text-gray-500">Hasil Pencarian</h2>
+                        {songs.length > 0 && (
+                            <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-500 ring-1 ring-gray-200">
+                                {songs.length} lagu
+                            </span>
+                        )}
+                    </div>
                     {songs.length > 0 ? (
-                        <div className="grid gap-3">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                             {songs.map((song) => (
                                 <Card
                                     key={song.id}
-                                    className="overflow-hidden bg-white hover:shadow-md transition-shadow cursor-pointer"
+                                    className={cn(
+                                        "group overflow-hidden border-gray-200 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:border-red-100 hover:shadow-md",
+                                        currentSong?.id === song.id && "border-red-200 bg-red-50/50 shadow-sm"
+                                    )}
                                     onClick={() => onPlay(song)}
                                 >
-                                    <CardContent className="p-3 flex items-center gap-3">
-                                        <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden relative">
+                                    <CardContent className="flex h-full gap-4 p-3">
+                                        <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gray-100 ring-1 ring-gray-100">
                                             {song.thumbnail ? (
-                                                <Image src={song.thumbnail} alt={song.title} fill className="object-cover"  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                                                <Image
+                                                    src={song.thumbnail}
+                                                    alt={song.title}
+                                                    fill
+                                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                                    sizes="80px"
+                                                />
                                             ) : (
-                                                <Music className="w-6 h-6 text-gray-400" />
+                                                <Music className="h-7 w-7 text-gray-400" />
                                             )}
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h4 className="font-medium text-gray-900 line-clamp-1">{song.title}</h4>
-                                            <p className="text-xs text-gray-500">
-                                                {categories.find(c => c.id === song.category_id)?.name || "Musik"}
-                                            </p>
-                                        </div>
-                                        <div className={cn(
-                                            "w-8 h-8 rounded-full flex items-center justify-center",
-                                            currentSong?.id === song.id ? "bg-primary text-white" : "bg-gray-100"
-                                        )}>
-                                            {currentSong?.id === song.id && isPlaying ? (
-                                                <Pause className="w-4 h-4" />
-                                            ) : (
-                                                <Play className="w-4 h-4 ml-0.5" />
-                                            )}
+
+                                        <div className="flex min-w-0 flex-1 flex-col justify-between gap-3">
+                                            <div className="min-w-0">
+                                                <div className="flex items-start justify-between gap-3">
+                                                    <div className="min-w-0">
+                                                        <h4 className="line-clamp-2 font-semibold leading-snug text-gray-900 group-hover:text-primary">
+                                                            {song.title}
+                                                        </h4>
+                                                        <p className="mt-1 text-xs text-gray-500">Musik relaksasi</p>
+                                                    </div>
+                                                    <div className={cn(
+                                                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors",
+                                                        currentSong?.id === song.id ? "bg-primary text-white" : "bg-red-50 text-primary group-hover:bg-primary group-hover:text-white"
+                                                    )}>
+                                                        {currentSong?.id === song.id && isPlaying ? (
+                                                            <Pause className="h-4 w-4" />
+                                                        ) : (
+                                                            <Play className="ml-0.5 h-4 w-4" />
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
+                                                    {categories.find(c => c.id === song.category_id)?.name || song.category?.name || "Musik"}
+                                                </span>
+                                                {currentSong?.id === song.id && (
+                                                    <span className="rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700">
+                                                        {isPlaying ? "Sedang diputar" : "Dipilih"}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Card>

@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuthStore } from "@/store/authStore";
-import { breathingService, moodService, songService, journalService, articleService, chatService, billingService } from "@/services/api";
+import { breathingService, moodService, songService, journalService, articleService, chatService, billingService, wellnessService } from "@/services/api";
 import { UserMood, SongCategory, Journal, Article, ChatSession, BillingStatus } from "@/types";
 import { BreathingWidgetData } from "@/types/breathing";
+import type { WeeklyInsight, WellnessJourneyMap, WellnessNeedCondition, WellnessNeedNowResponse, WellnessOnboardingResponse, WellnessPlanItem } from "@/types/wellness";
 import { useDashboardStore } from "@/store/dashboardStore";
 
 export function useMemberDashboard() {
@@ -14,6 +15,11 @@ export function useMemberDashboard() {
   const [recentJournals, setRecentJournals] = useState<Journal[]>([]);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [billingStatus, setBillingStatus] = useState<BillingStatus | null>(null);
+  const [wellnessData, setWellnessData] = useState<WellnessOnboardingResponse | null>(null);
+  const [weeklyInsight, setWeeklyInsight] = useState<WeeklyInsight | null>(null);
+  const [journeyMap, setJourneyMap] = useState<WellnessJourneyMap | null>(null);
+  const [needNow, setNeedNow] = useState<WellnessNeedNowResponse | null>(null);
+  const [isNeedNowLoading, setIsNeedNowLoading] = useState(false);
 
   // Widget States
   const [latestJournal, setLatestJournal] = useState<Journal | null>(null);
@@ -31,7 +37,7 @@ export function useMemberDashboard() {
     if (!token) return;
     setIsLoadingWidgets(true);
     try {
-      const [moodResult, categoriesResult, breathingResult, journalResult, articleResult, chatResult, billingResult] = await Promise.allSettled([
+      const [moodResult, categoriesResult, breathingResult, journalResult, articleResult, chatResult, billingResult, wellnessResult, weeklyInsightResult, journeyMapResult] = await Promise.allSettled([
         moodService.getHistory(token, { limit: 100 }),
         songService.getCategories(),
         breathingService.getWidgetData(token),
@@ -39,9 +45,12 @@ export function useMemberDashboard() {
         articleService.getArticles({ limit: 3 }),
         chatService.getSessions(token, { page: 1, limit: 20 }),
         billingService.getStatus(token),
+        wellnessService.getCurrentPlan(token),
+        wellnessService.getWeeklyInsight(token),
+        wellnessService.getJourneyMap(token),
       ]);
 
-      const failedRequests = [moodResult, categoriesResult, breathingResult, journalResult, articleResult, chatResult, billingResult].filter(
+      const failedRequests = [moodResult, categoriesResult, breathingResult, journalResult, articleResult, chatResult, billingResult, wellnessResult, weeklyInsightResult, journeyMapResult].filter(
         (result) => result.status === "rejected"
       ).length;
       setIsNetworkDegraded(failedRequests > 0);
@@ -104,6 +113,18 @@ export function useMemberDashboard() {
         setBillingStatus(billingResult.value.data);
       }
 
+      if (wellnessResult.status === "fulfilled" && wellnessResult.value?.data) {
+        setWellnessData(wellnessResult.value.data);
+      }
+
+      if (weeklyInsightResult.status === "fulfilled" && weeklyInsightResult.value?.data) {
+        setWeeklyInsight(weeklyInsightResult.value.data);
+      }
+
+      if (journeyMapResult.status === "fulfilled" && journeyMapResult.value?.data) {
+        setJourneyMap(journeyMapResult.value.data);
+      }
+
       setLastSyncAt(new Date());
     } catch (error) {
       console.error("Failed to load dashboard data:", error);
@@ -113,9 +134,31 @@ export function useMemberDashboard() {
     }
   }, [token]);
 
+  const requestNeedNow = useCallback(async (condition: WellnessNeedCondition) => {
+    if (!token) return;
+    setIsNeedNowLoading(true);
+    try {
+      const response = await wellnessService.needNow(token, condition);
+      setNeedNow(response.data);
+    } finally {
+      setIsNeedNowLoading(false);
+    }
+  }, [token]);
+
+  const completeWellnessPlanItem = useCallback(async (item: WellnessPlanItem) => {
+    if (!token || item.status === "completed") return;
+    await wellnessService.completePlanItem(token, item.id);
+    await loadDashboardData();
+  }, [loadDashboardData, token]);
+
   useEffect(() => {
     loadDashboardData();
   }, [loadDashboardData, moodRefreshTrigger]);
+
+  useEffect(() => {
+    window.addEventListener("wellness-refresh", loadDashboardData);
+    return () => window.removeEventListener("wellness-refresh", loadDashboardData);
+  }, [loadDashboardData]);
 
   return {
     user,
@@ -131,5 +174,12 @@ export function useMemberDashboard() {
     lastSyncAt,
     refreshDashboardData: loadDashboardData,
     breathingWidgetData,
+    wellnessData,
+    weeklyInsight,
+    journeyMap,
+    needNow,
+    isNeedNowLoading,
+    requestNeedNow,
+    completeWellnessPlanItem,
   };
 }

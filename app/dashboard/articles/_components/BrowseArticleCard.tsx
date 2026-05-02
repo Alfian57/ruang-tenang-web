@@ -14,14 +14,14 @@ export function BrowseArticleCard({ article, isOwn }: BrowseArticleCardProps) {
   return (
     <Link href={ROUTES.articleRead(article.slug)}>
       <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 bg-white cursor-pointer group h-full flex flex-col">
-        <div className="relative h-40 overflow-hidden bg-gray-100">
+        <div className="relative aspect-16/10 w-full overflow-hidden bg-gray-100">
           {article.thumbnail ? (
             <Image
               src={article.thumbnail}
               alt={article.title}
-              width={400}
-              height={200}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/15">

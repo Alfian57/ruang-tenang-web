@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Song, SongCategory } from "@/types";
 import { searchService, songService } from "@/services/api";
+import { useAuthStore } from "@/store/authStore";
 
 interface UseAddSongsProps {
     open: boolean;
@@ -11,6 +12,7 @@ interface UseAddSongsProps {
 }
 
 export function useAddSongs({ open, onAddSongs, onOpenChange }: UseAddSongsProps) {
+    const { token } = useAuthStore();
     const [categories, setCategories] = useState<SongCategory[]>([]);
     const [songs, setSongs] = useState<Song[]>([]);
     const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
@@ -66,7 +68,7 @@ export function useAddSongs({ open, onAddSongs, onOpenChange }: UseAddSongsProps
 
     // Search songs
     useEffect(() => {
-        if (!search.trim()) {
+        if (!search.trim() || !token) {
             setSearchResults([]);
             return;
         }
@@ -74,7 +76,7 @@ export function useAddSongs({ open, onAddSongs, onOpenChange }: UseAddSongsProps
         const timer = setTimeout(async () => {
             setIsSearching(true);
             try {
-                const response = await searchService.search(search);
+                const response = await searchService.search(search, undefined, token);
                 setSearchResults(response.data?.songs || []);
             } catch (error) {
                 console.error("Search failed:", error);
@@ -84,7 +86,7 @@ export function useAddSongs({ open, onAddSongs, onOpenChange }: UseAddSongsProps
         }, 300);
 
         return () => clearTimeout(timer);
-    }, [search]);
+    }, [search, token]);
 
     const toggleSong = (songId: number) => {
         const newSelected = new Set(selectedSongs);

@@ -221,3 +221,47 @@ export interface B2BSeatUpgradeRequest {
   contracted_seats: number;
   billing_cycle?: "monthly" | "yearly";
 }
+
+export interface B2BImpactMetric {
+  label: string;
+  value: string;
+  helper: string;
+  tone: string;
+  description: string;
+}
+
+export interface B2BImpactEngagement {
+  active_members: number;
+  total_members: number;
+  pending_approvals: number;
+  messages_sent: number;
+  engagement_rate_pct: number;
+  average_messages_daily: number;
+}
+
+export interface B2BImpactSubscription {
+  status: string;
+  plan_name: string;
+  billing_cycle: string;
+  contracted_seats: number;
+  used_seats: number;
+  total_amount: number;
+  starts_at?: string;
+  ends_at?: string;
+  days_remaining?: number;
+}
+
+export interface B2BImpactReport {
+  organization: B2BOrganization;
+  generated_at: string;
+  window_days: number;
+  seat_usage: B2BSeatUsage;
+  seat_utilization_pct: number;
+  member_status_counts: Record<string, number>;
+  engagement: B2BImpactEngagement;
+  subscription: B2BImpactSubscription;
+  metrics: B2BImpactMetric[];
+  trend: B2BDailyUsageMetric[];
+  recommendations: string[];
+  pricing_recommendation?: B2BPricingRecommendation;
+}

@@ -1,74 +1,37 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Search, Loader2, Music, FileText, ArrowRight } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { searchService } from "@/services/api";
-import { getUploadUrl } from "@/services/http/upload-url";
-import { Article, Song } from "@/types";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
-import { ROUTES } from "@/lib/routes";
-
-// Simple debounce hook implementation if not exists
-function useDebounceValue<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-}
+import { useRouter } from "next/navigation";
+import { ArrowRight, Loader2, Search } from "lucide-react";
+import { getUploadUrl } from "@/services/http/upload-url";
+import { useGlobalSearch } from "./useGlobalSearch";
 
 export function GlobalSearch() {
   const router = useRouter();
-  const [query, setQuery] = useState("");
-  const debouncedQuery = useDebounceValue(query, 500);
-  const [results, setResults] = useState<{ articles: Article[]; songs: Song[] } | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const {
+    query,
+    setQuery,
+    isLoading,
+    isOpen,
+    setIsOpen,
+    sections,
+    hasResults,
+    placeholder,
+    emptyHint,
+  } = useGlobalSearch();
 
-  useEffect(() => {
-    const fetchResults = async () => {
-      if (!debouncedQuery.trim()) {
-        setResults(null);
-        return;
-      }
-
-      setIsLoading(true);
-      try {
-        const res = await searchService.search(debouncedQuery);
-        if (res.data) {
-          setResults(res.data);
-          setIsOpen(true);
-        }
-      } catch (error) {
-        console.error("Search failed:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchResults();
-  }, [debouncedQuery]);
-
-  // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     }
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [setIsOpen]);
 
   const handleSelect = (path: string) => {
     setIsOpen(false);
@@ -76,101 +39,82 @@ export function GlobalSearch() {
     router.push(path);
   };
 
+  const showDropdown = isOpen && query.trim().length > 0;
+
   return (
     <div ref={wrapperRef} className="relative w-full max-w-md">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
         <input
           type="text"
-          placeholder="Cari artikel, lagu..."
+          placeholder={placeholder}
           value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            if (e.target.value.length > 0) setIsOpen(true);
+          onChange={(event) => {
+            setQuery(event.target.value);
+            setIsOpen(event.target.value.trim().length > 0);
           }}
           onFocus={() => {
-            if (results) setIsOpen(true);
+            if (query.trim()) setIsOpen(true);
           }}
-          className="w-full pl-9 pr-4 py-2 bg-gray-100 border-none rounded-full text-sm focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all outline-none"
+          className="w-full rounded-full border-none bg-gray-100 py-2 pl-9 pr-9 text-sm outline-none transition-all focus:bg-white focus:ring-2 focus:ring-primary/20"
         />
         {isLoading && (
-          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 animate-spin" />
+          <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-gray-400" />
         )}
       </div>
 
-      {isOpen && results && (results.articles.length > 0 || results.songs.length > 0) && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 max-h-96 overflow-y-auto z-50 p-2">
-          {results.articles.length > 0 && (
-            <div className="mb-2">
-              <h3 className="text-xs font-semibold text-gray-500 px-3 py-2 uppercase tracking-wider flex items-center gap-2">
-                <FileText className="w-3 h-3" /> Artikel
+      {showDropdown && hasResults && (
+        <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-96 overflow-y-auto rounded-xl border border-gray-100 bg-white p-2 shadow-lg">
+          {sections.map((section) => (
+            <div key={section.title} className="mb-2 last:mb-0">
+              <h3 className="flex items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                <section.icon className="h-3 w-3" />
+                {section.title}
               </h3>
-              {results.articles.map((article) => (
-                <div
-                  key={article.id}
-                  onClick={() => handleSelect(ROUTES.articleRead(article.slug || String(article.id)))}
-                  className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-md cursor-pointer group"
+              {section.results.map((result) => (
+                <button
+                  key={result.id}
+                  type="button"
+                  onClick={() => handleSelect(result.href)}
+                  className="group flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-gray-50"
                 >
-                  <div className="relative w-10 h-10 rounded-md overflow-hidden shrink-0 bg-gray-100">
-                    <Image
-                      src={getUploadUrl(article.thumbnail)}
-                      alt={article.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
-                      {article.title}
-                    </p>
-                    <p className="text-xs text-gray-500 line-clamp-1">
-                      {article.category?.name}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+                  {result.thumbnail ? (
+                    <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-gray-100">
+                      <Image
+                        src={getUploadUrl(result.thumbnail)}
+                        alt={result.title}
+                        fill
+                        className="object-cover"
+                        sizes="40px"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                      <result.icon className="h-4 w-4" />
+                    </div>
+                  )}
 
-          {results.songs.length > 0 && (
-            <div>
-              <h3 className="text-xs font-semibold text-gray-500 px-3 py-2 uppercase tracking-wider flex items-center gap-2">
-                <Music className="w-3 h-3" /> Musik
-              </h3>
-              {results.songs.map((song) => (
-                <div
-                  key={song.id}
-                  onClick={() => handleSelect(ROUTES.MUSIC)}
-                  className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-md cursor-pointer group"
-                >
-                  <div className="relative w-10 h-10 rounded-md overflow-hidden shrink-0 bg-gray-100">
-                    <Image
-                      src={getUploadUrl(song.thumbnail)}
-                      alt={song.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
-                      {song.title}
+                  <div className="min-w-0 flex-1">
+                    <p className="line-clamp-1 text-sm font-medium text-gray-900 transition-colors group-hover:text-primary">
+                      {result.title}
                     </p>
-                    <p className="text-xs text-gray-500 line-clamp-1">
-                      {song.category?.name || "Buka di halaman Musik"}
+                    <p className="line-clamp-1 text-xs text-gray-500">
+                      {result.description}
                     </p>
                   </div>
-                  <ArrowRight className="ml-auto h-3.5 w-3.5 text-gray-300 transition-colors group-hover:text-primary" />
-                </div>
+
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0 text-gray-300 transition-colors group-hover:text-primary" />
+                </button>
               ))}
             </div>
-          )}
+          ))}
         </div>
       )}
 
-      {isOpen && query && !isLoading && (!results || (results.articles.length === 0 && results.songs.length === 0)) && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 z-50 p-4 text-center text-sm text-gray-500">
+      {showDropdown && !isLoading && !hasResults && (
+        <div className="absolute left-0 right-0 top-full z-50 mt-2 rounded-xl border border-gray-100 bg-white p-4 text-center text-sm text-gray-500 shadow-lg">
           <p className="font-medium text-gray-700">Tidak ada hasil untuk kata kunci ini</p>
-          <p className="mt-1 text-xs text-gray-500">Coba kata kunci lain atau buka menu Artikel dan Musik.</p>
+          <p className="mt-1 text-xs text-gray-500">{emptyHint}</p>
         </div>
       )}
     </div>

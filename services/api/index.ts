@@ -25,3 +25,4 @@ export { xpBoostService } from "./xp-boost";
 export { pushService } from "./push";
 export { b2bService } from "./b2b";
 export { billingService } from "./billing";
+export { wellnessService } from "./wellness";

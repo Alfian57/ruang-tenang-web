@@ -19,6 +19,7 @@ import {
   CreditCard,
   Wallet,
   BarChart3,
+  Settings,
   type LucideIcon,
 } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
@@ -138,6 +139,7 @@ export const mitraGroups: NavGroup[] = [
       { href: ROUTES.MITRA.SUBSCRIPTION, icon: CreditCard, label: "Langganan" },
       { href: ROUTES.MITRA.INSIGHTS, icon: BarChart3, label: "Analitik Seat" },
       { href: ROUTES.MITRA.PAYMENTS, icon: Wallet, label: "Pembayaran" },
+      { href: ROUTES.MITRA.SETTINGS, icon: Settings, label: "Settings B2B" },
     ],
   },
 ];

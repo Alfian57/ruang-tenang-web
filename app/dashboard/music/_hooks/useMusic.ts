@@ -127,11 +127,11 @@ export function useMusic() {
 
   // Search effect
   useEffect(() => {
-    if (debouncedSearch) {
+    if (debouncedSearch && token) {
       const doSearch = async () => {
         setIsLoading(true);
         try {
-          const response = await searchService.search(debouncedSearch);
+          const response = await searchService.search(debouncedSearch, undefined, token || undefined);
           setSongs(response.data?.songs || []);
         } catch (error) {
           console.error("Search failed:", error);
@@ -141,7 +141,7 @@ export function useMusic() {
       };
       doSearch();
     }
-  }, [debouncedSearch]);
+  }, [debouncedSearch, token]);
 
   // Handlers
 

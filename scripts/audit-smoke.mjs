@@ -64,13 +64,13 @@ assertContains("lib/routes.ts", "/dashboard/moderation/queue?focus=", "Moderatio
 assertContains("lib/routes.ts", "/dashboard/moderation/reports?focus=", "Moderation report links must target the existing reports route");
 assertNotContains("lib/routes.ts", "/dashboard/moderation/articles/", "Moderation article links must not target missing detail pages");
 
-assertContains("app/dashboard/_components/MemberDashboard.tsx", "Status Paket", "Member dashboard must make premium/free status visible");
-assertContains("app/dashboard/_components/MemberDashboard.tsx", "Quest Hari Ini", "Member dashboard must guide the core daily journey");
-assertContains("app/dashboard/_components/MemberDashboard.tsx", "Mulai dari sini", "Member dashboard must include a first-run starting point");
-assertContains("app/dashboard/_components/MemberDashboard.tsx", "Akun Gratis", "Member dashboard must explain free account state");
-assertContains("app/dashboard/_components/MemberDashboard.tsx", "Premium aktif", "Member dashboard must explain premium account state");
+assertContains("app/dashboard/_components/member-dashboard/DailyQuestSection.tsx", "Status Paket", "Member dashboard must make premium/free status visible");
+assertContains("app/dashboard/_components/member-dashboard/DailyQuestSection.tsx", "Quest Hari Ini", "Member dashboard must guide the core daily journey");
+assertContains("app/dashboard/_components/member-dashboard/DailyQuestSection.tsx", "Mulai dari sini", "Member dashboard must include a first-run starting point");
+assertContains("app/dashboard/_components/member-dashboard/DailyQuestSection.tsx", "Akun Gratis", "Member dashboard must explain free account state");
+assertContains("app/dashboard/_components/member-dashboard/DailyQuestSection.tsx", "Premium aktif", "Member dashboard must explain premium account state");
 assertContains("app/dashboard/chat/_hooks/useChatPage.ts", "chat-quota-limited", "Chat page must react to exhausted quota events");
-assertContains("app/dashboard/chat/_components/ChatMessagesArea.tsx", "Boolean(chatQuotaNotice)", "Chat input must lock when quota is exhausted");
+assertContains("app/dashboard/chat/_components/ChatMessagesArea.tsx", "isQuotaExhausted", "Chat input must lock when quota is exhausted");
 assertContains("app/dashboard/chat/_components/ChatMessagesArea.tsx", "Tulis Jurnal", "Chat quota exhausted state must offer a non-chat alternative");
 assertContains("app/dashboard/chat/_components/ChatMessagesArea.tsx", "Atur Napas", "Chat quota exhausted state must offer breathing support");
 assertContains("app/dashboard/chat/_components/EmptyState.tsx", "Mulai guided check-in", "Chat empty state must prioritize guided check-in");
@@ -102,11 +102,11 @@ assertContains("app/dashboard/billing/page.tsx", "useBillingCheckout", "Billing 
 assertContains("app/dashboard/topup/page.tsx", "useBillingCheckout", "Topup page must use the shared checkout hook");
 assertContains("app/dashboard/billing/page.tsx", "Premium B2B", "Billing page must compare B2B premium access");
 assertContains("app/dashboard/topup/page.tsx", "Fokus halaman ini adalah saldo koin", "Topup page must keep coin purchase separate from premium decisions");
-assertContains("app/dashboard/_components/MitraDashboard.tsx", "Pusat Kendali Mitra", "Mitra dashboard must expose an organization command bar");
+assertContains("app/dashboard/_components/mitra-dashboard/MitraOverviewSection.tsx", "Pusat Kendali Mitra", "Mitra dashboard must expose an organization command bar");
 assertContains("components/layout/dashboard/nav-config.ts", "Pernapasan", "Dashboard navigation should use consistent Indonesian copy");
-assertContains("app/dashboard/_components/MitraDashboard.tsx", "Belum ada trend analitik", "Mitra dashboard must show localized analytics empty state");
+assertContains("app/dashboard/_components/mitra-dashboard/MitraInsightsSection.tsx", "Belum ada trend analitik", "Mitra dashboard must show localized analytics empty state");
 
-assertContains("components/layout/dashboard/GlobalSearch.tsx", "Musik", "Global search must expose music as an active result section");
+assertContains("components/layout/dashboard/useGlobalSearch.ts", "Musik", "Global search must expose music as an active result section");
 assertNotContains("components/layout/dashboard/GlobalSearch.tsx", "Segera Hadir", "Global search must not label active music results as coming soon");
 assertContains("components/ui/button.tsx", "Memuat...", "Shared button loading copy must be localized");
 assertContains("components/ui/spinner.tsx", "Memuat...", "Shared spinner loading copy must be localized");

@@ -1,7 +1,7 @@
 import { httpClient } from "@/services/http/client";
 import type { ApiResponse, PaginatedResponse } from "@/services/http/types";
 import type { User, Article, Song, SongCategory, LevelConfig } from "@/types";
-import type { Forum, ForumCategory } from "@/types/forum";
+import type { Forum, ForumCategory, ForumPost } from "@/types/forum";
 import type { AdminMapLandmark, AdminMapLandmarkPayload } from "@/types/progress-map";
 import type { DashboardStats } from "@/types/admin";
 
@@ -92,8 +92,28 @@ export const adminService = {
     return httpClient.get<PaginatedResponse<Forum>>("/admin/forums", { token, params });
   },
 
-  deleteForum(token: string, id: number) {
-    return httpClient.delete<ApiResponse<null>>(`/admin/forums/${id}`, { token });
+  getForum(token: string, identifier: string | number) {
+    return httpClient.get<ApiResponse<Forum>>(`/admin/forums/${identifier}`, { token });
+  },
+
+  getForumPosts(token: string, identifier: string | number, params?: { limit?: number; offset?: number; sort?: string }) {
+    return httpClient.get<PaginatedResponse<ForumPost>>(`/admin/forums/${identifier}/posts`, { token, params });
+  },
+
+  createForumPost(token: string, identifier: string | number, data: { content: string }) {
+    return httpClient.post<ApiResponse<ForumPost>>(`/admin/forums/${identifier}/posts`, data, { token });
+  },
+
+  deleteForum(token: string, identifier: string | number) {
+    return httpClient.delete<ApiResponse<null>>(`/admin/forums/${identifier}`, { token });
+  },
+
+  deleteForumPost(token: string, postId: number) {
+    return httpClient.delete<ApiResponse<null>>(`/admin/forum-posts/${postId}`, { token });
+  },
+
+  toggleAcceptedAnswer(token: string, postId: number) {
+    return httpClient.put<ApiResponse<{ is_accepted_answer: boolean }>>(`/admin/forum-posts/${postId}/accepted-answer`, undefined, { token });
   },
 
   // Levels

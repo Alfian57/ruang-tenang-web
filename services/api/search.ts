@@ -11,7 +11,7 @@ interface SearchResults {
 }
 
 export const searchService = {
-  search(query: string, params?: { type?: string; page?: number; limit?: number }) {
-    return httpClient.get<ApiResponse<SearchResults>>("/search", { params: { q: query, ...params } });
+  search(query: string, params?: { type?: string; page?: number; limit?: number }, token?: string) {
+    return httpClient.get<ApiResponse<SearchResults>>("/search", { token, params: { q: query, ...params } });
   },
 };

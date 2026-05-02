@@ -7,6 +7,7 @@ import { useAuthStore } from "@/store/authStore";
 import type {
   B2BAuditLog,
   B2BBulkInviteResponse,
+  B2BImpactReport,
   B2BInviteMemberResponse,
   B2BOnboardingTemplate,
   B2BOrganizationAnalytics,
@@ -41,6 +42,7 @@ export function useMitraDashboard() {
   const [summary, setSummary] = useState<B2BOrganizationSummary | null>(null);
   const [members, setMembers] = useState<B2BOrganizationMember[]>([]);
   const [analytics, setAnalytics] = useState<B2BOrganizationAnalytics | null>(null);
+  const [impactReport, setImpactReport] = useState<B2BImpactReport | null>(null);
   const [auditLogs, setAuditLogs] = useState<B2BAuditLog[]>([]);
   const [onboardingTemplate, setOnboardingTemplate] = useState<B2BOnboardingTemplate | null>(null);
   const [pricingRecommendation, setPricingRecommendation] = useState<B2BPricingRecommendation | null>(null);
@@ -95,10 +97,11 @@ export function useMitraDashboard() {
     setErrorMessage(null);
 
     try {
-      const [summaryRes, membersRes, analyticsRes, auditRes, onboardingRes, pricingRes] = await Promise.all([
+      const [summaryRes, membersRes, analyticsRes, impactRes, auditRes, onboardingRes, pricingRes] = await Promise.all([
         b2bService.getOrganizationSummary(token, organizationId),
         b2bService.listOrganizationMembers(token, organizationId),
         b2bService.getOrganizationAnalytics(token, organizationId, 30),
+        b2bService.getImpactReport(token, organizationId, 30).catch(() => null),
         b2bService.listAuditLogs(token, organizationId, { limit: 12 }),
         b2bService.getOnboardingTemplate(token, organizationId, "member"),
         b2bService.getPricingRecommendation(token, organizationId).catch(() => null),
@@ -107,6 +110,7 @@ export function useMitraDashboard() {
       setSummary(summaryRes.data ?? null);
       setMembers(membersRes.data ?? []);
       setAnalytics(analyticsRes.data ?? null);
+      setImpactReport(impactRes?.data ?? null);
       setAuditLogs(auditRes.data?.items ?? []);
       setOnboardingTemplate(onboardingRes.data ?? null);
       setPricingRecommendation(pricingRes?.data ?? null);
@@ -115,6 +119,7 @@ export function useMitraDashboard() {
       setSummary(null);
       setMembers([]);
       setAnalytics(null);
+      setImpactReport(null);
       setAuditLogs([]);
       setOnboardingTemplate(null);
       setPricingRecommendation(null);
@@ -215,6 +220,7 @@ export function useMitraDashboard() {
       setSummary(null);
       setMembers([]);
       setAnalytics(null);
+      setImpactReport(null);
       setAuditLogs([]);
       setOnboardingTemplate(null);
       setPricingRecommendation(null);
@@ -236,6 +242,7 @@ export function useMitraDashboard() {
     summary,
     members,
     analytics,
+    impactReport,
     auditLogs,
     onboardingTemplate,
     pricingRecommendation,

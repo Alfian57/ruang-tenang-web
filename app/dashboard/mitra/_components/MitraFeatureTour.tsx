@@ -95,6 +95,13 @@ const TOUR_STEPS: TourStep[] = [
     },
     {
         route: ROUTES.MITRA.INSIGHTS,
+        target: "mitra-impact-report",
+        eyebrow: "Impact",
+        title: "Buka laporan siap presentasi",
+        description: "Impact report merangkum utilisasi seat, engagement anggota, status subscription, dan rekomendasi tindakan.",
+    },
+    {
+        route: ROUTES.MITRA.INSIGHTS,
         target: "mitra-audit-log",
         eyebrow: "Audit",
         title: "Telusuri audit organisasi",

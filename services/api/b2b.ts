@@ -20,6 +20,7 @@ import type {
   B2BPricingRecommendation,
   B2BSeatUpgradeRequest,
   B2BSubscription,
+  B2BImpactReport,
 } from "@/types";
 
 export const b2bService = {
@@ -99,6 +100,13 @@ export const b2bService = {
 
   getOrganizationAnalytics(token: string, organizationId: number, days = 30) {
     return httpClient.get<ApiResponse<B2BOrganizationAnalytics>>(`/b2b/organizations/${organizationId}/analytics`, {
+      token,
+      params: { days },
+    });
+  },
+
+  getImpactReport(token: string, organizationId: number, days = 30) {
+    return httpClient.get<ApiResponse<B2BImpactReport>>(`/b2b/organizations/${organizationId}/impact-report`, {
       token,
       params: { days },
     });

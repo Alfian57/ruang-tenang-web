@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { forumService } from "@/services/api";
+import { adminService } from "@/services/api";
 import { Forum, ForumPost } from "@/types/forum";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/authStore";
@@ -31,7 +31,7 @@ export function useAdminForumDetail() {
   const fetchForum = useCallback(async () => {
     if (!token || !slug) return;
     try {
-      const res = await forumService.getBySlug(token, slug as string);
+      const res = await adminService.getForum(token, slug as string);
       setForum(res.data);
       setIsLiked(!!res.data.is_liked);
       setLikesCount(res.data.likes_count || 0);
@@ -44,14 +44,7 @@ export function useAdminForumDetail() {
   const fetchPosts = useCallback(async () => {
     if (!token || !slug) return;
     try {
-      // Use getPosts but we need forum ID. But the backend for getPosts uses forumId.
-      // Actually forumService.getPosts takes forumId (string | number).
-      // If we use slug, we might need a different endpoint or get ID first.
-      // Wait, forumService.getPosts calls /forums/${forumId}/posts.
-      // Does backend support slug there? Checking router.go...
-      // router.go: forum.GET("/:slug/posts", forumHandler.GetForumPosts)
-      // Yes! It supports slug!
-      const response = await forumService.getPosts(token, slug as string, 100);
+      const response = await adminService.getForumPosts(token, slug as string, { limit: 100, sort: "top" });
       setPosts(response.data);
     } catch (error) {
       console.error(error);
@@ -72,10 +65,7 @@ export function useAdminForumDetail() {
 
     setSubmitting(true);
     try {
-      // forumService.createPost expects forumId. 
-      // Checking router.go: forum.POST("/:slug/posts", forumHandler.CreateForumPost)
-      // Yes, supports slug!
-      await forumService.createPost(token, slug as string, { content: replyContent });
+      await adminService.createForumPost(token, slug as string, { content: replyContent });
       setReplyContent("");
       fetchPosts();
       fetchForum(); // Update reply count if needed
@@ -92,7 +82,7 @@ export function useAdminForumDetail() {
     if (!deletePostId || !token) return;
     setIsDeleting(true);
     try {
-      await forumService.deletePost(token, deletePostId);
+      await adminService.deleteForumPost(token, deletePostId);
       setPosts(posts.filter(p => p.id !== deletePostId));
       toast.success("Balasan dihapus");
       setShowDeletePostDialog(false);
@@ -109,9 +99,7 @@ export function useAdminForumDetail() {
     if (!token || !slug) return;
     setIsDeleting(true);
     try {
-      // route: forum.DELETE("/:slug", forumHandler.DeleteForum)
-      // Supports slug!
-      await forumService.delete(token, slug as string);
+      await adminService.deleteForum(token, slug as string);
       toast.success("Topik dihapus");
       router.push("/dashboard/admin/forums");
     } catch (error) {
@@ -123,60 +111,12 @@ export function useAdminForumDetail() {
   };
 
   const handleToggleLike = async () => {
-    if (!token || !slug) return;
-    // Optimistic update
-    const previousLiked = isLiked;
-    const previousCount = likesCount;
-
-    setIsLiked(!isLiked);
-    setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
-
-    try {
-      // route: forum.PUT("/:slug/like", forumHandler.ToggleLike)
-      // Supports slug!
-      await forumService.toggleLike(token, slug as string);
-    } catch (error) {
-      console.error("Failed to toggle like:", error);
-      // Revert on error
-      setIsLiked(previousLiked);
-      setLikesCount(previousCount);
-      toast.error("Gagal memproses like");
-    }
+    toast.info("Mode admin hanya menampilkan jumlah suka. Interaksi suka tersedia untuk user.");
   };
   
   const handleTogglePostLike = async (post: ForumPost) => {
-    if (!token) return;
-    const currentlyLiked = post.has_user_voted ?? post.is_liked ?? false;
-    
-    // Optimistic Update
-    const updatedPosts = posts.map(p => {
-      if (p.id === post.id) {
-        const current = p.has_user_voted ?? p.is_liked ?? false;
-        const next = !current;
-        const currentUpvotes = p.upvotes_count ?? p.likes_count ?? 0;
-        return {
-          ...p,
-          has_user_voted: next,
-          is_liked: next,
-          upvotes_count: currentUpvotes + (next ? 1 : -1),
-          likes_count: currentUpvotes + (next ? 1 : -1)
-        };
-      }
-      return p;
-    });
-    setPosts(updatedPosts);
-    
-    try {
-      if (currentlyLiked) {
-        await forumService.removePostVote(token, post.id);
-      } else {
-        await forumService.upvotePost(token, post.id);
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error("Gagal melike balasan");
-      // Revert would go here
-    }
+    void post;
+    toast.info("Mode admin hanya menampilkan jumlah suka. Interaksi suka tersedia untuk user.");
   };
 
   const handleToggleBestAnswer = async (post: ForumPost) => {
@@ -193,11 +133,25 @@ export function useAdminForumDetail() {
     setPosts(updatedPosts);
     
     try {
-      await forumService.markAcceptedAnswer(token, post.id);
+      await adminService.toggleAcceptedAnswer(token, post.id);
+      fetchPosts();
+      fetchForum();
       toast.success(isBest ? "Ditandai sebagai Jawaban Terbaik" : "Status Jawaban Terbaik dihapus");
     } catch (error) {
        console.error(error);
        toast.error("Gagal mengubah status jawaban terbaik");
+    }
+  };
+
+  const handleToggleForumAccess = async (userId: number) => {
+    if (!token) return;
+
+    try {
+      await adminService.toggleForumBlock(token, userId);
+      toast.success("Status akses forum pengguna diperbarui");
+    } catch (error) {
+      console.error(error);
+      toast.error("Gagal memperbarui akses forum pengguna");
     }
   };
 
@@ -225,6 +179,7 @@ export function useAdminForumDetail() {
     handleDeleteForum,
     handleToggleLike,
     handleTogglePostLike,
-    handleToggleBestAnswer
+    handleToggleBestAnswer,
+    handleToggleForumAccess
   };
 }

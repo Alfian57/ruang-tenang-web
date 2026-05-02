@@ -9,10 +9,12 @@ import { ChangePasswordModal } from "@/components/layout/dashboard";
 import { ExpHistoryModal } from "@/components/layout/dashboard";
 import { AuthProvider, useAuth } from "@/components/providers/AuthProvider";
 import { MoodCheckinProvider } from "@/components/providers/MoodCheckinProvider";
+import { WellnessOnboardingProvider } from "@/components/providers/WellnessOnboardingProvider";
 import { GlobalMusicPlayer } from "@/components/layout";
 import { DailyTaskFAB } from "@/components/shared/gamification";
 import { OfflineIndicator } from "@/components/pwa/OfflineIndicator";
 import { SkipLink } from "@/components/ui/accessibility";
+import { UserFeatureTour } from "./_components/UserFeatureTour";
 import { initAutoSync } from "@/lib/offline/syncOutbox";
 import { cn } from "@/utils";
 import { useAuthStore } from "@/store/authStore";
@@ -22,11 +24,50 @@ import { Sidebar, MobileHeader, TopHeader } from "@/components/layout/dashboard"
 import { ROUTES } from "@/lib/routes";
 import { billingService, xpBoostService } from "@/services/api";
 import { ApiError } from "@/services/http/types";
-import type { BillingStatus, XPBoostStatus } from "@/types";
+import type { BillingStatus, UserRole, XPBoostStatus } from "@/types";
 
 type XPBoostUpdatedEventDetail = {
   status?: XPBoostStatus | null;
 };
+
+const SHARED_DASHBOARD_PATHS = [
+  ROUTES.DASHBOARD,
+  ROUTES.PROFILE,
+  ROUTES.SETTINGS,
+];
+
+function isPathAtOrBelow(pathname: string, basePath: string): boolean {
+  return pathname === basePath || pathname.startsWith(`${basePath}/`);
+}
+
+function isSharedDashboardPath(pathname: string): boolean {
+  return SHARED_DASHBOARD_PATHS.some((path) => isPathAtOrBelow(pathname, path));
+}
+
+function getRoleHome(role: UserRole): string {
+  if (role === "admin") return ROUTES.ADMIN.DASHBOARD;
+  if (role === "mitra") return ROUTES.MITRA.DASHBOARD;
+  return ROUTES.DASHBOARD;
+}
+
+function getUnauthorizedDashboardRedirect(pathname: string, role: UserRole): string | null {
+  const isAdminPath = isPathAtOrBelow(pathname, ROUTES.ADMIN.DASHBOARD) || isPathAtOrBelow(pathname, ROUTES.ADMIN.MODERATION);
+  const isMitraPath = isPathAtOrBelow(pathname, ROUTES.MITRA.DASHBOARD);
+
+  if (isSharedDashboardPath(pathname)) {
+    return null;
+  }
+
+  if (role === "admin") {
+    return isAdminPath ? null : getRoleHome(role);
+  }
+
+  if (role === "mitra") {
+    return isMitraPath ? null : getRoleHome(role);
+  }
+
+  return isAdminPath || isMitraPath ? getRoleHome(role) : null;
+}
 
 export default function DashboardLayout({
   children,
@@ -214,7 +255,17 @@ function DashboardContent({
     };
   }, [sidebarOpen]);
 
-  if (!user) {
+  const unauthorizedRedirect = user
+    ? getUnauthorizedDashboardRedirect(pathname, user.role)
+    : null;
+
+  useEffect(() => {
+    if (unauthorizedRedirect) {
+      router.replace(unauthorizedRedirect);
+    }
+  }, [router, unauthorizedRedirect]);
+
+  if (!user || unauthorizedRedirect) {
     return null;
   }
 
@@ -342,8 +393,10 @@ function DashboardContent({
           {children}
         </main>
 
-        {/* Mood Check-in Modal (for regular users only) */}
+        {/* Wellness onboarding and mood check-in modal (for regular users only) */}
+        {isUser && <WellnessOnboardingProvider />}
         {isUser && <MoodCheckinProvider />}
+        {isUser && <UserFeatureTour />}
 
         {/* Daily Task FAB (for non-admin users) */}
         {isUser && <DailyTaskFAB isSidebarOpen={sidebarOpen} xpBoost={xpBoostStatus} />}

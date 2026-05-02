@@ -16,4 +16,5 @@ export * from "./breathing";
 export * from "./progress-map";
 export * from "./guild";
 export * from "./b2b";
+export * from "./wellness";
 export * from "./billing";
