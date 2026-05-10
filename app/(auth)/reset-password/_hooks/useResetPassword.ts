@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,12 +23,22 @@ export function useResetPassword() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Cleanup timer on unmount to prevent memory leak and state updates on unmounted component
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+      }
+    };
+  }, []);
 
   const {
     register,
@@ -54,7 +64,7 @@ export function useResetPassword() {
         password_confirmation: data.confirmPassword
       });
       setIsSuccess(true);
-      setTimeout(() => {
+      redirectTimerRef.current = setTimeout(() => {
         router.push(ROUTES.LOGIN);
       }, 3000);
     } catch (error) {

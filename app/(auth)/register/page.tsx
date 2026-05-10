@@ -18,9 +18,14 @@ import { buildPathWithRedirect, getSafeRedirect } from "@/lib/safe-redirect";
 import { TRUST_CUES } from "@/constants";
 
 const registerSchema = z.object({
-  name: z.string().min(2, "Nama minimal 2 karakter"),
+  name: z.string().min(2, "Nama minimal 2 karakter").max(100, "Nama terlalu panjang"),
   email: z.string().email("Email tidak valid"),
-  password: z.string().min(6, "Password minimal 6 karakter"),
+  password: z.string()
+    .min(8, "Password minimal 8 karakter")
+    .max(128, "Password terlalu panjang")
+    .regex(/[A-Z]/, "Password harus mengandung huruf besar")
+    .regex(/[a-z]/, "Password harus mengandung huruf kecil")
+    .regex(/[0-9]/, "Password harus mengandung angka"),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Password tidak cocok",
