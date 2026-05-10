@@ -167,6 +167,18 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
       }
     } catch (error) {
       console.error("ChatStore.toggleMessageLike: failed", error);
+      // Revert optimistic update on error
+      set((state) => ({
+        messages: state.messages.map((msg) =>
+          msg.id === messageId
+            ? {
+                ...msg,
+                is_liked: isLike ? !msg.is_liked : msg.is_liked,
+                is_disliked: !isLike ? !msg.is_disliked : msg.is_disliked,
+              }
+            : msg
+        ),
+      }));
     }
   },
 
