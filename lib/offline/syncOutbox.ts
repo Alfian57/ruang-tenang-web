@@ -18,7 +18,19 @@ export async function syncOutbox(): Promise<number> {
 
   let synced = 0;
 
+  const NEVER_QUEUE_PREFIXES = [
+    "/admin", "/auth", "/b2b", "/billing", "/chat", 
+    "/chat-sessions", "/chat-messages", "/moderation", 
+    "/push", "/rewards"
+  ];
+
   for (const m of mutations) {
+    // Failsafe: drop never-queue items that bypassed local checks
+    if (NEVER_QUEUE_PREFIXES.some(prefix => m.endpoint === prefix || m.endpoint.startsWith(`${prefix}/`))) {
+      if (m.id !== undefined) await deleteMutation(m.id);
+      continue;
+    }
+
     try {
       const url = `${env.NEXT_PUBLIC_API_BASE_URL}${m.endpoint}`;
       const headers: HeadersInit = {
@@ -39,10 +51,10 @@ export async function syncOutbox(): Promise<number> {
         }
         synced++;
       } else if (response.status === 401) {
-        // Token expired — can't replay, remove to avoid infinite retries
-        if (m.id !== undefined) {
-          await deleteMutation(m.id);
-        }
+        // Token expired — DO NOT remove the mutation (prevent data loss).
+        // Since the session is invalid, the rest of the queue will also fail.
+        // We break the replay loop and wait for the user to login again.
+        break;
       }
       // Other errors (500, 422, etc.) — leave in queue for manual retry
     } catch {

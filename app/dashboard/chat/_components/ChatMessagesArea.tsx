@@ -18,7 +18,7 @@ import {
   TypingIndicator,
 } from ".";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, CreditCard, Crown, HeartHandshake, History, Lock, MessageSquare, NotebookPen, Phone, SlidersHorizontal, Wind } from "lucide-react";
+import { ChevronDown, ChevronUp, CreditCard, HeartHandshake, History, Lock, MessageSquare, NotebookPen, Phone, SlidersHorizontal, Wind } from "lucide-react";
 import { ChatHeader } from "./ChatHeader";
 import { ChatSummaryPanel } from "./ChatSummaryPanel";
 import { JournalContextIndicator } from "./JournalContextIndicator";

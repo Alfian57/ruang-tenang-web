@@ -87,7 +87,15 @@ export const authService = {
   },
 
   async resetPassword(data: { email: string; token: string; password: string; password_confirmation: string }): Promise<ApiResponse<null>> {
-    const response = await httpClient.post<ApiResponse<null>>("/auth/reset-password", data);
+    // Backend expects `new_password` + `password_confirmation`; the form field is
+    // named `password` for UX, so map it here. `email` is ignored server-side
+    // (the token alone authorizes the reset) but kept for backward compatibility.
+    const response = await httpClient.post<ApiResponse<null>>("/auth/reset-password", {
+      email: data.email,
+      token: data.token,
+      new_password: data.password,
+      password_confirmation: data.password_confirmation,
+    });
     return nullableResponseSchema.parse(response);
   },
 

@@ -103,7 +103,6 @@ function DashboardContent({
   const loadBlockedUsers = useBlockStore((s) => s.loadBlockedUsers);
   const isPlayerVisible = useMusicPlayerStore((s) => s.isPlayerVisible);
   const currentSong = useMusicPlayerStore((s) => s.currentSong);
-  const isMinimized = useMusicPlayerStore((s) => s.isMinimized);
   const showMusicPlayer = isPlayerVisible && currentSong;
 
   // Load blocked users list on mount
@@ -385,7 +384,7 @@ function DashboardContent({
         <main className={cn(
           "focus:outline-none w-full min-w-0 max-w-[120rem] mx-auto overflow-x-clip",
           "flex-1 pt-16 lg:pt-0 transition-[padding-bottom] duration-200",
-          showMusicPlayer && (isMinimized ? "pb-16" : "pb-28")
+          showMusicPlayer && "pb-28"
         )}
           id="main-content"
           tabIndex={-1}
