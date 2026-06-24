@@ -47,15 +47,15 @@ export default function GamePage() {
                         Tekan SPASI, ↑, atau tap layar untuk melompat dan menghindari rintangan.
                     </p>
                 </div>
-                <div className="bg-orange-50 rounded-xl p-4 border border-orange-100">
-                    <h3 className="font-semibold text-orange-800 text-sm mb-1">💛 Kumpulkan</h3>
-                    <p className="text-xs text-orange-600">
+                <div className="bg-primary/10 rounded-xl p-4 border border-primary/20">
+                    <h3 className="font-semibold text-primary text-sm mb-1">💛 Kumpulkan</h3>
+                    <p className="text-xs text-primary/80">
                         Hati, bintang, dan bunga lotus memberikan poin bonus. Combo = lebih banyak poin!
                     </p>
                 </div>
-                <div className="bg-green-50 rounded-xl p-4 border border-green-100">
-                    <h3 className="font-semibold text-green-800 text-sm mb-1">✨ Tips</h3>
-                    <p className="text-xs text-green-600">
+                <div className="bg-primary/10 rounded-xl p-4 border border-primary/20">
+                    <h3 className="font-semibold text-primary text-sm mb-1">✨ Tips</h3>
+                    <p className="text-xs text-primary/80">
                         Game ini juga tersedia saat offline. Mainkan kapan saja untuk relaksasi sejenak.
                     </p>
                 </div>

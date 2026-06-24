@@ -125,10 +125,10 @@ export function WellnessOnboardingProvider() {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && closeModal()}>
-      <DialogContent className="max-w-2xl border-emerald-100 bg-white p-0">
-        <div className="border-b border-emerald-100 bg-emerald-50/80 px-5 py-5 sm:px-6">
+      <DialogContent className="max-w-2xl border-primary/20 bg-white p-0">
+        <div className="border-b border-primary/20 bg-primary/5 px-5 py-5 sm:px-6">
           <DialogHeader>
-            <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-emerald-700 shadow-sm">
+            <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-primary shadow-sm">
               <Sparkles className="h-5 w-5" />
             </div>
             <DialogTitle>Bangun Rencana Tenang 7 Hari</DialogTitle>
@@ -152,8 +152,8 @@ export function WellnessOnboardingProvider() {
                     className={cn(
                       "rounded-xl border px-3 py-2 text-left text-sm font-medium transition-colors",
                       isSelected
-                        ? "border-emerald-300 bg-emerald-100 text-emerald-950"
-                        : "border-gray-200 bg-gray-50 text-gray-700 hover:border-emerald-200 hover:bg-emerald-50"
+                        ? "border-primary/50 bg-primary/15 text-primary"
+                        : "border-gray-200 bg-gray-50 text-gray-700 hover:border-primary/30 hover:bg-primary/5"
                     )}
                   >
                     {option.label}
@@ -176,13 +176,13 @@ export function WellnessOnboardingProvider() {
                     className={cn(
                       "flex items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm transition-colors",
                       isSelected
-                        ? "border-emerald-300 bg-emerald-50 text-emerald-950"
-                        : "border-gray-200 bg-white text-gray-700 hover:border-emerald-200"
+                        ? "border-primary/50 bg-primary/10 text-primary"
+                        : "border-gray-200 bg-white text-gray-700 hover:border-primary/30"
                     )}
                   >
                     <span className={cn(
                       "grid h-5 w-5 shrink-0 place-items-center rounded-md border",
-                      isSelected ? "border-emerald-400 bg-emerald-500 text-white" : "border-gray-300 bg-gray-50"
+                      isSelected ? "border-primary bg-primary text-primary-foreground" : "border-gray-300 bg-gray-50"
                     )}>
                       {isSelected && <Check className="h-3.5 w-3.5" />}
                     </span>
@@ -206,13 +206,13 @@ export function WellnessOnboardingProvider() {
                     className={cn(
                       "flex items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm transition-colors",
                       isSelected
-                        ? "border-emerald-300 bg-emerald-50 text-emerald-950"
-                        : "border-gray-200 bg-white text-gray-700 hover:border-emerald-200"
+                        ? "border-primary/50 bg-primary/10 text-primary"
+                        : "border-gray-200 bg-white text-gray-700 hover:border-primary/30"
                     )}
                   >
                     <span className={cn(
                       "grid h-5 w-5 shrink-0 place-items-center rounded-md border",
-                      isSelected ? "border-emerald-400 bg-emerald-500 text-white" : "border-gray-300 bg-gray-50"
+                      isSelected ? "border-primary bg-primary text-primary-foreground" : "border-gray-300 bg-gray-50"
                     )}>
                       {isSelected && <Check className="h-3.5 w-3.5" />}
                     </span>

@@ -56,7 +56,7 @@ export function ArticleBlockModal({ isOpen, onClose, article, onConfirm }: Artic
                     <Button variant="outline" onClick={onClose}>Batal</Button>
                     <Button
                         className={article?.status === "blocked"
-                            ? "bg-green-500 hover:bg-green-600 text-white"
+                            ? "bg-primary hover:bg-primary text-white"
                             : "bg-yellow-500 hover:bg-yellow-600 text-white"}
                         onClick={onConfirm}
                     >

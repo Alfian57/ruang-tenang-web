@@ -478,7 +478,7 @@ export default function AdminRewardsPage() {
                                 className={cn(
                                   "px-3 py-1 rounded-full text-xs font-medium",
                                   formData.is_active
-                                    ? "bg-green-100 text-green-700"
+                                    ? "bg-primary/10 text-primary"
                                     : "bg-gray-100 text-gray-500"
                                 )}
                               >
@@ -537,7 +537,7 @@ export default function AdminRewardsPage() {
                                 className={cn(
                                   "px-3 py-1 rounded-full text-xs font-medium transition-colors",
                                   reward.is_active
-                                    ? "bg-green-100 text-green-700 hover:bg-green-200"
+                                    ? "bg-primary/10 text-primary hover:bg-primary/20"
                                     : "bg-gray-100 text-gray-500 hover:bg-gray-200"
                                 )}
                               >

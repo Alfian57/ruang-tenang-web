@@ -27,6 +27,28 @@
   --color-border: #E5E7EB;
   --color-input: #E5E7EB;
   --color-ring: #EF4444;
+  
+  /* Dynamic Theme Accent Colors */
+  --color-theme-accent: var(--theme-accent);
+  --color-theme-accent-light: var(--theme-accent-light);
+  --color-theme-accent-soft: var(--theme-accent-soft);
+  --color-theme-accent-dark: var(--theme-accent-dark);
+  --color-theme-accent-text: var(--theme-accent-text);
+  --color-theme-accent-border: var(--theme-accent-border);
+  
+  /* Theme Story / Secondary Colors */
+  --color-theme-story-from: var(--theme-story-from);
+  --color-theme-story-to: var(--theme-story-to);
+  --color-theme-story-border: var(--theme-story-border);
+  --color-theme-story-icon: var(--theme-story-icon);
+  --color-theme-story-heading: var(--theme-story-heading);
+  
+  /* Promo Banner / Streak Colors */
+  --color-theme-fab-from: var(--theme-fab-from);
+  --color-theme-fab-via: var(--theme-fab-via);
+  --color-theme-fab-to: var(--theme-fab-to);
+  --color-theme-streak-from: var(--theme-streak-from);
+  --color-theme-streak-to: var(--theme-streak-to);
 
   /* Extended red palette */
   --color-red-50: #FEF2F2;
@@ -604,6 +626,26 @@ button:disabled,
 .theme-streak-bg { background: linear-gradient(to right, var(--theme-streak-from), var(--theme-streak-to)); }
 .theme-streak-border { border-color: var(--theme-streak-border); }
 .theme-notification-bg { background-color: var(--theme-notification); }
+
+/* Ensure Tailwind color variables re-evaluate in the context of any theme override */
+[class*="theme-"] {
+  --color-theme-accent: var(--theme-accent);
+  --color-theme-accent-light: var(--theme-accent-light);
+  --color-theme-accent-soft: var(--theme-accent-soft);
+  --color-theme-accent-dark: var(--theme-accent-dark);
+  --color-theme-accent-text: var(--theme-accent-text);
+  --color-theme-accent-border: var(--theme-accent-border);
+  --color-theme-story-from: var(--theme-story-from);
+  --color-theme-story-to: var(--theme-story-to);
+  --color-theme-story-border: var(--theme-story-border);
+  --color-theme-story-icon: var(--theme-story-icon);
+  --color-theme-story-heading: var(--theme-story-heading);
+  --color-theme-fab-from: var(--theme-fab-from);
+  --color-theme-fab-via: var(--theme-fab-via);
+  --color-theme-fab-to: var(--theme-fab-to);
+  --color-theme-streak-from: var(--theme-streak-from);
+  --color-theme-streak-to: var(--theme-streak-to);
+}
 
 /* Dashboard Theme: Ocean Calm (Blue) */
 .theme-ocean_calm {

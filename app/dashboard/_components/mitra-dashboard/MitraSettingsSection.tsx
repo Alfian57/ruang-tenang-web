@@ -41,13 +41,13 @@ export function MitraSettingsSection({ viewModel }: MitraSettingsSectionProps) {
           Pengingat Operasional
         </h2>
         <p className="mt-1 text-sm text-gray-600">
-          Jalankan pengecekan reminder kontrak, utilisasi seat, dan tindak lanjut anggota.
+          Jalankan pengecekan reminder kontrak, utilisasi kuota, dan tindak lanjut anggota.
         </p>
         <div className="mt-4 space-y-4">
           <div className="rounded-xl border border-red-100 bg-red-50/60 p-4">
             <p className="text-sm font-semibold text-red-900">Reminder aktif untuk organisasi terpilih</p>
             <p className="mt-1 text-xs leading-5 text-red-800">
-              Sistem akan menyiapkan reminder berdasarkan status subscription, penggunaan seat, dan approval anggota.
+              Sistem akan menyiapkan reminder berdasarkan status langganan, penggunaan kuota, dan persetujuan anggota.
             </p>
           </div>
           <Button type="button" variant="outline" onClick={viewModel.handleRunReminders} disabled={viewModel.isSubmitting}>

@@ -27,12 +27,12 @@ const ACTIVITY_ICONS: Record<string, typeof UserPlus> = {
 
 const ACTIVITY_COLORS: Record<string, string> = {
     guild_created: "text-primary bg-primary/10",
-    member_joined: "text-green-600 bg-green-50",
+    member_joined: "text-primary/80 bg-primary/10",
     member_left: "text-gray-500 bg-gray-100",
     member_kicked: "text-red-500 bg-red-50",
-    member_promoted: "text-blue-500 bg-blue-50",
-    challenge_created: "text-purple-500 bg-purple-50",
-    challenge_completed: "text-green-600 bg-green-50",
+    member_promoted: "text-primary/80 bg-primary/10",
+    challenge_created: "text-primary/80 bg-primary/10",
+    challenge_completed: "text-primary/80 bg-primary/10",
     xp_contributed: "text-yellow-600 bg-yellow-50",
 };
 

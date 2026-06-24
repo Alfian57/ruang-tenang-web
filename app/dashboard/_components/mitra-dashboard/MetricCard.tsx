@@ -9,7 +9,7 @@ export function MetricCard({ label, value, helper, tone = "red" }: MetricCardPro
   const toneClass = {
     red: "border-red-100 bg-white text-red-700",
     amber: "border-amber-200 bg-amber-50 text-amber-800",
-    rose: "border-rose-200 bg-rose-50 text-rose-800",
+    rose: "border-primary/20 bg-primary/10 text-primary",
     gray: "border-gray-200 bg-white text-gray-700",
   }[tone];
 

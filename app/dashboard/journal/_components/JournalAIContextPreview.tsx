@@ -65,7 +65,7 @@ export function JournalAIContextPreview({
                             {entries.map((entry) => (
                                 <div
                                     key={entry.id}
-                                    className="p-3 bg-purple-50 border border-purple-200 rounded-lg"
+                                    className="p-3 bg-primary/10 border border-primary/20 rounded-lg"
                                 >
                                     <div className="flex items-center gap-2 mb-1">
                                         {entry.mood_emoji && (

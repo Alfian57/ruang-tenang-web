@@ -228,13 +228,13 @@ export default function BreathingPage() {
                     {/* Bedtime Mode CTA */}
                     <button
                         onClick={handleBedtimeMode}
-                        className="w-full mb-6 p-4 rounded-xl bg-linear-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-200/50 hover:border-indigo-300 transition-colors flex items-center gap-4 text-left"
+                        className="w-full mb-6 p-4 rounded-xl bg-linear-to-r from-primary/10 to-primary/10 border border-primary/20 hover:border-primary/40 transition-colors flex items-center gap-4 text-left"
                     >
-                        <div className="w-12 h-12 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0">
-                            <Moon className="w-6 h-6 text-indigo-500" />
+                        <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                            <Moon className="w-6 h-6 text-primary/80" />
                         </div>
                         <div className="flex-1">
-                            <h3 className="font-semibold text-indigo-700">Mode Tidur</h3>
+                            <h3 className="font-semibold text-primary">Mode Tidur</h3>
                             <p className="text-sm text-muted-foreground">Teknik 4-7-8 untuk relaksasi sebelum tidur</p>
                         </div>
                     </button>

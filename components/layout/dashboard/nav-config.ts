@@ -77,7 +77,7 @@ export const memberGroups: NavGroup[] = [
     title: "Komunitas",
     links: [
       { href: ROUTES.GUILDS, icon: Swords, label: "Guild" },
-      { href: ROUTES.DASHBOARD_COMMUNITY, icon: Trophy, label: "Community Stats" },
+      { href: ROUTES.DASHBOARD_COMMUNITY, icon: Trophy, label: "Statistik Komunitas" },
     ],
   },
   {

@@ -18,7 +18,7 @@ export function MitraSubscriptionSection({ viewModel }: MitraSubscriptionSection
       <article data-mitra-tour="mitra-subscription-summary" className="rounded-2xl border border-red-100 bg-white p-5 shadow-sm xl:col-span-3">
         <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
           <CreditCard className="h-5 w-5 text-red-600" />
-          Langganan dan Seat
+          Langganan dan Kuota
         </h2>
         <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="rounded-2xl border border-gray-200 p-4 md:col-span-2">
@@ -27,7 +27,7 @@ export function MitraSubscriptionSection({ viewModel }: MitraSubscriptionSection
             <p className="mt-1 text-sm text-gray-600">{viewModel.subscription ? `${formatCurrency(viewModel.subscription.total_amount)} / ${formatBillingCycle(viewModel.subscription.billing_cycle)}` : "Kontrak langganan belum aktif."}</p>
           </div>
           <div className="rounded-2xl border border-gray-200 p-4">
-            <p className="text-xs uppercase tracking-wide text-gray-500">Sisa seat</p>
+            <p className="text-xs uppercase tracking-wide text-gray-500">Sisa kuota</p>
             <p className="mt-1 text-lg font-semibold text-gray-900">{viewModel.seatUsage?.available_seats ?? 0}</p>
             <p className="mt-1 text-sm text-gray-600">{viewModel.seatUsage?.used_seats ?? 0} digunakan</p>
           </div>
@@ -35,17 +35,17 @@ export function MitraSubscriptionSection({ viewModel }: MitraSubscriptionSection
 
         {!viewModel.subscription && (
           <div className="mt-4 rounded-xl border border-dashed border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            Langganan belum aktif. Buat quote dari panel kanan atau koordinasikan aktivasi kontrak sebelum mengundang banyak anggota.
+            Langganan belum aktif. Buat penawaran dari panel kanan atau koordinasikan aktivasi kontrak sebelum mengundang banyak anggota.
           </div>
         )}
 
         <form onSubmit={viewModel.handleUpgradeSeats} className="mt-4 grid grid-cols-1 gap-3 rounded-2xl border border-red-100 bg-red-50/40 p-4 md:grid-cols-3">
           <div className="space-y-1.5">
-            <Label htmlFor="upgrade-seats">Contracted seat</Label>
+            <Label htmlFor="upgrade-seats">Kuota dikontrak</Label>
             <Input id="upgrade-seats" type="number" min={viewModel.summary?.seat_usage.used_seats ?? 1} placeholder="120" value={viewModel.upgradeForm.contracted_seats} onChange={(event) => viewModel.setUpgradeForm((prev) => ({ ...prev, contracted_seats: event.target.value }))} />
           </div>
           <div className="space-y-1.5">
-            <Label>Siklus billing</Label>
+            <Label>Siklus tagihan</Label>
             <Select value={viewModel.upgradeForm.billing_cycle} onValueChange={(value) => viewModel.setUpgradeForm((prev) => ({ ...prev, billing_cycle: value }))}>
               <SelectTrigger><SelectValue placeholder="Pilih siklus" /></SelectTrigger>
               <SelectContent>
@@ -56,7 +56,7 @@ export function MitraSubscriptionSection({ viewModel }: MitraSubscriptionSection
           </div>
           <div className="flex items-end">
             <Button type="submit" disabled={viewModel.isSubmitting || !viewModel.subscription}>
-              Perbarui Seat
+              Perbarui Kuota
             </Button>
           </div>
         </form>
@@ -74,7 +74,7 @@ export function MitraSubscriptionSection({ viewModel }: MitraSubscriptionSection
             <div key={plan.id} className="rounded-2xl border border-gray-200 p-4">
               <p className="text-sm font-semibold text-gray-900">{plan.name}</p>
               <p className="mt-1 text-xl font-bold text-red-700">{formatCurrency(plan.base_price_per_seat)}</p>
-              <p className="mt-1 text-xs text-gray-500">Minimal {plan.min_seats} seat, maksimal {plan.max_seats} seat</p>
+              <p className="mt-1 text-xs text-gray-500">Minimal {plan.min_seats} kuota, maksimal {plan.max_seats} kuota</p>
               <p className="mt-3 text-sm leading-5 text-gray-600">{plan.description}</p>
             </div>
           ))}

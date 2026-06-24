@@ -248,10 +248,10 @@ export default function MusicPage() {
           </p>
         </div>
 
-        <section className="mb-6 rounded-2xl border border-indigo-200 bg-linear-to-r from-indigo-50 to-sky-50 p-4">
+        <section className="mb-6 rounded-2xl border border-primary/20 bg-linear-to-r from-primary/10 to-primary/10 p-4">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs font-semibold text-indigo-700 uppercase tracking-wide">MUSIC-2</p>
+              <p className="text-xs font-semibold text-primary uppercase tracking-wide">MUSIC-2</p>
               <h2 className="text-lg font-semibold text-gray-900 mt-1">
                 {currentSong
                   ? `Setelah mendengar "${currentSong.title}", lanjutkan aksi kecil.`
@@ -287,8 +287,8 @@ export default function MusicPage() {
         </section>
 
         {activeJourney && (
-          <section className="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Journey Recap</p>
+          <section className="mb-6 rounded-2xl border border-primary/20 bg-primary/10 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-primary">Journey Recap</p>
             <h3 className="text-lg font-semibold text-gray-900 mt-1">{activeJourney.title}</h3>
             <p className="text-sm text-gray-600 mt-1">
               {currentSong
@@ -311,14 +311,14 @@ export default function MusicPage() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full min-w-0">
-          <TabsList className="mb-6 w-full max-w-full overflow-x-auto">
+          <TabsList className="mb-6 grid w-full max-w-md grid-cols-3">
             <TabsTrigger value="browse" className="text-xs sm:text-sm shrink-0">
               <Library className="w-4 h-4 mr-1.5" />
               Jelajahi
             </TabsTrigger>
             <TabsTrigger value="explore" className="text-xs sm:text-sm shrink-0">
               <Compass className="w-4 h-4 mr-1.5" />
-              Explore
+              Eksplorasi
             </TabsTrigger>
             <TabsTrigger value="playlists" className="text-xs sm:text-sm shrink-0">
               <ListMusic className="w-4 h-4 mr-1.5" />

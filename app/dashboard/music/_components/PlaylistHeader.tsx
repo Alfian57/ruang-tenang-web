@@ -31,7 +31,7 @@ export function PlaylistHeader({
                 <ArrowLeft className="w-5 h-5" />
             </Button>
 
-            <div className="w-20 h-20 rounded-xl overflow-hidden bg-linear-to-br from-purple-100 to-purple-200 shrink-0">
+            <div className="w-20 h-20 rounded-xl overflow-hidden bg-linear-to-br from-primary/10 to-primary/10 shrink-0">
                 {playlist.thumbnail && !imgError ? (
                     <Image
                         src={playlist.thumbnail}
@@ -42,8 +42,8 @@ export function PlaylistHeader({
                         onError={() => setImgError(true)}
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-purple-50">
-                        <ListMusic className="w-8 h-8 text-purple-300" />
+                    <div className="w-full h-full flex items-center justify-center bg-primary/10">
+                        <ListMusic className="w-8 h-8 text-primary/60" />
                     </div>
                 )}
             </div>

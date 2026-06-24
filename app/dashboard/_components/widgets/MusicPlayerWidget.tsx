@@ -96,7 +96,7 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 bg-linear-to-br from-indigo-500 to-purple-600 text-white">
+      <div className="p-4 bg-linear-to-br from-primary to-primary text-white">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-white/20 rounded-lg">
@@ -126,7 +126,7 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
 
       {/* Now Playing Bar */}
       {currentSong && (
-        <div className="bg-gray-900 px-4 py-3 text-white flex items-center gap-4 border-b-4 border-indigo-600">
+        <div className="bg-gray-900 px-4 py-3 text-white flex items-center gap-4 border-b-4 border-primary/60">
           <button
             onClick={() => playSong(currentSong)}
             className="w-10 h-10 rounded-full bg-white text-gray-900 flex items-center justify-center shrink-0 hover:bg-gray-100 transition-transform hover:scale-105"
@@ -139,7 +139,7 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
               <span className="text-[10px] text-gray-400 tabular-nums font-medium">{formatTime(audioProgress)}</span>
               <div className="h-1 flex-1 bg-white/20 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-indigo-500 rounded-full transition-all duration-300"
+                  className="h-full bg-primary rounded-full transition-all duration-300"
                   style={{ width: `${audioDuration ? (audioProgress / audioDuration) * 100 : 0}%` }}
                 />
               </div>
@@ -162,8 +162,8 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
                   className={cn(
                     "bg-white rounded-2xl overflow-hidden border transition-all duration-300 group flex flex-col w-full h-full relative",
                     isExpanded
-                      ? "border-indigo-400 shadow-md ring-2 ring-indigo-400/20"
-                      : "border-gray-200 shadow-sm hover:border-indigo-300 hover:shadow-md cursor-pointer"
+                      ? "border-primary/40 shadow-md ring-2 ring-primary/50"
+                      : "border-gray-200 shadow-sm hover:border-primary/40 hover:shadow-md cursor-pointer"
                   )}
                   onClick={() => !isExpanded && handleCategoryClick(cat.id)}
                 >
@@ -185,8 +185,8 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
                           sizes="(max-width: 768px) 50vw, 33vw"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-indigo-50">
-                          <Music className="w-10 h-10 text-indigo-300" />
+                        <div className="w-full h-full flex items-center justify-center bg-primary/10">
+                          <Music className="w-10 h-10 text-primary/60" />
                         </div>
                       )}
                       {/* Play icon overlay on hover */}
@@ -207,7 +207,7 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
                       <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 scrollbar-thin scrollbar-thumb-indigo-200">
                         {categorySongs[cat.id] === undefined && (
                           <div className="h-full flex flex-col items-center justify-center">
-                            <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mb-3" />
+                            <div className="w-6 h-6 border-2 border-primary/40 border-t-transparent rounded-full animate-spin mb-3" />
                             <p className="text-xs text-gray-500 font-medium tracking-wide">Memuat lagu...</p>
                           </div>
                         )}
@@ -230,21 +230,21 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
                                 className={cn(
                                   "w-full text-left text-xs py-2.5 px-3 rounded-xl flex items-center gap-3 transition-all group/song border",
                                   isSelected
-                                    ? "bg-indigo-50 text-indigo-700 font-bold border-indigo-200 shadow-none"
-                                    : "bg-white text-gray-600 hover:bg-gray-50 hover:text-indigo-600 border-transparent hover:border-gray-100"
+                                    ? "bg-theme-accent/10 text-theme-accent-text font-bold border-theme-accent/20 shadow-none"
+                                    : "bg-white text-gray-600 hover:bg-gray-50 hover:text-theme-accent-dark border-transparent hover:border-gray-100"
                                 )}
                               >
-                                <div className="shrink-0 w-6 h-6 rounded-full bg-white border shadow-xs flex items-center justify-center border-gray-100 group-hover/song:border-indigo-200 transition-colors">
+                                <div className="shrink-0 w-6 h-6 rounded-full bg-white border shadow-xs flex items-center justify-center border-gray-100 group-hover/song:border-primary/20 transition-colors">
                                   {isSelected && isPlaying ? (
                                     <div className="flex items-center gap-0.5 h-3">
-                                      <div className="w-0.5 bg-indigo-500 h-1.5 animate-[ping_1s_ease-in-out_infinite]" />
-                                      <div className="w-0.5 bg-indigo-500 h-3 animate-[ping_1.2s_ease-in-out_infinite]" />
-                                      <div className="w-0.5 bg-indigo-500 h-2 animate-[ping_0.8s_ease-in-out_infinite]" />
+                                      <div className="w-0.5 bg-primary h-1.5 animate-[ping_1s_ease-in-out_infinite]" />
+                                      <div className="w-0.5 bg-primary h-3 animate-[ping_1.2s_ease-in-out_infinite]" />
+                                      <div className="w-0.5 bg-primary h-2 animate-[ping_0.8s_ease-in-out_infinite]" />
                                     </div>
                                   ) : (
                                     <Play className={cn(
                                       "w-2.5 h-2.5 ml-0.5", 
-                                      isSelected ? "text-indigo-500 fill-indigo-500" : "text-gray-400 group-hover/song:text-indigo-500"
+                                      isSelected ? "text-theme-accent-text fill-theme-accent-text" : "text-gray-400 group-hover/song:text-theme-accent-text"
                                     )} />
                                   )}
                                 </div>
@@ -260,7 +260,7 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
                   {/* Bottom Footer Info */}
                   <div className="p-3.5 flex items-center justify-between border-t border-gray-100 bg-white z-30 relative shadow-[0_-4px_10px_rgba(0,0,0,0.02)]">
                     <div className="flex-1 min-w-0 pr-3">
-                      <h4 className={cn("font-bold text-[15px] leading-tight transition-colors line-clamp-1", isExpanded ? "text-indigo-700" : "text-gray-800")}>
+                      <h4 className={cn("font-bold text-[15px] leading-tight transition-colors line-clamp-1", isExpanded ? "text-theme-accent-dark" : "text-gray-800")}>
                         {cat.name}
                       </h4>
                       <p className="text-xs text-gray-500 mt-1 font-medium">{cat.song_count || 0} Lagu</p>
@@ -271,13 +271,13 @@ export function MusicPlayerWidget({ categories }: MusicPlayerWidgetProps) {
                           e.stopPropagation();
                           setExpandedCategory(null);
                         }}
-                        className="px-3 py-1.5 bg-gray-100 hover:bg-rose-50 hover:text-rose-600 text-gray-600 rounded-lg text-xs font-bold transition-colors border border-transparent hover:border-rose-100 shrink-0 shadow-sm"
+                        className="px-3 py-1.5 bg-gray-100 hover:bg-primary/10 hover:text-primary/80 text-gray-600 rounded-lg text-xs font-bold transition-colors border border-transparent hover:border-primary/20 shrink-0 shadow-sm"
                       >
                         Batal
                       </button>
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-indigo-50 transition-colors shrink-0">
-                        <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-indigo-500 transition-colors" />
+                      <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-primary/10 transition-colors shrink-0">
+                        <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-primary/80 transition-colors" />
                       </div>
                     )}
                   </div>

@@ -45,11 +45,11 @@ function getStatusBadgeClass(status?: string): string {
     case "pending":
       return "bg-amber-100 text-amber-800 border-amber-200";
     case "rejected":
-      return "bg-rose-100 text-rose-800 border-rose-200";
+      return "bg-primary/10 text-primary border-primary/20";
     case "revision_requested":
-      return "bg-orange-100 text-orange-800 border-orange-200";
+      return "bg-primary/10 text-primary border-primary/20";
     case "approved":
-      return "bg-emerald-100 text-emerald-800 border-emerald-200";
+      return "bg-primary/10 text-primary border-primary/20";
     default:
       return "bg-gray-100 text-gray-700 border-gray-200";
   }
@@ -78,11 +78,11 @@ export default function StoriesPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="p-4 lg:p-6">
-        <section className="mb-8 rounded-2xl border border-violet-200 bg-violet-50 p-4">
+        <section className="mb-8 rounded-2xl border border-primary/20 bg-primary/10 p-4">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">STORY CHALLENGE</p>
-              <h2 className="text-lg font-semibold text-gray-900 mt-1">Tema Mingguan: From Chaos to Calm</h2>
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary">TANTANGAN KISAH</p>
+              <h2 className="text-lg font-semibold text-gray-900 mt-1">Tema Mingguan: Dari Kacau Menjadi Tenang</h2>
               <p className="text-sm text-gray-600 mt-1">
                 Ceritakan satu momen sulit minggu ini dan langkah kecil yang membantumu kembali stabil.
               </p>
@@ -90,7 +90,7 @@ export default function StoriesPage() {
             <Button asChild className="gap-1.5">
               <Link href={weeklyChallengeHref}>
                 <PenLine className="w-4 h-4" />
-                Ikut Challenge
+                Ikut Tantangan
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </Button>
@@ -122,7 +122,7 @@ export default function StoriesPage() {
                     </div>
                   )}
                   <div className="p-4">
-                    <Badge className="text-white mb-2" style={{ backgroundColor: `var(--theme-story-icon)` }}>Featured</Badge>
+                    <Badge className="text-white mb-2" style={{ backgroundColor: `var(--theme-story-icon)` }}>Pilihan</Badge>
                     <h3 className="font-bold text-lg mb-2 group-hover:text-amber-600 transition-colors line-clamp-2">
                       {story.title}
                     </h3>
@@ -137,7 +137,7 @@ export default function StoriesPage() {
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="flex items-center gap-1">
-                          <Heart className="w-4 h-4 text-rose-500" />
+                          <Heart className="w-4 h-4 text-primary/80" />
                           {story.heart_count}
                         </span>
                       </div>
@@ -235,7 +235,7 @@ export default function StoriesPage() {
                   <div className="p-4">
                     {story.is_own && (
                       <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <Badge className="bg-blue-100 text-blue-800 border border-blue-200">Milik Anda</Badge>
+                        <Badge className="bg-primary/10 text-primary border border-primary/20">Milik Anda</Badge>
                         <Badge className={getStatusBadgeClass(story.status)}>
                           {getStatusLabel(story.status)}
                         </Badge>
@@ -248,7 +248,7 @@ export default function StoriesPage() {
                     {story.has_trigger_warning && (
                       <Badge variant="destructive" className="mb-2 gap-1">
                         <AlertTriangle className="w-3 h-3" />
-                        Trigger Warning
+                        Peringatan Konten
                       </Badge>
                     )}
                     <h3 className="font-bold text-lg mb-2 group-hover:text-amber-600 transition-colors line-clamp-2">

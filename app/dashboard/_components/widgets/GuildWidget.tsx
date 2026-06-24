@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 const ROLE_LABELS: Record<string, string> = {
-    leader: "Leader", admin: "Admin", member: "Member",
+    leader: "Ketua", admin: "Admin", member: "Anggota",
 };
 
 export function GuildWidget() {
@@ -106,7 +106,7 @@ export function GuildWidget() {
 
     // User is not in a guild — show CTA
     return (
-        <Card className="border border-gray-100 shadow-sm bg-linear-to-br from-amber-50/50 to-orange-50/30 overflow-hidden relative">
+        <Card className="border border-gray-100 shadow-sm bg-linear-to-br from-amber-50/50 to-primary/10 overflow-hidden relative">
             <CardContent className="p-4">
                 <div className="flex items-center gap-3 mb-3">
                     <div className="p-2.5 bg-amber-100 rounded-xl">

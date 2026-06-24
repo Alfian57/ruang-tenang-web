@@ -49,30 +49,30 @@ const TOUR_STEPS: TourStep[] = [
   {
     route: ROUTES.DASHBOARD,
     target: "user-breathing",
-    eyebrow: "Breathing",
+    eyebrow: "Pernapasan",
     title: "Tenangkan tubuh dulu",
     description: "Sesi napas singkat menjadi rute cepat untuk kondisi cemas, marah, capek, atau ingin fokus.",
   },
   {
     route: ROUTES.DASHBOARD,
     target: "user-reward",
-    eyebrow: "Reward",
-    title: "Selesaikan quest hari ini",
-    description: "Quest, EXP, dan reward menjaga perjalanan terasa selesai, bukan hanya sekadar membuka fitur.",
+    eyebrow: "Hadiah",
+    title: "Selesaikan misi hari ini",
+    description: "Misi, EXP, dan hadiah menjaga perjalanan terasa selesai, bukan hanya sekadar membuka fitur.",
   },
   {
     route: ROUTES.DASHBOARD,
     target: "user-progress-map",
-    eyebrow: "Progress",
+    eyebrow: "Progres",
     title: "Lihat progres perjalanan",
-    description: "Progress map menunjukkan capaian lintas aktivitas dan menjadi bagian dari narasi perjalanan tenang.",
+    description: "Peta progres menunjukkan capaian lintas aktivitas dan menjadi bagian dari narasi perjalanan tenang.",
   },
   {
     route: ROUTES.DASHBOARD,
     target: "user-wellness-plan",
-    eyebrow: "Plan",
+    eyebrow: "Rencana",
     title: "Ikuti rencana 7 hari",
-    description: "Plan ini mengurutkan mood, breathing, jurnal, chat AI, reward, dan progress map agar flow user baru lebih jelas.",
+    description: "Plan ini mengurutkan mood, breathing, jurnal, chat AI, reward, dan progress map agar alur pengguna baru lebih jelas.",
   },
   {
     route: ROUTES.DASHBOARD,
@@ -84,21 +84,21 @@ const TOUR_STEPS: TourStep[] = [
   {
     route: ROUTES.DASHBOARD,
     target: "user-weekly-insight",
-    eyebrow: "Insight",
+    eyebrow: "Wawasan",
     title: "Baca laporan mingguan",
-    description: "Ringkasan ini menggabungkan mood, jurnal, breathing, chat, dan quest menjadi pola serta rekomendasi minggu depan.",
+    description: "Ringkasan ini menggabungkan mood, jurnal, breathing, chat, dan misi menjadi pola serta rekomendasi minggu depan.",
   },
   {
     route: ROUTES.DASHBOARD,
     target: "user-journey-map",
-    eyebrow: "Signature",
+    eyebrow: "Unggulan",
     title: "Peta Perjalanan Tenang",
     description: "Fitur khas Ruang Tenang yang merangkai streak, mood, jurnal, breathing, dan reward sebagai perjalanan personal.",
   },
   {
     route: ROUTES.DASHBOARD,
     target: "user-crisis-support",
-    eyebrow: "Support",
+    eyebrow: "Bantuan",
     title: "Bantuan cepat selalu terlihat",
     description: "Saat situasi terasa tidak aman, tombol bantuan cepat tersedia tanpa harus masuk ke chat terlebih dahulu.",
   },
@@ -339,18 +339,18 @@ export function UserFeatureTour() {
       <Button
         type="button"
         onClick={startTour}
-        className="fixed bottom-3 left-3 z-30 rounded-full bg-emerald-600 px-3 shadow-lg shadow-emerald-900/20 hover:bg-emerald-700 xs:bottom-4 xs:left-4 xs:px-4"
+        className="fixed bottom-3 left-3 z-30 rounded-full bg-primary px-3 shadow-lg shadow-emerald-900/20 hover:bg-primary xs:bottom-4 xs:left-4 xs:px-4"
         aria-label="Mulai tour fitur dashboard user"
       >
         <Compass className="h-4 w-4" />
-        <span className="hidden xs:inline">Tour User</span>
+        <span className="hidden xs:inline">Tur Pengguna</span>
       </Button>
 
       {activeStep && (
         <div className="pointer-events-none fixed inset-0 z-[80]">
           {targetRect ? (
             <div
-              className="fixed rounded-2xl border-2 border-emerald-400 bg-transparent shadow-[0_0_0_9999px_rgba(15,23,42,0.58)] transition-all duration-200"
+              className="fixed rounded-2xl border-2 border-primary/40 bg-transparent shadow-[0_0_0_9999px_rgba(15,23,42,0.58)] transition-all duration-200"
               style={highlightStyle}
             />
           ) : (
@@ -359,7 +359,7 @@ export function UserFeatureTour() {
 
           <section
             className={cn(
-              "pointer-events-auto fixed bottom-4 left-3 right-3 z-[90] rounded-2xl border border-emerald-100 bg-white p-4 shadow-2xl shadow-slate-950/20",
+              "pointer-events-auto fixed bottom-4 left-3 right-3 z-[90] rounded-2xl border border-primary/20 bg-white p-4 shadow-2xl shadow-slate-950/20",
               "xs:left-auto xs:right-4 xs:w-[min(24rem,calc(100vw-2rem))]"
             )}
             role="dialog"
@@ -368,7 +368,7 @@ export function UserFeatureTour() {
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-widest text-emerald-700">{activeStep.eyebrow}</p>
+                <p className="text-xs font-semibold uppercase tracking-widest text-primary">{activeStep.eyebrow}</p>
                 <h2 className="mt-1 text-base font-semibold text-gray-950">{activeStep.title}</h2>
               </div>
               <button
@@ -384,7 +384,7 @@ export function UserFeatureTour() {
             <p className="mt-2 text-sm leading-6 text-gray-600">{activeStep.description}</p>
 
             {isSeekingTarget && (
-              <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+              <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
                 Menyiapkan sorotan
               </div>
@@ -392,7 +392,7 @@ export function UserFeatureTour() {
 
             <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-gray-100">
               <div
-                className="h-full rounded-full bg-emerald-500 transition-all"
+                className="h-full rounded-full bg-primary transition-all"
                 style={{ width: `${((currentIndex + 1) / TOUR_STEPS.length) * 100}%` }}
               />
             </div>

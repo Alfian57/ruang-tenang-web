@@ -78,7 +78,7 @@ export function AdminQuickActions({ stats }: AdminQuickActionsProps) {
           <Link href={ROUTES.ADMIN.ARTICLES} className="block">
             <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
               <div className="flex items-center gap-3">
-                <FileText className="w-5 h-5 text-blue-500" />
+                <FileText className="w-5 h-5 text-primary/80" />
                 <span>Kelola Artikel</span>
               </div>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
@@ -87,7 +87,7 @@ export function AdminQuickActions({ stats }: AdminQuickActionsProps) {
           <Link href={ROUTES.ADMIN.SONGS} className="block">
             <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
               <div className="flex items-center gap-3">
-                <Music className="w-5 h-5 text-purple-500" />
+                <Music className="w-5 h-5 text-primary/80" />
                 <span>Kelola Musik</span>
               </div>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />

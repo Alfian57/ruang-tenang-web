@@ -51,10 +51,10 @@ export default function AdminUsersPage() {
 
   const getRoleBadge = (role: string) => {
     if (role === "admin") {
-      return <span className="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-700">Admin</span>;
+      return <span className="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">Admin</span>;
     }
     if (role === "mitra") {
-      return <span className="px-2 py-1 text-xs rounded-full bg-sky-100 text-sky-700">Mitra</span>;
+      return <span className="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">Mitra</span>;
     }
     return <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">User</span>;
   };
@@ -63,7 +63,7 @@ export default function AdminUsersPage() {
     if (isBlocked) {
       return <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">Diblokir</span>;
     }
-    return <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">Aktif</span>;
+    return <span className="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">Aktif</span>;
   };
 
   const getInitial = (name: string) => {
@@ -188,8 +188,8 @@ export default function AdminUsersPage() {
                         <div className="min-w-0">
                           <p className="font-medium truncate flex items-center gap-1.5">
                             {u.name}
-                            {u.role === "admin" && <Shield className="w-3.5 h-3.5 text-purple-600 shrink-0" />}
-                            {u.role === "mitra" && <Building2 className="w-3.5 h-3.5 text-sky-600 shrink-0" />}
+                            {u.role === "admin" && <Shield className="w-3.5 h-3.5 text-primary/80 shrink-0" />}
+                            {u.role === "mitra" && <Building2 className="w-3.5 h-3.5 text-primary/80 shrink-0" />}
                           </p>
                           <p className="text-xs text-gray-500 md:hidden truncate">{u.email}</p>
                         </div>
@@ -220,7 +220,7 @@ export default function AdminUsersPage() {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => openBlockDialog(u.id, "unblock")}
-                                className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                className="text-primary/80 hover:text-primary hover:bg-primary/10"
                                 title="Buka Blokir"
                               >
                                 <CheckCircle className="w-4 h-4" />
@@ -230,7 +230,7 @@ export default function AdminUsersPage() {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => openBlockDialog(u.id, "block")}
-                                className="text-orange-500 hover:text-orange-600 hover:bg-orange-50"
+                                className="text-primary/80 hover:text-primary/80 hover:bg-primary/10"
                                 title="Blokir"
                               >
                                 <Ban className="w-4 h-4" />
@@ -241,8 +241,8 @@ export default function AdminUsersPage() {
                               size="icon"
                               onClick={() => openFeatureBlockDialog(u.id, u.name, "journal", Boolean(u.journal_blocked))}
                               className={u.journal_blocked
-                                ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
-                                : "text-rose-500 hover:text-rose-600 hover:bg-rose-50"}
+                                ? "text-primary/80 hover:text-primary hover:bg-primary/10"
+                                : "text-primary/80 hover:text-primary/80 hover:bg-primary/10"}
                               title={u.journal_blocked ? "Buka Blokir Jurnal" : "Blokir Jurnal"}
                             >
                               {u.journal_blocked ? (
@@ -256,8 +256,8 @@ export default function AdminUsersPage() {
                               size="icon"
                               onClick={() => openFeatureBlockDialog(u.id, u.name, "forum", Boolean(u.is_forum_blocked))}
                               className={u.is_forum_blocked
-                                ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
-                                : "text-violet-500 hover:text-violet-600 hover:bg-violet-50"}
+                                ? "text-primary/80 hover:text-primary hover:bg-primary/10"
+                                : "text-primary/80 hover:text-primary/80 hover:bg-primary/10"}
                               title={u.is_forum_blocked ? "Buka Blokir Forum" : "Blokir Forum"}
                             >
                               {u.is_forum_blocked ? (
@@ -272,7 +272,7 @@ export default function AdminUsersPage() {
                               onClick={() => handleRoleChange(u.id, u.role === "mitra" ? "user" : "mitra")}
                               className={u.role === "mitra"
                                 ? "text-gray-600 hover:text-gray-700 hover:bg-gray-50"
-                                : "text-sky-600 hover:text-sky-700 hover:bg-sky-50"}
+                                : "text-primary/80 hover:text-primary hover:bg-primary/10"}
                               title={u.role === "mitra" ? "Cabut role mitra" : "Promosikan menjadi mitra"}
                             >
                               {u.role === "mitra" ? (
@@ -338,8 +338,8 @@ export default function AdminUsersPage() {
             <Button variant="outline" onClick={() => setBlockId(null)}>Batal</Button>
             <Button
               className={blockAction === "unblock"
-                ? "bg-green-500 hover:bg-green-600 text-white"
-                : "bg-orange-500 hover:bg-orange-600 text-white"}
+                ? "bg-primary hover:bg-primary text-white"
+                : "bg-primary hover:bg-primary text-white"}
               onClick={handleBlockAction}
             >
               {blockAction === "unblock" ? "Buka Blokir" : "Blokir"}
@@ -365,8 +365,8 @@ export default function AdminUsersPage() {
             <Button variant="outline" onClick={() => setFeatureBlockAction(null)}>Batal</Button>
             <Button
               className={featureBlockAction?.currentlyBlocked
-                ? "bg-emerald-500 hover:bg-emerald-600 text-white"
-                : "bg-rose-500 hover:bg-rose-600 text-white"}
+                ? "bg-primary hover:bg-primary text-white"
+                : "bg-primary hover:bg-primary text-white"}
               onClick={handleConfirmFeatureBlock}
             >
               {featureBlockAction?.currentlyBlocked

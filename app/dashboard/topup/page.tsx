@@ -121,17 +121,17 @@ export default function TopupPage() {
 
     return (
         <div className="p-4 lg:p-6 space-y-6">
-            <section className="rounded-3xl border border-blue-100 bg-linear-to-br from-blue-50 via-white to-cyan-50 p-5 lg:p-6">
+            <section className="rounded-3xl border border-primary/20 bg-linear-to-br from-primary/10 via-white to-primary/10 p-5 lg:p-6">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-blue-600">Top Up Koin</p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary/80">Top Up Koin</p>
                         <h1 className="mt-1 text-2xl font-semibold text-slate-900">Tambah Koin untuk Reward</h1>
                         <p className="mt-2 text-sm text-slate-600 max-w-2xl">
                             Fokus halaman ini adalah saldo koin. Upgrade premium dan B2B dikelola dari halaman Billing agar pilihan paket tetap jelas.
                         </p>
                     </div>
                     <Link href={ROUTES.BILLING}>
-                        <Button variant="outline" className="gap-2 border-blue-200 text-blue-700 hover:bg-blue-100">
+                        <Button variant="outline" className="gap-2 border-primary/20 text-primary hover:bg-primary/10">
                             Buka Billing Detail
                             <ArrowRight className="w-4 h-4" />
                         </Button>
@@ -139,7 +139,7 @@ export default function TopupPage() {
                 </div>
 
                 <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-3">
-                    <div className="rounded-2xl border border-blue-100 bg-white p-4">
+                    <div className="rounded-2xl border border-primary/20 bg-white p-4">
                         <p className="text-xs uppercase tracking-wide text-slate-500">Saldo Koin</p>
                         <p className="mt-1 text-2xl font-semibold text-slate-900">{(status?.gold_coins ?? user?.gold_coins ?? 0).toLocaleString("id-ID")}</p>
                         <p className="mt-1 text-xs text-slate-500">Bisa dipakai untuk klaim reward</p>
@@ -149,7 +149,7 @@ export default function TopupPage() {
                         <p className="mt-1 text-2xl font-semibold text-slate-900">{currentTier}</p>
                         <p className="mt-1 text-xs text-slate-500">Akses: {formatPremiumAccess(status)}</p>
                     </div>
-                    <div className="rounded-2xl border border-emerald-100 bg-white p-4">
+                    <div className="rounded-2xl border border-primary/20 bg-white p-4">
                         <p className="text-xs uppercase tracking-wide text-slate-500">Kuota Chat AI</p>
                         <p className="mt-1 text-lg font-semibold text-slate-900">{quotaLabel}</p>
                         <p className="mt-1 text-xs text-slate-500">Reset: {formatDate(quota?.reset_at)}</p>
@@ -215,13 +215,13 @@ export default function TopupPage() {
             </section>
 
             <section className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-                <article className="rounded-2xl border border-violet-200 bg-white p-4 shadow-sm">
+                <article className="rounded-2xl border border-primary/20 bg-white p-4 shadow-sm">
                     <div className="flex items-start gap-3">
-                        <div className="rounded-xl bg-violet-100 p-2 text-violet-700">
+                        <div className="rounded-xl bg-primary/10 p-2 text-primary">
                             <Crown className="h-5 w-5" />
                         </div>
                         <div>
-                            <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">Butuh chat tanpa batas?</p>
+                            <p className="text-xs font-semibold uppercase tracking-wide text-primary">Butuh chat tanpa batas?</p>
                             <h2 className="mt-1 text-lg font-semibold text-slate-900">Premium dikelola di Billing</h2>
                             <p className="mt-1 text-sm text-slate-600">
                                 {recommendedPlan
@@ -229,7 +229,7 @@ export default function TopupPage() {
                                     : "Bandingkan Free, Premium, dan B2B sebelum membeli paket."}
                             </p>
                             <Link href={ROUTES.BILLING}>
-                                <Button variant="outline" className="mt-4 gap-2 border-violet-300 text-violet-700 hover:bg-violet-50">
+                                <Button variant="outline" className="mt-4 gap-2 border-primary/40 text-primary hover:bg-primary/10">
                                     Buka Billing
                                     <ArrowRight className="h-4 w-4" />
                                 </Button>
@@ -238,13 +238,13 @@ export default function TopupPage() {
                     </div>
                 </article>
 
-                <article className="rounded-2xl border border-sky-200 bg-white p-4 shadow-sm">
+                <article className="rounded-2xl border border-primary/20 bg-white p-4 shadow-sm">
                     <div className="flex items-start gap-3">
-                        <div className="rounded-xl bg-sky-100 p-2 text-sky-700">
+                        <div className="rounded-xl bg-primary/10 p-2 text-primary">
                             <Building2 className="h-5 w-5" />
                         </div>
                         <div>
-                            <p className="text-xs font-semibold uppercase tracking-wide text-sky-700">Untuk organisasi</p>
+                            <p className="text-xs font-semibold uppercase tracking-wide text-primary">Untuk organisasi</p>
                             <h2 className="mt-1 text-lg font-semibold text-slate-900">Premium B2B Mitra</h2>
                             <p className="mt-1 text-sm text-slate-600">
                                 {recommendedBusinessPlan
@@ -252,7 +252,7 @@ export default function TopupPage() {
                                     : "Kelola seat, approval, analytics agregat, dan onboarding anggota."}
                             </p>
                             <Link href={user?.role === "mitra" ? ROUTES.MITRA.SUBSCRIPTION : ROUTES.CONTACT}>
-                                <Button variant="outline" className="mt-4 gap-2 border-sky-300 text-sky-700 hover:bg-sky-50">
+                                <Button variant="outline" className="mt-4 gap-2 border-primary/40 text-primary hover:bg-primary/10">
                                     {user?.role === "mitra" ? "Kelola Mitra" : "Hubungi Tim B2B"}
                                     <ArrowRight className="h-4 w-4" />
                                 </Button>

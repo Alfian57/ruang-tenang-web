@@ -88,7 +88,7 @@ function LandmarkItem({
                             {landmark.name}
                         </h4>
                         {landmark.is_unlocked && landmark.reward_claimed && (
-                            <Check className="h-3.5 w-3.5 text-emerald-500" />
+                            <Check className="h-3.5 w-3.5 text-primary/80" />
                         )}
                     </div>
                     <p
@@ -118,7 +118,7 @@ function LandmarkItem({
                     {(landmark.xp_reward > 0 || landmark.coin_reward > 0) && (
                         <div className="flex items-center gap-3 mt-2">
                             {landmark.xp_reward > 0 && (
-                                <span className="flex items-center gap-1 text-xs text-violet-600">
+                                <span className="flex items-center gap-1 text-xs text-primary/80">
                                     <Zap className="h-3 w-3" />
                                     {landmark.xp_reward} XP
                                 </span>

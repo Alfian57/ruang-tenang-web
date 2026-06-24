@@ -183,20 +183,20 @@ export default function CreateJournalPage() {
                 </p>
 
                 {contextPreset && (
-                    <div className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3">
-                        <p className="text-[11px] font-semibold uppercase tracking-wide text-indigo-700">Context Preset</p>
+                    <div className="mt-4 rounded-xl border border-primary/20 bg-primary/10 px-4 py-3">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">Context Preset</p>
                         <p className="text-sm font-semibold text-gray-900 mt-1">{contextPreset.label}</p>
-                        <p className="text-xs text-indigo-900 mt-1">
+                        <p className="text-xs text-primary mt-1">
                             Template ini aktif agar refleksi kamu nyambung dengan alur fitur sebelumnya.
                         </p>
                     </div>
                 )}
 
                 {isMusicJourneyReflection && (
-                    <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
-                        <p className="text-[11px] font-semibold uppercase tracking-wide text-emerald-700">Auto Reflection Summary</p>
+                    <div className="mt-4 rounded-xl border border-primary/20 bg-primary/10 px-4 py-3">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">Auto Reflection Summary</p>
                         <p className="text-sm font-semibold text-gray-900 mt-1">Draft refleksi dari Music Journey sudah terisi otomatis</p>
-                        <p className="text-xs text-emerald-900 mt-1">
+                        <p className="text-xs text-primary mt-1">
                             Kamu tinggal lengkapi dampak mood dan langkah lanjutan agar loop musik menjadi progres yang terukur.
                         </p>
                     </div>

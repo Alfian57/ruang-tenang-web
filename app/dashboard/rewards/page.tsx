@@ -142,10 +142,12 @@ export default function RewardsPage() {
     setActiveTheme("default");
   }, [user]);
 
-  const formatThemeLabel = (theme: string) =>
-    theme
+  const formatThemeLabel = (theme: string) => {
+    if (theme === "default") return "Bawaan";
+    return theme
       .replace(/[_-]/g, " ")
       .replace(/\b\w/g, (char) => char.toUpperCase());
+  };
 
   const handleActivateTheme = async (theme: string) => {
     if (!token || activatingTheme || !canCustomizeThemes) return;
@@ -280,10 +282,10 @@ export default function RewardsPage() {
       </div>
 
       <div className="mb-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="rounded-2xl border border-indigo-200 bg-linear-to-r from-indigo-50 to-sky-50 p-4">
-          <div className="flex items-center gap-2 text-indigo-700">
+        <div className="rounded-2xl border border-primary/20 bg-linear-to-r from-primary/10 to-primary/10 p-4">
+          <div className="flex items-center gap-2 text-primary">
             <WandSparkles className="w-4 h-4" />
-            <p className="text-xs font-semibold uppercase tracking-wide">REWARD-1</p>
+            <p className="text-xs font-semibold uppercase tracking-wide">HADIAH-1</p>
           </div>
           <h2 className="text-lg font-semibold text-gray-900 mt-2">Hadiah yang mengubah pengalaman</h2>
           <p className="text-sm text-gray-600 mt-1">
@@ -299,7 +301,7 @@ export default function RewardsPage() {
         {canCustomizeThemes && <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
           <div className="flex items-center justify-between gap-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-red-700">Theme Locker</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-red-700">Koleksi Tema</p>
               <h3 className="text-lg font-semibold text-gray-900 mt-1">Tema Aktif: {formatThemeLabel(activeTheme)}</h3>
             </div>
             <div className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-white px-3 py-1 text-xs font-medium text-red-700">
@@ -424,8 +426,8 @@ export default function RewardsPage() {
                       <div className="flex items-start justify-between gap-3 mb-1">
                         <h3 className="font-semibold text-gray-900">{reward.name}</h3>
                         {reward.reward_type === "theme" && (
-                          <span className="inline-flex items-center gap-1 rounded-full border border-indigo-200 bg-indigo-50 text-indigo-700 px-2 py-1 text-[10px] font-semibold shrink-0">
-                            <Palette className="w-3 h-3" /> Theme
+                          <span className="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 text-primary px-2 py-1 text-[10px] font-semibold shrink-0">
+                            <Palette className="w-3 h-3" /> Tema
                           </span>
                         )}
                       </div>
@@ -453,7 +455,7 @@ export default function RewardsPage() {
                             )}
                           </Button>
                         ) : isThemeOwned ? (
-                          <span className="flex items-center gap-1.5 text-xs h-8 px-3 rounded-md bg-green-50 text-green-600 font-medium">
+                          <span className="flex items-center gap-1.5 text-xs h-8 px-3 rounded-md bg-primary/10 text-primary/80 font-medium">
                             <CheckCircle className="w-3.5 h-3.5" />
                             {reward.reward_value === activeTheme ? "Tema Aktif" : "Sudah Dimiliki"}
                           </span>
@@ -564,18 +566,18 @@ export default function RewardsPage() {
       )}
 
       {/* Info Box */}
-      <section className="mt-8 rounded-xl border border-violet-200 bg-violet-50 p-4">
-        <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">Creative Reward Loop</p>
-        <h4 className="font-semibold text-gray-900 mt-1">Aktifkan reward lewat perilaku kreatif harian</h4>
+      <section className="mt-8 rounded-xl border border-primary/20 bg-primary/10 p-4">
+        <p className="text-xs font-semibold uppercase tracking-wide text-primary">Siklus Hadiah Kreatif</p>
+        <h4 className="font-semibold text-gray-900 mt-1">Aktifkan hadiah lewat perilaku kreatif harian</h4>
         <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
           {creativeRewardActions.map((action) => (
-            <Link key={action.key} href={action.href} className="rounded-xl border border-violet-200 bg-white p-3 hover:bg-violet-100 transition-colors">
-              <div className="w-8 h-8 rounded-lg bg-violet-100 text-violet-700 grid place-items-center">
+            <Link key={action.key} href={action.href} className="rounded-xl border border-primary/20 bg-white p-3 hover:bg-primary/10 transition-colors">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary grid place-items-center">
                 <action.icon className="w-4 h-4" />
               </div>
               <p className="text-sm font-semibold text-gray-900 mt-2">{action.title}</p>
               <p className="text-xs text-gray-600 mt-1 leading-relaxed">{action.description}</p>
-              <span className="text-[11px] font-semibold text-violet-700 mt-2 inline-flex items-center gap-1">
+              <span className="text-[11px] font-semibold text-primary mt-2 inline-flex items-center gap-1">
                 Jalankan
                 <ArrowRight className="w-3 h-3" />
               </span>

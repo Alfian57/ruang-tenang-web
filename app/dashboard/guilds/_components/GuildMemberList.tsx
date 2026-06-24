@@ -25,7 +25,7 @@ interface GuildMemberListProps {
 
 const ROLE_BADGES: Record<string, { label: string; color: string; icon: typeof Crown }> = {
     leader: { label: "Ketua", color: "text-yellow-600 bg-yellow-50", icon: Crown },
-    admin: { label: "Wakil Ketua", color: "text-blue-600 bg-blue-50", icon: ShieldCheck },
+    admin: { label: "Wakil Ketua", color: "text-primary/80 bg-primary/10", icon: ShieldCheck },
     member: { label: "Anggota", color: "text-gray-600 bg-gray-50", icon: Users },
 };
 
@@ -154,7 +154,7 @@ export function GuildMemberList({
                                         <button
                                             onClick={() => setConfirmAction({ type: "promote", member })}
                                             title="Promosikan ke Wakil Ketua"
-                                            className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-500 transition-colors"
+                                            className="p-1.5 rounded-lg hover:bg-primary/10 text-primary/80 transition-colors"
                                         >
                                             <ArrowUpCircle className="w-4 h-4" />
                                         </button>
@@ -189,7 +189,7 @@ export function GuildMemberList({
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
-                            <AlertTriangle className={`w-5 h-5 ${info.variant === "destructive" ? "text-red-500" : "text-blue-500"}`} />
+                            <AlertTriangle className={`w-5 h-5 ${info.variant === "destructive" ? "text-red-500" : "text-primary/80"}`} />
                             {info.title}
                         </DialogTitle>
                     </DialogHeader>

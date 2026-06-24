@@ -6,15 +6,15 @@ import { Lock, Sparkles } from "lucide-react";
 
 // Theme colors for each region based on display order
 const REGION_THEMES = [
-    { bg: "from-emerald-400 to-emerald-600", glow: "shadow-emerald-400/40", ring: "ring-emerald-400" },
-    { bg: "from-sky-400 to-sky-600", glow: "shadow-sky-400/40", ring: "ring-sky-400" },
-    { bg: "from-violet-400 to-violet-600", glow: "shadow-violet-400/40", ring: "ring-violet-400" },
+    { bg: "from-primary/40 to-primary", glow: "shadow-emerald-400/40", ring: "ring-primary/50" },
+    { bg: "from-primary/40 to-primary", glow: "shadow-sky-400/40", ring: "ring-primary/50" },
+    { bg: "from-primary/40 to-primary", glow: "shadow-violet-400/40", ring: "ring-primary/50" },
     { bg: "from-amber-400 to-amber-600", glow: "shadow-amber-400/40", ring: "ring-amber-400" },
-    { bg: "from-rose-400 to-rose-600", glow: "shadow-rose-400/40", ring: "ring-rose-400" },
-    { bg: "from-teal-400 to-teal-600", glow: "shadow-teal-400/40", ring: "ring-teal-400" },
-    { bg: "from-indigo-400 to-indigo-600", glow: "shadow-indigo-400/40", ring: "ring-indigo-400" },
-    { bg: "from-pink-400 to-pink-600", glow: "shadow-pink-400/40", ring: "ring-pink-400" },
-    { bg: "from-cyan-400 to-cyan-600", glow: "shadow-cyan-400/40", ring: "ring-cyan-400" },
+    { bg: "from-primary/40 to-primary", glow: "shadow-rose-400/40", ring: "ring-primary/50" },
+    { bg: "from-primary/40 to-primary", glow: "shadow-teal-400/40", ring: "ring-primary/50" },
+    { bg: "from-primary/40 to-primary", glow: "shadow-indigo-400/40", ring: "ring-primary/50" },
+    { bg: "from-primary/40 to-primary", glow: "shadow-pink-400/40", ring: "ring-primary/50" },
+    { bg: "from-primary/40 to-primary", glow: "shadow-cyan-400/40", ring: "ring-primary/50" },
     { bg: "from-yellow-400 to-yellow-500", glow: "shadow-yellow-400/40", ring: "ring-yellow-400" },
 ];
 

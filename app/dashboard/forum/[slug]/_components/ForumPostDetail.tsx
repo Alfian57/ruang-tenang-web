@@ -45,7 +45,7 @@ export function ForumPostDetail({
                         <div className="flex items-center gap-2 flex-wrap">
                             <p className="text-xs text-gray-500">Penulis</p>
                             {isOwner && (
-                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
                                     Topik Anda
                                 </span>
                             )}
@@ -114,7 +114,7 @@ export function ForumPostDetail({
             </div>
 
             {moderationFeedback && (
-                <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                <div className="mt-4 rounded-xl border border-primary/20 bg-primary/10 px-3 py-2 text-sm text-primary">
                     {moderationFeedback}
                 </div>
             )}

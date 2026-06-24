@@ -50,25 +50,25 @@ export function TechniqueInfoModal({ isOpen, technique, onClose, onStart }: Tech
                     {/* Timing Diagram */}
                     <div>
                         <div className="flex items-center gap-2 mb-3">
-                            <Clock className="w-4 h-4 text-blue-500" />
+                            <Clock className="w-4 h-4 text-primary/80" />
                             <h4 className="font-semibold text-sm">Pola Pernapasan</h4>
                         </div>
                         <div className="grid grid-cols-4 gap-2">
-                            <div className="text-center p-3 rounded-lg bg-blue-500/10 border border-blue-200/50">
-                                <div className="text-2xl font-bold text-blue-600">{technique.inhale_duration}</div>
-                                <div className="text-[10px] text-blue-600 font-medium mt-1">Tarik Napas</div>
+                            <div className="text-center p-3 rounded-lg bg-primary/10 border border-primary/20">
+                                <div className="text-2xl font-bold text-primary/80">{technique.inhale_duration}</div>
+                                <div className="text-[10px] text-primary/80 font-medium mt-1">Tarik Napas</div>
                             </div>
                             <div className="text-center p-3 rounded-lg bg-amber-500/10 border border-amber-200/50">
                                 <div className="text-2xl font-bold text-amber-600">{technique.inhale_hold_duration}</div>
                                 <div className="text-[10px] text-amber-600 font-medium mt-1">Tahan</div>
                             </div>
-                            <div className="text-center p-3 rounded-lg bg-green-500/10 border border-green-200/50">
-                                <div className="text-2xl font-bold text-green-600">{technique.exhale_duration}</div>
-                                <div className="text-[10px] text-green-600 font-medium mt-1">Hembuskan</div>
+                            <div className="text-center p-3 rounded-lg bg-primary/10 border border-primary/20">
+                                <div className="text-2xl font-bold text-primary/80">{technique.exhale_duration}</div>
+                                <div className="text-[10px] text-primary/80 font-medium mt-1">Hembuskan</div>
                             </div>
-                            <div className="text-center p-3 rounded-lg bg-purple-500/10 border border-purple-200/50">
-                                <div className="text-2xl font-bold text-purple-600">{technique.exhale_hold_duration}</div>
-                                <div className="text-[10px] text-purple-600 font-medium mt-1">Tahan</div>
+                            <div className="text-center p-3 rounded-lg bg-primary/10 border border-primary/20">
+                                <div className="text-2xl font-bold text-primary/80">{technique.exhale_hold_duration}</div>
+                                <div className="text-[10px] text-primary/80 font-medium mt-1">Tahan</div>
                             </div>
                         </div>
                         <p className="text-xs text-muted-foreground text-center mt-2">
@@ -91,7 +91,7 @@ export function TechniqueInfoModal({ isOpen, technique, onClose, onStart }: Tech
                     {technique.best_for && (
                         <div>
                             <div className="flex items-center gap-2 mb-2">
-                                <Target className="w-4 h-4 text-green-500" />
+                                <Target className="w-4 h-4 text-primary/80" />
                                 <h4 className="font-semibold text-sm">Terbaik Untuk</h4>
                             </div>
                             <p className="text-sm text-muted-foreground">{technique.best_for}</p>

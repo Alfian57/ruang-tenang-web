@@ -47,7 +47,7 @@ export function ExploreTab({
             <div className="space-y-4">
                 <div className="flex items-center gap-2">
                     <AudioLines className="w-5 h-5 text-primary" />
-                    <h2 className="font-semibold text-gray-900">Journey Sesuai Kondisi</h2>
+                    <h2 className="font-semibold text-gray-900">Perjalanan Sesuai Kondisi</h2>
                     <span className="text-[10px] px-2 py-1 rounded-full border border-primary/20 bg-primary/5 text-primary font-semibold">
                         MUSIC-1
                     </span>
@@ -69,7 +69,7 @@ export function ExploreTab({
                                 className="mt-3 w-full justify-between"
                                 onClick={() => onJourneyStart(journey)}
                             >
-                                Mulai Journey
+                                Mulai Perjalanan
                                 <ArrowRight className="w-4 h-4" />
                             </Button>
                         </div>
@@ -83,7 +83,7 @@ export function ExploreTab({
                     <div className="flex items-center gap-2">
                         <Sparkles className="w-5 h-5 text-primary" />
                         <h2 className="font-semibold text-gray-900">Playlist Resmi</h2>
-                        <span className="text-[10px] px-2 py-1 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 font-semibold inline-flex items-center gap-1">
+                        <span className="text-[10px] px-2 py-1 rounded-full border border-primary/20 bg-primary/10 text-primary font-semibold inline-flex items-center gap-1">
                             <BadgeCheck className="w-3 h-3" />
                             Kurasi Tim
                         </span>

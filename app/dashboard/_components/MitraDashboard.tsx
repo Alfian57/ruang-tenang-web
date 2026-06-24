@@ -30,7 +30,7 @@ export function MitraDashboard({ initialSection = "overview" }: MitraDashboardPr
       <MitraDashboardHeader viewModel={viewModel} />
 
       {viewModel.errorMessage && (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <div className="rounded-2xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary">
           {viewModel.errorMessage}
         </div>
       )}

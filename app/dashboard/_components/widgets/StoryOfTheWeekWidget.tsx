@@ -81,7 +81,7 @@ export function StoryOfTheWeekWidget() {
                         {story.heart_count}
                     </span>
                     <span className="flex items-center gap-1">
-                        <MessageCircle className="h-3.5 w-3.5 text-blue-400" />
+                        <MessageCircle className="h-3.5 w-3.5 text-primary/60" />
                         {story.comment_count}
                     </span>
                     {story.author && !story.is_anonymous && (

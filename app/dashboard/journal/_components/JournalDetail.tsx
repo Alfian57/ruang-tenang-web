@@ -119,7 +119,7 @@ export function JournalDetail({
                         <span>{journal.word_count} kata</span>
                     </div>
                     {journal.is_private && (
-                        <div className="flex items-center gap-1 text-green-600">
+                        <div className="flex items-center gap-1 text-primary/80">
                             <Lock className="w-4 h-4" />
                             <span>Privat</span>
                         </div>
@@ -128,7 +128,7 @@ export function JournalDetail({
                         className={cn(
                             "flex items-center gap-1",
                             journal.share_with_ai
-                                ? "text-purple-600"
+                                ? "text-primary/80"
                                 : "text-gray-500"
                         )}
                     >
@@ -163,8 +163,8 @@ export function JournalDetail({
 
                 {/* AI Access Info */}
                 {journal.ai_accessed_at && (
-                    <div className="mb-6 p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                        <div className="flex items-center gap-2 text-sm text-purple-700">
+                    <div className="mb-6 p-3 bg-primary/10 border border-primary/20 rounded-lg">
+                        <div className="flex items-center gap-2 text-sm text-primary">
                             <Eye className="w-4 h-4" />
                             <span>
                                 AI terakhir membaca jurnal ini:{" "}

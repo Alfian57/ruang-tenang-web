@@ -15,10 +15,10 @@ export function Footer() {
       transition={{ duration: 0.5 }}
       className="bg-white border-t border-gray-100"
     >
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid md:grid-cols-4 gap-10">
+      <div className="container mx-auto max-w-6xl px-4 py-16">
+        <div className="grid md:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand */}
-          <div className="md:col-span-1">
+          <div className="md:col-span-2">
             <Link href={ROUTES.HOME} className="flex items-center gap-2 mb-6">
               <Image
                 src="/logo-full.webp"
@@ -29,7 +29,7 @@ export function Footer() {
                 style={{ width: "auto", height: "auto" }}
               />
             </Link>
-            <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+            <p className="text-sm text-gray-600 mb-6 leading-relaxed max-w-md">
               Platform kesehatan mental berbasis AI yang dirancang untuk menemani
               perjalanan akademikmu. Hadir 24/7, mendengarkan tanpa menghakimi.
             </p>
@@ -116,13 +116,10 @@ export function Footer() {
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-primary mt-0.5" />
-                <span className="text-sm text-gray-600">Universitas Teknologi Yogyakarta</span>
+                <span className="text-sm text-gray-600 max-w-[200px]">Universitas Teknologi Yogyakarta</span>
               </li>
             </ul>
           </div>
-
-          {/* Empty Column for balance */}
-          <div className="hidden md:block"></div>
         </div>
 
         {/* Copyright */}

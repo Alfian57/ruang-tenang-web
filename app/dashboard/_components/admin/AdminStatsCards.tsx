@@ -23,11 +23,11 @@ export function AdminStatsCards({ stats }: AdminStatsCardsProps) {
               <h3 className="text-3xl font-bold">{stats.users.total.toLocaleString()}</h3>
               <div className="flex items-center gap-1 mt-1">
                 {stats.users.growth >= 0 ? (
-                  <TrendingUp className="w-4 h-4 text-green-500" />
+                  <TrendingUp className="w-4 h-4 text-primary/80" />
                 ) : (
                   <TrendingDown className="w-4 h-4 text-red-500" />
                 )}
-                <span className={`text-sm ${stats.users.growth >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                <span className={`text-sm ${stats.users.growth >= 0 ? 'text-primary/80' : 'text-red-500'}`}>
                   {stats.users.growth >= 0 ? '+' : ''}{stats.users.growth.toFixed(1)}% bulan ini
                 </span>
               </div>
@@ -59,8 +59,8 @@ export function AdminStatsCards({ stats }: AdminStatsCardsProps) {
                 +{stats.articles.this_month} bulan ini
               </p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-              <FileText className="w-6 h-6 text-blue-500" />
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <FileText className="w-6 h-6 text-primary/80" />
             </div>
           </div>
         </CardContent>
@@ -76,8 +76,8 @@ export function AdminStatsCards({ stats }: AdminStatsCardsProps) {
                 +{stats.chat_sessions.today} hari ini
               </p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center">
-              <MessageCircle className="w-6 h-6 text-orange-500" />
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <MessageCircle className="w-6 h-6 text-primary/80" />
             </div>
           </div>
           {/* Mini Chart */}
@@ -85,7 +85,7 @@ export function AdminStatsCards({ stats }: AdminStatsCardsProps) {
             {stats.chat_sessions.chart_data.map((value, i) => (
               <div
                 key={i}
-                className="flex-1 bg-orange-500/20 rounded-t"
+                className="flex-1 bg-primary/20 rounded-t"
                 style={{ height: `${Math.max(10, (value / Math.max(...stats.chat_sessions.chart_data, 1)) * 100)}%` }}
               />
             ))}
@@ -103,8 +103,8 @@ export function AdminStatsCards({ stats }: AdminStatsCardsProps) {
                 +{stats.messages.today} hari ini
               </p>
             </div>
-            <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center">
-              <MessageCircle className="w-6 h-6 text-purple-500" />
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <MessageCircle className="w-6 h-6 text-primary/80" />
             </div>
           </div>
         </CardContent>

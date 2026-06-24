@@ -85,7 +85,7 @@ export function HistoryView({
                             </div>
                             <div className="text-right shrink-0">
                                 {session.completed ? (
-                                    <span className="text-xs font-medium text-green-600 dark:text-green-400 bg-green-500/10 px-2 py-1 rounded-full">
+                                    <span className="text-xs font-medium text-primary/80 dark:text-primary/60 bg-primary/10 px-2 py-1 rounded-full">
                                         Selesai
                                     </span>
                                 ) : (

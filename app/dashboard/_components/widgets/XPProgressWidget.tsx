@@ -91,24 +91,24 @@ export function XPProgressWidget() {
     const xpChange = Number(weeklyProgress?.xp_change ?? 0);
     const weeklyTrend = xpChange > 0 ? "up" : xpChange < 0 ? "down" : "neutral";
     const TrendIcon = weeklyTrend === "up" ? TrendingUp : weeklyTrend === "down" ? TrendingDown : Zap;
-    const trendColor = weeklyTrend === "up" ? "text-green-500" : weeklyTrend === "down" ? "text-red-500" : "text-violet-400";
+    const trendColor = weeklyTrend === "up" ? "text-primary/80" : weeklyTrend === "down" ? "text-red-500" : "text-primary/60";
 
     return (
-        <Card className="flex flex-col border border-gray-100 shadow-sm bg-linear-to-br from-white to-violet-50/40">
+        <Card className="flex flex-col border border-gray-100 shadow-sm bg-linear-to-br from-white to-primary/10">
             <CardHeader className="flex flex-row items-center justify-between px-4 pt-4 pb-1">
                 <CardTitle className="text-lg font-bold flex items-center gap-2 text-gray-800">
-                    <Zap className="w-5 h-5 text-violet-500" />
+                    <Zap className="w-5 h-5 text-primary/80" />
                     Perjalananmu
                 </CardTitle>
                 <Link href={ROUTES.DASHBOARD_COMMUNITY}>
-                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-violet-600">
+                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-primary/80">
                         Detail <ArrowRight className="w-3 h-3 ml-1" />
                     </Button>
                 </Link>
             </CardHeader>
 
             <CardContent className="flex-1 flex flex-col gap-3 px-4 pb-4 pt-2">
-                <div className="rounded-xl border border-violet-100 bg-white/70 p-3">
+                <div className="rounded-xl border border-primary/20 bg-white/70 p-3">
                     <div className="flex items-center justify-between mb-1.5">
                         <span className="text-xl font-bold text-gray-900">Level {currentLevel}</span>
                         <span
@@ -122,9 +122,9 @@ export function XPProgressWidget() {
                         </span>
                     </div>
                     <p className="text-xs text-gray-500 mb-1.5">{currentExp.toLocaleString()} XP</p>
-                    <div className="w-full h-2.5 bg-violet-100 rounded-full overflow-hidden">
+                    <div className="w-full h-2.5 bg-primary/10 rounded-full overflow-hidden">
                         <div
-                            className="h-full bg-linear-to-r from-violet-500 to-indigo-500 rounded-full transition-all duration-500"
+                            className="h-full bg-linear-to-r from-primary to-primary rounded-full transition-all duration-500"
                             style={{ width: `${progressPercent}%` }}
                         />
                     </div>
@@ -132,34 +132,34 @@ export function XPProgressWidget() {
                         {expToNextLevel.toLocaleString()} XP lagi ke Level {currentLevel + 1}
                     </p>
                     {nextTaskDescription ? (
-                        <div className="mt-2 rounded-md border border-violet-100 bg-violet-50/60 px-2 py-1.5">
-                            <p className="text-[11px] font-semibold text-violet-700">Tugas Level Berikutnya</p>
-                            <p className="text-[11px] text-violet-800">{nextTaskDescription}</p>
+                        <div className="mt-2 rounded-md border border-primary/20 bg-primary/10 px-2 py-1.5">
+                            <p className="text-[11px] font-semibold text-primary">Tugas Level Berikutnya</p>
+                            <p className="text-[11px] text-primary">{nextTaskDescription}</p>
                         </div>
                     ) : null}
                 </div>
 
                 <div className="grid grid-cols-3 gap-2">
-                    <div className="bg-white rounded-lg p-2 text-center border border-violet-100/60">
+                    <div className="bg-white rounded-lg p-2 text-center border border-primary/20">
                         <div className="flex items-center justify-center gap-1 mb-0.5">
                             <TrendIcon className={`h-3.5 w-3.5 ${trendColor}`} />
                         </div>
                         <p className="text-sm font-bold text-gray-900">{weeklyExp.toLocaleString()}</p>
                         <p className="text-[10px] text-gray-500">XP Minggu Ini</p>
                     </div>
-                    <div className="bg-white rounded-lg p-2 text-center border border-violet-100/60">
+                    <div className="bg-white rounded-lg p-2 text-center border border-primary/20">
                         <div className="flex items-center justify-center gap-1 mb-0.5">
-                            <Activity className="h-3.5 w-3.5 text-blue-500" />
+                            <Activity className="h-3.5 w-3.5 text-primary/80" />
                         </div>
                         <p className="text-sm font-bold text-gray-900">{monthlyExp.toLocaleString()}</p>
                         <p className="text-[10px] text-gray-500">XP Bulan Ini</p>
                     </div>
-                    <div className="bg-white rounded-lg p-2 text-center border border-violet-100/60">
+                    <div className="bg-white rounded-lg p-2 text-center border border-primary/20">
                         <div className="flex items-center justify-center gap-1 mb-0.5">
                             <Award className="h-3.5 w-3.5 text-amber-500" />
                         </div>
                         <p className="text-sm font-bold text-gray-900">{badgesEarned}</p>
-                        <p className="text-[10px] text-gray-500">Badge</p>
+                        <p className="text-[10px] text-gray-500">Lencana</p>
                     </div>
                 </div>
             </CardContent>

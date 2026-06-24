@@ -85,7 +85,7 @@ export function SessionItem({
                       <Heart className="w-3 h-3 text-red-500 fill-red-500 shrink-0" />
                     )}
                     {session.has_summary && (
-                      <span className="text-[10px] px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded">📝</span>
+                      <span className="text-[10px] px-1.5 py-0.5 bg-primary/10 text-primary/80 rounded">📝</span>
                     )}
                   </div>
                   {!compact && (

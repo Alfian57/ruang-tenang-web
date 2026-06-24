@@ -27,16 +27,16 @@ const GAME_LOOP_STEPS = [
     },
     {
         icon: Trophy,
-        title: "XP, Level, Tier, dan Badge",
+        title: "XP, Level, Tingkat, dan Lencana",
         description:
-            "Widget Perjalananmu menampilkan level saat ini, XP ke level berikutnya, tier, XP mingguan/bulanan, dan jumlah badge.",
+            "Setiap aktivitas positif memberikanmu XP. Capai level tertentu untuk naik tingkat (tier) dan buka lencana eksklusif.",
         metric: "Sinkron ke Community Journey",
     },
     {
         icon: Clock3,
-        title: "Breathing Streak + Milestone",
+        title: "Runtunan Pernapasan + Pencapaian",
         description:
-            "Latihan napas punya current streak, warning saat streak berisiko putus, dan milestone bonus XP.",
+            "Lakukan sesi pernapasan tiap hari untuk membangun runtunan (streak). Ada pencapaian rahasia untuk konsistensi.",
         metric: "Streak memengaruhi bonus progres",
     },
     {

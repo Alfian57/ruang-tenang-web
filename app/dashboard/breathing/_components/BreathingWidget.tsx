@@ -30,10 +30,10 @@ export function BreathingWidget({ data }: BreathingWidgetProps) {
 
             {/* Streak Alert */}
             {data.streak_at_risk && (
-                <div className="mb-4 p-3 rounded-lg bg-amber-500/10 border border-amber-300 flex items-center gap-3">
-                    <AlertTriangle className="w-5 h-5 text-amber-500" />
+                <div className="mb-4 p-3 rounded-lg bg-theme-accent-soft border border-theme-accent-border flex items-center gap-3">
+                    <AlertTriangle className="w-5 h-5 text-theme-accent-text" />
                     <div className="flex-1">
-                        <p className="text-sm font-medium text-amber-700">Streak dalam bahaya!</p>
+                        <p className="text-sm font-medium text-theme-accent-dark">Streak dalam bahaya!</p>
                         <p className="text-xs text-muted-foreground">Latihan hari ini untuk menjaga streak</p>
                     </div>
                 </div>
@@ -75,7 +75,7 @@ export function BreathingWidget({ data }: BreathingWidgetProps) {
                     <div
                         className={cn(
                             "h-full rounded-full transition-all",
-                            progressPercent >= 100 ? "bg-green-500" : "bg-primary"
+                            progressPercent >= 100 ? "bg-primary" : "bg-primary"
                         )}
                         style={{ width: `${progressPercent}%` }}
                     />

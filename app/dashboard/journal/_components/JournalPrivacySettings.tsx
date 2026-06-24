@@ -103,13 +103,13 @@ export function JournalPrivacySettings({
             </CardHeader>
             {isExpanded && (
                 <CardContent className="space-y-6">
-                    <div className="rounded-lg border border-sky-200 bg-sky-50 p-3">
-                        <p className="text-[11px] font-semibold uppercase tracking-wide text-sky-900">
+                    <div className="rounded-lg border border-primary/20 bg-primary/10 p-3">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">
                             Privasi & Batasan AI
                         </p>
-                        <p className="mt-1 text-sm text-sky-800">{TRUST_CUES.PRIVACY}</p>
-                        <p className="text-sm text-sky-800">{TRUST_CUES.CONSENT}</p>
-                        <p className="text-sm text-sky-800">{TRUST_CUES.LIMITATION}</p>
+                        <p className="mt-1 text-sm text-primary">{TRUST_CUES.PRIVACY}</p>
+                        <p className="text-sm text-primary">{TRUST_CUES.CONSENT}</p>
+                        <p className="text-sm text-primary">{TRUST_CUES.LIMITATION}</p>
                     </div>
 
                     {/* Master AI Access Toggle */}
@@ -117,7 +117,7 @@ export function JournalPrivacySettings({
                         <div className="flex items-start justify-between gap-3">
                             <div className="flex min-w-0 flex-1 items-start gap-3">
                                 {localSettings.allow_ai_access ? (
-                                    <Eye className="w-5 h-5 text-purple-600 mt-0.5 shrink-0" />
+                                    <Eye className="w-5 h-5 text-primary/80 mt-0.5 shrink-0" />
                                 ) : (
                                     <EyeOff className="w-5 h-5 text-gray-500 mt-0.5 shrink-0" />
                                 )}

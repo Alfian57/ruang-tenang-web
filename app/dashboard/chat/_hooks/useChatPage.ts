@@ -204,7 +204,7 @@ export function useChatPage() {
     ).length;
 
     const hour = new Date().getHours();
-    const checkInLabel = hour < 12 ? "Check-in Pagi" : hour < 18 ? "Reset Sore" : "Tutup Hari";
+    const checkInLabel = hour < 12 ? "Jurnal Pagi" : hour < 18 ? "Reset Sore" : "Tutup Hari";
     const checkInPrompt =
       hour < 12
         ? "Pagi ini aku ingin mulai dengan lebih tenang. Bantu aku bikin rencana 3 langkah kecil untuk hari ini."

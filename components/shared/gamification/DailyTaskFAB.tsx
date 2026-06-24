@@ -379,7 +379,7 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
             "theme-fab-bg",
             "hover:shadow-xl hover:scale-105 active:scale-95",
             isOpen && "rotate-180 bg-linear-to-br from-gray-600 to-gray-700",
-            hasXPBoost && !isOpen && "ring-4 ring-orange-300/55 shadow-[0_0_0_8px_rgba(251,146,60,0.14)]",
+            hasXPBoost && !isOpen && "ring-4 ring-theme-accent/50 shadow-[0_0_0_8px_rgba(var(--color-theme-accent),0.14)]",
             claimableTasks > 0 && !isOpen && "animate-bounce"
           )}
         >
@@ -405,7 +405,7 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
           )}
 
           {hasXPBoost && !isOpen && (
-            <div className="absolute -bottom-1 -left-1 min-w-8 h-5 px-1.5 rounded-full bg-orange-500 text-white text-[10px] font-bold inline-flex items-center justify-center gap-0.5 border-2 border-white shadow-md">
+            <div className="absolute -bottom-1 -left-1 min-w-8 h-5 px-1.5 rounded-full bg-theme-accent text-white text-[10px] font-bold inline-flex items-center justify-center gap-0.5 border-2 border-white shadow-md">
               <Rocket className="h-2.5 w-2.5" />
               x{boostMultiplier}
             </div>
@@ -419,7 +419,7 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
                 <span className="ml-1" style={{ color: `var(--theme-accent-border)` }}>({claimableTasks} siap klaim)</span>
               )}
               {hasXPBoost && (
-                <span className="ml-1 text-orange-300">• Boost x{boostMultiplier}</span>
+                <span className="ml-1 text-theme-accent-border">• Boost x{boostMultiplier}</span>
               )}
               <div className="absolute top-1/2 -translate-y-1/2 right-0 translate-x-full border-8 border-transparent border-l-gray-800" />
             </div>

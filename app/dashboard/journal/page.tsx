@@ -121,7 +121,7 @@ export default function JournalPage() {
             </div>
 
             {isJournalBlocked && (
-                <div className="mb-6 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                <div className="mb-6 rounded-xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary">
                     Akses fitur jurnal kamu sedang diblokir oleh admin. Kamu tidak bisa membuat atau mengubah jurnal sampai blokir dibuka.
                 </div>
             )}
@@ -270,7 +270,7 @@ export default function JournalPage() {
                                                     className={cn(
                                                         "font-medium",
                                                         settings.allow_ai_access
-                                                            ? "text-green-600"
+                                                            ? "text-primary/80"
                                                             : "text-gray-500"
                                                     )}
                                                 >

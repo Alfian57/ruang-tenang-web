@@ -60,7 +60,7 @@ export function QuickJournalWidget({ latestJournal, isLoading }: QuickJournalWid
 
   if (isLoading) {
     return (
-      <Card className="h-full border-none shadow-sm flex flex-col min-h-70">
+      <Card className="flex-1 border-none shadow-sm flex flex-col min-h-70">
         <CardHeader>
           <div className="h-6 w-1/3 bg-gray-100 rounded animate-pulse" />
         </CardHeader>
@@ -74,7 +74,7 @@ export function QuickJournalWidget({ latestJournal, isLoading }: QuickJournalWid
   }
 
   return (
-    <Card className="h-full flex flex-col border shadow-sm theme-accent-border-soft min-h-70" style={{ background: `linear-gradient(to bottom right, white, var(--theme-accent-soft))` }}>
+    <Card className="flex-1 flex flex-col border shadow-sm theme-accent-border-soft min-h-70" style={{ background: `linear-gradient(to bottom right, white, var(--theme-accent-soft))` }}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-lg font-bold flex items-center gap-2 text-gray-800">
           <Book className="w-5 h-5 theme-accent-text" />

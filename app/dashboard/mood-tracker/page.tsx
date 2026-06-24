@@ -13,12 +13,12 @@ import { useAuthStore } from "@/store/authStore";
 import type { MoodType, UserMood } from "@/types";
 
 const MOOD_OPTIONS: Array<{ value: MoodType; label: string; emoji: string; tone: string }> = [
-  { value: "happy", label: "Senang", emoji: "😊", tone: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+  { value: "happy", label: "Senang", emoji: "😊", tone: "bg-primary/10 text-primary border-primary/20" },
   { value: "neutral", label: "Netral", emoji: "😐", tone: "bg-slate-50 text-slate-700 border-slate-200" },
   { value: "angry", label: "Marah", emoji: "😠", tone: "bg-red-50 text-red-700 border-red-200" },
   { value: "disappointed", label: "Kecewa", emoji: "😞", tone: "bg-amber-50 text-amber-700 border-amber-200" },
-  { value: "sad", label: "Sedih", emoji: "😢", tone: "bg-blue-50 text-blue-700 border-blue-200" },
-  { value: "crying", label: "Menangis", emoji: "😭", tone: "bg-violet-50 text-violet-700 border-violet-200" },
+  { value: "sad", label: "Sedih", emoji: "😢", tone: "bg-primary/10 text-primary border-primary/20" },
+  { value: "crying", label: "Menangis", emoji: "😭", tone: "bg-primary/10 text-primary border-primary/20" },
 ];
 
 const moodMap = new Map(MOOD_OPTIONS.map((item) => [item.value, item]));
@@ -92,10 +92,10 @@ export default function MoodTrackerPage() {
 
   return (
     <div className="p-4 lg:p-6 space-y-6">
-      <section className="rounded-3xl border border-rose-100 bg-linear-to-br from-rose-50 via-white to-orange-50 p-5 lg:p-6">
+      <section className="rounded-3xl border border-primary/20 bg-linear-to-br from-primary/10 via-white to-primary/10 p-5 lg:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-rose-700">Mood Tracker</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-primary">Mood Tracker</p>
             <h1 className="mt-1 text-2xl font-semibold text-slate-950">Pantau mood harianmu</h1>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
               Catatan mood membantu dashboard, jurnal, dan rekomendasi aktivitas memahami pola emosimu dari waktu ke waktu.
@@ -103,7 +103,7 @@ export default function MoodTrackerPage() {
           </div>
           <Button variant="outline" className="gap-2 bg-white" onClick={() => void loadMoods()} disabled={isLoading}>
             <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-            Refresh
+            Muat Ulang
           </Button>
         </div>
       </section>
@@ -111,15 +111,15 @@ export default function MoodTrackerPage() {
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <SmilePlus className="h-5 w-5 text-primary" />
-              Check-in hari ini
+            <CardTitle className="text-xl font-bold flex items-center gap-2">
+              <PlusCircle className="w-6 h-6 text-primary/80" />
+              Catat hari ini
             </CardTitle>
             <CardDescription>Pilih satu kondisi yang paling mendekati perasaanmu saat ini.</CardDescription>
           </CardHeader>
           <CardContent>
             {todayMood && (
-              <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+              <div className="mb-4 rounded-2xl border border-primary/20 bg-primary/10 p-4 text-sm text-primary">
                 <div className="flex items-center gap-2 font-semibold">
                   <CheckCircle2 className="h-4 w-4" />
                   Kamu sudah check-in hari ini: {moodMap.get(todayMood.mood)?.label ?? todayMood.mood}
@@ -173,7 +173,7 @@ export default function MoodTrackerPage() {
               <CalendarDays className="h-5 w-5 text-slate-700" />
               Riwayat terbaru
             </CardTitle>
-            <CardDescription>Data terbaru dari aktivitas mood tracking akunmu.</CardDescription>
+            <CardDescription>Data terbaru dari aktivitas pelacakan mood akunmu.</CardDescription>
           </CardHeader>
           <CardContent>
             {isLoading ? (

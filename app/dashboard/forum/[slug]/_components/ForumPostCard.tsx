@@ -50,14 +50,14 @@ export function ForumPostCard({
         <Avatar
           className={cn(
             "w-8 h-8 ring-2",
-            isBestAnswer ? "ring-green-500" : "ring-transparent"
+            isBestAnswer ? "ring-primary/50" : "ring-transparent"
           )}
         >
           <AvatarImage src={authorAvatar} alt={post.user?.name || "User"} className="object-cover" />
           <AvatarFallback
             className={cn(
               "text-xs font-bold",
-              isBestAnswer ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-500"
+              isBestAnswer ? "bg-primary/10 text-primary" : "bg-gray-200 text-gray-500"
             )}
           >
             {isBestAnswer ? <Trophy className="w-4 h-4" /> : authorInitial}
@@ -66,21 +66,21 @@ export function ForumPostCard({
       </div>
       <div className={cn(
         "flex-1 min-w-0 p-3 sm:p-4 rounded-2xl rounded-tl-none shadow-sm border transaction-colors relative",
-        isBestAnswer ? "bg-green-50 border-green-200" : "bg-white"
+        isBestAnswer ? "bg-primary/10 border-primary/20" : "bg-white"
       )}>
         {isBestAnswer && (
-          <div className="absolute top-2 right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm flex items-center gap-1 max-w-[55%] truncate">
+          <div className="absolute top-2 right-2 bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm flex items-center gap-1 max-w-[55%] truncate">
             <CheckCircle2 className="w-3 h-3" /> BEST ANSWER
           </div>
         )}
 
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2 min-w-0 flex-wrap">
-            <span className={cn("text-sm font-semibold truncate max-w-45", post.is_best_answer ? "text-green-800" : "text-gray-900")}>
+            <span className={cn("text-sm font-semibold truncate max-w-45", post.is_best_answer ? "text-primary" : "text-gray-900")}>
               {post.user?.name}
             </span>
             {isOwner && (
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
                 Komentar Anda
               </span>
             )}
@@ -92,7 +92,7 @@ export function ForumPostCard({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 px-2 text-[10px] text-gray-400 hover:text-green-600 hover:bg-green-50 hidden sm:inline-flex"
+                className="h-6 px-2 text-[10px] text-gray-400 hover:text-primary/80 hover:bg-primary/10 hidden sm:inline-flex"
                 onClick={() => onToggleBestAnswer(post)}
                 title="Tandai sebagai Jawaban Terbaik"
               >
@@ -146,7 +146,7 @@ export function ForumPostCard({
           <Button
             variant="ghost"
             size="sm"
-            className="h-6 px-2 text-[10px] text-gray-500 hover:text-green-700 hover:bg-green-100 mb-2 sm:hidden"
+            className="h-6 px-2 text-[10px] text-gray-500 hover:text-primary hover:bg-primary/10 mb-2 sm:hidden"
             onClick={() => onToggleBestAnswer(post)}
             title="Tandai sebagai Jawaban Terbaik"
           >
@@ -155,7 +155,7 @@ export function ForumPostCard({
           </Button>
         )}
 
-        <p className={cn("text-sm whitespace-pre-wrap leading-relaxed mb-3 wrap-break-word", isBestAnswer ? "text-green-900" : "text-gray-700")}>
+        <p className={cn("text-sm whitespace-pre-wrap leading-relaxed mb-3 wrap-break-word", isBestAnswer ? "text-primary" : "text-gray-700")}>
           {post.content}
         </p>
 

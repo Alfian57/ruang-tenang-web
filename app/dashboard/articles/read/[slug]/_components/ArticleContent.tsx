@@ -145,8 +145,8 @@ export function ArticleContent({
           dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.content) }}
         />
 
-        <div className="mt-8 rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 via-white to-cyan-50 p-5 md:p-6">
-          <div className="flex items-center gap-2 text-emerald-700 mb-2">
+        <div className="mt-8 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-white to-primary/10 p-5 md:p-6">
+          <div className="flex items-center gap-2 text-primary mb-2">
             <Sparkles className="w-4 h-4" />
             <span className="text-xs font-semibold uppercase tracking-wide">Langkah Lanjutan</span>
           </div>
@@ -160,7 +160,7 @@ export function ArticleContent({
               </Button>
             </Link>
             <Link href={actionPlan.secondaryHref}>
-              <Button variant="outline" className="w-full sm:w-auto border-emerald-200 text-emerald-700 hover:bg-emerald-50">
+              <Button variant="outline" className="w-full sm:w-auto border-primary/20 text-primary hover:bg-primary/10">
                 {actionPlan.secondaryLabel}
               </Button>
             </Link>

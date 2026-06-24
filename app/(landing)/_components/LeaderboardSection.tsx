@@ -74,7 +74,7 @@ export default function LeaderboardSection() {
           </div>
         ) : featuredMembers.length === 0 ? (
           <div className="mx-auto mb-10 max-w-4xl rounded-2xl border border-dashed border-rose-200 bg-white/80 px-6 py-10 text-center">
-            <p className="text-lg font-semibold text-gray-700 mb-2">Leaderboard belum memiliki data</p>
+            <p className="text-lg font-semibold text-gray-700 mb-2">Papan Peringkat belum memiliki data</p>
             <p className="text-sm text-gray-500">
               Belum ada member yang masuk ranking saat ini. Aktivitas komunitas berikutnya akan muncul di sini.
             </p>

@@ -89,8 +89,8 @@ export default function NewStoryPage() {
           </p>
 
           {challengeMeta && (
-            <div className="mt-4 rounded-xl border border-violet-200 bg-violet-50 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wide text-violet-700 inline-flex items-center gap-1.5">
+            <div className="mt-4 rounded-xl border border-primary/20 bg-primary/10 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary inline-flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
                 Story Challenge Aktif
               </p>

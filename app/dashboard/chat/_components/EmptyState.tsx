@@ -109,7 +109,7 @@ export function EmptyState({
   return (
     <div className="min-h-full bg-gray-50/50 p-4 sm:p-6 lg:p-8">
       <div className="mx-auto w-full max-w-5xl">
-        <section className="rounded-2xl border border-rose-100 bg-white p-5 shadow-sm sm:p-6">
+        <section className="rounded-2xl border border-primary/20 bg-white p-5 shadow-sm sm:p-6">
           <p className="text-xs font-semibold uppercase tracking-wide text-primary">Teman Cerita AI</p>
           <div className="mt-2 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -166,17 +166,17 @@ export function EmptyState({
         )}
 
         <section className="mt-5 grid grid-cols-1 gap-3 lg:grid-cols-3">
-          <article className="rounded-2xl border border-sky-200 bg-sky-50 p-4">
-            <History className="h-5 w-5 text-sky-700" />
+          <article className="rounded-2xl border border-primary/20 bg-primary/10 p-4">
+            <History className="h-5 w-5 text-primary" />
             <h4 className="mt-3 text-base font-semibold text-gray-900">Lanjut sesi terakhir</h4>
             {journeyCompanion?.previousSession ? (
               <>
                 <p className="mt-1 line-clamp-2 text-sm text-gray-600">{journeyCompanion.previousSession.title}</p>
-                <p className="mt-1 text-xs text-sky-700">Update: {formatUpdatedDate(journeyCompanion.previousSession.updatedAt)}</p>
+                <p className="mt-1 text-xs text-primary">Diperbarui: {formatUpdatedDate(journeyCompanion.previousSession.updatedAt)}</p>
                 <Button
                   size="sm"
                   variant="outline"
-                  className="mt-4 border-sky-200 bg-white text-sky-700 hover:bg-sky-100"
+                  className="mt-4 border-primary/20 bg-white text-primary hover:bg-primary/10"
                   onClick={() => {
                     const session = journeyCompanion.previousSession;
                     if (!session) return;
@@ -189,35 +189,35 @@ export function EmptyState({
             ) : (
               <>
                 <p className="mt-1 text-sm text-gray-600">Belum ada sesi lama. Mulai obrolan pertama dari check-in singkat.</p>
-                <Button size="sm" variant="outline" className="mt-4 border-sky-200 bg-white text-sky-700 hover:bg-sky-100" onClick={handleStartConversation}>
+                <Button size="sm" variant="outline" className="mt-4 border-primary/20 bg-white text-primary hover:bg-primary/10" onClick={handleStartConversation}>
                   {isQuotaExhausted ? "Upgrade dulu" : "Mulai baru"}
                 </Button>
               </>
             )}
           </article>
 
-          <article className="rounded-2xl border border-rose-200 bg-rose-50 p-4">
-            <NotebookPen className="h-5 w-5 text-rose-700" />
-            <h4 className="mt-3 text-base font-semibold text-gray-900">Mulai guided check-in</h4>
+          <article className="rounded-2xl border border-primary/20 bg-primary/10 p-4">
+            <NotebookPen className="h-5 w-5 text-primary" />
+            <h4 className="mt-3 text-base font-semibold text-gray-900">Mulai check-in terpandu</h4>
             <p className="mt-1 text-sm text-gray-600">Cocok saat kamu belum tahu harus cerita dari mana.</p>
             <Button
               size="sm"
-              className={`mt-4 ${isQuotaExhausted ? "bg-amber-600 hover:bg-amber-700" : "bg-rose-600 hover:bg-rose-700"}`}
+              className={`mt-4 ${isQuotaExhausted ? "bg-amber-600 hover:bg-amber-700" : "bg-primary hover:bg-primary"}`}
               onClick={() => handlePromptAction(guidedPrompt, onJourneyPromptClick ?? onSuggestedPromptClick)}
             >
               {isQuotaExhausted && <Lock className="mr-1.5 h-3.5 w-3.5" />}
-              {isQuotaExhausted ? "Terkunci" : "Check-in sekarang"}
+              {isQuotaExhausted ? "Terkunci" : "Isi Jurnal Sekarang"}
             </Button>
           </article>
 
-          <article className="rounded-2xl border border-violet-200 bg-violet-50 p-4">
-            <Sparkles className="h-5 w-5 text-violet-700" />
+          <article className="rounded-2xl border border-primary/20 bg-primary/10 p-4">
+            <Sparkles className="h-5 w-5 text-primary" />
             <h4 className="mt-3 text-base font-semibold text-gray-900">Pilih prompt cepat</h4>
             <p className="mt-1 text-sm text-gray-600">Gunakan prompt siap pakai untuk memulai percakapan terarah.</p>
             <Button
               size="sm"
               variant="outline"
-              className="mt-4 border-violet-200 bg-white text-violet-700 hover:bg-violet-100"
+              className="mt-4 border-primary/20 bg-white text-primary hover:bg-primary/10"
               onClick={() => handlePromptAction(firstPrompt, onSuggestedPromptClick)}
             >
               {isQuotaExhausted && <Lock className="mr-1.5 h-3.5 w-3.5" />}
@@ -227,11 +227,11 @@ export function EmptyState({
         </section>
 
         {journeyCompanion && journeyCompanion.quickPrompts.length > 0 && (
-          <section className="mt-5 rounded-2xl border border-sky-200 bg-white p-4">
+          <section className="mt-5 rounded-2xl border border-primary/20 bg-white p-4">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-sky-700">Journey Companion</p>
-                <p className="mt-1 text-sm text-sky-900">
+                <p className="text-xs font-semibold uppercase tracking-wide text-primary">Pendamping Perjalanan</p>
+                <p className="mt-1 text-sm text-primary">
                   {journeyCompanion.sessionsThisWeek} sesi aktif dalam 7 hari terakhir.
                 </p>
               </div>
@@ -242,7 +242,7 @@ export function EmptyState({
                   key={prompt.id}
                   type="button"
                   onClick={() => handlePromptAction(prompt.text, onJourneyPromptClick)}
-                  className={`rounded-xl border px-3 py-2 text-left text-xs font-medium transition-colors ${isQuotaExhausted ? "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100" : "border-sky-200 bg-sky-50 text-sky-800 hover:bg-sky-100"}`}
+                  className={`rounded-xl border px-3 py-2 text-left text-xs font-medium transition-colors ${isQuotaExhausted ? "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100" : "border-primary/20 bg-primary/10 text-primary hover:bg-primary/10"}`}
                 >
                   {isQuotaExhausted && <Lock className="mr-1 inline h-3 w-3 align-[-2px]" />}
                   {prompt.label}
@@ -288,7 +288,7 @@ export function EmptyState({
               onClick={() => setShowCreativeModes((value) => !value)}
             >
               <span>
-                <span className="block text-xs font-semibold uppercase tracking-wide text-violet-700">Creative Conversation Mode</span>
+                <span className="block text-xs font-semibold uppercase tracking-wide text-primary">Mode Percakapan Kreatif</span>
                 <span className="mt-1 block text-sm text-gray-600">Opsi gaya pendampingan tambahan.</span>
               </span>
               {showCreativeModes ? (
@@ -305,9 +305,9 @@ export function EmptyState({
                     key={mode.id}
                     type="button"
                     onClick={() => handlePromptAction(mode.prompt, onCreativeModeClick)}
-                    className={`rounded-xl border px-3 py-2 text-left transition-colors ${isQuotaExhausted ? "border-amber-200 bg-amber-50 hover:bg-amber-100" : "border-violet-200 bg-violet-50 hover:bg-violet-100"}`}
+                    className={`rounded-xl border px-3 py-2 text-left transition-colors ${isQuotaExhausted ? "border-amber-200 bg-amber-50 hover:bg-amber-100" : "border-primary/20 bg-primary/10 hover:bg-primary/10"}`}
                   >
-                    <p className={`text-xs font-semibold ${isQuotaExhausted ? "text-amber-900" : "text-violet-800"}`}>
+                    <p className={`text-xs font-semibold ${isQuotaExhausted ? "text-amber-900" : "text-primary"}`}>
                       {isQuotaExhausted && <Lock className="mr-1 inline h-3 w-3 align-[-2px]" />}
                       {mode.label}
                     </p>

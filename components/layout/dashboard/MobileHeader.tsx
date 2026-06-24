@@ -122,7 +122,7 @@ export function MobileHeader({
               <DropdownMenuItem asChild className="cursor-pointer">
                 <Link href={ROUTES.BILLING}>
                   {isPremium ? (
-                    <Crown className="mr-2 h-4 w-4 text-violet-600" />
+                    <Crown className="mr-2 h-4 w-4 text-primary/80" />
                   ) : isChatLimitExhausted ? (
                     <Lock className="mr-2 h-4 w-4 text-amber-700" />
                   ) : (
@@ -142,15 +142,15 @@ export function MobileHeader({
             )}
             {isUser && hasXPBoost && (
               <DropdownMenuItem disabled className="opacity-100 focus:bg-transparent">
-                <Rocket className="mr-2 h-4 w-4 text-orange-600" />
-                <span className="text-orange-700">
+                <Rocket className="mr-2 h-4 w-4 text-primary/80" />
+                <span className="text-primary">
                   XP x{xpBoost?.multiplier ?? 1} • {formatRemaining(xpBoost?.remaining_seconds ?? 0)}
                 </span>
               </DropdownMenuItem>
             )}
             {isAdmin && (
               <DropdownMenuItem disabled>
-                <Crown className="mr-2 h-4 w-4 text-purple-600" />
+                <Crown className="mr-2 h-4 w-4 text-primary/80" />
                 <span>Admin</span>
               </DropdownMenuItem>
             )}

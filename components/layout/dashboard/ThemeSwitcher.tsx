@@ -171,7 +171,7 @@ export function ThemeSwitcher() {
                                 {isLoading ? (
                                     <Loader2 className="w-4 h-4 animate-spin text-gray-400" />
                                 ) : isActive ? (
-                                    <Check className="w-4 h-4 text-green-500" />
+                                    <Check className="w-4 h-4 text-primary/80" />
                                 ) : !isOwned ? (
                                     <Lock className="w-3.5 h-3.5 text-gray-300" />
                                 ) : null}
