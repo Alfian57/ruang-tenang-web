@@ -32,7 +32,7 @@ export function ArticleTable({
     const getStatusBadge = (status: string) => {
         switch (status) {
             case "published":
-                return <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">Dipublikasikan</span>;
+                return <span className="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">Dipublikasikan</span>;
             case "draft":
                 return <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">Draf</span>;
             case "pending":
@@ -42,7 +42,7 @@ export function ArticleTable({
             case "rejected":
                 return <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">Ditolak</span>;
             case "revision_needed":
-                return <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">Perlu Revisi</span>;
+                return <span className="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">Perlu Revisi</span>;
             default:
                 return null;
         }
@@ -136,7 +136,7 @@ export function ArticleTable({
                                                         size="icon"
                                                         onClick={() => onApprove(article.id)}
                                                         title="Setujui"
-                                                        className="text-green-500 hover:text-green-600"
+                                                        className="text-primary/80 hover:text-primary/80"
                                                     >
                                                         <CheckCircle className="w-4 h-4" />
                                                     </Button>
@@ -180,7 +180,7 @@ export function ArticleTable({
                                                 size="icon"
                                                 onClick={() => onBlock(article.id)}
                                                 title={article.status === "blocked" ? "Unblock" : "Block"}
-                                                className={article.status === "blocked" ? "text-green-500 hover:text-green-600" : "text-yellow-500 hover:text-yellow-600"}
+                                                className={article.status === "blocked" ? "text-primary/80 hover:text-primary/80" : "text-yellow-500 hover:text-yellow-600"}
                                             >
                                                 {article.status === "blocked" ? <CheckCircle className="w-4 h-4" /> : <Ban className="w-4 h-4" />}
                                             </Button>

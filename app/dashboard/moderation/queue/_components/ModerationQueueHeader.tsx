@@ -25,9 +25,9 @@ import { ArticleModerationStatus } from "@/types/moderation";
 const STATUS_LABELS: Record<ArticleModerationStatus, { label: string; color: string }> = {
     pending: { label: "Menunggu", color: "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300" },
     flagged: { label: "Ditandai", color: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300" },
-    approved: { label: "Disetujui", color: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300" },
+    approved: { label: "Disetujui", color: "bg-primary/10 text-primary dark:bg-primary dark:text-primary/60" },
     rejected: { label: "Ditolak", color: "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300" },
-    revision_needed: { label: "Perlu Revisi", color: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300" },
+    revision_needed: { label: "Perlu Revisi", color: "bg-primary/10 text-primary dark:bg-primary dark:text-primary/60" },
 };
 
 interface ModerationQueueHeaderProps {
@@ -104,7 +104,7 @@ export function ModerationQueueHeader({
                                     Ditandai
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => setStatusFilter("revision_needed")}>
-                                    <FileText className="h-4 w-4 mr-2 text-blue-500" />
+                                    <FileText className="h-4 w-4 mr-2 text-primary/80" />
                                     Perlu Revisi
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

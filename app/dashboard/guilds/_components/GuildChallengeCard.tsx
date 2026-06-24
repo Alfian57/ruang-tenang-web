@@ -48,7 +48,7 @@ export function GuildChallengeCard({ challenge, onClaim, isClaiming }: GuildChal
         <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`bg-white rounded-xl border p-4 ${challenge.is_completed ? "border-green-200 bg-green-50/30" :
+            className={`bg-white rounded-xl border p-4 ${challenge.is_completed ? "border-primary/20 bg-primary/10" :
                 challenge.is_expired ? "border-red-200 bg-red-50/30 opacity-60" :
                     "hover:shadow-md hover:border-primary/20 transition-all"
                 }`}>
@@ -61,19 +61,19 @@ export function GuildChallengeCard({ challenge, onClaim, isClaiming }: GuildChal
                         <h4 className="font-semibold text-gray-800 truncate">{challenge.title}</h4>
                         {/* Daily/Weekly badge */}
                         {isDaily && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-medium bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded-full shrink-0">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-medium bg-primary/10 text-primary/80 px-1.5 py-0.5 rounded-full shrink-0">
                                 <CalendarDays className="w-3 h-3" />
                                 Harian
                             </span>
                         )}
                         {isWeekly && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-medium bg-purple-50 text-purple-600 px-1.5 py-0.5 rounded-full shrink-0">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-medium bg-primary/10 text-primary/80 px-1.5 py-0.5 rounded-full shrink-0">
                                 <CalendarClock className="w-3 h-3" />
                                 Mingguan
                             </span>
                         )}
                         {challenge.is_completed && (
-                            <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-primary/80 shrink-0" />
                         )}
                         {challenge.is_expired && !challenge.is_completed && (
                             <AlertTriangle className="w-4 h-4 text-red-500 shrink-0" />
@@ -96,9 +96,9 @@ export function GuildChallengeCard({ challenge, onClaim, isClaiming }: GuildChal
                         </div>
                         <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
                             <motion.div
-                                className={`h-2.5 rounded-full ${challenge.is_completed ? "bg-green-500" :
+                                className={`h-2.5 rounded-full ${challenge.is_completed ? "bg-primary" :
                                         challenge.is_expired ? "bg-red-400" :
-                                            "bg-gradient-to-r from-primary to-violet-500"
+                                            "bg-gradient-to-r from-primary to-primary"
                                     }`}
                                 initial={{ width: 0 }}
                                 animate={{ width: `${progressPercent}%` }}
@@ -120,7 +120,7 @@ export function GuildChallengeCard({ challenge, onClaim, isClaiming }: GuildChal
                                 </span>
                             )}
                             {challenge.is_completed && (
-                                <span className="flex items-center gap-1 text-green-600">
+                                <span className="flex items-center gap-1 text-primary/80">
                                     <CheckCircle2 className="w-3 h-3" />
                                     Selesai
                                 </span>
@@ -150,14 +150,14 @@ export function GuildChallengeCard({ challenge, onClaim, isClaiming }: GuildChal
                             <button
                                 onClick={() => onClaim(challenge.id)}
                                 disabled={isClaiming}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-500 text-white text-xs font-medium hover:bg-green-600 transition-colors disabled:opacity-50"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary transition-colors disabled:opacity-50"
                             >
                                 <Gift className="w-3.5 h-3.5" />
                                 {isClaiming ? "Mengklaim..." : "Claim Hadiah"}
                             </button>
                         )}
                         {challenge.is_claimed && (
-                            <span className="inline-flex items-center gap-1 text-xs text-green-600 font-medium">
+                            <span className="inline-flex items-center gap-1 text-xs text-primary/80 font-medium">
                                 <CheckCircle2 className="w-3.5 h-3.5" />
                                 Sudah diklaim
                             </span>

@@ -40,7 +40,7 @@ const SIGNATURE_LOOP = [
     icon: Gift,
     title: "Reward Identitas",
     description: "Koin ditukar menjadi perubahan atmosfer dashboard, sehingga reward terasa hidup setiap hari.",
-    highlight: "Tema Dashboard",
+    highlight: "Tema Dasbor",
     href: ROUTES.REWARDS,
     style: "from-red-500 to-rose-600",
   },
@@ -59,7 +59,7 @@ const WOW_MOMENTS = [
   {
     title: "Momen utama #1: Mood jadi arahan, bukan angka",
     description: "Setelah check-in, pengguna langsung mendapat langkah berikutnya yang relevan ke jurnal, napas, atau chat.",
-    cta: "Lihat Mood Insight",
+    cta: "Lihat Wawasan Mood",
     href: ROUTES.DASHBOARD,
   },
   {
@@ -112,11 +112,17 @@ export function FeaturesSection() {
             <div className="mb-6 flex flex-col items-start gap-3 sm:flex-row sm:justify-between">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-widest text-rose-600">Alur Utama</p>
-                <h3 className="font-brand-display mt-1 text-xl font-bold leading-snug text-gray-900 sm:text-2xl">
-                  Refleksi {"->"} Progres {"->"} Reward {"->"} Komunitas
+                <h3 className="font-brand-display mt-2 flex flex-wrap items-center gap-1.5 text-xl font-bold leading-snug text-gray-900 sm:gap-2.5 sm:text-2xl">
+                  <span>Refleksi</span>
+                  <ArrowRight className="h-5 w-5 text-rose-400" />
+                  <span>Progres</span>
+                  <ArrowRight className="h-5 w-5 text-rose-400" />
+                  <span>Reward</span>
+                  <ArrowRight className="h-5 w-5 text-rose-400" />
+                  <span>Komunitas</span>
                 </h3>
               </div>
-              <div className="rounded-lg bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">Simulasi alur</div>
+              <div className="shrink-0 whitespace-nowrap rounded-lg bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">Simulasi alur</div>
             </div>
 
             <div className="space-y-4">
@@ -139,7 +145,7 @@ export function FeaturesSection() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-xs font-semibold text-rose-600">Step {stage.id}</span>
+                        <span className="text-xs font-bold text-red-600 sm:text-sm">Langkah {stage.id}</span>
                         <h4 className="text-lg font-semibold text-gray-900">{stage.title}</h4>
                       </div>
                       <p className="text-sm text-gray-600 mt-1 leading-relaxed">{stage.description}</p>
@@ -193,7 +199,7 @@ export function FeaturesSection() {
               </div>
               <h4 className="font-brand-display text-lg font-bold text-gray-900 mt-3">Masuk lewat satu pertanyaan sederhana</h4>
               <p className="text-sm text-gray-600 mt-1 leading-relaxed">
-                User tidak perlu memahami semua menu. Cukup pilih kondisi saat ini, lalu sistem mengantar ke langkah paling relevan.
+                Pengguna tidak perlu memahami semua menu. Cukup pilih kondisi saat ini, lalu sistem mengantar ke langkah paling relevan.
               </p>
 
               <div className="mt-4 grid gap-2 sm:grid-cols-2">

@@ -61,7 +61,7 @@ export function CTASection() {
             <Link href={ROUTES.REGISTER}>
               <Button
                 size="lg"
-                className="w-full rounded-2xl bg-primary px-8 py-6 text-base font-semibold text-white shadow-xl transition-all hover:bg-primary/90 hover:shadow-2xl sm:w-auto sm:px-10 sm:py-7 sm:text-lg group"
+                className="w-full rounded-xl bg-primary px-6 py-3 text-base font-semibold text-white shadow-xl transition-all hover:bg-primary/90 hover:shadow-2xl sm:w-auto sm:px-8 sm:py-4 group"
               >
                 Mulai Sekarang
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -71,7 +71,7 @@ export function CTASection() {
               <Button
                 size="lg"
                 variant="outline"
-                className="w-full rounded-2xl border-2 border-red-200 px-8 py-6 text-base font-semibold text-gray-700 transition-all hover:bg-white/80 sm:w-auto sm:py-7 sm:text-lg"
+                className="w-full rounded-xl border-2 border-red-200 px-6 py-3 text-base font-semibold text-gray-700 transition-all hover:bg-white/80 sm:w-auto sm:px-8 sm:py-4 bg-white/50"
               >
                 Sudah Punya Akun
               </Button>

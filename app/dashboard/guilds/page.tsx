@@ -265,7 +265,7 @@ export default function GuildsPage() {
                 </div>
 
                 {hasGuild && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-700 flex items-center gap-2">
+                    <div className="bg-primary/10 border border-primary/20 rounded-xl p-3 text-sm text-primary flex items-center gap-2">
                         <Shield className="w-4 h-4 shrink-0" />
                         <span>
                             Kamu sudah bergabung di guild <strong>{myGuild?.guild?.name}</strong>. Setiap user hanya bisa bergabung di 1 guild.

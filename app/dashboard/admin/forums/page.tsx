@@ -127,7 +127,7 @@ export default function AdminForumsPage() {
                       <tr key={forum.id} className="hover:bg-gray-50">
                         <td className="p-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0 text-blue-500">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 text-primary/80">
                               <MessageSquare className="w-5 h-5" />
                             </div>
                             <div>
@@ -157,7 +157,7 @@ export default function AdminForumsPage() {
                               <AlertTriangle className="w-3 h-3" /> Ditandai
                             </span>
                           ) : (
-                            <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                            <span className="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">
                               Dipublikasi
                             </span>
                           )}
@@ -177,7 +177,7 @@ export default function AdminForumsPage() {
                               size="icon"
                               onClick={() => setBlockId(forum.id)}
                               title={forum.is_flagged ? "Buka Blokir" : "Blokir"}
-                              className={forum.is_flagged ? "text-green-500 hover:text-green-600" : "text-yellow-500 hover:text-yellow-600"}
+                              className={forum.is_flagged ? "text-primary/80 hover:text-primary/80" : "text-yellow-500 hover:text-yellow-600"}
                             >
                               {forum.is_flagged ? <CheckCircle className="w-4 h-4" /> : <Ban className="w-4 h-4" />}
                             </Button>
@@ -310,8 +310,8 @@ export default function AdminForumsPage() {
             </DialogTitle>
           </DialogHeader>
           <div className="py-4 text-center">
-            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${allForums.find(f => f.id === blockId)?.is_flagged ? "bg-green-100" : "bg-red-100"}`}>
-              {allForums.find(f => f.id === blockId)?.is_flagged ? <CheckCircle className="w-8 h-8 text-green-600" /> : <Ban className="w-8 h-8 text-red-600" />}
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${allForums.find(f => f.id === blockId)?.is_flagged ? "bg-primary/10" : "bg-red-100"}`}>
+              {allForums.find(f => f.id === blockId)?.is_flagged ? <CheckCircle className="w-8 h-8 text-primary/80" /> : <Ban className="w-8 h-8 text-red-600" />}
             </div>
             <p className="text-gray-600">
               {allForums.find(f => f.id === blockId)?.is_flagged
@@ -322,7 +322,7 @@ export default function AdminForumsPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setBlockId(null)}>Batal</Button>
             <Button
-              className={allForums.find(f => f.id === blockId)?.is_flagged ? "bg-green-600 hover:bg-green-700 text-white" : "bg-red-600 hover:bg-red-700 text-white"}
+              className={allForums.find(f => f.id === blockId)?.is_flagged ? "bg-primary hover:bg-primary text-white" : "bg-red-600 hover:bg-red-700 text-white"}
               onClick={confirmToggleFlag}
             >
               {allForums.find(f => f.id === blockId)?.is_flagged ? "Buka Blokir" : "Blokir"}

@@ -175,7 +175,7 @@ export function StoryComments({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-7 gap-1 text-gray-500 hover:text-rose-500"
+                      className="h-7 gap-1 text-gray-500 hover:text-primary/80"
                     >
                       <Heart className="w-3 h-3" />
                       {comment.heart_count}

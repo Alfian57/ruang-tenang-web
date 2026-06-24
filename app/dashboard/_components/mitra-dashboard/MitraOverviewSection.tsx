@@ -20,9 +20,9 @@ export function MitraOverviewSection({ viewModel }: MitraOverviewSectionProps) {
             <p className="mt-1 text-sm text-gray-600">Pilih alur kerja sesuai kebutuhan operasional hari ini.</p>
           </div>
           <div className="grid grid-cols-1 gap-2 text-xs font-medium text-red-700 xs:grid-cols-2 md:flex md:flex-wrap">
-            <span className="rounded-lg border border-red-100 bg-white px-3 py-2">Seat {viewModel.seatUsagePercent}%</span>
-            <span className="rounded-lg border border-red-100 bg-white px-3 py-2">Approval {viewModel.pendingMembers.length}</span>
-            <span className="rounded-lg border border-red-100 bg-white px-3 py-2">Billing {viewModel.hasActiveSubscription ? "aktif" : "perlu setup"}</span>
+            <span className="rounded-lg border border-red-100 bg-white px-3 py-2">Kuota {viewModel.seatUsagePercent}%</span>
+            <span className="rounded-lg border border-red-100 bg-white px-3 py-2">Persetujuan {viewModel.pendingMembers.length}</span>
+            <span className="rounded-lg border border-red-100 bg-white px-3 py-2">Tagihan {viewModel.hasActiveSubscription ? "aktif" : "perlu disiapkan"}</span>
           </div>
         </div>
       </section>
@@ -57,7 +57,7 @@ export function MitraOverviewSection({ viewModel }: MitraOverviewSectionProps) {
             logs={viewModel.auditLogs}
             limit={5}
             emptyTitle="Belum ada aktivitas terbaru"
-            emptyDescription="Undangan, approval anggota, perubahan seat, dan reminder organisasi akan tampil di sini."
+            emptyDescription="Undangan, persetujuan anggota, perubahan kuota, dan pengingat organisasi akan tampil di sini."
           />
         </article>
 
@@ -68,11 +68,11 @@ export function MitraOverviewSection({ viewModel }: MitraOverviewSectionProps) {
           </h2>
           <div className="mt-4 space-y-3 text-sm">
             <div className="rounded-xl border border-red-100 bg-red-50/60 p-3">
-              <p className="font-semibold text-red-900">Approval anggota</p>
+              <p className="font-semibold text-red-900">Persetujuan anggota</p>
               <p className="mt-1 text-red-800">{viewModel.pendingMembers.length} anggota menunggu keputusan.</p>
             </div>
             <div className="rounded-xl border border-gray-200 p-3">
-              <p className="font-semibold text-gray-900">Periode billing</p>
+              <p className="font-semibold text-gray-900">Periode tagihan</p>
               <p className="mt-1 text-gray-600">{viewModel.daysUntilRenewal === null ? "Belum ada periode aktif." : `${viewModel.daysUntilRenewal} hari sampai akhir periode.`}</p>
             </div>
           </div>

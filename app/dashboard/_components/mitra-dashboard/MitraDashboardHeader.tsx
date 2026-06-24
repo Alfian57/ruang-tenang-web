@@ -14,7 +14,7 @@ export function MitraDashboardHeader({ viewModel }: MitraDashboardHeaderProps) {
 
   return (
     <section data-mitra-tour="mitra-header" className="relative min-w-0 overflow-hidden rounded-2xl border border-red-100 bg-white p-4 shadow-sm sm:p-5">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-red-500 via-rose-500 to-red-400" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-red-500 via-primary to-red-400" />
       <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div className="min-w-0 max-w-2xl">
           <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-red-700">
@@ -25,8 +25,8 @@ export function MitraDashboardHeader({ viewModel }: MitraDashboardHeaderProps) {
           <p className="mt-2 text-sm leading-6 text-gray-600">{viewModel.pageMeta.description}</p>
           <div className="mt-4 flex flex-wrap gap-2 text-xs font-medium text-red-700">
             <span className="rounded-full border border-red-100 bg-red-50 px-3 py-1">{viewModel.organizations.length} organisasi</span>
-            <span className="rounded-full border border-red-100 bg-red-50 px-3 py-1">{viewModel.seatUsage?.used_seats ?? 0} seat aktif</span>
-            <span className="rounded-full border border-red-100 bg-red-50 px-3 py-1">{viewModel.pendingMembers.length} approval pending</span>
+            <span className="rounded-full border border-red-100 bg-red-50 px-3 py-1">{viewModel.seatUsage?.used_seats ?? 0} kuota aktif</span>
+            <span className="rounded-full border border-red-100 bg-red-50 px-3 py-1">{viewModel.pendingMembers.length} persetujuan tertunda</span>
           </div>
         </div>
         <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center">
@@ -47,7 +47,7 @@ export function MitraDashboardHeader({ viewModel }: MitraDashboardHeaderProps) {
           </Select>
           <Button type="button" variant="outline" className="border-red-100 bg-white hover:bg-red-50 hover:text-red-700" onClick={() => viewModel.refresh()}>
             <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
+            Muat Ulang
           </Button>
           <Button type="button" onClick={() => viewModel.setShowCreateForm((value) => !value)}>
             <Plus className="mr-2 h-4 w-4" />

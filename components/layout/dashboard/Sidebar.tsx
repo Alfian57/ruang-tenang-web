@@ -152,7 +152,7 @@ export function Sidebar({
         )}
 
         {/* Navigation */}
-        <nav className="py-4 overflow-y-auto h-[calc(100vh-10rem)]" aria-label="Navigasi dashboard">
+        <nav className="py-4 overflow-y-auto h-[calc(100vh-4rem)] pb-8" aria-label="Navigasi dashboard">
           {/* AI Chat highlight - rendered before groups */}
           {highlightLink && (() => {
             const isActive = userRole === "mitra"
@@ -194,16 +194,17 @@ export function Sidebar({
                         </span>
                         {chatAccessState && StatusIcon && (
                           <span
+                            title={chatAccessState.tone === "premium" ? "Unlimited" : undefined}
                             className={cn(
-                              "inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold",
+                              "inline-flex shrink-0 items-center justify-center rounded-full border",
+                              chatAccessState.tone === "premium" ? "h-6 w-6 border-primary/20 bg-white/90 text-primary" : "gap-1 px-2 py-0.5 text-[10px] font-semibold",
                               chatAccessState.tone === "locked" && "border-amber-200 bg-amber-100 text-amber-900",
                               chatAccessState.tone === "low" && "border-amber-100 bg-white/90 text-amber-700",
-                              chatAccessState.tone === "premium" && "border-violet-100 bg-white/90 text-violet-700",
                               chatAccessState.tone === "available" && "border-white/25 bg-white/15 text-white"
                             )}
                           >
-                            <StatusIcon className="h-3 w-3" />
-                            {chatAccessState.label}
+                            <StatusIcon className="h-3.5 w-3.5" />
+                            {chatAccessState.tone !== "premium" && chatAccessState.label}
                           </span>
                         )}
                       </span>
@@ -218,8 +219,8 @@ export function Sidebar({
                     className={cn(
                       "absolute -right-1 -top-1 z-20 grid h-5 w-5 place-items-center rounded-full border-2 border-white shadow-sm",
                       chatAccessState?.tone === "locked" && "bg-amber-500 text-white",
-                      chatAccessState?.tone === "low" && "bg-orange-500 text-white",
-                      chatAccessState?.tone === "premium" && "bg-violet-500 text-white"
+                      chatAccessState?.tone === "low" && "bg-primary text-white",
+                      chatAccessState?.tone === "premium" && "bg-primary text-white"
                     )}
                   >
                     <StatusIcon className="h-3 w-3" />
@@ -297,7 +298,7 @@ export function Sidebar({
                       </span>
                     )}
                     {!sidebarCollapsed && badge && BadgeIcon && (
-                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[10px] font-semibold text-violet-700">
+                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
                         <BadgeIcon className="h-3 w-3" />
                         {badge.label}
                       </span>
@@ -309,12 +310,7 @@ export function Sidebar({
           ))}
         </nav>
 
-        {/* Bottom section */}
-        <div className="sidebar-bottom absolute bottom-0 left-0 right-0 p-4 border-t bg-white">
-          <div className="flex items-center justify-center p-2">
-            <span className="text-xs text-gray-400">v1.0.0</span>
-          </div>
-        </div>
+
       </aside>
     </>
   );

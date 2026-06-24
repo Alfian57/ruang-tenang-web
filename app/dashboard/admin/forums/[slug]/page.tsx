@@ -49,7 +49,7 @@ export default function AdminForumTopicPage() {
       <div className="bg-white border-b px-4 lg:px-6 py-4 flex items-center gap-4 sticky top-0 z-10 shrink-0 shadow-sm">
         <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse" />
         <div className="space-y-1.5">
-          <div className="flex items-center gap-2"><div className="h-4 w-20 rounded bg-purple-100 animate-pulse" /><div className="h-4 w-16 rounded bg-gray-200 animate-pulse" /></div>
+          <div className="flex items-center gap-2"><div className="h-4 w-20 rounded bg-primary/10 animate-pulse" /><div className="h-4 w-16 rounded bg-gray-200 animate-pulse" /></div>
           <div className="h-6 w-48 rounded bg-gray-200 animate-pulse" />
         </div>
       </div>
@@ -117,12 +117,12 @@ export default function AdminForumTopicPage() {
             </Button>
             <div>
               <div className="flex items-center gap-2">
-                <span className="flex items-center gap-1 bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
+                <span className="flex items-center gap-1 bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
                   <ShieldAlert className="w-3 h-3" />
                   ADMIN MODE
                 </span>
                 {forum.category && (
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 uppercase tracking-wide">
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary/80 uppercase tracking-wide">
                     {forum.category.name}
                   </span>
                 )}
@@ -167,13 +167,13 @@ export default function AdminForumTopicPage() {
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-4xl mx-auto p-4 lg:p-6 space-y-6">
             {forum.is_flagged && (
-              <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-center gap-3 text-orange-800">
-                <div className="bg-orange-100 p-2 rounded-full shrink-0">
-                  <AlertTriangle className="w-5 h-5 text-orange-600" />
+              <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 flex items-center gap-3 text-primary">
+                <div className="bg-primary/10 p-2 rounded-full shrink-0">
+                  <AlertTriangle className="w-5 h-5 text-primary/80" />
                 </div>
                 <div>
                   <h3 className="font-semibold">Status: DIBLOKIR</h3>
-                  <p className="text-sm text-orange-700">
+                  <p className="text-sm text-primary">
                     Topik ini sedang diblokir untuk pengguna umum. Sebagai admin, Anda masih dapat melihat dan membalas.
                   </p>
                 </div>
@@ -257,24 +257,24 @@ export default function AdminForumTopicPage() {
                     <div className="shrink-0">
                       <div className={cn(
                         "w-8 h-8 rounded-full overflow-hidden relative flex items-center justify-center text-xs font-bold ring-2",
-                        isAcceptedAnswer ? "bg-green-100 text-green-700 ring-green-500" : "bg-gray-200 text-gray-500 ring-transparent"
+                        isAcceptedAnswer ? "bg-primary/10 text-primary ring-primary/50" : "bg-gray-200 text-gray-500 ring-transparent"
                       )}>
                         {isAcceptedAnswer ? <Trophy className="w-4 h-4" /> : (post.user?.name?.charAt(0).toUpperCase() || "U")}
                       </div>
                     </div>
                     <div className={cn(
                       "flex-1 p-4 rounded-2xl rounded-tl-none shadow-sm border transaction-colors relative",
-                      isAcceptedAnswer ? "bg-green-50 border-green-200" : "bg-white"
+                      isAcceptedAnswer ? "bg-primary/10 border-primary/20" : "bg-white"
                     )}>
                       {isAcceptedAnswer && (
-                        <div className="absolute -top-3 -right-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm flex items-center gap-1">
+                        <div className="absolute -top-3 -right-2 bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3" /> BEST ANSWER
                         </div>
                       )}
 
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <span className={cn("text-sm font-semibold", isAcceptedAnswer ? "text-green-800" : "text-gray-900")}>
+                          <span className={cn("text-sm font-semibold", isAcceptedAnswer ? "text-primary" : "text-gray-900")}>
                             {post.user?.name}
                           </span>
                           <span className="text-xs text-gray-400">•</span>
@@ -284,7 +284,7 @@ export default function AdminForumTopicPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-6 px-2 text-[10px] text-gray-400 hover:text-green-600 hover:bg-green-50"
+                            className="h-6 px-2 text-[10px] text-gray-400 hover:text-primary/80 hover:bg-primary/10"
                             onClick={() => handleToggleBestAnswer(post)}
                             title={isAcceptedAnswer ? "Hapus Jawaban Terbaik" : "Tandai sebagai Jawaban Terbaik"}
                           >
@@ -324,7 +324,7 @@ export default function AdminForumTopicPage() {
                         </div>
                       </div>
 
-                      <p className={cn("text-sm whitespace-pre-wrap leading-relaxed mb-3", isAcceptedAnswer ? "text-green-900" : "text-gray-700")}>
+                      <p className={cn("text-sm whitespace-pre-wrap leading-relaxed mb-3", isAcceptedAnswer ? "text-primary" : "text-gray-700")}>
                         {post.content}
                       </p>
 

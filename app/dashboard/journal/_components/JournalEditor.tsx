@@ -29,12 +29,12 @@ import { Label } from "@/components/ui/label";
 import { JournalToolbar } from "./JournalToolbar";
 
 const MOOD_OPTIONS = [
-    { id: 1, emoji: "😊", label: "Bahagia", color: "bg-green-100 text-green-700" },
+    { id: 1, emoji: "😊", label: "Bahagia", color: "bg-primary/10 text-primary" },
     { id: 2, emoji: "😐", label: "Netral", color: "bg-gray-100 text-gray-700" },
-    { id: 3, emoji: "😔", label: "Sedih", color: "bg-blue-100 text-blue-700" },
+    { id: 3, emoji: "😔", label: "Sedih", color: "bg-primary/10 text-primary" },
     { id: 4, emoji: "😠", label: "Marah", color: "bg-red-100 text-red-700" },
-    { id: 5, emoji: "😫", label: "Kecewa", color: "bg-orange-100 text-orange-700" },
-    { id: 6, emoji: "😭", label: "Menangis", color: "bg-purple-100 text-purple-700" },
+    { id: 5, emoji: "😫", label: "Kecewa", color: "bg-primary/10 text-primary" },
+    { id: 6, emoji: "😭", label: "Menangis", color: "bg-primary/10 text-primary" },
 ];
 
 interface JournalEditorProps {
@@ -244,7 +244,7 @@ export function JournalEditor({
                                             type="button"
                                             onClick={() => insertGuidedStep(step.id)}
                                             className={`w-full rounded-lg border px-3 py-2.5 text-left transition ${isDone
-                                                ? "border-emerald-200 bg-emerald-50"
+                                                ? "border-primary/20 bg-primary/10"
                                                 : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                                                 }`}
                                         >
@@ -254,7 +254,7 @@ export function JournalEditor({
                                                     <p className="text-xs text-gray-600 mt-0.5">{step.helper}</p>
                                                     <p className="text-xs text-gray-500 mt-1 italic">&quot;{step.prompt}&quot;</p>
                                                 </div>
-                                                {isDone && <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />}
+                                                {isDone && <CheckCircle2 className="w-4 h-4 text-primary/80 mt-0.5 shrink-0" />}
                                             </div>
                                         </button>
                                     );
@@ -296,7 +296,7 @@ export function JournalEditor({
                                 <div className="space-y-0.5">
                                     <Label className="flex items-center gap-2">
                                         {shareWithAI ? (
-                                            <Eye className="w-4 h-4 text-purple-500" />
+                                            <Eye className="w-4 h-4 text-primary/80" />
                                         ) : (
                                             <EyeOff className="w-4 h-4" />
                                         )}
@@ -344,24 +344,24 @@ export function JournalEditor({
                     </div>
 
                     {writingPrompt && (
-                        <div className="bg-purple-50 p-4 rounded-lg border border-purple-100">
-                            <h4 className="font-medium text-purple-900 mb-2 text-sm flex items-center gap-2">
+                        <div className="bg-primary/10 p-4 rounded-lg border border-primary/20">
+                            <h4 className="font-medium text-primary mb-2 text-sm flex items-center gap-2">
                                 <span className="text-lg">💡</span>
                                 Ide Menulis
                             </h4>
-                            <p className="text-sm text-purple-800 italic">
+                            <p className="text-sm text-primary italic">
                                 &quot;{writingPrompt}&quot;
                             </p>
                         </div>
                     )}
 
                     {!writingPrompt && activeMode?.prompt && (
-                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
-                            <h4 className="font-medium text-blue-900 mb-2 text-sm flex items-center gap-2">
+                        <div className="bg-primary/10 p-4 rounded-lg border border-primary/20">
+                            <h4 className="font-medium text-primary mb-2 text-sm flex items-center gap-2">
                                 <span className="text-lg">🧭</span>
                                 Prompt Mode: {activeMode.label}
                             </h4>
-                            <p className="text-sm text-blue-800 italic">
+                            <p className="text-sm text-primary italic">
                                 &quot;{activeMode.prompt}&quot;
                             </p>
                         </div>
@@ -414,7 +414,7 @@ export function JournalEditor({
                             </p>
                             <div className="p-3 bg-gray-100 rounded-lg text-sm font-medium">
                                 <p>Layanan Konseling Darurat:</p>
-                                <p className="text-lg font-bold text-blue-600 mt-1">119 (LISA)</p>
+                                <p className="text-lg font-bold text-primary/80 mt-1">119 (LISA)</p>
                             </div>
                         </DialogDescription>
                     </DialogHeader>

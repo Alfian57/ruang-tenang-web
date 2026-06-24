@@ -30,7 +30,6 @@ interface MusicPlayerState {
   
   // Player visibility
   isPlayerVisible: boolean;
-  isMinimized: boolean;
   
   // Actions
   setCurrentSong: (song: Song | null) => void;
@@ -61,7 +60,6 @@ interface MusicPlayerState {
   // Player visibility
   showPlayer: () => void;
   hidePlayer: () => void;
-  toggleMinimize: () => void;
   
   // Reset
   resetPlayer: () => void;
@@ -86,7 +84,6 @@ export const useMusicPlayerStore = create<MusicPlayerState>()(
       repeatMode: "off" as RepeatMode,
       
       isPlayerVisible: false,
-      isMinimized: false,
       
       // State setters
       setCurrentSong: (song) => set({ currentSong: song, isPlayerVisible: song !== null }),
@@ -278,7 +275,6 @@ export const useMusicPlayerStore = create<MusicPlayerState>()(
       // Player visibility
       showPlayer: () => set({ isPlayerVisible: true }),
       hidePlayer: () => set({ isPlayerVisible: false, isPlaying: false }),
-      toggleMinimize: () => set((state) => ({ isMinimized: !state.isMinimized })),
       
       // Reset
       resetPlayer: () => set({
@@ -290,7 +286,6 @@ export const useMusicPlayerStore = create<MusicPlayerState>()(
         queueIndex: 0,
         playbackSource: null,
         isPlayerVisible: false,
-        isMinimized: false,
       }),
     }),
     {

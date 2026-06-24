@@ -41,8 +41,8 @@ export function MapProgressWidget() {
         return (
             <Card className="border border-gray-100 shadow-sm overflow-hidden">
                 <CardContent className="p-4 text-center space-y-2">
-                    <div className="p-2.5 bg-emerald-50 rounded-xl inline-flex">
-                        <Map className="w-5 h-5 text-emerald-600" />
+                    <div className="p-2.5 bg-primary/10 rounded-xl inline-flex">
+                        <Map className="w-5 h-5 text-primary/80" />
                     </div>
                     <h4 className="font-semibold text-sm text-gray-800">Peta Perjalanan</h4>
                     <p className="text-xs text-gray-500">Mulai petualangan dan buka area baru!</p>
@@ -59,14 +59,14 @@ export function MapProgressWidget() {
     const progress = Math.round(summary.overall_progress);
 
     return (
-        <Card className="border border-emerald-100/50 shadow-sm bg-linear-to-br from-emerald-50/40 to-sky-50/30 overflow-hidden">
+        <Card className="border border-theme-story-border shadow-sm bg-linear-to-br from-theme-story-from to-white overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between px-4 pt-4 pb-1">
-                <CardTitle className="text-base font-bold flex items-center gap-2 text-gray-800">
-                    <Map className="w-4 h-4 text-emerald-600" />
+                <CardTitle className="text-base font-bold flex items-center gap-2 text-theme-story-heading">
+                    <Map className="w-4 h-4 text-theme-story-icon" />
                     Peta Perjalanan
                 </CardTitle>
                 <Link href={ROUTES.PROGRESS_MAP}>
-                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-emerald-600 h-7 px-2">
+                    <Button variant="ghost" size="sm" className="text-xs text-theme-story-link hover:text-theme-story-heading h-7 px-2">
                         Buka <ArrowRight className="w-3 h-3 ml-1" />
                     </Button>
                 </Link>
@@ -76,11 +76,11 @@ export function MapProgressWidget() {
                 <div>
                     <div className="flex items-center justify-between mb-1.5">
                         <span className="text-xs text-gray-500">Progres Keseluruhan</span>
-                        <span className="text-xs font-bold text-emerald-600">{progress}%</span>
+                        <span className="text-xs font-bold text-primary/80">{progress}%</span>
                     </div>
                     <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
                         <motion.div
-                            className="h-full rounded-full bg-linear-to-r from-emerald-400 via-sky-400 to-violet-500"
+                            className="h-full rounded-full bg-linear-to-r from-primary/40 via-primary/40 to-primary"
                             initial={{ width: 0 }}
                             animate={{ width: `${progress}%` }}
                             transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
@@ -90,16 +90,16 @@ export function MapProgressWidget() {
 
                 {/* Mini stats */}
                 <div className="grid grid-cols-1 gap-2 xs:grid-cols-2">
-                    <div className="bg-white/70 border border-emerald-100/60 rounded-lg px-2.5 py-2 text-center">
+                    <div className="bg-white/70 border border-theme-story-border rounded-lg px-2.5 py-2 text-center">
                         <div className="flex items-center justify-center mb-0.5">
-                            <Compass className="h-3.5 w-3.5 text-emerald-500" />
+                            <Compass className="h-3.5 w-3.5 text-theme-story-icon" />
                         </div>
                         <p className="text-sm font-bold text-gray-900">{summary.unlocked_regions}/{summary.total_regions}</p>
                         <p className="text-[10px] text-gray-500">Area</p>
                     </div>
-                    <div className="bg-white/70 border border-sky-100/60 rounded-lg px-2.5 py-2 text-center">
+                    <div className="bg-white/70 border border-theme-story-border rounded-lg px-2.5 py-2 text-center">
                         <div className="flex items-center justify-center mb-0.5">
-                            <Flag className="h-3.5 w-3.5 text-sky-500" />
+                            <Flag className="h-3.5 w-3.5 text-theme-story-icon" />
                         </div>
                         <p className="text-sm font-bold text-gray-900">{summary.unlocked_landmarks}/{summary.total_landmarks}</p>
                         <p className="text-[10px] text-gray-500">Landmark</p>
@@ -108,8 +108,8 @@ export function MapProgressWidget() {
 
                 {/* Latest unlock */}
                 {summary.latest_unlock && (
-                    <div className="flex items-center gap-2 bg-white/70 border border-amber-100/60 rounded-lg px-3 py-2">
-                        <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                    <div className="flex items-center gap-2 bg-white/70 border border-theme-story-border rounded-lg px-3 py-2">
+                        <Sparkles className="w-3.5 h-3.5 text-theme-story-icon shrink-0" />
                         <div className="min-w-0">
                             <p className="text-[10px] text-gray-400">Terakhir Dibuka</p>
                             <p className="text-xs font-medium text-gray-700 truncate">{summary.latest_unlock}</p>

@@ -141,7 +141,7 @@ export default function GuildDetailPage({
             {/* Daily Tasks */}
             <div className="space-y-3">
                 <h3 className="font-semibold text-gray-700 flex items-center gap-2 text-sm">
-                    <CalendarDays className="w-4 h-4 text-blue-500" />
+                    <CalendarDays className="w-4 h-4 text-primary/80" />
                     Tugas Harian
                 </h3>
                 {dailyTasks.length > 0 ? (
@@ -156,8 +156,8 @@ export default function GuildDetailPage({
                         ))}
                     </div>
                 ) : showEmpty ? (
-                    <div className="text-center py-6 bg-blue-50/30 rounded-xl border border-dashed border-blue-200">
-                        <CalendarDays className="w-8 h-8 text-blue-300 mx-auto mb-2" />
+                    <div className="text-center py-6 bg-primary/10 rounded-xl border border-dashed border-primary/20">
+                        <CalendarDays className="w-8 h-8 text-primary/60 mx-auto mb-2" />
                         <p className="text-sm text-gray-400">Belum ada tugas harian</p>
                         <p className="text-xs text-gray-400 mt-0.5">Tugas harian baru akan diberikan oleh sistem setiap hari</p>
                     </div>
@@ -167,7 +167,7 @@ export default function GuildDetailPage({
             {/* Weekly Tasks */}
             <div className="space-y-3">
                 <h3 className="font-semibold text-gray-700 flex items-center gap-2 text-sm">
-                    <CalendarClock className="w-4 h-4 text-purple-500" />
+                    <CalendarClock className="w-4 h-4 text-primary/80" />
                     Tugas Mingguan
                 </h3>
                 {weeklyTasks.length > 0 ? (
@@ -182,8 +182,8 @@ export default function GuildDetailPage({
                         ))}
                     </div>
                 ) : showEmpty ? (
-                    <div className="text-center py-6 bg-purple-50/30 rounded-xl border border-dashed border-purple-200">
-                        <CalendarClock className="w-8 h-8 text-purple-300 mx-auto mb-2" />
+                    <div className="text-center py-6 bg-primary/10 rounded-xl border border-dashed border-primary/20">
+                        <CalendarClock className="w-8 h-8 text-primary/60 mx-auto mb-2" />
                         <p className="text-sm text-gray-400">Belum ada tugas mingguan</p>
                         <p className="text-xs text-gray-400 mt-0.5">Tugas mingguan baru akan diberikan oleh sistem setiap minggu</p>
                     </div>
@@ -368,9 +368,9 @@ export default function GuildDetailPage({
                     </div>
 
                     {/* Claim info banner */}
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-xs text-green-700">
+                    <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 text-xs text-primary">
                         <p className="font-medium mb-1">🎁 Cara Claim Tugas Guild:</p>
-                        <ul className="space-y-0.5 list-disc list-inside text-green-600">
+                        <ul className="space-y-0.5 list-disc list-inside text-primary/80">
                             <li>Tugas dapat dikerjakan bersama oleh semua anggota guild</li>
                             <li>Jika ada anggota yang sudah menyelesaikan tugas, semua anggota bisa melakukan claim</li>
                             <li>Claim hadiah memberikan <strong>XP Guild</strong>, <strong>XP Pengguna</strong>, dan <strong>Koin Emas</strong></li>

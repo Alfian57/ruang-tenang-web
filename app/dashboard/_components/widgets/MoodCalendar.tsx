@@ -18,12 +18,12 @@ import {
 import { Button } from "@/components/ui/button";
 
 const moodColors: Record<MoodType, { bg: string; ring: string }> = {
-  happy: { bg: "bg-emerald-50", ring: "ring-emerald-200" },
-  neutral: { bg: "bg-amber-50", ring: "ring-amber-200" },
+  happy: { bg: "bg-theme-accent/10", ring: "ring-theme-accent/50" },
+  neutral: { bg: "bg-theme-accent-soft", ring: "ring-theme-accent/30" },
   angry: { bg: "bg-red-50", ring: "ring-red-200" },
-  disappointed: { bg: "bg-orange-50", ring: "ring-orange-200" },
-  sad: { bg: "bg-sky-50", ring: "ring-sky-200" },
-  crying: { bg: "bg-violet-50", ring: "ring-violet-200" },
+  disappointed: { bg: "bg-theme-accent/10", ring: "ring-theme-accent/50" },
+  sad: { bg: "bg-theme-accent/10", ring: "ring-theme-accent/50" },
+  crying: { bg: "bg-theme-accent/10", ring: "ring-theme-accent/50" },
 };
 
 interface MoodCalendarProps {
@@ -163,10 +163,10 @@ export function MoodCalendar({ moods }: MoodCalendarProps) {
                     : "bg-gray-50/40 border-gray-100 text-gray-400",
                 isToday &&
                 !mood &&
-                "bg-primary/5 text-primary font-bold ring-1 ring-primary/30 border-primary/30",
+                "bg-theme-accent-soft text-theme-accent-text font-bold ring-1 ring-theme-accent/30 border-theme-accent/30",
                 isToday &&
                 mood &&
-                "ring-2 ring-primary/50 shadow-sm"
+                "ring-2 ring-theme-accent/50 shadow-sm"
               )}
             >
               {mood ? (
@@ -188,7 +188,7 @@ export function MoodCalendar({ moods }: MoodCalendarProps) {
                 <span
                   className={cn(
                     "text-xs sm:text-sm",
-                    isToday && "text-primary font-bold"
+                    isToday && "text-theme-accent-text font-bold"
                   )}
                 >
                   {day}

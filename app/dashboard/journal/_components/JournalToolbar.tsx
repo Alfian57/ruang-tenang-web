@@ -136,7 +136,7 @@ export function JournalToolbar({ editor, onGeneratePrompt }: JournalToolbarProps
                             variant="ghost"
                             size="sm"
                             onClick={onGeneratePrompt}
-                            className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 h-8 px-2"
+                            className="text-primary/80 hover:text-primary hover:bg-primary/10 h-8 px-2"
                             title="Generate Prompt"
                         >
                             <Sparkles className="h-4 w-4" />

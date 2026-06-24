@@ -4,7 +4,6 @@ import { useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMusicPlayerStore } from "@/store/musicPlayerStore";
 import { cn } from "@/utils";
-import { MinimizedPlayer } from "./player/MinimizedPlayer";
 import { ExpandedPlayer } from "./player/ExpandedPlayer";
 import { getUploadUrl } from "@/services/http/upload-url";
 
@@ -28,7 +27,6 @@ export function GlobalMusicPlayer({ sidebarCollapsed = false }: GlobalMusicPlaye
         shuffle,
         repeatMode,
         isPlayerVisible,
-        isMinimized,
         setIsPlaying,
         setCurrentTime,
         setDuration,
@@ -38,7 +36,6 @@ export function GlobalMusicPlayer({ sidebarCollapsed = false }: GlobalMusicPlaye
         playPrevious,
         toggleShuffle,
         toggleRepeat,
-        toggleMinimize,
         hidePlayer,
     } = useMusicPlayerStore();
 
@@ -187,43 +184,28 @@ export function GlobalMusicPlayer({ sidebarCollapsed = false }: GlobalMusicPlaye
                             sidebarCollapsed ? "lg:left-20" : "lg:left-60"
                         )}
                     >
-                        {/* Minimized Player */}
-                        {isMinimized ? (
-                            <MinimizedPlayer
-                                currentSong={currentSong}
-                                playbackSourceName={playbackSource?.name}
-                                isPlaying={isPlaying}
-                                onPlayPrevious={playPrevious}
-                                onTogglePlay={togglePlay}
-                                onPlayNext={playNext}
-                                onToggleMinimize={toggleMinimize}
-                            />
-                        ) : (
-                            /* Full Player */
-                            <ExpandedPlayer
-                                currentSong={currentSong}
-                                playbackSourceName={playbackSource?.name}
-                                isPlaying={isPlaying}
-                                currentTime={currentTime}
-                                duration={duration}
-                                volume={volume}
-                                isMuted={isMuted}
-                                queueLength={queue.length}
-                                queueIndex={queueIndex}
-                                shuffle={shuffle}
-                                repeatMode={repeatMode}
-                                onSeek={handleSeek}
-                                onTogglePlay={togglePlay}
-                                onPlayPrevious={playPrevious}
-                                onPlayNext={playNext}
-                                onToggleShuffle={toggleShuffle}
-                                onToggleRepeat={toggleRepeat}
-                                onToggleMute={toggleMute}
-                                onVolumeChange={setVolume}
-                                onToggleMinimize={toggleMinimize}
-                                onHidePlayer={hidePlayer}
-                            />
-                        )}
+                        <ExpandedPlayer
+                            currentSong={currentSong}
+                            playbackSourceName={playbackSource?.name}
+                            isPlaying={isPlaying}
+                            currentTime={currentTime}
+                            duration={duration}
+                            volume={volume}
+                            isMuted={isMuted}
+                            queueLength={queue.length}
+                            queueIndex={queueIndex}
+                            shuffle={shuffle}
+                            repeatMode={repeatMode}
+                            onSeek={handleSeek}
+                            onTogglePlay={togglePlay}
+                            onPlayPrevious={playPrevious}
+                            onPlayNext={playNext}
+                            onToggleShuffle={toggleShuffle}
+                            onToggleRepeat={toggleRepeat}
+                            onToggleMute={toggleMute}
+                            onVolumeChange={setVolume}
+                            onHidePlayer={hidePlayer}
+                        />
                     </motion.div>
                 )}
             </AnimatePresence>

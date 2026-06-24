@@ -34,7 +34,7 @@ export function ModerationStatsGrid({ stats }: ModerationStatsGridProps) {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Laporan Pending</CardTitle>
-                    <Flag className="h-4 w-4 text-orange-500" />
+                    <Flag className="h-4 w-4 text-primary/80" />
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{stats?.pending_reports ?? "-"}</div>
@@ -45,7 +45,7 @@ export function ModerationStatsGrid({ stats }: ModerationStatsGridProps) {
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Diselesaikan Hari Ini</CardTitle>
-                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    <CheckCircle2 className="h-4 w-4 text-primary/80" />
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">

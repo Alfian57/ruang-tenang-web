@@ -344,12 +344,12 @@ export function TierJourneySection() {
                     <div className="sticky top-2 z-10">
                         <div className="rounded-2xl border border-white/70 bg-white/85 backdrop-blur-md shadow-xs px-3 py-2.5 md:px-4">
                             <div className="flex flex-wrap items-center gap-2 md:gap-3 text-[11px] font-semibold">
-                                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 px-2 py-1">
-                                    <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary px-2 py-1">
+                                    <span className="h-2 w-2 rounded-full bg-primary" />
                                     Selesai
                                 </span>
-                                <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 border border-sky-100 text-sky-700 px-2 py-1">
-                                    <span className="h-2 w-2 rounded-full bg-sky-500" />
+                                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary px-2 py-1">
+                                    <span className="h-2 w-2 rounded-full bg-primary" />
                                     Aktif
                                 </span>
                                 <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-50 border border-gray-200 text-gray-600 px-2 py-1">
@@ -396,9 +396,9 @@ export function TierJourneySection() {
                                     ? "Tier aktif"
                                     : `Terkunci (butuh Level ${tier.minLevel})`;
                             const statusClass = isCompletedTier
-                                ? "bg-emerald-100 text-emerald-700"
+                                ? "bg-primary/10 text-primary"
                                 : isCurrentTier
-                                    ? "bg-sky-100 text-sky-700"
+                                    ? "bg-primary/10 text-primary"
                                     : "bg-gray-100 text-gray-600";
 
                             return (

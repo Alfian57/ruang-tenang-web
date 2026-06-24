@@ -17,13 +17,13 @@ const TUTORIAL_STEPS = [
         tips: ["Pilih teknik yang sesuai dengan kebutuhanmu", "Mulai dari durasi pendek (2-5 menit)", "Latihan rutin lebih efektif dari sesi panjang jarang"],
     },
     {
-        icon: <Play className="w-12 h-12 text-green-500" />,
+        icon: <Play className="w-12 h-12 text-primary/80" />,
         title: "Memulai Sesi",
         description: "Pilih teknik, atur durasi, lalu ikuti petunjuk visual dan suara.",
         tips: ["Duduk dengan nyaman dan tutup mata jika memungkinkan", "Ikuti lingkaran animasi - tarik napas saat membesar, hembuskan saat mengecil", "Gunakan mood selector untuk melacak perasaanmu sebelum dan sesudah"],
     },
     {
-        icon: <BarChart3 className="w-12 h-12 text-purple-500" />,
+        icon: <BarChart3 className="w-12 h-12 text-primary/80" />,
         title: "Lacak Progresmu",
         description: "Lihat statistik, kalender heatmap, dan raih streak harian.",
         tips: ["Klik ikon statistik di header untuk melihat progres", "Pertahankan streak harian untuk bonus XP", "7 hari berturut-turut = 50 XP bonus!"],

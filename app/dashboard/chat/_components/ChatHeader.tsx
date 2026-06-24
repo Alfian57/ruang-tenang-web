@@ -8,6 +8,7 @@ import {
     ChevronDown,
     ChevronUp,
     Pin,
+    Crown,
 } from "lucide-react";
 import {
     DropdownMenu,
@@ -24,6 +25,7 @@ interface ChatHeaderProps {
     onToggleSummary: () => void;
     onExport?: (format: "pdf" | "txt") => void;
     onOpenMobileSidebar?: () => void;
+    isPremium?: boolean;
 }
 
 export function ChatHeader({
@@ -34,10 +36,16 @@ export function ChatHeader({
     onToggleSummary,
     onExport,
     onOpenMobileSidebar,
+    isPremium,
 }: ChatHeaderProps) {
     return (
-        <div className="flex min-w-0 items-center justify-between gap-2 p-3 border-b bg-white shrink-0 sm:p-4">
-            <h3 className="min-w-0 flex-1 line-clamp-1 font-semibold text-gray-800">{activeSession.title}</h3>
+        <div className="flex min-w-0 items-center justify-between gap-2 px-3 py-2 border-b bg-white shrink-0 sm:px-4 sm:py-2.5">
+            <div className="min-w-0 flex-1 flex items-center gap-2">
+                <h3 className="line-clamp-1 font-semibold text-gray-800 text-sm sm:text-base">{activeSession.title}</h3>
+                {isPremium && (
+                    <Crown className="w-4 h-4 text-primary shrink-0" title="Premium aktif: chat tanpa batas" />
+                )}
+            </div>
 
             <div className="flex shrink-0 items-center gap-1 sm:gap-2">
                 {/* Summary Button */}

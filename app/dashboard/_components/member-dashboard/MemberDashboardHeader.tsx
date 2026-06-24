@@ -27,7 +27,7 @@ export function MemberDashboardHeader({ viewModel }: MemberDashboardHeaderProps)
           </Button>
         </Link>
         <Link data-user-tour="user-chat-ai" href={viewModel.header.isChatLimitExhausted ? ROUTES.BILLING : ROUTES.CHAT}>
-          <Button className={`rounded-full shadow-lg hover:shadow-xl transition-all gap-2 border-0 ${viewModel.header.isChatLimitExhausted ? "bg-amber-600 hover:bg-amber-700" : "bg-linear-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-700"}`}>
+          <Button className={`rounded-full shadow-lg hover:shadow-xl transition-all gap-2 border-0 ${viewModel.header.isChatLimitExhausted ? "bg-amber-600 hover:bg-amber-700" : "bg-linear-to-r from-primary to-primary hover:from-primary/90 hover:to-primary"}`}>
             {viewModel.header.isChatLimitExhausted ? <Lock className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
             {viewModel.header.isChatLimitExhausted ? "Limit Chat Habis" : "Teman Cerita AI"}
           </Button>

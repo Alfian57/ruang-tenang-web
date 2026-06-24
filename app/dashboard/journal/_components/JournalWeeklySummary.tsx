@@ -43,7 +43,7 @@ export function JournalWeeklySummary({
     if (!summary) {
         return (
             <Card>
-                <CardContent className="py-8 text-center">
+                <CardContent className="p-8 pt-8 sm:p-8 sm:pt-8 text-center">
                     <Brain className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                     <p className="text-gray-500">Tulis beberapa jurnal minggu ini untuk mendapatkan ringkasan mingguan!</p>
                 </CardContent>
@@ -52,11 +52,11 @@ export function JournalWeeklySummary({
     }
 
     return (
-        <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-white">
+        <Card className="border-primary/20 bg-gradient-to-br from-primary/10 to-white">
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-lg flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-purple-600" />
+                        <Sparkles className="w-5 h-5 text-primary/80" />
                         Ringkasan Mingguanmu
                     </CardTitle>
                     <span className="text-sm text-gray-500">
@@ -98,7 +98,7 @@ export function JournalWeeklySummary({
                             {summary.key_themes.map((theme, i) => (
                                 <span
                                     key={i}
-                                    className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-sm"
+                                    className="px-2 py-1 bg-primary/10 text-primary rounded-full text-sm"
                                 >
                                     {theme}
                                 </span>
@@ -114,7 +114,7 @@ export function JournalWeeklySummary({
                         <ul className="space-y-1">
                             {summary.recommendations.map((rec, i) => (
                                 <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
-                                    <span className="text-purple-600">•</span>
+                                    <span className="text-primary/80">•</span>
                                     {rec}
                                 </li>
                             ))}

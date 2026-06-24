@@ -46,7 +46,7 @@ export function ForumHeader({
                 <div className="min-w-0">
                     <div className="flex items-center gap-2 min-w-0 flex-wrap">
                         {forum.category && (
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 uppercase tracking-wide max-w-full truncate">
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary/80 uppercase tracking-wide max-w-full truncate">
                                 {forum.category.name}
                             </span>
                         )}

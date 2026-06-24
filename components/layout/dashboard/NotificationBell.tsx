@@ -23,9 +23,9 @@ function getNotificationIcon(type: string) {
     case "story_rejected":
       return <Star className="w-4 h-4 text-gray-400" />;
     case "badge_earned":
-      return <Award className="w-4 h-4 text-purple-500" />;
+      return <Award className="w-4 h-4 text-primary/80" />;
     case "level_up":
-      return <TrendingUp className="w-4 h-4 text-green-500" />;
+      return <TrendingUp className="w-4 h-4 text-primary/80" />;
     default:
       return <Bell className="w-4 h-4 text-gray-500" />;
   }
@@ -116,7 +116,7 @@ export function NotificationBell() {
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <button
-          className="relative p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-300"
+          className="relative p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50"
           aria-label="Notifikasi"
         >
           <Bell className="w-5 h-5 text-gray-600" />
@@ -129,12 +129,12 @@ export function NotificationBell() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-hidden p-0">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b bg-linear-to-r from-purple-50 to-indigo-50">
+        <div className="flex items-center justify-between px-4 py-3 border-b bg-linear-to-r from-primary/10 to-primary/10">
           <h3 className="font-semibold text-sm text-gray-800">Notifikasi</h3>
           {unreadCount > 0 && (
             <button
               onClick={handleMarkAllAsRead}
-              className="flex items-center gap-1 text-xs text-purple-600 hover:text-purple-800 transition-colors"
+              className="flex items-center gap-1 text-xs text-primary/80 hover:text-primary transition-colors"
             >
               <CheckCheck className="w-3.5 h-3.5" />
               Tandai Semua
@@ -153,7 +153,7 @@ export function NotificationBell() {
             notifications.map((notif) => (
               <div
                 key={notif.id}
-                className={`flex items-start gap-3 px-4 py-3 border-b last:border-b-0 transition-colors hover:bg-gray-50 ${!notif.is_read ? "bg-purple-50/50" : ""
+                className={`flex items-start gap-3 px-4 py-3 border-b last:border-b-0 transition-colors hover:bg-gray-50 ${!notif.is_read ? "bg-primary/10" : ""
                   }`}
               >
                 <div className="mt-0.5 shrink-0">
@@ -172,10 +172,10 @@ export function NotificationBell() {
                       e.stopPropagation();
                       handleMarkAsRead(notif.id);
                     }}
-                    className="mt-1 shrink-0 p-1 rounded-full hover:bg-purple-100 transition-colors"
+                    className="mt-1 shrink-0 p-1 rounded-full hover:bg-primary/10 transition-colors"
                     title="Tandai sudah dibaca"
                   >
-                    <Check className="w-3.5 h-3.5 text-purple-500" />
+                    <Check className="w-3.5 h-3.5 text-primary/80" />
                   </button>
                 )}
               </div>

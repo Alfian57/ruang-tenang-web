@@ -36,9 +36,9 @@ export function CalendarHeatmap({ days, month, year }: CalendarHeatmapProps) {
 
     const getIntensityColor = (intensity: number) => {
         switch (intensity) {
-            case 3: return "bg-green-500";
-            case 2: return "bg-green-400";
-            case 1: return "bg-green-300";
+            case 3: return "bg-primary";
+            case 2: return "bg-primary";
+            case 1: return "bg-primary/20";
             default: return "bg-muted";
         }
     };
@@ -89,9 +89,9 @@ export function CalendarHeatmap({ days, month, year }: CalendarHeatmapProps) {
                 <span>Kurang</span>
                 <div className="flex gap-1">
                     <div className="w-3 h-3 rounded bg-muted" />
-                    <div className="w-3 h-3 rounded bg-green-300" />
-                    <div className="w-3 h-3 rounded bg-green-400" />
-                    <div className="w-3 h-3 rounded bg-green-500" />
+                    <div className="w-3 h-3 rounded bg-primary/20" />
+                    <div className="w-3 h-3 rounded bg-primary" />
+                    <div className="w-3 h-3 rounded bg-primary" />
                 </div>
                 <span>Banyak</span>
             </div>

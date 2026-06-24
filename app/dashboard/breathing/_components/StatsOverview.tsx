@@ -23,12 +23,12 @@ export function StatsOverview({ stats }: StatsOverviewProps) {
             </div>
 
             {/* Today's Sessions */}
-            <div className="p-4 rounded-xl bg-linear-to-br from-blue-500/10 to-cyan-500/10 border border-blue-200/50">
+            <div className="p-4 rounded-xl bg-linear-to-br from-primary/10 to-primary/10 border border-primary/20">
                 <div className="flex items-center gap-2 mb-2">
-                    <Target className="w-5 h-5 text-blue-500" />
-                    <span className="text-sm font-medium text-blue-700">Hari Ini</span>
+                    <Target className="w-5 h-5 text-primary/80" />
+                    <span className="text-sm font-medium text-primary">Hari Ini</span>
                 </div>
-                <div className="text-3xl font-bold text-blue-600">
+                <div className="text-3xl font-bold text-primary/80">
                     {stats.today.sessions_count}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -37,12 +37,12 @@ export function StatsOverview({ stats }: StatsOverviewProps) {
             </div>
 
             {/* Total Sessions */}
-            <div className="p-4 rounded-xl bg-linear-to-br from-purple-500/10 to-pink-500/10 border border-purple-200/50">
+            <div className="p-4 rounded-xl bg-linear-to-br from-primary/10 to-primary/10 border border-primary/20">
                 <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="w-5 h-5 text-purple-500" />
-                    <span className="text-sm font-medium text-purple-700">Total Sesi</span>
+                    <TrendingUp className="w-5 h-5 text-primary/80" />
+                    <span className="text-sm font-medium text-primary">Total Sesi</span>
                 </div>
-                <div className="text-3xl font-bold text-purple-600">
+                <div className="text-3xl font-bold text-primary/80">
                     {stats.overall.total_sessions}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
@@ -51,12 +51,12 @@ export function StatsOverview({ stats }: StatsOverviewProps) {
             </div>
 
             {/* Completion Rate */}
-            <div className="p-4 rounded-xl bg-linear-to-br from-green-500/10 to-emerald-500/10 border border-green-200/50">
+            <div className="p-4 rounded-xl bg-linear-to-br from-primary/10 to-primary/10 border border-primary/20">
                 <div className="flex items-center gap-2 mb-2">
-                    <Award className="w-5 h-5 text-green-500" />
-                    <span className="text-sm font-medium text-green-700">Penyelesaian</span>
+                    <Award className="w-5 h-5 text-primary/80" />
+                    <span className="text-sm font-medium text-primary">Penyelesaian</span>
                 </div>
-                <div className="text-3xl font-bold text-green-600">
+                <div className="text-3xl font-bold text-primary/80">
                     {Math.round(stats.overall.completion_rate)}%
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">

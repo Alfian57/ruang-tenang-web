@@ -125,7 +125,7 @@ export function TechniquesView({
 
             {/* Recommendations */}
             {recommendations?.default_pick && (
-                <div className="p-4 rounded-xl bg-linear-to-r from-primary/10 to-purple-500/10 border border-primary/20">
+                <div className="p-4 rounded-xl bg-linear-to-r from-primary/10 to-primary/10 border border-primary/20">
                     <div className="flex items-center gap-2 mb-3">
                         <Sparkles className="w-5 h-5 text-primary" />
                         <h2 className="font-semibold">Rekomendasi untuk Kamu</h2>

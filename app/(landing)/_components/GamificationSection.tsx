@@ -55,9 +55,9 @@ const GAMIFICATION_FEATURES = [
   },
   {
     icon: Award,
-    title: "Koleksi Badge",
+    title: "Koleksi Lencana",
     description:
-      "Raih badge spesial untuk pencapaian unikmu, dari pengguna baru hingga Hall of Fame.",
+      "Selesaikan misi tersembunyi untuk mengumpulkan lencana pencapaian eksklusif.",
     color: "text-rose-600",
     bgColor: "bg-rose-50",
     borderColor: "border-rose-200",

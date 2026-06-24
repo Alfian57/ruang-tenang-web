@@ -57,7 +57,7 @@ export function PlaylistCard({
         >
             <div className="flex w-full items-start gap-3 sm:items-center sm:gap-4 min-w-0">
                 {/* Thumbnail */}
-                <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-linear-to-br from-purple-100 to-purple-200 shrink-0">
+                <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-linear-to-br from-primary/10 to-primary/10 shrink-0">
                     {playlist.thumbnail && !imgError ? (
                         <Image
                             src={playlist.thumbnail}
@@ -68,8 +68,8 @@ export function PlaylistCard({
                             onError={() => setImgError(true)}
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-purple-50">
-                            <ListMusic className="w-8 h-8 text-purple-300" />
+                        <div className="w-full h-full flex items-center justify-center bg-primary/10">
+                            <ListMusic className="w-8 h-8 text-primary/60" />
                         </div>
                     )}
 
@@ -168,7 +168,7 @@ export function PlaylistCardCompact({
             )}
             onClick={onClick}
         >
-            <div className="w-10 h-10 rounded-lg overflow-hidden bg-linear-to-br from-purple-100 to-purple-200 shrink-0">
+            <div className="w-10 h-10 rounded-lg overflow-hidden bg-linear-to-br from-primary/10 to-primary/10 shrink-0">
                 {playlist.thumbnail && !imgError ? (
                     <Image
                         src={playlist.thumbnail}
@@ -179,8 +179,8 @@ export function PlaylistCardCompact({
                         onError={() => setImgError(true)}
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-purple-50">
-                        <ListMusic className="w-5 h-5 text-purple-300" />
+                    <div className="w-full h-full flex items-center justify-center bg-primary/10">
+                        <ListMusic className="w-5 h-5 text-primary/60" />
                     </div>
                 )}
             </div>

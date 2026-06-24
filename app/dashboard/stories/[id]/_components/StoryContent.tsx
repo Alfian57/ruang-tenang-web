@@ -116,7 +116,7 @@ export function StoryContent({ story, heartLoading, onToggleHeart }: StoryConten
           disabled={heartLoading}
           className={cn(
             "gap-2",
-            story.has_hearted && "bg-rose-500 hover:bg-rose-600"
+            story.has_hearted && "bg-primary hover:bg-primary"
           )}
         >
           <Heart

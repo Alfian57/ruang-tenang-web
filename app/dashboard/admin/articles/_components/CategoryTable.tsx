@@ -57,7 +57,7 @@ export function CategoryTable({
                                         <span className="text-sm text-gray-600 line-clamp-2">{category.description || "-"}</span>
                                     </td>
                                     <td className="p-4 whitespace-nowrap">
-                                        <span className="inline-flex whitespace-nowrap px-2 py-1 text-sm bg-blue-100 text-blue-700 rounded-full">
+                                        <span className="inline-flex whitespace-nowrap px-2 py-1 text-sm bg-primary/10 text-primary rounded-full">
                                             {category.article_count || 0} artikel
                                         </span>
                                     </td>

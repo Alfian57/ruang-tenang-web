@@ -41,10 +41,10 @@ function formatDateTime(value?: string): string {
 
 function statusClass(status: string): string {
     const normalized = status.toLowerCase();
-    if (normalized === "paid") return "bg-emerald-100 text-emerald-700";
+    if (normalized === "paid") return "bg-primary/10 text-primary";
     if (normalized === "pending") return "bg-amber-100 text-amber-700";
     if (normalized === "expired" || normalized === "failed" || normalized === "canceled") {
-        return "bg-rose-100 text-rose-700";
+        return "bg-primary/10 text-primary";
     }
     return "bg-slate-100 text-slate-700";
 }
@@ -162,15 +162,15 @@ export default function BillingPage() {
 
     return (
         <div className="p-4 lg:p-6 space-y-6">
-            <section className="rounded-3xl border border-violet-100 bg-linear-to-br from-violet-50 via-white to-indigo-50 p-5 lg:p-6">
+            <section className="rounded-3xl border border-theme-story-border bg-linear-to-br from-theme-story-from via-white to-theme-story-to p-5 lg:p-6">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-violet-700">Billing Overview</p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Billing Overview</p>
                         <h1 className="mt-1 text-2xl font-semibold text-slate-900">Status Paket dan Riwayat Pembayaran</h1>
                         <p className="mt-2 text-sm text-slate-600 max-w-2xl">
                             Pantau tier akun, kuota chat AI, dan transaksi langganan/top up dalam satu tempat.
                         </p>
-                        <span className="mt-3 inline-flex rounded-full border border-violet-200 bg-white px-3 py-1 text-xs font-semibold text-violet-700">
+                        <span className="mt-3 inline-flex rounded-full border border-theme-story-border bg-white px-3 py-1 text-xs font-semibold text-theme-story-heading">
                             Paket aktif: {currentTier}
                         </span>
                     </div>
@@ -189,17 +189,17 @@ export default function BillingPage() {
                 </div>
 
                 <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-3">
-                    <div className="rounded-2xl border border-violet-100 bg-white p-4">
+                    <div className="rounded-2xl border border-theme-story-border bg-white p-4">
                         <p className="text-xs uppercase tracking-wide text-slate-500">Tier Aktif</p>
                         <p className="mt-1 text-2xl font-semibold text-slate-900">{currentTier}</p>
                         <p className="mt-1 text-xs text-slate-500">Akses premium: {formatPremiumAccess(status)}</p>
                     </div>
-                    <div className="rounded-2xl border border-emerald-100 bg-white p-4">
+                    <div className="rounded-2xl border border-theme-story-border bg-white p-4">
                         <p className="text-xs uppercase tracking-wide text-slate-500">Saldo Koin</p>
                         <p className="mt-1 text-2xl font-semibold text-slate-900">{(status?.gold_coins ?? 0).toLocaleString("id-ID")}</p>
                         <p className="mt-1 text-xs text-slate-500">Digunakan untuk reward</p>
                     </div>
-                    <div className="rounded-2xl border border-blue-100 bg-white p-4">
+                    <div className="rounded-2xl border border-theme-story-border bg-white p-4">
                         <p className="text-xs uppercase tracking-wide text-slate-500">Kuota Chat AI</p>
                         <p className="mt-1 text-lg font-semibold text-slate-900">
                             {status?.chat_quota.is_unlimited
@@ -214,7 +214,7 @@ export default function BillingPage() {
             <section className="rounded-2xl border border-slate-200 bg-white p-4">
                 <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                     <div>
-                        <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">Gratis, Premium, B2B</p>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-theme-accent-text">Gratis, Premium, B2B</p>
                         <h2 className="mt-1 text-lg font-semibold text-slate-900">Pilih jalur akses yang sesuai</h2>
                     </div>
                     {!status?.is_premium && recommendedPlan && user?.role !== "mitra" && (
@@ -242,56 +242,56 @@ export default function BillingPage() {
                             )}
                         </div>
                         <div className="mt-4 space-y-2 text-sm text-slate-700">
-                            <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-emerald-600" /> Akses fitur inti dashboard.</p>
-                            <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-emerald-600" /> Chat AI sampai kuota periode ini.</p>
+                            <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-primary/80" /> Akses fitur inti dashboard.</p>
+                            <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-primary/80" /> Chat AI sampai kuota periode ini.</p>
                             <p className="flex items-start gap-2"><Lock className="mt-0.5 h-4 w-4 text-amber-600" /> Misi premium dan chat tanpa batas terkunci.</p>
                         </div>
                     </article>
 
-                    <article className={`rounded-2xl border p-4 ${status?.is_premium ? "border-violet-300 bg-violet-50/70" : "border-violet-200 bg-white"}`}>
+                    <article className={`rounded-2xl border p-4 ${status?.is_premium ? "border-theme-accent/40 bg-theme-accent/10" : "border-slate-200 bg-white"}`}>
                         <div className="flex items-center justify-between gap-3">
                             <div>
-                                <p className="text-xs uppercase tracking-wide text-violet-700">Premium</p>
+                                <p className="text-xs uppercase tracking-wide text-theme-accent-text">Premium</p>
                                 <h3 className="mt-1 text-base font-semibold text-slate-900">Akun Premium</h3>
                             </div>
                             {status?.is_premium && (
-                                <span className="rounded-full bg-violet-100 px-2.5 py-1 text-[11px] font-semibold text-violet-700">Aktif</span>
+                                <span className="rounded-full bg-theme-accent/20 px-2.5 py-1 text-[11px] font-semibold text-theme-accent-dark">Aktif</span>
                             )}
                         </div>
                         <div className="mt-4 space-y-2 text-sm text-slate-700">
-                            <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-emerald-600" /> Chat AI tanpa batas selama masa aktif paket.</p>
-                            <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-emerald-600" /> Seat B2B aktif otomatis dihitung sebagai Premium B2B.</p>
-                            <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-emerald-600" /> Misi premium harian dengan XP dan koin ekstra.</p>
+                            <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-theme-accent-text" /> Chat AI tanpa batas selama masa aktif paket.</p>
+                            <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-theme-accent-text" /> Seat B2B aktif otomatis dihitung sebagai Premium B2B.</p>
+                            <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-theme-accent-text" /> Misi premium harian dengan XP dan koin ekstra.</p>
                         </div>
                     </article>
 
-                    <article className={`rounded-2xl border p-4 ${status?.entitlement_source === "b2b" || user?.role === "mitra" ? "border-sky-300 bg-sky-50/80" : "border-sky-200 bg-white"}`}>
+                    <article className={`rounded-2xl border p-4 ${status?.entitlement_source === "b2b" || user?.role === "mitra" ? "border-theme-accent/40 bg-theme-accent/10" : "border-slate-200 bg-white"}`}>
                         <div className="flex items-center justify-between gap-3">
                             <div>
-                                <p className="text-xs uppercase tracking-wide text-sky-700">Premium B2B</p>
+                                <p className="text-xs uppercase tracking-wide text-theme-accent-text">Premium B2B</p>
                                 <h3 className="mt-1 text-base font-semibold text-slate-900">Organisasi Mitra</h3>
                             </div>
                             {status?.entitlement_source === "b2b" || user?.role === "mitra" ? (
-                                <span className="rounded-full bg-sky-100 px-2.5 py-1 text-[11px] font-semibold text-sky-700">Aktif</span>
+                                <span className="rounded-full bg-theme-accent/20 px-2.5 py-1 text-[11px] font-semibold text-theme-accent-dark">Aktif</span>
                             ) : (
-                                <Building2 className="h-5 w-5 text-sky-600" />
+                                <Building2 className="h-5 w-5 text-theme-accent-text" />
                             )}
                         </div>
                         <div className="mt-4 space-y-2 text-sm text-slate-700">
-                            <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-emerald-600" /> Seat premium untuk anggota organisasi.</p>
-                            <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-emerald-600" /> Dashboard mitra, analytics agregat, approval, dan seat management.</p>
-                            <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-emerald-600" /> Cocok untuk kampus, komunitas, atau perusahaan.</p>
+                            <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-theme-accent-text" /> Seat premium untuk anggota organisasi.</p>
+                            <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-theme-accent-text" /> Dashboard mitra, analytics agregat, approval, dan seat management.</p>
+                            <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-theme-accent-text" /> Cocok untuk kampus, komunitas, atau perusahaan.</p>
                         </div>
                         <div className="mt-4">
                             {user?.role === "mitra" ? (
                                 <Link href={ROUTES.MITRA.DASHBOARD}>
-                                    <Button size="sm" variant="outline" className="w-full border-sky-300 text-sky-700 hover:bg-sky-100">
+                                    <Button size="sm" variant="outline" className="w-full border-theme-accent/40 text-theme-accent-dark hover:bg-theme-accent/10">
                                         Kelola Dashboard Mitra
                                     </Button>
                                 </Link>
                             ) : (
                                 <Link href={ROUTES.CONTACT}>
-                                    <Button size="sm" variant="outline" className="w-full border-sky-300 text-sky-700 hover:bg-sky-100">
+                                    <Button size="sm" variant="outline" className="w-full border-theme-accent/40 text-theme-accent-dark hover:bg-theme-accent/10">
                                         Konsultasi B2B
                                     </Button>
                                 </Link>
@@ -302,17 +302,17 @@ export default function BillingPage() {
             </section>
 
             {recommendedBusinessPlan && user?.role !== "mitra" && status?.entitlement_source !== "b2b" && (
-                <section className="rounded-2xl border border-sky-200 bg-sky-50/70 p-4">
+                <section className="rounded-2xl border border-theme-accent-border bg-theme-accent-soft p-4">
                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                         <div>
-                            <p className="text-xs uppercase tracking-wide text-sky-700">Butuh banyak seat?</p>
+                            <p className="text-xs uppercase tracking-wide text-theme-accent-text">Butuh banyak seat?</p>
                             <h2 className="mt-1 text-lg font-semibold text-slate-900">{recommendedBusinessPlan.name}</h2>
                             <p className="mt-1 text-sm text-slate-700">
                                 Mulai dari {formatIDR(Number(recommendedBusinessPlan.base_price_per_seat ?? 0))} / seat untuk akses premium organisasi.
                             </p>
                         </div>
                         <Link href={ROUTES.CONTACT}>
-                            <Button variant="outline" className="gap-2 border-sky-300 bg-white text-sky-700 hover:bg-sky-100">
+                            <Button variant="outline" className="gap-2 border-theme-accent/40 bg-white text-theme-accent-dark hover:bg-theme-accent/10">
                                 <Building2 className="w-4 h-4" />
                                 Hubungi Tim B2B
                             </Button>
@@ -347,15 +347,15 @@ export default function BillingPage() {
             )}
 
             {status?.subscription && (
-                <section className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4">
+                <section className="rounded-2xl border border-theme-story-border bg-theme-story-from p-4">
                     <div className="flex items-start gap-3">
-                        <BadgeCheck className="w-5 h-5 text-emerald-600 mt-0.5" />
+                        <BadgeCheck className="w-5 h-5 text-theme-story-icon mt-0.5" />
                         <div>
-                            <h2 className="text-base font-semibold text-emerald-900">Langganan Aktif: {status.subscription.plan_name}</h2>
-                            <p className="text-sm text-emerald-800 mt-1">
+                            <h2 className="text-base font-semibold text-theme-story-heading">Langganan Aktif: {status.subscription.plan_name}</h2>
+                            <p className="text-sm text-theme-story-heading mt-1">
                                 Aktif {formatDateTime(status.subscription.starts_at)} sampai {formatDateTime(status.subscription.ends_at)}.
                             </p>
-                            <p className="text-xs text-emerald-700 mt-1">Order: {status.subscription.source_order_id}</p>
+                            <p className="text-xs text-theme-story-heading mt-1 opacity-80">Order: {status.subscription.source_order_id}</p>
                         </div>
                     </div>
                 </section>
@@ -432,11 +432,11 @@ export default function BillingPage() {
                 )}
             </section>
 
-            <section className="rounded-2xl border border-blue-100 bg-blue-50/70 p-4 flex items-start gap-3">
-                <CreditCard className="w-5 h-5 text-blue-600 mt-0.5" />
+            <section className="rounded-2xl border border-theme-accent-border bg-theme-accent-soft p-4 flex items-start gap-3">
+                <CreditCard className="w-5 h-5 text-theme-accent-text mt-0.5" />
                 <div>
-                    <p className="text-sm font-semibold text-blue-900">Pembayaran diproses via Midtrans</p>
-                    <p className="text-xs text-blue-700 mt-1">
+                    <p className="text-sm font-semibold text-theme-accent-dark">Pembayaran diproses via Midtrans</p>
+                    <p className="text-xs text-theme-accent-dark mt-1">
                         Setelah pembayaran selesai, status transaksi akan diperbarui otomatis via webhook.
                     </p>
                 </div>

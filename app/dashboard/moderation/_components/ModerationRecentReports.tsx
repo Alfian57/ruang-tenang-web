@@ -54,7 +54,7 @@ export function ModerationRecentReports({ reports, isLoading }: ModerationRecent
                                 className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
                             >
                                 <div className="shrink-0">
-                                    <Flag className="h-5 w-5 text-orange-500" />
+                                    <Flag className="h-5 w-5 text-primary/80" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="font-medium truncate">

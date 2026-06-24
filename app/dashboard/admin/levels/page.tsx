@@ -414,7 +414,7 @@ export default function LevelsManagementPage() {
                     {/* Level Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 text-white text-xs font-bold shadow-sm">
+                        <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-amber-400 to-primary text-white text-xs font-bold shadow-sm">
                           {level.level}
                         </span>
                         <h3 className="font-bold text-gray-900 truncate">{level.badge_name}</h3>
@@ -503,24 +503,24 @@ export default function LevelsManagementPage() {
       )}
 
       {/* ── Info Box ── */}
-      <div className="rounded-2xl border border-blue-100 bg-blue-50/50 p-5">
+      <div className="rounded-2xl border border-primary/20 bg-primary/10 p-5">
         <div className="flex items-start gap-3">
-          <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center shrink-0">
-            <Info className="w-4 h-4 text-blue-600" />
+          <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <Info className="w-4 h-4 text-primary/80" />
           </div>
           <div>
-            <h4 className="font-semibold text-blue-800 mb-2">Cara Kerja Sinkronisasi</h4>
-            <ul className="text-sm text-blue-700 space-y-1.5">
+            <h4 className="font-semibold text-primary mb-2">Cara Kerja Sinkronisasi</h4>
+            <ul className="text-sm text-primary space-y-1.5">
               <li className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
                 <span><strong>Level & Badge</strong> — Nomor level, min EXP, dan badge ditampilkan di profil user dan leaderboard.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
                 <span><strong>Tugas Level</strong> — Otomatis tersinkron ke <strong>Peta Perjalanan</strong> sebagai landmark yang bisa diklaim member.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
                 <span><strong>Reward EXP & Koin</strong> — Diberikan saat member mengklaim tugas yang sudah selesai di Peta Perjalanan.</span>
               </li>
             </ul>

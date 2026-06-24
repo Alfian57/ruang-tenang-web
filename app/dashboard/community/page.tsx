@@ -94,20 +94,20 @@ export default function DashboardCommunityPage() {
                         className="grid grid-cols-1 xl:grid-cols-3 gap-4"
                     >
                         <div className="xl:col-span-2 space-y-3">
-                            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+                            <div className="rounded-xl border border-primary/20 bg-primary/10 px-4 py-3">
                                 <div className="flex items-start justify-between gap-3">
                                     <div>
-                                        <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700 inline-flex items-center gap-2">
+                                        <p className="text-xs font-semibold uppercase tracking-wide text-primary inline-flex items-center gap-2">
                                             <HeartHandshake className="w-4 h-4" />
-                                            COMMUNITY-1 · Misi Pemulihan Bersama
+                                            KOMUNITAS-1 · Misi Pemulihan Bersama
                                         </p>
                                         <h2 className="text-lg font-semibold text-gray-900 mt-1">Misi Harian Komunitasmu</h2>
                                         <p className="text-sm text-gray-600 mt-1">
-                                            Selesaikan misi kecil, klaim reward, dan dorong ritme pemulihan bersama.
+                                            Selesaikan misi kecil, klaim hadiah, dan dorong ritme pemulihan bersama.
                                         </p>
                                     </div>
                                     {claimableDailyTasks > 0 && (
-                                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300 bg-white px-3 py-1 text-xs font-semibold text-emerald-700">
+                                        <span className="inline-flex items-center gap-1 rounded-full border border-primary/40 bg-white px-3 py-1 text-xs font-semibold text-primary">
                                             <CheckCircle2 className="w-3.5 h-3.5" />
                                             {claimableDailyTasks} siap klaim
                                         </span>
@@ -123,20 +123,20 @@ export default function DashboardCommunityPage() {
                                 </div>
                             )}
 
-                            <div className="rounded-xl border border-violet-200 bg-violet-50 p-4">
-                                <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">Papan Misi Kreatif</p>
+                            <div className="rounded-xl border border-primary/20 bg-primary/10 p-4">
+                                <p className="text-xs font-semibold uppercase tracking-wide text-primary">Papan Misi Kreatif</p>
                                 <p className="text-sm text-gray-700 mt-1">
                                     Variasi misi ini dirancang agar kontribusi komunitas tidak monoton dan tetap terasa personal.
                                 </p>
                                 <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
                                     {creativeMissions.map((mission) => (
-                                        <Link key={mission.key} href={mission.href} className="rounded-xl border border-violet-200 bg-white p-3 hover:bg-violet-100 transition-colors">
-                                            <div className="w-8 h-8 rounded-lg bg-violet-100 text-violet-700 grid place-items-center">
+                                        <Link key={mission.key} href={mission.href} className="rounded-xl border border-primary/20 bg-white p-3 hover:bg-primary/10 transition-colors">
+                                            <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary grid place-items-center">
                                                 <mission.icon className="w-4 h-4" />
                                             </div>
                                             <p className="text-sm font-semibold text-gray-900 mt-2">{mission.title}</p>
                                             <p className="text-xs text-gray-600 mt-1 leading-relaxed">{mission.description}</p>
-                                            <span className="text-[11px] font-semibold text-violet-700 mt-2 inline-flex items-center gap-1">
+                                            <span className="text-[11px] font-semibold text-primary mt-2 inline-flex items-center gap-1">
                                                 Jalankan Misi
                                                 <ArrowRight className="w-3 h-3" />
                                             </span>
@@ -148,7 +148,7 @@ export default function DashboardCommunityPage() {
 
                         <div className="rounded-xl border bg-white p-4 space-y-3">
                             <div>
-                                <p className="text-xs font-semibold uppercase tracking-wide text-orange-700 inline-flex items-center gap-2">
+                                <p className="text-xs font-semibold uppercase tracking-wide text-primary inline-flex items-center gap-2">
                                     <Flame className="w-4 h-4" />
                                     Hall of Impact
                                 </p>

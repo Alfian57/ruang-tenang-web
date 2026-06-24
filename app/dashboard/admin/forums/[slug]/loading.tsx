@@ -7,7 +7,7 @@ export default function AdminForumDetailLoading() {
           <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse" />
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <div className="h-4 w-20 rounded bg-purple-100 animate-pulse" />
+              <div className="h-4 w-20 rounded bg-primary/10 animate-pulse" />
               <div className="h-4 w-16 rounded bg-gray-200 animate-pulse" />
               <div className="h-3 w-20 rounded bg-gray-200 animate-pulse" />
             </div>

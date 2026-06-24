@@ -50,7 +50,7 @@ export function CompletionModal({
                 <div
                     className={cn(
                         "mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full",
-                        completed ? "bg-green-500/15 text-green-600" : "bg-amber-500/15 text-amber-600"
+                        completed ? "bg-primary/15 text-primary/80" : "bg-amber-500/15 text-amber-600"
                     )}
                 >
                     {hasResult ? <CheckCircle2 className="h-8 w-8" /> : <Save className="h-8 w-8" />}
@@ -117,8 +117,8 @@ export function CompletionModal({
                 ) : (
                     <>
                         {completed ? (
-                            <div className="mt-6 rounded-xl border border-green-500/20 bg-green-500/10 p-4">
-                                <div className="flex items-center justify-center gap-2 font-semibold text-green-700 dark:text-green-300">
+                            <div className="mt-6 rounded-xl border border-primary/40 bg-primary/10 p-4">
+                                <div className="flex items-center justify-center gap-2 font-semibold text-primary dark:text-primary/60">
                                     <CheckCircle2 className="h-5 w-5" />
                                     Misi harian selesai
                                 </div>

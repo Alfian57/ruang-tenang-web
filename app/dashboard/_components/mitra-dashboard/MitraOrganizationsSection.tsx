@@ -19,9 +19,9 @@ interface MitraOrganizationsSectionProps {
 export function MitraOrganizationsSection({ viewModel }: MitraOrganizationsSectionProps) {
   const selectedOrg = viewModel.selectedOrganization?.organization;
   const statusCards = [
-    { key: "active", label: "Aktif", helper: "Seat sedang dipakai" },
+    { key: "active", label: "Aktif", helper: "Kuota sedang dipakai" },
     { key: "invited", label: "Diundang", helper: "Menunggu aktivasi" },
-    { key: "pending_approval", label: "Perlu Approval", helper: "Butuh keputusan" },
+    { key: "pending_approval", label: "Perlu Persetujuan", helper: "Butuh keputusan" },
     { key: "removed", label: "Dihapus", helper: "Akses dilepas" },
   ];
 
@@ -94,14 +94,14 @@ export function MitraOrganizationsSection({ viewModel }: MitraOrganizationsSecti
 
               <div>
                 <div className="flex items-center justify-between gap-3 text-sm">
-                  <span className="font-medium text-gray-700">Pemakaian seat</span>
+                  <span className="font-medium text-gray-700">Pemakaian kuota</span>
                   <span className="font-semibold text-gray-950">{viewModel.seatUsage?.used_seats ?? 0}/{viewModel.seatUsage?.contracted_seats ?? 0}</span>
                 </div>
                 <div className="mt-2 h-2 overflow-hidden rounded-full bg-gray-100">
                   <div className="h-full rounded-full bg-red-500" style={{ width: `${Math.min(100, Math.max(0, viewModel.seatUsagePercent))}%` }} />
                 </div>
                 <p className="mt-2 text-xs leading-5 text-gray-500">
-                  {viewModel.seatUsage?.available_seats ?? 0} seat tersedia. Approval anggota {selectedOrg.requires_member_approval ? "aktif" : "otomatis"}.
+                  {viewModel.seatUsage?.available_seats ?? 0} kuota tersedia. Persetujuan anggota {selectedOrg.requires_member_approval ? "aktif" : "otomatis"}.
                 </p>
               </div>
 
@@ -111,14 +111,14 @@ export function MitraOrganizationsSection({ viewModel }: MitraOrganizationsSecti
                   <p className="mt-1 break-words font-semibold text-gray-950">{viewModel.subscription?.plan_name ?? "Belum aktif"}</p>
                 </div>
                 <div className="rounded-xl bg-gray-50 p-3">
-                  <p className="text-xs font-medium text-gray-500">Approval</p>
+                  <p className="text-xs font-medium text-gray-500">Persetujuan</p>
                   <p className="mt-1 font-semibold text-gray-950">{viewModel.pendingMembers.length}</p>
                 </div>
               </div>
             </div>
           ) : (
             <div className="mt-4 rounded-2xl border border-dashed border-gray-300 p-4 text-sm leading-6 text-gray-600">
-              Pilih organisasi untuk melihat ringkasan seat, status langganan, dan approval anggota.
+              Pilih organisasi untuk melihat ringkasan kuota, status langganan, dan persetujuan anggota.
             </div>
           )}
         </article>
@@ -130,9 +130,9 @@ export function MitraOrganizationsSection({ viewModel }: MitraOrganizationsSecti
             <div>
               <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
                 <Users className="h-5 w-5 text-red-600" />
-                Anggota dan Approval
+                Anggota dan Persetujuan
               </h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">Buat undangan satuan untuk anggota baru dan tentukan role aksesnya.</p>
+              <p className="mt-1 text-sm leading-6 text-gray-600">Buat undangan satuan untuk anggota baru dan tentukan peran aksesnya.</p>
             </div>
             {viewModel.summary && (
               <span className="w-fit rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700">
@@ -158,11 +158,11 @@ export function MitraOrganizationsSection({ viewModel }: MitraOrganizationsSecti
                 <Input id="invite-name" placeholder="Nama lengkap anggota" value={viewModel.inviteForm.full_name} onChange={(event) => viewModel.setInviteForm((prev) => ({ ...prev, full_name: event.target.value }))} />
               </div>
               <div className="space-y-1.5 lg:col-span-2">
-                <Label>Role</Label>
+                <Label>Peran</Label>
                 <Select value={viewModel.inviteForm.role} onValueChange={(value) => viewModel.setInviteForm((prev) => ({ ...prev, role: value }))}>
-                  <SelectTrigger><SelectValue placeholder="Pilih role" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="Pilih peran" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="member">Member</SelectItem>
+                    <SelectItem value="member">Anggota</SelectItem>
                     <SelectItem value="admin">Admin</SelectItem>
                   </SelectContent>
                 </Select>
@@ -193,7 +193,7 @@ export function MitraOrganizationsSection({ viewModel }: MitraOrganizationsSecti
               <article data-mitra-tour="mitra-bulk-invite" className="rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h3 className="font-semibold text-gray-950">Bulk Invite</h3>
+                    <h3 className="font-semibold text-gray-950">Undang Massal</h3>
                     <p className="mt-1 text-sm leading-6 text-gray-600">Tempel beberapa email sekaligus, satu anggota per baris.</p>
                   </div>
                   <Mail className="h-5 w-5 shrink-0 text-red-600" />
@@ -201,11 +201,11 @@ export function MitraOrganizationsSection({ viewModel }: MitraOrganizationsSecti
                 <Label htmlFor="bulk-invite" className="mt-4 block">Daftar anggota</Label>
                 <Textarea id="bulk-invite" className="mt-2 min-h-32" value={viewModel.bulkInviteText} onChange={(event) => viewModel.setBulkInviteText(event.target.value)} placeholder={"anggota1@kampus.ac.id, Andi Pratama\nanggota2@kampus.ac.id, Sinta Ayu"} />
                 <Button type="button" variant="outline" className="mt-3 w-full xs:w-auto" onClick={viewModel.handleBulkInvite} disabled={viewModel.isSubmitting}>
-                  Proses Bulk Invite
+                  Proses Undang Massal
                 </Button>
                 {viewModel.bulkInviteResult && (
                   <p className="mt-3 rounded-xl bg-gray-50 px-3 py-2 text-xs text-gray-600">
-                    {viewModel.bulkInviteResult.invited} invited, {viewModel.bulkInviteResult.skipped} skipped dari {viewModel.bulkInviteResult.total} baris.
+                    {viewModel.bulkInviteResult.invited} diundang, {viewModel.bulkInviteResult.skipped} dilewati dari {viewModel.bulkInviteResult.total} baris.
                   </p>
                 )}
               </article>
@@ -237,11 +237,11 @@ export function MitraOrganizationsSection({ viewModel }: MitraOrganizationsSecti
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h3 className="font-semibold text-gray-950">Daftar Anggota</h3>
-                  <p className="mt-1 text-sm leading-6 text-gray-600">Kelola approval dan akses anggota organisasi.</p>
+                  <p className="mt-1 text-sm leading-6 text-gray-600">Kelola persetujuan dan akses anggota organisasi.</p>
                 </div>
                 {viewModel.pendingMembers.length > 0 && (
                   <span className="w-fit rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
-                    {viewModel.pendingMembers.length} perlu approval
+                    {viewModel.pendingMembers.length} perlu persetujuan
                   </span>
                 )}
               </div>
@@ -260,16 +260,16 @@ export function MitraOrganizationsSection({ viewModel }: MitraOrganizationsSecti
                         <>
                           <Button size="sm" variant="outline" onClick={() => viewModel.handleApproveMember(member.id)}>
                             <UserCheck className="mr-1 h-4 w-4" />
-                            Approve
+                            Setujui
                           </Button>
                           <Button size="sm" variant="outline" onClick={() => viewModel.handleRejectMember(member.id)}>
                             <UserX className="mr-1 h-4 w-4" />
-                            Reject
+                            Tolak
                           </Button>
                         </>
                       )}
                       {member.role !== "owner" && member.status !== "removed" && (
-                        <Button size="sm" variant="ghost" className="text-rose-600 hover:bg-rose-50 hover:text-rose-700" aria-label={`Hapus akses ${member.full_name || member.email}`} onClick={() => viewModel.handleRemoveMember(member.id)}>
+                        <Button size="sm" variant="ghost" className="text-primary/80 hover:bg-primary/10 hover:text-primary" aria-label={`Hapus akses ${member.full_name || member.email}`} onClick={() => viewModel.handleRemoveMember(member.id)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       )}
@@ -278,7 +278,7 @@ export function MitraOrganizationsSection({ viewModel }: MitraOrganizationsSecti
                 ))}
                 {viewModel.members.length === 0 && (
                   <div className="rounded-xl border border-dashed border-gray-300 p-4 text-sm leading-6 text-gray-600">
-                    Belum ada anggota. Buat link undangan atau gunakan bulk invite untuk mulai mengisi seat organisasi.
+                    Belum ada anggota. Buat link undangan atau gunakan undangan massal untuk mulai mengisi kuota organisasi.
                   </div>
                 )}
               </div>

@@ -28,7 +28,7 @@ export function PlaylistsTab({
             <Button
                 onClick={onCreateClick}
                 variant="outline"
-                className="w-full border-dashed border-2 border-gray-200 hover:border-primary hover:text-primary hover:bg-purple-50 text-gray-500 h-12"
+                className="w-full border-dashed border-2 border-gray-200 hover:border-primary hover:text-primary hover:bg-primary/10 text-gray-500 h-12"
             >
                 <Plus className="w-4 h-4 mr-2" />
                 Buat Playlist Baru

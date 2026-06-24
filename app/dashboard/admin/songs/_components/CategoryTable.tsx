@@ -53,7 +53,7 @@ export function CategoryTable({
                                         </div>
                                     </td>
                                     <td className="p-4 whitespace-nowrap">
-                                        <span className="inline-flex whitespace-nowrap px-2 py-1 text-sm bg-blue-100 text-blue-700 rounded-full">
+                                        <span className="inline-flex whitespace-nowrap px-2 py-1 text-sm bg-primary/10 text-primary rounded-full">
                                             {cat.song_count || 0} lagu
                                         </span>
                                     </td>

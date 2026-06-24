@@ -41,8 +41,8 @@ export function PublicPlaylistCard({
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
         ) : (
-          <div className="w-full h-full bg-linear-to-br from-purple-100 to-purple-200 flex items-center justify-center">
-            <ListMusic className="w-12 h-12 text-purple-400" />
+          <div className="w-full h-full bg-linear-to-br from-primary/10 to-primary/10 flex items-center justify-center">
+            <ListMusic className="w-12 h-12 text-primary/60" />
           </div>
         )}
 
@@ -157,8 +157,8 @@ export function PublicPlaylistCardHorizontal({
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
         ) : (
-          <div className="w-full h-full bg-linear-to-br from-purple-100 to-purple-200 flex items-center justify-center">
-            <ListMusic className="w-8 h-8 text-purple-400" />
+          <div className="w-full h-full bg-linear-to-br from-primary/10 to-primary/10 flex items-center justify-center">
+            <ListMusic className="w-8 h-8 text-primary/60" />
           </div>
         )}
 

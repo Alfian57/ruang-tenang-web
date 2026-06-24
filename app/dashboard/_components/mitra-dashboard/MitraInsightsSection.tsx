@@ -36,22 +36,22 @@ export function MitraInsightsSection({ viewModel }: MitraInsightsSectionProps) {
       <article data-mitra-tour="mitra-impact-report" className="rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-red-600">Mitra Impact Report</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-red-600">Laporan Dampak Mitra</p>
             <h2 className="mt-1 flex items-center gap-2 text-lg font-semibold text-gray-900">
               <FileText className="h-5 w-5 text-red-600" />
               Ringkasan Siap Presentasi
             </h2>
             <p className="mt-1 max-w-3xl text-sm leading-6 text-gray-600">
-              Utilisasi seat, engagement anggota, status subscription, dan rekomendasi tindakan dalam jendela {viewModel.impactReport?.window_days ?? 30} hari.
+              Utilisasi kuota, keterlibatan anggota, status langganan, dan rekomendasi tindakan dalam jendela {viewModel.impactReport?.window_days ?? 30} hari.
             </p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <span className="w-fit rounded-full border border-red-100 bg-red-50 px-3 py-1 text-xs font-semibold text-red-700">
-              {viewModel.impactReport ? `Generated ${formatDateTime(viewModel.impactReport.generated_at)}` : "Menunggu data"}
+              {viewModel.impactReport ? `Dibuat ${formatDateTime(viewModel.impactReport.generated_at)}` : "Menunggu data"}
             </span>
             <Button type="button" variant="outline" disabled className="border-red-100 bg-white text-red-700">
               <FileText className="mr-2 h-4 w-4" />
-              Export PDF
+              Ekspor PDF
             </Button>
           </div>
         </div>
@@ -73,7 +73,7 @@ export function MitraInsightsSection({ viewModel }: MitraInsightsSectionProps) {
               <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
                 <div className="flex items-center gap-2">
                   <Users className="h-5 w-5 text-red-600" />
-                  <h3 className="font-semibold text-gray-950">Engagement Anggota</h3>
+                  <h3 className="font-semibold text-gray-950">Keterlibatan Anggota</h3>
                 </div>
                 <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                   <div className="rounded-xl bg-white p-3">
@@ -81,7 +81,7 @@ export function MitraInsightsSection({ viewModel }: MitraInsightsSectionProps) {
                     <p className="mt-1 text-xl font-bold text-gray-950">{viewModel.impactEngagement?.active_members ?? 0}/{viewModel.impactEngagement?.total_members ?? 0}</p>
                   </div>
                   <div className="rounded-xl bg-white p-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Rate</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Tingkat</p>
                     <p className="mt-1 text-xl font-bold text-gray-950">{viewModel.impactEngagement?.engagement_rate_pct ?? 0}%</p>
                   </div>
                   <div className="rounded-xl bg-white p-3">
@@ -89,7 +89,7 @@ export function MitraInsightsSection({ viewModel }: MitraInsightsSectionProps) {
                     <p className="mt-1 text-xl font-bold text-gray-950">{viewModel.impactEngagement?.messages_sent ?? 0}</p>
                   </div>
                   <div className="rounded-xl bg-white p-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Approval</p>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Persetujuan</p>
                     <p className="mt-1 text-xl font-bold text-gray-950">{viewModel.impactEngagement?.pending_approvals ?? 0}</p>
                   </div>
                 </div>
@@ -98,7 +98,7 @@ export function MitraInsightsSection({ viewModel }: MitraInsightsSectionProps) {
               <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
                 <div className="flex items-center gap-2">
                   <CreditCard className="h-5 w-5 text-red-600" />
-                  <h3 className="font-semibold text-gray-950">Status Subscription</h3>
+                  <h3 className="font-semibold text-gray-950">Status Langganan</h3>
                 </div>
                 <div className="mt-4 space-y-3 text-sm">
                   <div className="rounded-xl bg-white p-3">
@@ -156,7 +156,7 @@ export function MitraInsightsSection({ viewModel }: MitraInsightsSectionProps) {
                   <div key={item.metric_date} className="rounded-2xl border border-gray-200 bg-white p-3">
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-xs font-semibold text-gray-600">{formatShortDate(item.metric_date)}</p>
-                      <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs font-semibold text-red-700">{trendUtilization}% seat</span>
+                      <span className="rounded-full bg-red-50 px-2 py-0.5 text-xs font-semibold text-red-700">{trendUtilization}% kuota</span>
                     </div>
                     <div className="mt-3 h-2 overflow-hidden rounded-full bg-gray-100">
                       <div className="h-full rounded-full bg-red-500" style={{ width: `${Math.max(4, trendUtilization)}%` }} />
@@ -176,19 +176,19 @@ export function MitraInsightsSection({ viewModel }: MitraInsightsSectionProps) {
 
       <PageSection className="xl:grid-cols-5">
         <article data-mitra-tour="mitra-utilization-trend" className="overflow-hidden rounded-2xl border border-red-100 bg-white shadow-sm xl:col-span-3">
-          <div className="border-b border-red-50 bg-linear-to-br from-red-50 via-white to-orange-50 p-5">
+          <div className="border-b border-red-50 bg-linear-to-br from-red-50 via-white to-primary/10 p-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-red-600">Tren Utilisasi</p>
                 <h2 className="mt-1 flex items-center gap-2 text-lg font-semibold text-gray-900">
                   <BarChart3 className="h-5 w-5 text-red-600" />
-                  Seat Premium 14 Hari Terakhir
+                  Kuota Premium 14 Hari Terakhir
                 </h2>
                 <p className="mt-1 max-w-2xl text-sm text-gray-600">
-                  Pantau tekanan kapasitas seat, momentum anggota aktif, dan volume pesan agregat tanpa membuka data pribadi pengguna.
+                  Pantau tekanan kapasitas kuota, momentum anggota aktif, dan volume pesan agregat tanpa membuka data pribadi pengguna.
                 </p>
               </div>
-              <div className={`inline-flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold ${viewModel.utilizationDelta >= 0 ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`}>
+              <div className={`inline-flex w-fit items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold ${viewModel.utilizationDelta >= 0 ? "border-red-200 bg-red-50 text-red-700" : "border-primary/20 bg-primary/10 text-primary"}`}>
                 {viewModel.utilizationDelta >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
                 {Math.abs(viewModel.utilizationDelta)}% dari titik sebelumnya
               </div>
@@ -196,10 +196,10 @@ export function MitraInsightsSection({ viewModel }: MitraInsightsSectionProps) {
 
             <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
               {[
-                ["Saat ini", `${viewModel.latestTrendPoint?.utilizationPct ?? viewModel.seatUsagePercent}%`, `${viewModel.latestTrendPoint?.usedSeats ?? viewModel.seatUsage?.used_seats ?? 0}/${viewModel.latestTrendPoint?.contractedSeats ?? viewModel.seatUsage?.contracted_seats ?? 0} seat`],
+                ["Saat ini", `${viewModel.latestTrendPoint?.utilizationPct ?? viewModel.seatUsagePercent}%`, `${viewModel.latestTrendPoint?.usedSeats ?? viewModel.seatUsage?.used_seats ?? 0}/${viewModel.latestTrendPoint?.contractedSeats ?? viewModel.seatUsage?.contracted_seats ?? 0} kuota`],
                 ["Rata-rata", `${viewModel.averageUtilization}%`, "periode tampil"],
                 ["Puncak", `${viewModel.peakUtilization}%`, `${viewModel.peakMessages} pesan tertinggi`],
-                ["Sisa seat", viewModel.latestTrendPoint?.availableSeats ?? viewModel.seatUsage?.available_seats ?? 0, "kapasitas siap pakai"],
+                ["Sisa kuota", viewModel.latestTrendPoint?.availableSeats ?? viewModel.seatUsage?.available_seats ?? 0, "kapasitas siap pakai"],
               ].map(([label, value, helper]) => (
                 <div key={String(label)} className="rounded-2xl border border-white/80 bg-white/85 p-3 shadow-xs">
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{label}</p>
@@ -251,7 +251,7 @@ export function MitraInsightsSection({ viewModel }: MitraInsightsSectionProps) {
                         formatter={(value, name, payload) => {
                           const point = payload.payload as UtilizationTrendPoint;
                           if (name === "utilizationPct") {
-                            return [`${value}% (${point.usedSeats}/${point.contractedSeats} seat)`, "Utilisasi"];
+                            return [`${value}% (${point.usedSeats}/${point.contractedSeats} kuota)`, "Utilisasi"];
                           }
                           return [value, name];
                         }}
@@ -279,7 +279,7 @@ export function MitraInsightsSection({ viewModel }: MitraInsightsSectionProps) {
                         <div className="h-full rounded-full bg-red-500" style={{ width: `${Math.max(4, item.utilizationPct)}%` }} />
                       </div>
                       <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-600">
-                        <span>{item.usedSeats} seat aktif</span>
+                        <span>{item.usedSeats} kuota aktif</span>
                         <span className="text-right">{item.messagesSent} pesan</span>
                       </div>
                     </div>
@@ -288,9 +288,9 @@ export function MitraInsightsSection({ viewModel }: MitraInsightsSectionProps) {
               </>
             ) : (
               <div className="rounded-2xl border border-dashed border-red-200 bg-red-50/50 p-6 text-sm text-gray-700">
-                <p className="font-semibold text-gray-900">Belum ada trend analitik.</p>
+                <p className="font-semibold text-gray-900">Belum ada tren analitik.</p>
                 <p className="mt-1 leading-relaxed">
-                  Data akan muncul setelah anggota mulai memakai seat premium. Undang anggota, aktifkan seat,
+                  Data akan muncul setelah anggota mulai memakai kuota premium. Undang anggota, aktifkan kuota,
                   lalu buka halaman ini lagi untuk melihat kurva utilisasi.
                 </p>
               </div>

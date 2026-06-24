@@ -31,8 +31,8 @@ import { ReportStatus, ReportType } from "@/types/moderation";
 
 const STATUS_CONFIG: Record<ReportStatus, { label: string; color: string; icon: React.ElementType }> = {
     pending: { label: "Menunggu", color: "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300", icon: Clock },
-    reviewing: { label: "Ditinjau", color: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300", icon: Eye },
-    resolved: { label: "Selesai", color: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300", icon: CheckCircle2 },
+    reviewing: { label: "Ditinjau", color: "bg-primary/10 text-primary dark:bg-primary dark:text-primary/60", icon: Eye },
+    resolved: { label: "Selesai", color: "bg-primary/10 text-primary dark:bg-primary dark:text-primary/60", icon: CheckCircle2 },
     dismissed: { label: "Ditolak", color: "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300", icon: AlertCircle },
 };
 

@@ -97,7 +97,7 @@ export function useMemberDashboardViewModel() {
     },
     {
       key: "reward",
-      title: "Reward",
+      title: "Hadiah",
       detail: "Klaim hadiah yang mengubah atmosfer",
       href: ROUTES.REWARDS,
       icon: Gift,
@@ -157,7 +157,7 @@ export function useMemberDashboardViewModel() {
     },
     {
       key: "mood",
-      label: "Mood Check-in",
+      label: "Catat Mood",
       count: moodCheckinsThisWeek,
       target: 4,
       windowLabel: "7 hari",
@@ -206,7 +206,7 @@ export function useMemberDashboardViewModel() {
       ? `Progress mingguan sudah berjalan. Fokus berikutnya: naikkan intensitas ${weakestSignal.label.toLowerCase()} agar loop refleksi-ke-aksi lebih seimbang.`
       : crossFeatureCompletion > 0
         ? "Kamu sudah mulai membangun momentum. Lengkapi satu fitur lagi hari ini supaya narasi progresmu lebih utuh lintas fitur."
-        : "Belum ada sinyal lintas fitur minggu ini. Mulai dari satu aksi kecil agar storyline progresmu terbentuk.";
+        : "Belum ada sinyal lintas fitur minggu ini. Mulai dari satu aksi kecil agar alur cerita progresmu terbentuk.";
 
   const loopCompletion = Math.round((loopStages.filter((stage) => stage.completed).length / loopStages.length) * 100);
   const isPremiumAccount = Boolean(billingStatus?.is_premium || user?.is_premium);
@@ -223,7 +223,7 @@ export function useMemberDashboardViewModel() {
   const todayQuestSteps: TodayQuestStep[] = [
     {
       key: "mood",
-      label: "Mood check-in",
+      label: "Catat Mood",
       completed: hasMoodToday,
       href: ROUTES.MOOD_TRACKER,
     },
@@ -242,7 +242,7 @@ export function useMemberDashboardViewModel() {
     },
     {
       key: "reward",
-      label: "Cek reward",
+      label: "Cek hadiah",
       completed: loopCompletion >= 50,
       href: ROUTES.REWARDS,
     },
@@ -253,12 +253,12 @@ export function useMemberDashboardViewModel() {
   const nextQuestDescription = nextQuestStep.locked
     ? "Kuota chat sedang habis. Buka billing untuk upgrade, atau lanjutkan refleksi lewat jurnal dan pernapasan."
     : nextQuestStep.key === "mood"
-      ? "Check-in singkat akan membuat rekomendasi harian lebih akurat."
+      ? "Catatan mood singkat akan membuat rekomendasi harian lebih akurat."
       : nextQuestStep.key === "journal"
         ? "Tulis 3 menit saja. Fokus pada satu kejadian, satu rasa, dan satu langkah kecil."
         : nextQuestStep.key === "chat"
           ? "Gunakan chat untuk merapikan isi jurnal menjadi langkah yang lebih jelas."
-          : "Cek reward agar progres hari ini terasa selesai dan ada dorongan untuk lanjut besok.";
+          : "Cek hadiah agar progres hari ini terasa selesai dan ada dorongan untuk lanjut besok.";
   const shouldShowStartHint = !hasMoodToday && !hasJournalToday && chatSessionsThisWeek === 0;
 
   const wellnessPlan = wellnessData?.plan ?? null;

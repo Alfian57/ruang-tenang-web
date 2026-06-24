@@ -163,7 +163,7 @@ export function ChatMessageBubble({
                   onClick={() => handleCopy(message.content, message.id)}
                 >
                   {copiedId === message.id ? (
-                    <Check className="w-3 h-3 text-green-500" />
+                    <Check className="w-3 h-3 text-primary/80" />
                   ) : (
                     <Copy className="w-3 h-3" />
                   )}

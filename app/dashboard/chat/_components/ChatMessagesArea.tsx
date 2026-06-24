@@ -200,26 +200,24 @@ export function ChatMessagesArea({
         onToggleSummary={() => setShowSummary(!showSummary)}
         onExport={onExport}
         onOpenMobileSidebar={onOpenMobileSidebar}
+        isPremium={isPremium}
       />
 
-      {quota && (
-        <div className={`shrink-0 border-b px-4 py-2 ${isPremium ? "border-violet-100 bg-violet-50" : isQuotaExhausted ? "border-amber-200 bg-amber-100" : "border-amber-100 bg-amber-50"}`}>
+      {quota && !isPremium && (
+        <div className={`shrink-0 border-b px-4 py-2 ${isQuotaExhausted ? "border-amber-200 bg-amber-100" : "border-amber-100 bg-amber-50"}`}>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2 text-sm">
-              {isPremium ? (
-                <Crown className="h-4 w-4 text-violet-600" />
-              ) : isQuotaExhausted ? (
+              {isQuotaExhausted ? (
                 <Lock className="h-4 w-4 text-amber-700" />
               ) : (
                 <MessageSquare className="h-4 w-4 text-amber-600" />
               )}
-              <span className={`font-semibold ${isPremium ? "text-violet-900" : "text-amber-900"}`}>
-                {isPremium ? "Premium aktif: chat tanpa batas" : isQuotaExhausted ? "Limit chat gratis habis" : `Kuota gratis: ${Math.max(0, quota.remaining)} dari ${quota.limit} tersisa`}
+              <span className="font-semibold text-amber-900">
+                {isQuotaExhausted ? "Limit chat gratis habis" : `Kuota gratis: ${Math.max(0, quota.remaining)} dari ${quota.limit} tersisa`}
               </span>
             </div>
 
-            {!isPremium && (
-              <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
                 <div className="h-1.5 w-28 overflow-hidden rounded-full bg-white">
                   <div className="h-full rounded-full bg-amber-500" style={{ width: `${quotaPercent}%` }} />
                 </div>
@@ -228,7 +226,6 @@ export function ChatMessagesArea({
                   {isQuotaExhausted ? "Buka Premium" : "Upgrade"}
                 </Button>
               </div>
-            )}
           </div>
         </div>
       )}
@@ -277,18 +274,18 @@ export function ChatMessagesArea({
         )}
 
         {reflectionNudge && (
-          <div className={`shrink-0 z-10 border-b border-violet-200 bg-violet-50 px-4 py-3 ${showMobileAssistPanels ? "block" : "hidden"} sm:block`}>
+          <div className={`shrink-0 z-10 border-b border-primary/20 bg-primary/10 px-4 py-3 ${showMobileAssistPanels ? "block" : "hidden"} sm:block`}>
             <div className="flex items-start gap-2">
-              <NotebookPen className="w-4 h-4 text-violet-600 mt-0.5 shrink-0" />
+              <NotebookPen className="w-4 h-4 text-primary/80 mt-0.5 shrink-0" />
               <div className="space-y-2 w-full">
-                <p className="text-sm font-medium text-violet-900">
+                <p className="text-sm font-medium text-primary">
                   Checkpoint refleksi #{reflectionNudge.checkpoint} setelah {reflectionNudge.userMessageCount} pesan.
                 </p>
-                <p className="text-xs text-violet-700">
+                <p className="text-xs text-primary">
                   Ambil 2 menit untuk merangkum pola emosi, kebutuhan utama, dan langkah kecil berikutnya.
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm" className="bg-violet-600 hover:bg-violet-700" onClick={onRunReflectionNudge}>
+                  <Button size="sm" className="bg-primary hover:bg-primary" onClick={onRunReflectionNudge}>
                     Refleksi 2 Menit
                   </Button>
                   <Button size="sm" variant="outline" onClick={onGenerateReflectionSummary}>
@@ -304,18 +301,18 @@ export function ChatMessagesArea({
         )}
 
         {isSafeModeActive && (
-          <div className="shrink-0 z-10 border-b border-rose-200 bg-rose-50 px-4 py-3">
+          <div className="shrink-0 z-10 border-b border-primary/20 bg-primary/10 px-4 py-3">
             <div className="flex items-start gap-2">
-              <HeartHandshake className="w-4 h-4 text-rose-600 mt-0.5 shrink-0" />
+              <HeartHandshake className="w-4 h-4 text-primary/80 mt-0.5 shrink-0" />
               <div className="space-y-2 w-full">
-                <p className="text-sm font-medium text-rose-800">
+                <p className="text-sm font-medium text-primary">
                   Kami mendeteksi kata yang mengarah ke kondisi berat. Kamu bisa lanjut lewat mode aman dengan langkah yang lebih sederhana.
                 </p>
                 {pendingCrisisMessage && (
-                  <p className="text-xs text-rose-700 line-clamp-2">Pesan terdeteksi: &quot;{pendingCrisisMessage}&quot;</p>
+                  <p className="text-xs text-primary line-clamp-2">Pesan terdeteksi: &quot;{pendingCrisisMessage}&quot;</p>
                 )}
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm" className="bg-rose-600 hover:bg-rose-700" onClick={onContinueInSafeMode}>
+                  <Button size="sm" className="bg-primary hover:bg-primary" onClick={onContinueInSafeMode}>
                     Lanjutkan Mode Aman
                   </Button>
                   <Button size="sm" variant="outline" onClick={onOpenBreathingSupport}>

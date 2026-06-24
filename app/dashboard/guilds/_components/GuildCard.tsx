@@ -30,7 +30,7 @@ export function GuildCard({ guild, onJoin, isMemberOfAny, myGuildId }: GuildCard
         >
             {/* Profile Image Hero */}
             <Link href={ROUTES.guildDetail(guild.id)} className="block shrink-0">
-                <div className="relative w-full aspect-[16/9] bg-gradient-to-br from-primary/10 via-primary/5 to-violet-100 overflow-hidden">
+                <div className="relative w-full aspect-[16/9] bg-gradient-to-br from-primary/10 via-primary/5 to-primary/10 overflow-hidden">
                     {hasProfileImage ? (
                         <Image
                             src={guild.icon}
@@ -56,7 +56,7 @@ export function GuildCard({ guild, onJoin, isMemberOfAny, myGuildId }: GuildCard
                             </span>
                         )}
                         {isMyGuild && (
-                            <span className="text-[10px] font-medium bg-blue-500/90 backdrop-blur-sm text-white px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                            <span className="text-[10px] font-medium bg-primary/90 backdrop-blur-sm text-white px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
                                 <Shield className="w-2.5 h-2.5" />
                                 Guild Saya
                             </span>
@@ -114,7 +114,7 @@ export function GuildCard({ guild, onJoin, isMemberOfAny, myGuildId }: GuildCard
                     ) : isMyGuild ? (
                         <Link
                             href={ROUTES.guildDetail(guild.id)}
-                            className="block w-full py-2 rounded-xl bg-blue-50 text-center text-sm text-blue-600 font-semibold hover:bg-blue-100 transition-colors"
+                            className="block w-full py-2 rounded-xl bg-primary/10 text-center text-sm text-primary/80 font-semibold hover:bg-primary/10 transition-colors"
                         >
                             Masuk Guild
                         </Link>

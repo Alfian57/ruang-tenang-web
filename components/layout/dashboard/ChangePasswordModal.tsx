@@ -136,7 +136,7 @@ export function ChangePasswordModal({ isOpen, onClose }: ChangePasswordModalProp
           )}
 
           {success && (
-            <div className="p-3 bg-green-50 text-green-600 rounded-md text-sm text-center">
+            <div className="p-3 bg-primary/10 text-primary/80 rounded-md text-sm text-center">
               Password berhasil diubah!
             </div>
           )}

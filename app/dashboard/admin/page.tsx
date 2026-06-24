@@ -63,19 +63,19 @@ export default function AdminDashboardPage() {
           {(stats.users.blocked > 0 || stats.articles.blocked > 0) && (
             <div className="mb-6 grid sm:grid-cols-2 gap-4">
               {stats.users.blocked > 0 && (
-                <Card className="border-orange-200 bg-orange-50">
+                <Card className="border-primary/20 bg-primary/10">
                   <CardContent className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
-                        <Ban className="w-5 h-5 text-orange-600" />
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Ban className="w-5 h-5 text-primary/80" />
                       </div>
                       <div>
-                        <p className="font-medium text-orange-800">{stats.users.blocked} Pengguna Diblokir</p>
-                        <p className="text-sm text-orange-600">Memerlukan perhatian</p>
+                        <p className="font-medium text-primary">{stats.users.blocked} Pengguna Diblokir</p>
+                        <p className="text-sm text-primary/80">Memerlukan perhatian</p>
                       </div>
                     </div>
                     <Link href={ROUTES.ADMIN.USERS}>
-                      <Button variant="outline" size="sm" className="border-orange-300 text-orange-700 hover:bg-orange-100">
+                      <Button variant="outline" size="sm" className="border-primary/40 text-primary hover:bg-primary/10">
                         Lihat <ChevronRight className="w-4 h-4 ml-1" />
                       </Button>
                     </Link>
@@ -115,11 +115,11 @@ export default function AdminDashboardPage() {
                     <h3 className="text-3xl font-bold">{stats.users.total.toLocaleString()}</h3>
                     <div className="flex items-center gap-1 mt-1">
                       {stats.users.growth >= 0 ? (
-                        <TrendingUp className="w-4 h-4 text-green-500" />
+                        <TrendingUp className="w-4 h-4 text-primary/80" />
                       ) : (
                         <TrendingDown className="w-4 h-4 text-red-500" />
                       )}
-                      <span className={`text-sm ${stats.users.growth >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      <span className={`text-sm ${stats.users.growth >= 0 ? 'text-primary/80' : 'text-red-500'}`}>
                         {stats.users.growth >= 0 ? '+' : ''}{stats.users.growth.toFixed(1)}% bulan ini
                       </span>
                     </div>
@@ -151,8 +151,8 @@ export default function AdminDashboardPage() {
                       +{stats.articles.this_month} bulan ini
                     </p>
                   </div>
-                  <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-                    <FileText className="w-6 h-6 text-blue-500" />
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <FileText className="w-6 h-6 text-primary/80" />
                   </div>
                 </div>
               </CardContent>
@@ -168,8 +168,8 @@ export default function AdminDashboardPage() {
                       +{stats.chat_sessions.today} hari ini
                     </p>
                   </div>
-                  <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center">
-                    <MessageCircle className="w-6 h-6 text-orange-500" />
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <MessageCircle className="w-6 h-6 text-primary/80" />
                   </div>
                 </div>
                 {/* Mini Chart */}
@@ -177,7 +177,7 @@ export default function AdminDashboardPage() {
                   {stats.chat_sessions.chart_data.map((value, i) => (
                     <div
                       key={i}
-                      className="flex-1 bg-orange-500/20 rounded-t"
+                      className="flex-1 bg-primary/20 rounded-t"
                       style={{ height: `${Math.max(10, (value / Math.max(...stats.chat_sessions.chart_data, 1)) * 100)}%` }}
                     />
                   ))}
@@ -195,8 +195,8 @@ export default function AdminDashboardPage() {
                       +{stats.messages.today} hari ini
                     </p>
                   </div>
-                  <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center">
-                    <MessageCircle className="w-6 h-6 text-purple-500" />
+                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <MessageCircle className="w-6 h-6 text-primary/80" />
                   </div>
                 </div>
               </CardContent>
@@ -270,7 +270,7 @@ export default function AdminDashboardPage() {
                 <Link href={ROUTES.ADMIN.ARTICLES} className="block">
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
                     <div className="flex items-center gap-3">
-                      <FileText className="w-5 h-5 text-blue-500" />
+                      <FileText className="w-5 h-5 text-primary/80" />
                       <span>Kelola Artikel</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
@@ -279,7 +279,7 @@ export default function AdminDashboardPage() {
                 <Link href={ROUTES.ADMIN.SONGS} className="block">
                   <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
                     <div className="flex items-center gap-3">
-                      <Music className="w-5 h-5 text-purple-500" />
+                      <Music className="w-5 h-5 text-primary/80" />
                       <span>Kelola Musik</span>
                     </div>
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
@@ -294,8 +294,8 @@ export default function AdminDashboardPage() {
             <Card>
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                    <Users className="w-5 h-5 text-green-600" />
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Users className="w-5 h-5 text-primary/80" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Pengguna Aktif</p>
@@ -307,8 +307,8 @@ export default function AdminDashboardPage() {
             <Card>
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                    <FolderOpen className="w-5 h-5 text-blue-600" />
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <FolderOpen className="w-5 h-5 text-primary/80" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Kategori Artikel</p>
@@ -320,8 +320,8 @@ export default function AdminDashboardPage() {
             <Card>
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                    <Music className="w-5 h-5 text-purple-600" />
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Music className="w-5 h-5 text-primary/80" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Total Musik</p>
@@ -333,8 +333,8 @@ export default function AdminDashboardPage() {
             <Card>
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
-                    <Heart className="w-5 h-5 text-pink-600" />
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Heart className="w-5 h-5 text-primary/80" />
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Mood Hari Ini</p>

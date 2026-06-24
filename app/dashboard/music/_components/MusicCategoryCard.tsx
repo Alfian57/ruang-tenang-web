@@ -16,12 +16,12 @@ interface MusicCategoryCardProps {
 }
 
 const categoryGradients: Record<string, { from: string; to: string }> = {
-  relaksasi: { from: "from-sky-300", to: "to-sky-500" },
-  meditasi: { from: "from-violet-300", to: "to-violet-500" },
-  fokus: { from: "from-emerald-300", to: "to-emerald-500" },
-  tidur: { from: "from-indigo-300", to: "to-indigo-500" },
-  alam: { from: "from-teal-300", to: "to-teal-500" },
-  default: { from: "from-rose-300", to: "to-rose-500" },
+  relaksasi: { from: "from-primary/40", to: "to-primary" },
+  meditasi: { from: "from-primary/40", to: "to-primary" },
+  fokus: { from: "from-primary/40", to: "to-primary" },
+  tidur: { from: "from-primary/40", to: "to-primary" },
+  alam: { from: "from-primary/40", to: "to-primary" },
+  default: { from: "from-primary/40", to: "to-primary" },
 };
 
 export function MusicCategoryCard({

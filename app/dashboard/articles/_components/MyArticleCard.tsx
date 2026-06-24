@@ -63,7 +63,7 @@ export function MyArticleCard({ article, onDelete }: MyArticleCardProps) {
               </p>
             )}
             {article.moderation_status === "revision_needed" && (
-              <p className="text-xs text-blue-500 mt-1 flex items-center gap-1">
+              <p className="text-xs text-primary/80 mt-1 flex items-center gap-1">
                 <AlertCircle className="w-3 h-3" />
                 Artikel perlu direvisi
               </p>

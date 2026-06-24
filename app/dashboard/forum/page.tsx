@@ -225,28 +225,28 @@ export default function ForumPage() {
       </div>
 
       {isForumBlocked && (
-        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <div className="rounded-xl border border-theme-accent-border bg-theme-accent-soft px-4 py-3 text-sm text-theme-accent-dark">
           Akses forum kamu sedang diblokir oleh admin. Kamu tidak bisa membuat topik, membalas, atau berinteraksi di forum.
         </div>
       )}
 
-      <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 flex items-start gap-2">
+      <div className="rounded-xl border border-theme-accent-border bg-theme-accent-soft px-4 py-3 text-sm text-theme-accent-dark flex items-start gap-2">
         <ShieldCheck className="w-4 h-4 mt-0.5 shrink-0" />
         <p>
           Forum ini dilindungi fitur keamanan komunitas. Kamu bisa melaporkan topik/balasan dan memblokir pengguna dari halaman detail diskusi.
         </p>
       </div>
 
-      <section className="rounded-2xl border border-indigo-200 bg-indigo-50/70 p-4 sm:p-5">
+      <section className="rounded-2xl border border-theme-story-border bg-theme-story-from p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div>
-            <p className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-indigo-700">
-              <Sparkles className="w-3.5 h-3.5" />
+            <p className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-theme-story-heading">
+              <Sparkles className="w-3.5 h-3.5 text-theme-story-icon" />
               Support Circle Tematik
             </p>
-            <h2 className="text-lg font-semibold text-indigo-950 mt-1">Pilih circle biar diskusi terasa lebih relevan</h2>
+            <h2 className="text-lg font-semibold text-theme-story-heading mt-1">Pilih circle biar diskusi terasa lebih relevan</h2>
           </div>
-          <p className="text-xs text-indigo-700">
+          <p className="text-xs text-theme-story-heading opacity-80">
             Circle aktif akan memfilter daftar topik dan membantu prefill draft.
           </p>
         </div>
@@ -257,7 +257,7 @@ export default function ForumPage() {
             return (
               <div
                 key={circle.id}
-                className={`rounded-xl border p-3 ${isActiveCircle ? "border-indigo-400 bg-indigo-100/60" : "border-indigo-200 bg-white"}`}
+                className={`rounded-xl border p-3 ${isActiveCircle ? "border-theme-story-icon bg-theme-story-icon-bg/30" : "border-theme-story-border/50 bg-white"}`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -269,8 +269,8 @@ export default function ForumPage() {
                     onClick={() => handleToggleSupportCircle(circle.id)}
                     className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                       isActiveCircle
-                        ? "bg-indigo-700 text-white"
-                        : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
+                        ? "bg-theme-story-icon text-white"
+                        : "bg-theme-story-icon-bg text-theme-story-icon hover:bg-theme-story-icon-bg/80"
                     }`}
                     aria-pressed={isActiveCircle}
                   >
@@ -282,7 +282,7 @@ export default function ForumPage() {
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="mt-3 w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                  className="mt-3 w-full border-theme-story-border text-theme-story-link hover:text-theme-story-heading hover:bg-theme-story-from"
                   onClick={() => handleUseSupportCircleDraft(circle)}
                   disabled={isForumBlocked}
                 >
@@ -294,35 +294,35 @@ export default function ForumPage() {
         </div>
 
         {selectedSupportCircle && (
-          <div className="mt-3 rounded-lg border border-indigo-200 bg-white px-3 py-2 text-xs text-indigo-800">
+          <div className="mt-3 rounded-lg border border-theme-story-border bg-white px-3 py-2 text-xs text-theme-story-heading">
             Filter circle aktif. Matikan circle untuk kembali melihat semua topik.
           </div>
         )}
       </section>
 
-      <section className="rounded-2xl border border-indigo-200 bg-indigo-50/70 p-4 sm:p-5">
+      <section className="rounded-2xl border border-theme-story-border bg-theme-story-from p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-indigo-700">
-              <Sparkles className="w-3.5 h-3.5" />
+            <p className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-theme-story-heading">
+              <Sparkles className="w-3.5 h-3.5 text-theme-story-icon" />
               Healing Prompt Minggu Ini
             </p>
-            <h2 className="text-lg font-semibold text-indigo-950 mt-1">Mulai topik dengan nuansa yang lebih suportif</h2>
+            <h2 className="text-lg font-semibold text-theme-story-heading mt-1">Mulai topik dengan nuansa yang lebih suportif</h2>
           </div>
-          <p className="text-xs text-indigo-700">
+          <p className="text-xs text-theme-story-heading opacity-80">
             Pilih prompt untuk otomatis mengisi draft topik baru.
           </p>
         </div>
 
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           {WEEKLY_HEALING_PROMPTS.map((prompt) => (
-            <div key={prompt.title} className="rounded-xl border border-indigo-200 bg-white p-3 flex flex-col gap-3">
+            <div key={prompt.title} className="rounded-xl border border-theme-story-border/50 bg-white p-3 flex flex-col gap-3">
               <p className="text-sm font-medium text-gray-800 leading-relaxed">{prompt.title}</p>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
-                className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                className="w-full border-theme-story-border text-theme-story-link hover:text-theme-story-heading hover:bg-theme-story-from"
                 onClick={() => handleUseWeeklyPrompt(prompt)}
                 disabled={isForumBlocked}
               >

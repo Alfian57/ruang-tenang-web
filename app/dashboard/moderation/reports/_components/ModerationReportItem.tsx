@@ -33,8 +33,8 @@ export function ModerationReportItem({ report, isFocused = false }: ModerationRe
             )}
         >
             <div className="shrink-0">
-                <div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center">
-                    <TypeIcon className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                <div className="h-10 w-10 rounded-full bg-primary/10 dark:bg-primary flex items-center justify-center">
+                    <TypeIcon className="h-5 w-5 text-primary/80 dark:text-primary/60" />
                 </div>
             </div>
 

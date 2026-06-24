@@ -22,7 +22,7 @@ export function MockDailyTasksCard() {
                     <p className="text-sm text-gray-500">Simulasi tugas harian untuk menunjukkan alur XP dan Koin Emas.</p>
                 </div>
                 <div
-                    className="flex items-center gap-2 rounded-full bg-red-50 px-3 py-1.5"
+                    className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-red-50 px-3 py-1.5"
                     title="Contoh streak"
                 >
                     <Flame className="w-4 h-4 text-red-500" />
@@ -35,7 +35,7 @@ export function MockDailyTasksCard() {
             {/* Progress bar */}
             <div className="mb-6">
                 <div className="flex justify-between text-sm mb-2">
-                    <span className="text-gray-500">Progress</span>
+                    <span className="text-gray-500">Progres</span>
                     <span className="font-semibold text-primary">2/4 selesai</span>
                 </div>
                 <div className="w-full bg-gray-100 rounded-full h-2.5">

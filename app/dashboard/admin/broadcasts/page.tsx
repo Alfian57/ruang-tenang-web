@@ -30,9 +30,9 @@ import type { BroadcastNotification } from "@/services/api/broadcast";
 function getStatusBadge(status: BroadcastNotification["status"]) {
     const map = {
         draft: { label: "Draft", className: "bg-gray-100 text-gray-700" },
-        scheduled: { label: "Terjadwal", className: "bg-blue-100 text-blue-700" },
+        scheduled: { label: "Terjadwal", className: "bg-primary/10 text-primary" },
         sending: { label: "Mengirim", className: "bg-yellow-100 text-yellow-700" },
-        sent: { label: "Terkirim", className: "bg-green-100 text-green-700" },
+        sent: { label: "Terkirim", className: "bg-primary/10 text-primary" },
         cancelled: { label: "Dibatalkan", className: "bg-red-100 text-red-700" },
     };
     const s = map[status] || map.draft;
@@ -48,11 +48,11 @@ function getStatusIcon(status: BroadcastNotification["status"]) {
         case "draft":
             return <Bell className="w-5 h-5 text-gray-400" />;
         case "scheduled":
-            return <Clock className="w-5 h-5 text-blue-500" />;
+            return <Clock className="w-5 h-5 text-primary/80" />;
         case "sending":
             return <Loader2 className="w-5 h-5 text-yellow-500 animate-spin" />;
         case "sent":
-            return <CheckCircle className="w-5 h-5 text-green-500" />;
+            return <CheckCircle className="w-5 h-5 text-primary/80" />;
         case "cancelled":
             return <Ban className="w-5 h-5 text-red-400" />;
         default:
@@ -233,7 +233,7 @@ export default function AdminBroadcastsPage() {
                                             <span className="text-sm text-gray-600">
                                                 {b.status === "sent" ? (
                                                     <span className="flex items-center gap-1">
-                                                        <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                                                        <CheckCircle className="w-3.5 h-3.5 text-primary/80" />
                                                         {b.sent_count}
                                                         {b.failed_count > 0 && (
                                                             <span className="text-red-400 ml-1 flex items-center gap-0.5">
@@ -261,7 +261,7 @@ export default function AdminBroadcastsPage() {
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 onClick={() => setSendId(b.id)}
-                                                                className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                                                className="text-primary/80 hover:text-primary hover:bg-primary/10"
                                                                 title="Kirim Sekarang"
                                                             >
                                                                 <Send className="w-4 h-4" />
@@ -270,7 +270,7 @@ export default function AdminBroadcastsPage() {
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 onClick={() => setEditingBroadcast(b)}
-                                                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                                                                className="text-primary/80 hover:text-primary hover:bg-primary/10"
                                                                 title="Edit"
                                                             >
                                                                 <Pencil className="w-4 h-4" />
@@ -282,7 +282,7 @@ export default function AdminBroadcastsPage() {
                                                         variant="ghost"
                                                         size="icon"
                                                         onClick={() => handleCancel(b.id)}
-                                                        className="text-orange-500 hover:text-orange-600 hover:bg-orange-50"
+                                                        className="text-primary/80 hover:text-primary/80 hover:bg-primary/10"
                                                         title="Batalkan"
                                                     >
                                                         <Ban className="w-4 h-4" />
@@ -402,7 +402,7 @@ export default function AdminBroadcastsPage() {
                             Batal
                         </Button>
                         <Button
-                            className="bg-green-500 hover:bg-green-600 text-white"
+                            className="bg-primary hover:bg-primary text-white"
                             onClick={handleSendNow}
                             disabled={isSubmitting}
                         >

@@ -369,12 +369,12 @@ function DashboardContent({
               <span className="text-red-600 font-medium text-sm">
                 {user.is_banned
                   ? "⛔ Akun Anda telah diblokir permanen."
-                  : `⚠️ Akun Anda sedang disuspend${user.suspension_end ? ` hingga ${new Date(user.suspension_end).toLocaleDateString("id-ID")}` : ""}.`}
+                  : `⚠️ Akun Anda sedang ditangguhkan${user.suspension_end ? ` hingga ${new Date(user.suspension_end).toLocaleDateString("id-ID")}` : ""}.`}
               </span>
             </div>
             <button
               onClick={() => setShowAppealModal(true)}
-              className="self-start text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline sm:self-auto sm:whitespace-nowrap"
+              className="self-start text-sm font-medium text-primary/80 hover:text-primary hover:underline sm:self-auto sm:whitespace-nowrap"
             >
               Ajukan Banding
             </button>

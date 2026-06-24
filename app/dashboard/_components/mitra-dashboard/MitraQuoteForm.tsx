@@ -16,7 +16,7 @@ interface MitraQuoteFormProps {
   submitLabel?: string;
 }
 
-export function MitraQuoteForm({ viewModel, title = "Quote dan Rekomendasi", submitLabel = "Buat Quote" }: MitraQuoteFormProps) {
+export function MitraQuoteForm({ viewModel, title = "Penawaran dan Rekomendasi", submitLabel = "Buat Penawaran" }: MitraQuoteFormProps) {
   return (
     <article data-mitra-tour="mitra-quote-form" className="rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
       <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
@@ -31,20 +31,20 @@ export function MitraQuoteForm({ viewModel, title = "Quote dan Rekomendasi", sub
             <SelectContent>
               {viewModel.activePlans.map((plan) => (
                 <SelectItem key={plan.id} value={String(plan.id)}>
-                  {plan.name} - {formatCurrency(plan.base_price_per_seat)} / seat
+                  {plan.name} - {formatCurrency(plan.base_price_per_seat)} / kuota
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
           {viewModel.selectedQuotePlan && (
             <p className="text-xs text-gray-500">
-              Batas paket: {viewModel.selectedQuotePlan.min_seats}-{viewModel.selectedQuotePlan.max_seats} seat.
+              Batas paket: {viewModel.selectedQuotePlan.min_seats}-{viewModel.selectedQuotePlan.max_seats} kuota.
             </p>
           )}
         </div>
         <div className="grid grid-cols-1 gap-3 xs:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="quote-seats">Jumlah seat</Label>
+            <Label htmlFor="quote-seats">Jumlah kuota</Label>
             <Input
               id="quote-seats"
               type="number"
@@ -56,7 +56,7 @@ export function MitraQuoteForm({ viewModel, title = "Quote dan Rekomendasi", sub
             />
           </div>
           <div className="space-y-1.5">
-            <Label>Siklus billing</Label>
+            <Label>Siklus tagihan</Label>
             <Select value={viewModel.quoteForm.billing_cycle} onValueChange={(value) => viewModel.setQuoteForm((prev) => ({ ...prev, billing_cycle: value }))}>
               <SelectTrigger><SelectValue placeholder="Pilih siklus" /></SelectTrigger>
               <SelectContent>
@@ -76,7 +76,7 @@ export function MitraQuoteForm({ viewModel, title = "Quote dan Rekomendasi", sub
       )}
       {viewModel.pricingRecommendation && (
         <div className="mt-4 rounded-2xl border border-red-100 bg-red-50 p-3 text-sm text-red-800">
-          Rekomendasi: {viewModel.pricingRecommendation.recommended_seats} seat, siklus {formatBillingCycle(viewModel.pricingRecommendation.recommended_billing_cycle)}, tingkat keyakinan {viewModel.pricingRecommendation.confidence_score}%.
+          Rekomendasi: {viewModel.pricingRecommendation.recommended_seats} kuota, siklus {formatBillingCycle(viewModel.pricingRecommendation.recommended_billing_cycle)}, tingkat keyakinan {viewModel.pricingRecommendation.confidence_score}%.
         </div>
       )}
     </article>

@@ -48,7 +48,6 @@ interface ExpandedPlayerProps {
     onToggleRepeat: () => void;
     onToggleMute: () => void;
     onVolumeChange: (value: number) => void;
-    onToggleMinimize: () => void;
     onHidePlayer: () => void;
 }
 
@@ -72,7 +71,6 @@ export function ExpandedPlayer({
     onToggleRepeat,
     onToggleMute,
     onVolumeChange,
-    onToggleMinimize,
     onHidePlayer,
 }: ExpandedPlayerProps) {
     // Get repeat icon
@@ -86,175 +84,121 @@ export function ExpandedPlayer({
     };
 
     return (
-        <div className="p-4 md:py-3">
-            <div className="mx-auto w-full max-w-6xl">
-                {/* Progress bar */}
-                <div className="flex items-center gap-3 mb-4 md:mb-3">
-                    <span className="text-xs text-gray-500 w-10 text-right">
-                        {formatTime(currentTime)}
-                    </span>
-                    <Slider
-                        value={[currentTime]}
-                        max={duration || 100}
-                        step={1}
-                        onValueChange={onSeek}
-                        className="flex-1"
-                    />
-                    <span className="text-xs text-gray-500 w-10">
-                        {formatTime(duration)}
-                    </span>
+        <div className="py-2 px-3 md:px-4">
+            <div className="mx-auto w-full max-w-7xl flex items-center justify-between gap-2 md:gap-4">
+                {/* Left: Album Info */}
+                <div className="flex items-center gap-3 w-[30%] min-w-0 shrink-0">
+                    <div className="w-10 h-10 rounded-lg overflow-hidden theme-placeholder-bg shrink-0">
+                        {currentSong.thumbnail ? (
+                            <Image
+                                src={currentSong.thumbnail}
+                                alt={currentSong.title}
+                                width={40}
+                                height={40}
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                                <Music className="w-5 h-5 text-primary" />
+                            </div>
+                        )}
+                    </div>
+                    <div className="min-w-0 hidden sm:block">
+                        <h4 className="font-semibold text-gray-900 text-sm truncate">
+                            {currentSong.title}
+                        </h4>
+                        <p className="text-xs text-gray-500 truncate">
+                            {playbackSourceName || currentSong.category?.name}
+                        </p>
+                    </div>
                 </div>
 
-                <div className="relative">
-                    <div className="flex items-center gap-3 min-w-0 md:max-w-[34%]">
-                        <div className="w-14 h-14 rounded-xl overflow-hidden theme-placeholder-bg shrink-0">
-                            {currentSong.thumbnail ? (
-                                <Image
-                                    src={currentSong.thumbnail}
-                                    alt={currentSong.title}
-                                    width={56}
-                                    height={56}
-                                    className="w-full h-full object-cover"
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                    <Music className="w-6 h-6 text-primary" />
-                                </div>
-                            )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                            <h4 className="font-semibold text-gray-900 truncate">
-                                {currentSong.title}
-                            </h4>
-                            <p className="text-sm text-gray-500 truncate">
-                                {playbackSourceName || currentSong.category?.name}
-                            </p>
-                            {queueLength > 1 && (
-                                <p className="text-xs text-gray-400">
-                                    {queueIndex + 1} / {queueLength}
-                                </p>
-                            )}
-                        </div>
-
-                        {/* Mobile Minimize/Close */}
-                        <div className="ml-auto flex items-center gap-1 md:hidden shrink-0">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={onToggleMinimize}
-                            >
-                                <ChevronDown className="w-4 h-4" />
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-gray-400 hover:text-gray-600"
-                                onClick={onHidePlayer}
-                            >
-                                <X className="w-4 h-4" />
-                            </Button>
-                        </div>
-                    </div>
-
-                    {/* Controls */}
-                    <div className="mt-3 flex items-center justify-center gap-2 md:mt-0 md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2">
+                {/* Center: Controls & Progress */}
+                <div className="flex items-center justify-center flex-1 gap-2 md:gap-4 min-w-0">
+                    <div className="flex items-center gap-1 md:gap-2 shrink-0">
                         <Button
                             variant="ghost"
                             size="icon"
-                            className={cn(
-                                "h-8 w-8 hidden sm:flex",
-                                shuffle && "text-primary"
-                            )}
+                            className={cn("h-8 w-8 hidden lg:flex", shuffle && "text-primary")}
                             onClick={onToggleShuffle}
                         >
                             <Shuffle className="w-4 h-4" />
                         </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-9 w-9"
-                            onClick={onPlayPrevious}
-                        >
-                            <SkipBack className="w-5 h-5" />
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onPlayPrevious}>
+                            <SkipBack className="w-4 h-4" />
                         </Button>
                         <Button
                             size="icon"
-                            className="h-12 w-12 rounded-full gradient-primary border-0"
+                            className="h-10 w-10 rounded-full gradient-primary border-0 shrink-0"
                             onClick={onTogglePlay}
                         >
-                            {isPlaying ? (
-                                <Pause className="w-6 h-6 text-white" />
-                            ) : (
-                                <Play className="w-6 h-6 text-white" />
-                            )}
+                            {isPlaying ? <Pause className="w-5 h-5 text-white" /> : <Play className="w-5 h-5 text-white" />}
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onPlayNext}>
+                            <SkipForward className="w-4 h-4" />
                         </Button>
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="h-9 w-9"
-                            onClick={onPlayNext}
-                        >
-                            <SkipForward className="w-5 h-5" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className={cn(
-                                "h-8 w-8 hidden sm:flex",
-                                repeatMode !== "off" && "text-primary"
-                            )}
+                            className={cn("h-8 w-8 hidden lg:flex", repeatMode !== "off" && "text-primary")}
                             onClick={onToggleRepeat}
                         >
                             {getRepeatIcon()}
                         </Button>
                     </div>
 
-                    {/* Volume & Actions */}
-                    <div className="hidden md:flex ml-auto items-center justify-end gap-3 pl-2 min-h-14">
-                        <div className="hidden md:flex items-center gap-3 w-40">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={onToggleMute}
-                            >
-                                {isMuted || volume === 0 ? (
-                                    <VolumeX className="w-4 h-4 text-gray-400" />
-                                ) : (
-                                    <Volume2 className="w-4 h-4 text-gray-400" />
-                                )}
-                            </Button>
-                            <Slider
-                                value={[isMuted ? 0 : volume * 100]}
-                                max={100}
-                                step={1}
-                                onValueChange={(value: number[]) => onVolumeChange(value[0] / 100)}
-                                className="flex-1"
-                            />
-                        </div>
-
-                        {/* Minimize/Close buttons */}
-                        <div className="flex items-center gap-1">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={onToggleMinimize}
-                            >
-                                <ChevronDown className="w-4 h-4" />
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-gray-400 hover:text-gray-600"
-                                onClick={onHidePlayer}
-                            >
-                                <X className="w-4 h-4" />
-                            </Button>
-                        </div>
+                    <div className="hidden md:flex items-center gap-2 w-full max-w-md">
+                        <span className="text-xs text-gray-500 w-9 text-right shrink-0">
+                            {formatTime(currentTime)}
+                        </span>
+                        <Slider
+                            value={[currentTime]}
+                            max={duration || 100}
+                            step={1}
+                            onValueChange={onSeek}
+                            className="flex-1"
+                        />
+                        <span className="text-xs text-gray-500 w-9 shrink-0">
+                            {formatTime(duration)}
+                        </span>
                     </div>
                 </div>
+
+                {/* Right: Volume & Actions */}
+                <div className="flex items-center justify-end gap-2 w-[30%] min-w-0 shrink-0">
+                    <div className="hidden md:flex items-center gap-2 w-28">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={onToggleMute}>
+                            {isMuted || volume === 0 ? (
+                                <VolumeX className="w-4 h-4 text-gray-400" />
+                            ) : (
+                                <Volume2 className="w-4 h-4 text-gray-400" />
+                            )}
+                        </Button>
+                        <Slider
+                            value={[isMuted ? 0 : volume * 100]}
+                            max={100}
+                            step={1}
+                            onValueChange={(value: number[]) => onVolumeChange(value[0] / 100)}
+                            className="flex-1"
+                        />
+                    </div>
+                    <div className="flex items-center shrink-0 md:ml-2">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-600" onClick={onHidePlayer}>
+                            <X className="w-4 h-4" />
+                        </Button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Mobile Progress Bar (Absolute Top or Bottom) */}
+            <div className="md:hidden absolute top-0 left-0 right-0 -mt-2 px-2">
+                <Slider
+                    value={[currentTime]}
+                    max={duration || 100}
+                    step={1}
+                    onValueChange={onSeek}
+                    className="w-full"
+                />
             </div>
         </div>
     );
