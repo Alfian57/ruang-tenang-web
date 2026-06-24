@@ -33,7 +33,7 @@ export function MemberDashboardWidgetGrid({ viewModel }: MemberDashboardWidgetGr
           </div>
           <div className="h-full">
             <div data-user-tour="user-mood">
-              <MoodInsightWidget moods={viewModel.moodHistory} isLoading={viewModel.isLoadingWidgets} activitySignals={viewModel.widgets.moodActivitySignals} />
+              <MoodInsightWidget moods={viewModel.moodHistory} isLoading={viewModel.isLoadingWidgets} />
             </div>
           </div>
         </div>

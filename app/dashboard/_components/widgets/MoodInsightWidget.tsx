@@ -71,15 +71,9 @@ const MOOD_ACTION_PLANS: Record<
 interface MoodInsightWidgetProps {
   moods: UserMood[];
   isLoading?: boolean;
-  activitySignals?: {
-    key: string;
-    label: string;
-    count: number;
-    href: string;
-  }[];
 }
 
-export function MoodInsightWidget({ moods, isLoading, activitySignals = [] }: MoodInsightWidgetProps) {
+export function MoodInsightWidget({ moods, isLoading }: MoodInsightWidgetProps) {
   if (isLoading) {
     return (
       <Card className="h-full border-none shadow-sm flex flex-col">
@@ -143,13 +137,6 @@ export function MoodInsightWidget({ moods, isLoading, activitySignals = [] }: Mo
   }
 
   const actionPlan = lastMood ? MOOD_ACTION_PLANS[lastMood.mood] : null;
-  const strongestActivitySignal = [...activitySignals]
-    .filter((signal) => signal.count > 0)
-    .sort((a, b) => b.count - a.count)[0];
-
-  const activityNarrative = strongestActivitySignal
-    ? `Aktivitas paling dominan hari ini: ${strongestActivitySignal.label.toLowerCase()} (${strongestActivitySignal.count}x). Pertahankan ritme ini agar tren mood lebih stabil.`
-    : "Belum ada pola aktivitas dominan. Coba mulai dari 1 aksi kecil agar insight mood lebih kontekstual.";
 
   return (
     <Card className="h-full flex flex-col border border-gray-100 shadow-sm bg-linear-to-br from-theme-accent/5 to-white">

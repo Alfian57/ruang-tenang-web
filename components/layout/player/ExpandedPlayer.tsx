@@ -11,7 +11,6 @@ import {
     Repeat,
     Repeat1,
     Shuffle,
-    ChevronDown,
     Music,
     X,
 } from "lucide-react";
@@ -36,8 +35,6 @@ interface ExpandedPlayerProps {
     duration: number;
     volume: number;
     isMuted: boolean;
-    queueLength: number;
-    queueIndex: number;
     shuffle: boolean;
     repeatMode: "off" | "all" | "one";
     onSeek: (value: number[]) => void;
@@ -59,8 +56,6 @@ export function ExpandedPlayer({
     duration,
     volume,
     isMuted,
-    queueLength,
-    queueIndex,
     shuffle,
     repeatMode,
     onSeek,

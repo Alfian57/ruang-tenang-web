@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { CalendarDays, CheckCircle2, Loader2, RefreshCw, SmilePlus, Wind } from "lucide-react";
+import { CalendarDays, CheckCircle2, Loader2, RefreshCw, PlusCircle, Wind } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

@@ -21,8 +21,7 @@ export function GlobalMusicPlayer({ sidebarCollapsed = false }: GlobalMusicPlaye
         duration,
         volume,
         isMuted,
-        queue,
-        queueIndex,
+
         playbackSource,
         shuffle,
         repeatMode,
@@ -192,8 +191,7 @@ export function GlobalMusicPlayer({ sidebarCollapsed = false }: GlobalMusicPlaye
                             duration={duration}
                             volume={volume}
                             isMuted={isMuted}
-                            queueLength={queue.length}
-                            queueIndex={queueIndex}
+
                             shuffle={shuffle}
                             repeatMode={repeatMode}
                             onSeek={handleSeek}

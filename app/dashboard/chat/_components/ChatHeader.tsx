@@ -43,7 +43,9 @@ export function ChatHeader({
             <div className="min-w-0 flex-1 flex items-center gap-2">
                 <h3 className="line-clamp-1 font-semibold text-gray-800 text-sm sm:text-base">{activeSession.title}</h3>
                 {isPremium && (
-                    <Crown className="w-4 h-4 text-primary shrink-0" title="Premium aktif: chat tanpa batas" />
+                    <span title="Premium aktif: chat tanpa batas">
+                        <Crown className="w-4 h-4 text-primary shrink-0" />
+                    </span>
                 )}
             </div>
 
