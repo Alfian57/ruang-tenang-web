@@ -9,7 +9,6 @@ import { ChangePasswordModal } from "@/components/layout/dashboard";
 import { ExpHistoryModal } from "@/components/layout/dashboard";
 import { AuthProvider, useAuth } from "@/components/providers/AuthProvider";
 import { MoodCheckinProvider } from "@/components/providers/MoodCheckinProvider";
-import { WellnessOnboardingProvider } from "@/components/providers/WellnessOnboardingProvider";
 import { GlobalMusicPlayer } from "@/components/layout";
 import { DailyTaskFAB } from "@/components/shared/gamification";
 import { OfflineIndicator } from "@/components/pwa/OfflineIndicator";
@@ -393,7 +392,6 @@ function DashboardContent({
         </main>
 
         {/* Wellness onboarding and mood check-in modal (for regular users only) */}
-        {isUser && <WellnessOnboardingProvider />}
         {isUser && <MoodCheckinProvider />}
         {isUser && <UserFeatureTour />}
 
