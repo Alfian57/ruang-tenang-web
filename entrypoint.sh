@@ -10,11 +10,15 @@ set -e
 echo "🔧 Injecting runtime environment variables..."
 
 API_BASE_URL="${NEXT_PUBLIC_API_BASE_URL:-${NEXT_PUBLIC_API_URL:-https://ruang-tenang.site/api/v1}}"
+API_HOST=$(echo "$API_BASE_URL" | sed -E 's|https?://([^/]+).*|\1|')
 
 # Cari semua file build artifact yang mungkin menyimpan placeholder.
 find /app/.next -type f \( -name "*.js" -o -name "*.mjs" -o -name "*.json" -o -name "*.html" \) -exec sed -i \
   -e "s|__NEXT_PUBLIC_API_BASE_URL__|${API_BASE_URL}|g" \
   -e "s|__NEXT_PUBLIC_API_URL__|${API_BASE_URL}|g" \
+  -e "s|__next_public_api_base_url__|${API_HOST}|g" \
+  -e "s|http://localhost:8080/api/v1|${API_BASE_URL}|g" \
+  -e "s|http://localhost:8080|https://${API_HOST}|g" \
   {} \;
 
 # Standalone server bundle juga bisa menyimpan placeholder.
@@ -23,6 +27,9 @@ if [ -f /app/server.js ]; then
   sed \
     -e "s|__NEXT_PUBLIC_API_BASE_URL__|${API_BASE_URL}|g" \
     -e "s|__NEXT_PUBLIC_API_URL__|${API_BASE_URL}|g" \
+    -e "s|__next_public_api_base_url__|${API_HOST}|g" \
+    -e "s|http://localhost:8080/api/v1|${API_BASE_URL}|g" \
+    -e "s|http://localhost:8080|https://${API_HOST}|g" \
     /app/server.js > "${SERVER_TMP}"
   if [ -w /app/server.js ]; then
     cat "${SERVER_TMP}" > /app/server.js
