@@ -1,3 +1,5 @@
+import { Waves, Trees, Sunset, Hand, type LucideIcon } from "lucide-react";
+
 export function isToday(timestamp?: string) {
   if (!timestamp) return false;
   return new Date(timestamp).toDateString() === new Date().toDateString();
@@ -27,9 +29,9 @@ export function formatQuotaReset(value?: string | null) {
     : "-";
 }
 
-export function getGreetingEmoji(themeKey?: string) {
-  if (themeKey === "ocean_calm") return "🌊";
-  if (themeKey === "forest_zen") return "🌿";
-  if (themeKey === "sunset_warmth") return "🌅";
-  return "👋";
+export function getGreetingIcon(themeKey?: string): LucideIcon {
+  if (themeKey === "ocean_calm") return Waves;
+  if (themeKey === "forest_zen") return Trees;
+  if (themeKey === "sunset_warmth") return Sunset;
+  return Hand;
 }

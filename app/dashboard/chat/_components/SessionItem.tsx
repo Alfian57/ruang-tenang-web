@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, MoreVertical, Trash2, Folder, FolderOutput, MessageSquare } from "lucide-react";
+import { Heart, MoreVertical, Trash2, Folder, FolderOutput, MessageSquare, NotebookPen } from "lucide-react";
 import { cn } from "@/utils";
 import { ChatSession, ChatFolder } from "@/types";
 import {
@@ -85,7 +85,7 @@ export function SessionItem({
                       <Heart className="w-3 h-3 text-red-500 fill-red-500 shrink-0" />
                     )}
                     {session.has_summary && (
-                      <span className="text-[10px] px-1.5 py-0.5 bg-primary/10 text-primary/80 rounded">📝</span>
+                      <span className="inline-flex items-center text-[10px] px-1.5 py-0.5 bg-primary/10 text-primary/80 rounded"><NotebookPen className="w-3 h-3" /></span>
                     )}
                   </div>
                   {!compact && (

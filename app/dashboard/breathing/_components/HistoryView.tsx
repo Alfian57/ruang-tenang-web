@@ -62,7 +62,7 @@ export function HistoryView({
                                     color: session.technique?.color || "var(--muted-foreground)",
                                 }}
                             >
-                                💨
+                                <Wind className="w-5 h-5" />
                             </div>
                             <div className="flex-1 min-w-0">
                                 <h4 className="font-medium text-sm truncate">

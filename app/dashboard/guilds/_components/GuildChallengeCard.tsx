@@ -1,6 +1,6 @@
 "use client";
 
-import { Target, Clock, Trophy, Coins, CheckCircle2, AlertTriangle, Gift, CalendarDays, CalendarClock } from "lucide-react";
+import { Target, Clock, Trophy, Coins, CheckCircle2, AlertTriangle, Gift, CalendarDays, CalendarClock, Star, ClipboardList, Wind, BookOpen, MessageCircle, Flame, type LucideIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import type { GuildChallenge } from "@/types/guild";
 import { formatDistanceToNow, differenceInDays } from "date-fns";
@@ -15,13 +15,13 @@ const CHALLENGE_TYPE_LABELS: Record<string, string> = {
     total_streak_days: "Total Hari Streak",
 };
 
-const CHALLENGE_TYPE_ICONS: Record<string, string> = {
-    total_xp: "⭐",
-    total_tasks: "📋",
-    total_breathing: "🌬️",
-    total_journals: "📖",
-    total_chats: "💬",
-    total_streak_days: "🔥",
+const CHALLENGE_TYPE_ICONS: Record<string, LucideIcon> = {
+    total_xp: Star,
+    total_tasks: ClipboardList,
+    total_breathing: Wind,
+    total_journals: BookOpen,
+    total_chats: MessageCircle,
+    total_streak_days: Flame,
 };
 
 interface GuildChallengeCardProps {
@@ -32,7 +32,7 @@ interface GuildChallengeCardProps {
 
 export function GuildChallengeCard({ challenge, onClaim, isClaiming }: GuildChallengeCardProps) {
     const typeLabel = CHALLENGE_TYPE_LABELS[challenge.challenge_type] || challenge.challenge_type;
-    const typeIcon = CHALLENGE_TYPE_ICONS[challenge.challenge_type] || "🎯";
+    const TypeIcon = CHALLENGE_TYPE_ICONS[challenge.challenge_type] || Target;
     const progressPercent = Math.min(challenge.progress_percent, 100);
 
     const timeLeft = challenge.is_active
@@ -53,8 +53,8 @@ export function GuildChallengeCard({ challenge, onClaim, isClaiming }: GuildChal
                     "hover:shadow-md hover:border-primary/20 transition-all"
                 }`}>
             <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-lg shrink-0">
-                    {typeIcon}
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                    <TypeIcon className="w-5 h-5" />
                 </div>
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">

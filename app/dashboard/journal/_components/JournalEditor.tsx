@@ -8,7 +8,7 @@ import { JournalTagsInput } from "./JournalTagsInput";
 import { EditorContent } from "@tiptap/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Save, Lock, Eye, EyeOff, Info, AlertTriangle, Loader2, WandSparkles, CheckCircle2, ArrowRight } from "lucide-react";
+import { Save, Lock, Eye, EyeOff, Info, AlertTriangle, Loader2, WandSparkles, CheckCircle2, ArrowRight, Lightbulb, Compass } from "lucide-react";
 import {
     Tooltip,
     TooltipContent,
@@ -29,12 +29,12 @@ import { Label } from "@/components/ui/label";
 import { JournalToolbar } from "./JournalToolbar";
 
 const MOOD_OPTIONS = [
-    { id: 1, emoji: "😊", label: "Bahagia", color: "bg-primary/10 text-primary" },
-    { id: 2, emoji: "😐", label: "Netral", color: "bg-gray-100 text-gray-700" },
-    { id: 3, emoji: "😔", label: "Sedih", color: "bg-primary/10 text-primary" },
-    { id: 4, emoji: "😠", label: "Marah", color: "bg-red-100 text-red-700" },
-    { id: 5, emoji: "😫", label: "Kecewa", color: "bg-primary/10 text-primary" },
-    { id: 6, emoji: "😭", label: "Menangis", color: "bg-primary/10 text-primary" },
+    { id: 1, icon: "/images/1-smile.png", label: "Bahagia", color: "bg-primary/10 text-primary" },
+    { id: 2, icon: "/images/2-netral.png", label: "Netral", color: "bg-gray-100 text-gray-700" },
+    { id: 3, icon: "/images/5-sad.png", label: "Sedih", color: "bg-primary/10 text-primary" },
+    { id: 4, icon: "/images/3-angry.png", label: "Marah", color: "bg-red-100 text-red-700" },
+    { id: 5, icon: "/images/4-disappointed.png", label: "Kecewa", color: "bg-primary/10 text-primary" },
+    { id: 6, icon: "/images/6-cry.png", label: "Menangis", color: "bg-primary/10 text-primary" },
 ];
 
 interface JournalEditorProps {
@@ -346,7 +346,7 @@ export function JournalEditor({
                     {writingPrompt && (
                         <div className="bg-primary/10 p-4 rounded-lg border border-primary/20">
                             <h4 className="font-medium text-primary mb-2 text-sm flex items-center gap-2">
-                                <span className="text-lg">💡</span>
+                                <Lightbulb className="w-4 h-4" />
                                 Ide Menulis
                             </h4>
                             <p className="text-sm text-primary italic">
@@ -358,7 +358,7 @@ export function JournalEditor({
                     {!writingPrompt && activeMode?.prompt && (
                         <div className="bg-primary/10 p-4 rounded-lg border border-primary/20">
                             <h4 className="font-medium text-primary mb-2 text-sm flex items-center gap-2">
-                                <span className="text-lg">🧭</span>
+                                <Compass className="w-4 h-4" />
                                 Prompt Mode: {activeMode.label}
                             </h4>
                             <p className="text-sm text-primary italic">

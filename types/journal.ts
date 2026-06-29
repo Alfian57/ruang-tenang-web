@@ -19,6 +19,38 @@ export interface Journal {
   sentiment_score?: number;
   created_at: string;
   updated_at: string;
+  /** Set when a public request was downgraded to private by AI moderation. */
+  moderation_notice?: string;
+}
+
+export interface JournalAuthor {
+  id: number;
+  name: string;
+  avatar?: string;
+}
+
+export interface PublicJournalListItem {
+  uuid: string;
+  title: string;
+  preview: string;
+  mood_label?: string;
+  mood_emoji?: string;
+  tags: string[];
+  word_count: number;
+  created_at: string;
+  author: JournalAuthor;
+}
+
+export interface PublicJournal {
+  uuid: string;
+  title: string;
+  content: string;
+  mood_label?: string;
+  mood_emoji?: string;
+  tags: string[];
+  word_count: number;
+  created_at: string;
+  author: JournalAuthor;
 }
 
 export interface JournalSettings {

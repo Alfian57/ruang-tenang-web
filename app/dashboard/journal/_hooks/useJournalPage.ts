@@ -66,7 +66,7 @@ export function useJournalPage() {
     // Derived state from URL
 
     // Derived state from URL
-    const activeTab = (searchParams.get("tab") || "journals") as "journals" | "analytics" | "settings";
+    const activeTab = (searchParams.get("tab") || "journals") as "journals" | "community" | "analytics" | "settings";
     const urlSearchQuery = searchParams.get("search") || "";
 
     // Local state for search input
@@ -100,7 +100,7 @@ export function useJournalPage() {
     const [showFilters, setShowFilters] = useState(false);
     const [showDisclaimer, setShowDisclaimer] = useState(false);
 
-    const setActiveTab = (tab: "journals" | "analytics" | "settings") => {
+    const setActiveTab = (tab: "journals" | "community" | "analytics" | "settings") => {
         updateUrlParam({ tab: tab === "journals" ? null : tab });
     };
 

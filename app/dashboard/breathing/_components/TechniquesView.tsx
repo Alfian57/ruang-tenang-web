@@ -10,7 +10,7 @@ import {
 } from "@/types/breathing";
 import { StreakBanner } from "./StreakBanner";
 import { TechniqueGrid } from "./TechniqueGrid";
-import { Moon, Sparkles, Star, Target, Zap } from "lucide-react";
+import { Moon, Sparkles, Star, Target, Zap, Wind } from "lucide-react";
 
 interface TechniquesViewProps {
     stats: BreathingStats | null;
@@ -138,7 +138,7 @@ export function TechniquesView({
                                 color: recommendations.default_pick.technique.color
                             }}
                         >
-                            💨
+                            <Wind className="w-5 h-5" />
                         </div>
                         <div className="flex-1">
                             <h3 className="font-medium">{recommendations.default_pick.technique.name}</h3>

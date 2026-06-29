@@ -157,6 +157,7 @@ export default function RewardsPage() {
       await rewardService.activateTheme(token, theme);
       setActiveTheme(theme);
       refreshUser();
+      window.dispatchEvent(new Event("themes-updated"));
       toast.success(`Tema ${formatThemeLabel(theme)} aktif!`, {
         description: "Tampilan dashboard kamu sudah diperbarui.",
       });
@@ -211,6 +212,12 @@ export default function RewardsPage() {
         setBalance(res.data.remaining_coins);
         fetchData();
         refreshUser();
+
+        // Notify the navbar theme switcher so a newly claimed theme unlocks
+        // immediately without a page refresh.
+        if (reward.reward_type === "theme") {
+          window.dispatchEvent(new Event("themes-updated"));
+        }
       }
     } catch {
       toast.error("Gagal mengklaim hadiah");
@@ -298,13 +305,13 @@ export default function RewardsPage() {
           </div>
         </div>
 
-        {canCustomizeThemes && <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
+        {canCustomizeThemes && <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
           <div className="flex items-center justify-between gap-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-red-700">Koleksi Tema</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary">Koleksi Tema</p>
               <h3 className="text-lg font-semibold text-gray-900 mt-1">Tema Aktif: {formatThemeLabel(activeTheme)}</h3>
             </div>
-            <div className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-white px-3 py-1 text-xs font-medium text-red-700">
+            <div className="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-white px-3 py-1 text-xs font-medium text-primary">
               <Palette className="w-3.5 h-3.5" />
               {ownedThemes.length} tema dimiliki
             </div>

@@ -7,12 +7,14 @@ import { cn } from "@/utils";
 import { Journal } from "@/types";
 import {
     Lock,
+    Globe,
     Eye,
     EyeOff,
     MoreVertical,
     Trash2,
     Edit,
-    Tag,
+    FileText,
+    Sparkles,
 } from "lucide-react";
 import {
     DropdownMenu,
@@ -38,125 +40,162 @@ export function JournalListItem({
     const journalIdentifier = journal.slug || journal.uuid || String(journal.id);
 
     // Strip HTML and truncate content for preview
-    const rawContent = journal.preview || journal.content || "";
-    const contentPreview = rawContent
+    const rawContent = (journal.preview || journal.content || "")
         .replace(/<[^>]*>/g, "")
-        .slice(0, 150)
+        .replace(/\s+/g, " ")
         .trim();
+    const contentPreview = rawContent.length > 320
+        ? `${rawContent.slice(0, 320).trimEnd()}…`
+        : rawContent;
+
+    const createdLabel = (() => {
+        const date = new Date(journal.created_at);
+        const now = new Date();
+        const displayDate = date > now ? now : date;
+        return formatDistanceToNow(displayDate, { addSuffix: true, locale: id });
+    })();
 
     return (
         <div
             className={cn(
-                "group p-4 bg-white rounded-lg border transition-all cursor-pointer hover:shadow-md",
+                "group relative overflow-hidden rounded-xl border bg-white transition-all cursor-pointer",
+                "hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/5",
                 isActive
-                    ? "border-primary ring-2 ring-primary/20"
-                    : "border-gray-200 hover:border-gray-300"
+                    ? "border-primary ring-2 ring-primary/15"
+                    : "border-gray-200 hover:border-primary/30"
             )}
             onClick={() => router.push(`/dashboard/journal/${journalIdentifier}`)}
         >
-            <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                    {/* Title & Mood */}
-                    <div className="flex items-center gap-2 mb-1">
-                        {journal.mood_emoji && (
-                            <span className="text-lg" title={journal.mood_label}>
-                                {journal.mood_emoji}
+            {/* Active/hover accent rail */}
+            <span
+                className={cn(
+                    "absolute inset-y-0 left-0 w-1 bg-primary transition-transform duration-200 origin-top",
+                    isActive ? "scale-y-100" : "scale-y-0 group-hover:scale-y-100"
+                )}
+            />
+
+            <div className="flex items-start gap-3 p-4">
+                {/* Mood / icon badge */}
+                <div
+                    className={cn(
+                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl",
+                        journal.mood_emoji ? "bg-primary/10" : "bg-gray-100 text-gray-400"
+                    )}
+                    title={journal.mood_label}
+                >
+                    {journal.mood_emoji || <FileText className="h-5 w-5" />}
+                </div>
+
+                <div className="min-w-0 flex-1">
+                    {/* Title row */}
+                    <div className="flex items-center gap-2">
+                        <h3 className="min-w-0 flex-1 truncate font-semibold text-gray-900 group-hover:text-primary transition-colors">
+                            {journal.title || "Tanpa Judul"}
+                        </h3>
+                        {journal.mood_label && (
+                            <span className="hidden shrink-0 rounded-full bg-primary/5 px-2 py-0.5 text-[11px] font-medium text-primary/80 sm:inline">
+                                {journal.mood_label}
                             </span>
                         )}
-                        <h3 className="font-medium text-gray-900 truncate">
-                            {journal.title}
-                        </h3>
                     </div>
 
                     {/* Content Preview */}
-                    <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                    <p className="mt-1 line-clamp-4 text-sm leading-relaxed text-gray-600">
                         {contentPreview || "Tidak ada konten..."}
                     </p>
 
                     {/* Tags */}
                     {journal.tags && journal.tags.length > 0 && (
-                        <div className="flex items-center gap-1 flex-wrap mb-2">
-                            <Tag className="w-3 h-3 text-gray-400" />
-                            {journal.tags.slice(0, 3).map((tag) => (
+                        <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                            {journal.tags.slice(0, 4).map((tag) => (
                                 <span
                                     key={tag}
-                                    className="text-xs px-1.5 py-0.5 bg-gray-100 rounded text-gray-600"
+                                    className="rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600"
                                 >
                                     #{tag}
                                 </span>
                             ))}
-                            {journal.tags.length > 3 && (
+                            {journal.tags.length > 4 && (
                                 <span className="text-xs text-gray-400">
-                                    +{journal.tags.length - 3}
+                                    +{journal.tags.length - 4}
                                 </span>
                             )}
                         </div>
                     )}
 
-                    {/* Meta */}
-                    <div className="flex items-center gap-3 text-xs text-gray-500">
-                        <span>
-                            {(() => {
-                                const date = new Date(journal.created_at);
-                                const now = new Date();
-                                // Fix: If date is in the future (likely timezone issue), clamp to now
-                                const displayDate = date > now ? now : date;
-                                return formatDistanceToNow(displayDate, {
-                                    addSuffix: true,
-                                    locale: id,
-                                });
-                            })()}
-                        </span>
-                        <span>•</span>
+                    {/* Meta + privacy badges */}
+                    <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5 border-t border-dashed pt-3 text-xs text-gray-500">
+                        <span>{createdLabel}</span>
+                        <span className="text-gray-300">•</span>
                         <span>{journal.word_count} kata</span>
-                        {journal.is_private && (
-                            <>
-                                <span>•</span>
-                                <Lock className="w-3 h-3" />
-                            </>
-                        )}
-                        {journal.share_with_ai ? (
-                            <>
-                                <span>•</span>
-                                <span title="AI dapat membaca">
-                                    <Eye className="w-3 h-3 text-primary/80" />
+
+                        <span className="ml-auto flex items-center gap-1.5">
+                            {/* Visibility to community (public/private) */}
+                            {journal.is_private ? (
+                                <span
+                                    className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-600"
+                                    title="Hanya kamu yang bisa membaca jurnal ini"
+                                >
+                                    <Lock className="h-3 w-3" />
+                                    Privat
                                 </span>
-                            </>
-                        ) : (
-                            <>
-                                <span>•</span>
-                                <span title="AI tidak dapat membaca">
-                                    <EyeOff className="w-3 h-3" />
+                            ) : (
+                                <span
+                                    className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 font-medium text-blue-600"
+                                    title="Jurnal ini bisa dilihat komunitas"
+                                >
+                                    <Globe className="h-3 w-3" />
+                                    Publik
                                 </span>
-                            </>
-                        )}
+                            )}
+
+                            {/* Visibility to AI */}
+                            {journal.share_with_ai ? (
+                                <span
+                                    className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 font-medium text-primary"
+                                    title="AI dapat membaca jurnal ini"
+                                >
+                                    <Sparkles className="h-3 w-3" />
+                                    AI
+                                </span>
+                            ) : (
+                                <span
+                                    className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-500"
+                                    title="AI tidak dapat membaca jurnal ini"
+                                >
+                                    <EyeOff className="h-3 w-3" />
+                                    AI
+                                </span>
+                            )}
+                        </span>
                     </div>
                 </div>
 
-                {/* Actions */}
+                {/* Actions — always visible */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <button
-                            className="p-1.5 rounded-lg hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
                             onClick={(e) => e.stopPropagation()}
+                            aria-label="Opsi jurnal"
                         >
-                            <MoreVertical className="w-4 h-4 text-gray-500" />
+                            <MoreVertical className="h-4 w-4" />
                         </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenuItem onClick={() => router.push(`/dashboard/journal/${journalIdentifier}/edit`)}>
-                            <Edit className="w-4 h-4 mr-2" />
+                            <Edit className="mr-2 h-4 w-4" />
                             Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={onToggleAIShare}>
                             {journal.share_with_ai ? (
                                 <>
-                                    <EyeOff className="w-4 h-4 mr-2" />
+                                    <EyeOff className="mr-2 h-4 w-4" />
                                     Sembunyikan dari AI
                                 </>
                             ) : (
                                 <>
-                                    <Eye className="w-4 h-4 mr-2" />
+                                    <Eye className="mr-2 h-4 w-4" />
                                     Bagikan ke AI
                                 </>
                             )}
@@ -165,7 +204,7 @@ export function JournalListItem({
                             onClick={onDelete}
                             className="text-red-600 focus:text-red-600"
                         >
-                            <Trash2 className="w-4 h-4 mr-2" />
+                            <Trash2 className="mr-2 h-4 w-4" />
                             Hapus
                         </DropdownMenuItem>
                     </DropdownMenuContent>

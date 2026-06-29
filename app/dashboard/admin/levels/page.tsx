@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Pencil, Trash2, Loader2, Save, X, ImageIcon, Star, Shield, Zap, Coins, Info } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, Save, X, ImageIcon, Star, Shield, Zap, Coins, Info, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -92,8 +92,16 @@ export default function LevelsManagementPage() {
     <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden mb-6">
       {/* Form Header */}
       <div className="bg-gradient-to-r from-gray-50 to-white px-5 py-4 border-b border-gray-100">
-        <h3 className="text-lg font-bold text-gray-900">
-          {mode === "add" ? "✨ Tambah Level Baru" : `✏️ Edit Level ${formData.level}`}
+        <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
+          {mode === "add" ? (
+            <>
+              <Sparkles className="w-5 h-5 text-primary" /> Tambah Level Baru
+            </>
+          ) : (
+            <>
+              <Pencil className="w-5 h-5 text-primary" /> {`Edit Level ${formData.level}`}
+            </>
+          )}
         </h3>
         <p className="text-sm text-gray-500 mt-0.5">
           Konfigurasi level, badge, dan tugas yang akan muncul di Peta Perjalanan member.

@@ -21,6 +21,7 @@ import {
     Shield,
     Flame,
     ArrowRight,
+    ClipboardList,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -207,7 +208,7 @@ export default function GuildsPage() {
 
                                     {/* Info box */}
                                     <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
-                                        <p className="font-medium mb-1">📋 Ketentuan Guild:</p>
+                                        <p className="flex items-center gap-1.5 font-medium mb-1"><ClipboardList className="w-3.5 h-3.5" /> Ketentuan Guild:</p>
                                         <ul className="space-y-0.5 list-disc list-inside text-amber-600">
                                             <li>Setiap user hanya bisa bergabung di 1 guild</li>
                                             <li>Maksimal 10 anggota per guild</li>

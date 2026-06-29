@@ -152,7 +152,13 @@ export default function CreateJournalPage() {
         if (!token) return;
         const newJournal = await createJournal(token, data);
         if (newJournal) {
-            toast.success("Jurnal berhasil disimpan!");
+            if (newJournal.moderation_notice) {
+                toast.warning("Jurnal disimpan sebagai privat", {
+                    description: newJournal.moderation_notice,
+                });
+            } else {
+                toast.success("Jurnal berhasil disimpan!");
+            }
             router.push("/dashboard/journal");
         }
     };

@@ -555,6 +555,25 @@ button:disabled,
   transform: translateY(-1px);
 }
 
+/* Collapsed: a clean centered square button. The decorative blobs are hidden
+   because at 48px they get clipped into messy shapes. Allow overflow so the
+   status badge (notification dot) at the corner renders fully. */
+.sidebar-ai-card.is-collapsed {
+  border-radius: 1rem;
+  display: grid;
+  place-items: center;
+  overflow: visible;
+}
+
+.sidebar-ai-card.is-collapsed:hover {
+  transform: none;
+}
+
+.sidebar-ai-card.is-collapsed::before,
+.sidebar-ai-card.is-collapsed::after {
+  display: none;
+}
+
 .sidebar-ai-card.active {
   box-shadow: 0 6px 24px -3px rgba(239, 68, 68, 0.5);
   background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
@@ -667,13 +686,13 @@ button:disabled,
   /* Theme-specific tokens */
   --theme-bg: #F0F9FF;
   --theme-bg-secondary: #E0F2FE;
-  --theme-sidebar-bg: linear-gradient(180deg, #051B2C 0%, #0A2E4A 30%, #0E3F63 65%, #145A80 100%);
-  --theme-sidebar-text: #B8DCF0;
-  --theme-sidebar-hover: rgba(56, 189, 248, 0.08);
-  --theme-sidebar-active-bg: rgba(14, 165, 233, 0.22);
-  --theme-sidebar-active-shadow: 0 4px 15px rgba(14, 165, 233, 0.30);
-  --theme-sidebar-border: rgba(56, 189, 248, 0.10);
-  --theme-sidebar-label: rgba(186, 230, 253, 0.50);
+  --theme-sidebar-bg: linear-gradient(180deg, #FFFFFF 0%, #F0F9FF 100%);
+  --theme-sidebar-text: #334155;
+  --theme-sidebar-hover: rgba(14, 165, 233, 0.08);
+  --theme-sidebar-active-bg: #0EA5E9;
+  --theme-sidebar-active-shadow: 0 4px 12px rgba(14, 165, 233, 0.30);
+  --theme-sidebar-border: #E2E8F0;
+  --theme-sidebar-label: #94A3B8;
   --theme-header-bg: rgba(240, 249, 255, 0.85);
   --theme-header-border: #BAE6FD;
   --theme-card-border: #BAE6FD;
@@ -681,10 +700,10 @@ button:disabled,
   --theme-gradient-to: #0284C7;
   --theme-chat-user-from: #0EA5E9;
   --theme-chat-user-to: #0284C7;
-  --theme-ai-card-from: #0EA5E9;
-  --theme-ai-card-mid: #0284C7;
+  --theme-ai-card-from: #38BDF8;
+  --theme-ai-card-mid: #0EA5E9;
   --theme-ai-card-to: #0369A1;
-  --theme-ai-card-shadow: rgba(14, 165, 233, 0.35);
+  --theme-ai-card-shadow: rgba(14, 165, 233, 0.45);
   --theme-music-from: #0EA5E9;
   --theme-music-to: #0369A1;
 
@@ -735,13 +754,13 @@ button:disabled,
 
   --theme-bg: #F0FDF4;
   --theme-bg-secondary: #DCFCE7;
-  --theme-sidebar-bg: linear-gradient(180deg, #061208 0%, #0E2912 30%, #183E1F 65%, #22562E 100%);
-  --theme-sidebar-text: #A8D4B8;
-  --theme-sidebar-hover: rgba(74, 222, 128, 0.08);
-  --theme-sidebar-active-bg: rgba(34, 197, 94, 0.20);
-  --theme-sidebar-active-shadow: 0 4px 15px rgba(34, 197, 94, 0.28);
-  --theme-sidebar-border: rgba(74, 222, 128, 0.08);
-  --theme-sidebar-label: rgba(187, 247, 208, 0.50);
+  --theme-sidebar-bg: linear-gradient(180deg, #FFFFFF 0%, #F0FDF4 100%);
+  --theme-sidebar-text: #334155;
+  --theme-sidebar-hover: rgba(22, 163, 74, 0.08);
+  --theme-sidebar-active-bg: #16A34A;
+  --theme-sidebar-active-shadow: 0 4px 12px rgba(22, 163, 74, 0.30);
+  --theme-sidebar-border: #E2E8F0;
+  --theme-sidebar-label: #94A3B8;
   --theme-header-bg: rgba(240, 253, 244, 0.85);
   --theme-header-border: #BBF7D0;
   --theme-card-border: #BBF7D0;
@@ -749,10 +768,10 @@ button:disabled,
   --theme-gradient-to: #15803D;
   --theme-chat-user-from: #16A34A;
   --theme-chat-user-to: #15803D;
-  --theme-ai-card-from: #16A34A;
-  --theme-ai-card-mid: #15803D;
-  --theme-ai-card-to: #166534;
-  --theme-ai-card-shadow: rgba(22, 163, 74, 0.35);
+  --theme-ai-card-from: #4ADE80;
+  --theme-ai-card-mid: #22C55E;
+  --theme-ai-card-to: #15803D;
+  --theme-ai-card-shadow: rgba(34, 197, 94, 0.45);
   --theme-music-from: #16A34A;
   --theme-music-to: #166534;
 
@@ -803,13 +822,13 @@ button:disabled,
 
   --theme-bg: #FFF7ED;
   --theme-bg-secondary: #FFEDD5;
-  --theme-sidebar-bg: linear-gradient(180deg, #1A0C08 0%, #351A10 25%, #502818 50%, #6B3820 75%, #804525 100%);
-  --theme-sidebar-text: #F0D0B5;
-  --theme-sidebar-hover: rgba(251, 146, 60, 0.10);
-  --theme-sidebar-active-bg: rgba(251, 146, 60, 0.22);
-  --theme-sidebar-active-shadow: 0 4px 15px rgba(234, 88, 12, 0.30);
-  --theme-sidebar-border: rgba(253, 186, 116, 0.10);
-  --theme-sidebar-label: rgba(254, 215, 170, 0.55);
+  --theme-sidebar-bg: linear-gradient(180deg, #FFFFFF 0%, #FFF7ED 100%);
+  --theme-sidebar-text: #334155;
+  --theme-sidebar-hover: rgba(234, 88, 12, 0.08);
+  --theme-sidebar-active-bg: #EA580C;
+  --theme-sidebar-active-shadow: 0 4px 12px rgba(234, 88, 12, 0.30);
+  --theme-sidebar-border: #E2E8F0;
+  --theme-sidebar-label: #94A3B8;
   --theme-header-bg: rgba(255, 247, 237, 0.85);
   --theme-header-border: #FED7AA;
   --theme-card-border: #FED7AA;
@@ -817,10 +836,10 @@ button:disabled,
   --theme-gradient-to: #C2410C;
   --theme-chat-user-from: #EA580C;
   --theme-chat-user-to: #C2410C;
-  --theme-ai-card-from: #EA580C;
-  --theme-ai-card-mid: #C2410C;
+  --theme-ai-card-from: #FB923C;
+  --theme-ai-card-mid: #EA580C;
   --theme-ai-card-to: #9A3412;
-  --theme-ai-card-shadow: rgba(234, 88, 12, 0.35);
+  --theme-ai-card-shadow: rgba(234, 88, 12, 0.45);
   --theme-music-from: #EA580C;
   --theme-music-to: #9A3412;
 
@@ -855,12 +874,29 @@ button:disabled,
 
 /* ====== Theme-aware component overrides ====== */
 
-/* Sidebar: dark themed sidebar for non-default themes */
+/* Sidebar: light themed sidebar (tinted with each theme's color) */
 [class*="theme-ocean_calm"] .sidebar-themed,
 [class*="theme-forest_zen"] .sidebar-themed,
 [class*="theme-sunset_warmth"] .sidebar-themed {
   background-image: var(--theme-sidebar-bg);
   border-right-color: var(--theme-sidebar-border);
+}
+
+/* Themed sidebars now use a light background (like the default theme), so the
+   colored logo sits naturally without any backing badge. */
+[class*="theme-ocean_calm"] .sidebar-themed .sidebar-logo,
+[class*="theme-forest_zen"] .sidebar-themed .sidebar-logo,
+[class*="theme-sunset_warmth"] .sidebar-themed .sidebar-logo {
+  padding: 0;
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+[class*="theme-ocean_calm"] .sidebar-themed .sidebar-logo.is-collapsed,
+[class*="theme-forest_zen"] .sidebar-themed .sidebar-logo.is-collapsed,
+[class*="theme-sunset_warmth"] .sidebar-themed .sidebar-logo.is-collapsed {
+  padding: 0;
 }
 
 [class*="theme-ocean_calm"] .sidebar-themed .sidebar-logo-text,
@@ -873,7 +909,7 @@ button:disabled,
 [class*="theme-forest_zen"] .sidebar-themed .sidebar-nav-link,
 [class*="theme-sunset_warmth"] .sidebar-themed .sidebar-nav-link {
   color: var(--theme-sidebar-text);
-  opacity: 0.75;
+  opacity: 1;
   transition: all 0.2s ease;
 }
 
@@ -891,8 +927,6 @@ button:disabled,
   color: white !important;
   opacity: 1;
   box-shadow: var(--theme-sidebar-active-shadow, 0 4px 12px rgba(0, 0, 0, 0.15));
-  border-left: 3px solid rgba(255, 255, 255, 0.6);
-  padding-left: calc(1rem - 3px);
 }
 
 [class*="theme-ocean_calm"] .sidebar-themed .sidebar-nav-active .sidebar-nav-icon,
@@ -904,8 +938,8 @@ button:disabled,
 [class*="theme-ocean_calm"] .sidebar-themed .sidebar-nav-icon,
 [class*="theme-forest_zen"] .sidebar-themed .sidebar-nav-icon,
 [class*="theme-sunset_warmth"] .sidebar-themed .sidebar-nav-icon {
-  color: var(--theme-sidebar-text);
-  opacity: 0.65;
+  color: var(--color-primary);
+  opacity: 0.7;
 }
 
 [class*="theme-ocean_calm"] .sidebar-themed .sidebar-group-title,
@@ -928,20 +962,20 @@ button:disabled,
   background: transparent;
   border-color: var(--theme-sidebar-border);
   color: var(--theme-sidebar-text);
-  opacity: 0.45;
+  opacity: 0.8;
 }
 
 [class*="theme-ocean_calm"] .sidebar-themed .sidebar-collapse-btn,
 [class*="theme-forest_zen"] .sidebar-themed .sidebar-collapse-btn,
 [class*="theme-sunset_warmth"] .sidebar-themed .sidebar-collapse-btn {
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(15, 23, 42, 0.05);
   color: var(--theme-sidebar-text);
 }
 
 [class*="theme-ocean_calm"] .sidebar-themed .sidebar-collapse-btn:hover,
 [class*="theme-forest_zen"] .sidebar-themed .sidebar-collapse-btn:hover,
 [class*="theme-sunset_warmth"] .sidebar-themed .sidebar-collapse-btn:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(15, 23, 42, 0.1);
 }
 
 [class*="theme-ocean_calm"] .sidebar-themed .sidebar-expand-btn,

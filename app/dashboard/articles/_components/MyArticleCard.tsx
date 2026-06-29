@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ROUTES } from "@/lib/routes";
-import { Edit, Trash2, Eye, AlertCircle } from "lucide-react";
+import { Edit, Trash2, Eye, AlertCircle, FileText } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/utils";
@@ -32,7 +32,7 @@ export function MyArticleCard({ article, onDelete }: MyArticleCardProps) {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-2xl">📄</div>
+              <div className="w-full h-full flex items-center justify-center"><FileText className="w-7 h-7 text-gray-300" /></div>
             )}
           </div>
 

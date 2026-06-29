@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, BookOpen } from "lucide-react";
+import { Search, BookOpen, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -140,8 +140,8 @@ export default function DashboardReadingPage() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-3xl">
-                        📄
+                      <div className="w-full h-full flex items-center justify-center">
+                        <FileText className="w-8 h-8 text-gray-300" />
                       </div>
                     )}
                   </div>

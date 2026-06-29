@@ -9,6 +9,8 @@ import type {
   JournalWeeklySummary,
   JournalPrompt,
   JournalExportData,
+  PublicJournalListItem,
+  PublicJournal,
 } from "@/types";
 
 export const journalService = {
@@ -43,6 +45,20 @@ export const journalService = {
 
   search(token: string, query: string, page?: number, limit?: number) {
     return httpClient.get<PaginatedResponse<Journal>>("/journals/search", { token, params: { q: query, page, limit } });
+  },
+
+  // Public (Community) journals
+  listPublic(token: string, params?: { page?: number; limit?: number; tags?: string[]; q?: string }) {
+    const flatParams: Record<string, string | number | boolean | undefined> = {};
+    if (params?.page) flatParams.page = params.page;
+    if (params?.limit) flatParams.limit = params.limit;
+    if (params?.q) flatParams.q = params.q;
+    if (params?.tags && params.tags.length > 0) flatParams.tags = params.tags.join(",");
+    return httpClient.get<PaginatedResponse<PublicJournalListItem>>("/journals/public", { token, params: flatParams });
+  },
+
+  getPublic(token: string, uuid: string) {
+    return httpClient.get<ApiResponse<PublicJournal>>(`/journals/public/${uuid}`, { token });
   },
 
   // Settings

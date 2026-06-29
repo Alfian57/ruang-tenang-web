@@ -8,6 +8,7 @@ import {
     JournalAnalytics,
     JournalWeeklySummary,
     JournalFilters,
+    JournalCommunity,
 } from "./_components";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +30,8 @@ import {
     Filter,
     X,
     WandSparkles,
+    NotebookPen,
+    Users,
 } from "lucide-react";
 import { cn } from "@/utils";
 import { useJournalPage } from "./_hooks/useJournalPage";
@@ -96,8 +99,8 @@ export default function JournalPage() {
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">
-                            📔 Jurnal Pribadi
+                        <h1 className="flex items-center gap-2 text-2xl font-bold text-gray-900">
+                            <NotebookPen className="w-6 h-6 text-primary" /> Jurnal Pribadi
                         </h1>
                         <p className="text-sm text-gray-500">
                             Tulis, refleksi, dan pertumbuhan pribadimu
@@ -162,6 +165,10 @@ export default function JournalPage() {
                     <TabsTrigger value="journals" className="flex items-center gap-2">
                         <BookOpen className="w-4 h-4" />
                         Jurnal
+                    </TabsTrigger>
+                    <TabsTrigger value="community" className="flex items-center gap-2">
+                        <Users className="w-4 h-4" />
+                        Komunitas
                     </TabsTrigger>
                     <TabsTrigger value="analytics" className="flex items-center gap-2">
                         <BarChart2 className="w-4 h-4" />
@@ -283,6 +290,11 @@ export default function JournalPage() {
                             </div>
                         </div>
                     </div>
+                </TabsContent>
+
+                {/* Community Tab */}
+                <TabsContent value="community">
+                    <JournalCommunity />
                 </TabsContent>
 
                 {/* Analytics Tab */}

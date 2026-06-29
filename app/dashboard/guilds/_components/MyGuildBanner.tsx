@@ -72,7 +72,7 @@ export function MyGuildBanner({ myGuild }: MyGuildBannerProps) {
                     href={ROUTES.guildDetail(guild.id)}
                     className="flex justify-center items-center gap-2 w-full sm:w-auto px-4 py-2 sm:py-2.5 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors shrink-0"
                 >
-                    Lihat Guild
+                    Buka Guild
                     <ArrowRight className="w-4 h-4" />
                 </Link>
             </div>

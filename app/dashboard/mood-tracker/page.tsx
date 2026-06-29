@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { CalendarDays, CheckCircle2, Loader2, RefreshCw, PlusCircle, Wind } from "lucide-react";
+import Image from "next/image";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,14 +12,15 @@ import { ROUTES } from "@/lib/routes";
 import { moodService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import type { MoodType, UserMood } from "@/types";
+import { MOOD_ASSETS } from "../_components/mood-config";
 
-const MOOD_OPTIONS: Array<{ value: MoodType; label: string; emoji: string; tone: string }> = [
-  { value: "happy", label: "Senang", emoji: "😊", tone: "bg-primary/10 text-primary border-primary/20" },
-  { value: "neutral", label: "Netral", emoji: "😐", tone: "bg-slate-50 text-slate-700 border-slate-200" },
-  { value: "angry", label: "Marah", emoji: "😠", tone: "bg-red-50 text-red-700 border-red-200" },
-  { value: "disappointed", label: "Kecewa", emoji: "😞", tone: "bg-amber-50 text-amber-700 border-amber-200" },
-  { value: "sad", label: "Sedih", emoji: "😢", tone: "bg-primary/10 text-primary border-primary/20" },
-  { value: "crying", label: "Menangis", emoji: "😭", tone: "bg-primary/10 text-primary border-primary/20" },
+const MOOD_OPTIONS: Array<{ value: MoodType; label: string; icon: string; activeIcon: string; tone: string }> = [
+  { value: "happy", label: "Senang", icon: MOOD_ASSETS.happy.inactive, activeIcon: MOOD_ASSETS.happy.active, tone: "bg-primary/10 text-primary border-primary/20" },
+  { value: "neutral", label: "Netral", icon: MOOD_ASSETS.neutral.inactive, activeIcon: MOOD_ASSETS.neutral.active, tone: "bg-slate-50 text-slate-700 border-slate-200" },
+  { value: "angry", label: "Marah", icon: MOOD_ASSETS.angry.inactive, activeIcon: MOOD_ASSETS.angry.active, tone: "bg-red-50 text-red-700 border-red-200" },
+  { value: "disappointed", label: "Kecewa", icon: MOOD_ASSETS.disappointed.inactive, activeIcon: MOOD_ASSETS.disappointed.active, tone: "bg-amber-50 text-amber-700 border-amber-200" },
+  { value: "sad", label: "Sedih", icon: MOOD_ASSETS.sad.inactive, activeIcon: MOOD_ASSETS.sad.active, tone: "bg-primary/10 text-primary border-primary/20" },
+  { value: "crying", label: "Menangis", icon: MOOD_ASSETS.crying.inactive, activeIcon: MOOD_ASSETS.crying.active, tone: "bg-primary/10 text-primary border-primary/20" },
 ];
 
 const moodMap = new Map(MOOD_OPTIONS.map((item) => [item.value, item]));
@@ -136,7 +138,9 @@ export default function MoodTrackerPage() {
                   onClick={() => void handleRecordMood(option.value)}
                   className={`rounded-2xl border p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-70 ${option.tone}`}
                 >
-                  <span className="text-3xl" aria-hidden="true">{option.emoji}</span>
+                  <span className="block h-10 w-10 relative" aria-hidden="true">
+                    <Image src={option.activeIcon} alt="" fill sizes="40px" className="object-contain" />
+                  </span>
                   <span className="mt-3 block text-sm font-semibold">{option.label}</span>
                   {isSubmitting === option.value && <Loader2 className="mt-2 h-4 w-4 animate-spin" />}
                 </button>
@@ -154,7 +158,12 @@ export default function MoodTrackerPage() {
             {distribution.map((item) => (
               <div key={item.value}>
                 <div className="flex items-center justify-between gap-3 text-sm">
-                  <span className="font-medium text-slate-700">{item.emoji} {item.label}</span>
+                  <span className="flex items-center gap-2 font-medium text-slate-700">
+                    <span className="h-5 w-5 relative shrink-0" aria-hidden="true">
+                      <Image src={item.icon} alt="" fill sizes="20px" className="object-contain" />
+                    </span>
+                    {item.label}
+                  </span>
                   <Badge variant="muted">{item.count}</Badge>
                 </div>
                 <div className="mt-2 h-2 rounded-full bg-slate-100">
@@ -192,7 +201,9 @@ export default function MoodTrackerPage() {
                   return (
                     <div key={mood.id} className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl" aria-hidden="true">{option?.emoji ?? mood.emoji}</span>
+                        <span className="h-8 w-8 relative shrink-0" aria-hidden="true">
+                          <Image src={option?.icon ?? MOOD_ASSETS[mood.mood]?.inactive} alt="" fill sizes="32px" className="object-contain" />
+                        </span>
                         <div>
                           <p className="text-sm font-semibold text-slate-900">{option?.label ?? mood.mood}</p>
                           <p className="text-xs text-slate-500">{formatDate(mood.created_at)}</p>

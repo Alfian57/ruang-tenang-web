@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
+import Image from "next/image";
 import { JournalAnalytics } from "@/types";
 
 interface JournalMoodChartProps {
@@ -37,7 +38,9 @@ export function JournalMoodChart({ analytics }: JournalMoodChartProps) {
         <Card>
             <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
-                    <span className="text-xl">😊</span>
+                    <span className="h-5 w-5 relative" aria-hidden="true">
+                        <Image src="/images/1-smile.png" alt="" fill sizes="20px" className="object-contain" />
+                    </span>
                     Distribusi Mood
                 </CardTitle>
             </CardHeader>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, Eye } from "lucide-react";
+import { BookOpen, Eye, ArrowRight } from "lucide-react";
 
 interface JournalContextIndicatorProps {
     journalSharedCount: number;
@@ -21,8 +21,8 @@ export function JournalContextIndicator({ journalSharedCount }: JournalContextIn
                     </span>
                     <Eye className="w-3 h-3 opacity-50" />
                 </div>
-                <span className="text-xs text-primary/80 group-hover:text-primary dark:group-hover:text-primary/60 transition-colors">
-                    Kelola →
+                <span className="inline-flex items-center gap-1 text-xs text-primary/80 group-hover:text-primary dark:group-hover:text-primary/60 transition-colors">
+                    Kelola <ArrowRight className="w-3 h-3" />
                 </span>
             </Link>
         </div>

@@ -5,6 +5,7 @@ import {
   Calendar,
   Tag,
   User,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,8 +39,8 @@ export function StoryContent({ story, heartLoading, onToggleHeart }: StoryConten
       {/* Title & Meta */}
       <div className="mb-8">
         {story.is_featured && (
-          <Badge className="bg-amber-500 text-white mb-3">
-            ✨ Kisah Pilihan
+          <Badge className="inline-flex items-center gap-1 bg-amber-500 text-white mb-3">
+            <Sparkles className="w-3.5 h-3.5" /> Kisah Pilihan
           </Badge>
         )}
         <h1 className="text-3xl md:text-4xl font-bold mb-4">

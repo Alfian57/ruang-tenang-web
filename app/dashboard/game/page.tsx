@@ -1,6 +1,6 @@
 "use client";
 
-import { Gamepad2 } from "lucide-react";
+import { Gamepad2, Wind, Heart, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import MindfulRunnerGame from "@/components/game/MindfulRunnerGame";
 
@@ -42,19 +42,25 @@ export default function GamePage() {
                 className="grid grid-cols-1 sm:grid-cols-3 gap-4"
             >
                 <div className="bg-red-50 rounded-xl p-4 border border-red-100">
-                    <h3 className="font-semibold text-red-800 text-sm mb-1">🧘 Cara Bermain</h3>
+                    <h3 className="flex items-center gap-1.5 font-semibold text-red-800 text-sm mb-1">
+                        <Wind className="w-4 h-4" /> Cara Bermain
+                    </h3>
                     <p className="text-xs text-red-600">
                         Tekan SPASI, ↑, atau tap layar untuk melompat dan menghindari rintangan.
                     </p>
                 </div>
                 <div className="bg-primary/10 rounded-xl p-4 border border-primary/20">
-                    <h3 className="font-semibold text-primary text-sm mb-1">💛 Kumpulkan</h3>
+                    <h3 className="flex items-center gap-1.5 font-semibold text-primary text-sm mb-1">
+                        <Heart className="w-4 h-4" /> Kumpulkan
+                    </h3>
                     <p className="text-xs text-primary/80">
                         Hati, bintang, dan bunga lotus memberikan poin bonus. Combo = lebih banyak poin!
                     </p>
                 </div>
                 <div className="bg-primary/10 rounded-xl p-4 border border-primary/20">
-                    <h3 className="font-semibold text-primary text-sm mb-1">✨ Tips</h3>
+                    <h3 className="flex items-center gap-1.5 font-semibold text-primary text-sm mb-1">
+                        <Sparkles className="w-4 h-4" /> Tips
+                    </h3>
                     <p className="text-xs text-primary/80">
                         Game ini juga tersedia saat offline. Mainkan kapan saja untuk relaksasi sejenak.
                     </p>

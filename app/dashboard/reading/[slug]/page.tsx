@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { Calendar, ArrowLeft, Tag, Flag } from "lucide-react";
+import { Calendar, ArrowLeft, Tag, Flag, FileText } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { articleService } from "@/services/api";
@@ -160,8 +160,8 @@ export default function DashboardArticleDetailPage() {
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-2xl">
-                              📄
+                            <div className="w-full h-full flex items-center justify-center">
+                              <FileText className="w-6 h-6 text-gray-300" />
                             </div>
                           )}
                         </div>

@@ -237,100 +237,82 @@ export default function ForumPage() {
         </p>
       </div>
 
-      <section className="rounded-2xl border border-theme-story-border bg-theme-story-from p-4 sm:p-5">
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-          <div>
-            <p className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-theme-story-heading">
-              <Sparkles className="w-3.5 h-3.5 text-theme-story-icon" />
-              Support Circle Tematik
-            </p>
-            <h2 className="text-lg font-semibold text-theme-story-heading mt-1">Pilih circle biar diskusi terasa lebih relevan</h2>
-          </div>
-          <p className="text-xs text-theme-story-heading opacity-80">
-            Circle aktif akan memfilter daftar topik dan membantu prefill draft.
-          </p>
-        </div>
+      <section className="rounded-xl border border-gray-200 bg-gray-50/60">
+        <details className="group">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3">
+            <span className="inline-flex items-center gap-2 text-sm font-medium text-gray-600">
+              <Sparkles className="h-4 w-4 text-theme-story-icon" />
+              Tambahan: Support Circle &amp; Healing Prompt
+            </span>
+            <span className="text-xs text-gray-400 transition-transform group-open:rotate-180">▾</span>
+          </summary>
 
-        <div className="grid gap-3 md:grid-cols-2">
-          {FORUM_SUPPORT_CIRCLES.map((circle) => {
-            const isActiveCircle = selectedSupportCircle === circle.id;
-            return (
-              <div
-                key={circle.id}
-                className={`rounded-xl border p-3 ${isActiveCircle ? "border-theme-story-icon bg-theme-story-icon-bg/30" : "border-theme-story-border/50 bg-white"}`}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-900">{circle.title}</h3>
-                    <p className="text-xs text-gray-600 mt-1 leading-relaxed">{circle.description}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleToggleSupportCircle(circle.id)}
-                    className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                      isActiveCircle
-                        ? "bg-theme-story-icon text-white"
-                        : "bg-theme-story-icon-bg text-theme-story-icon hover:bg-theme-story-icon-bg/80"
-                    }`}
-                    aria-pressed={isActiveCircle}
-                  >
-                    {isActiveCircle ? "Aktif" : "Pilih"}
-                  </button>
-                </div>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="mt-3 w-full border-theme-story-border text-theme-story-link hover:text-theme-story-heading hover:bg-theme-story-from"
-                  onClick={() => handleUseSupportCircleDraft(circle)}
-                  disabled={isForumBlocked}
-                >
-                  Buat Topik di Circle Ini
-                </Button>
+          <div className="space-y-5 px-4 pb-4">
+            {/* Support Circles — compact chips */}
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Support Circle Tematik
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {FORUM_SUPPORT_CIRCLES.map((circle) => {
+                  const isActiveCircle = selectedSupportCircle === circle.id;
+                  return (
+                    <button
+                      key={circle.id}
+                      type="button"
+                      onClick={() => handleToggleSupportCircle(circle.id)}
+                      title={circle.description}
+                      aria-pressed={isActiveCircle}
+                      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                        isActiveCircle
+                          ? "border-theme-story-icon bg-theme-story-icon text-white"
+                          : "border-gray-200 bg-white text-gray-600 hover:border-theme-story-icon/40 hover:text-theme-story-heading"
+                      }`}
+                    >
+                      {circle.title}
+                    </button>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
-
-        {selectedSupportCircle && (
-          <div className="mt-3 rounded-lg border border-theme-story-border bg-white px-3 py-2 text-xs text-theme-story-heading">
-            Filter circle aktif. Matikan circle untuk kembali melihat semua topik.
-          </div>
-        )}
-      </section>
-
-      <section className="rounded-2xl border border-theme-story-border bg-theme-story-from p-4 sm:p-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-theme-story-heading">
-              <Sparkles className="w-3.5 h-3.5 text-theme-story-icon" />
-              Healing Prompt Minggu Ini
-            </p>
-            <h2 className="text-lg font-semibold text-theme-story-heading mt-1">Mulai topik dengan nuansa yang lebih suportif</h2>
-          </div>
-          <p className="text-xs text-theme-story-heading opacity-80">
-            Pilih prompt untuk otomatis mengisi draft topik baru.
-          </p>
-        </div>
-
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
-          {WEEKLY_HEALING_PROMPTS.map((prompt) => (
-            <div key={prompt.title} className="rounded-xl border border-theme-story-border/50 bg-white p-3 flex flex-col gap-3">
-              <p className="text-sm font-medium text-gray-800 leading-relaxed">{prompt.title}</p>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="w-full border-theme-story-border text-theme-story-link hover:text-theme-story-heading hover:bg-theme-story-from"
-                onClick={() => handleUseWeeklyPrompt(prompt)}
-                disabled={isForumBlocked}
-              >
-                Gunakan Prompt Ini
-              </Button>
+              {selectedSupportCircle && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const circle = FORUM_SUPPORT_CIRCLES.find((c) => c.id === selectedSupportCircle);
+                    if (circle) handleUseSupportCircleDraft(circle);
+                  }}
+                  disabled={isForumBlocked}
+                  className="mt-2 text-xs font-medium text-theme-story-link hover:text-theme-story-heading disabled:opacity-50"
+                >
+                  Buat topik di circle ini →
+                </button>
+              )}
             </div>
-          ))}
-        </div>
+
+            {/* Healing Prompts — compact list */}
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Healing Prompt Minggu Ini
+              </p>
+              <div className="flex flex-col gap-1.5">
+                {WEEKLY_HEALING_PROMPTS.map((prompt) => (
+                  <button
+                    key={prompt.title}
+                    type="button"
+                    onClick={() => handleUseWeeklyPrompt(prompt)}
+                    disabled={isForumBlocked}
+                    className="group/prompt flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2 text-left text-xs text-gray-600 transition-colors hover:border-theme-story-icon/40 hover:text-theme-story-heading disabled:opacity-50"
+                  >
+                    <span className="line-clamp-1">{prompt.title}</span>
+                    <span className="shrink-0 text-theme-story-link opacity-0 transition-opacity group-hover/prompt:opacity-100">
+                      Gunakan →
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </details>
       </section>
 
       {/* Filters */}

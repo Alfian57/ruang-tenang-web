@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
 import { Smile } from "lucide-react";
@@ -5,7 +6,7 @@ import { Smile } from "lucide-react";
 interface JournalMoodPickerProps {
     selectedMoodId?: number;
     onSelectMood: (moodId: number) => void;
-    moods: Array<{ id: number; emoji: string; label: string; color: string }>;
+    moods: Array<{ id: number; icon: string; label: string; color: string }>;
     isOpen: boolean;
     onToggle: () => void;
     disabled?: boolean;
@@ -35,7 +36,9 @@ export function JournalMoodPicker({
             >
                 {selectedMood ? (
                     <>
-                        <span className="text-lg">{selectedMood.emoji}</span>
+                        <span className="h-5 w-5 relative" aria-hidden="true">
+                            <Image src={selectedMood.icon} alt="" fill sizes="20px" className="object-contain" />
+                        </span>
                         {selectedMood.label}
                     </>
                 ) : (
@@ -59,7 +62,9 @@ export function JournalMoodPicker({
                                 selectedMoodId === mood.id && "bg-primary/10 text-primary"
                             )}
                         >
-                            <span className="text-2xl">{mood.emoji}</span>
+                            <span className="h-7 w-7 relative" aria-hidden="true">
+                                <Image src={mood.icon} alt="" fill sizes="28px" className="object-contain" />
+                            </span>
                             <span className="text-xs">{mood.label}</span>
                         </button>
                     ))}

@@ -58,8 +58,14 @@ export default function EditJournalPage() {
         share_with_ai: boolean;
     }) => {
         if (!token || !identifier) return;
-        await updateJournal(token, identifier, data);
-        toast.success("Jurnal berhasil diperbarui!");
+        const updated = await updateJournal(token, identifier, data);
+        if (updated?.moderation_notice) {
+            toast.warning("Perubahan disimpan sebagai privat", {
+                description: updated.moderation_notice,
+            });
+        } else {
+            toast.success("Jurnal berhasil diperbarui!");
+        }
         router.push(`/dashboard/journal/${identifier}`);
     };
 

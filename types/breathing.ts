@@ -1,5 +1,7 @@
 // Breathing Exercise Types
 
+import { CloudRain, Annoyed, BatteryLow, Frown, Activity, Meh, Wind, Smile, Zap, Target } from "lucide-react";
+
 export interface BreathingTechnique {
   id: string;
   name: string;
@@ -272,16 +274,16 @@ export const DURATION_OPTIONS = [
 
 // Mood Options for before/after
 export const MOOD_OPTIONS = [
-  { id: 'anxious', label: 'Cemas', emoji: '😰' },
-  { id: 'stressed', label: 'Stres', emoji: '😓' },
-  { id: 'tired', label: 'Lelah', emoji: '😴' },
-  { id: 'sad', label: 'Sedih', emoji: '😢' },
-  { id: 'restless', label: 'Gelisah', emoji: '😟' },
-  { id: 'neutral', label: 'Biasa', emoji: '😐' },
-  { id: 'calm', label: 'Tenang', emoji: '😌' },
-  { id: 'happy', label: 'Senang', emoji: '😊' },
-  { id: 'energized', label: 'Berenergi', emoji: '💪' },
-  { id: 'focused', label: 'Fokus', emoji: '🎯' },
+  { id: 'anxious', label: 'Cemas', icon: CloudRain },
+  { id: 'stressed', label: 'Stres', icon: Annoyed },
+  { id: 'tired', label: 'Lelah', icon: BatteryLow },
+  { id: 'sad', label: 'Sedih', icon: Frown },
+  { id: 'restless', label: 'Gelisah', icon: Activity },
+  { id: 'neutral', label: 'Biasa', icon: Meh },
+  { id: 'calm', label: 'Tenang', icon: Wind },
+  { id: 'happy', label: 'Senang', icon: Smile },
+  { id: 'energized', label: 'Berenergi', icon: Zap },
+  { id: 'focused', label: 'Fokus', icon: Target },
 ] as const;
 
 export type MoodId = typeof MOOD_OPTIONS[number]['id'];

@@ -12,8 +12,9 @@ export function MemberDashboardHeader({ viewModel }: MemberDashboardHeaderProps)
   return (
     <div className="flex min-w-0 flex-col justify-between gap-4 md:flex-row md:items-center">
       <div className="min-w-0">
-        <h1 className="text-xl font-bold text-gray-900 xs:text-2xl md:text-3xl">
-          Halo, <span className="text-primary">{viewModel.user?.name?.split(" ")[0] || "Teman"}!</span> {viewModel.theme.greetingEmoji}
+        <h1 className="flex flex-wrap items-center gap-2 text-xl font-bold text-gray-900 xs:text-2xl md:text-3xl">
+          <span>Halo, <span className="text-primary">{viewModel.user?.name?.split(" ")[0] || "Teman"}!</span></span>
+          <viewModel.theme.greetingIcon className="w-6 h-6 text-primary md:w-7 md:h-7" />
         </h1>
         <p className="mt-1 text-base text-gray-500 md:text-lg">
           {viewModel.theme.greeting}

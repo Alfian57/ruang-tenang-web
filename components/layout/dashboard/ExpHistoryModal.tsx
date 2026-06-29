@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
-import { X, Calendar, Filter, ChevronLeft, ChevronRight, Loader2, Sparkles } from "lucide-react";
+import { X, Calendar, Filter, ChevronLeft, ChevronRight, Loader2, Sparkles, Sprout, MessageCircle, PenLine, MessagesSquare, Wind, CheckCircle2, ThumbsUp, ThumbsDown, BookOpen, Heart, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { communityService } from "@/services/api";
 import { ExpHistory, LevelConfig } from "@/types";
@@ -29,16 +29,16 @@ const ACTIVITY_LABELS: Record<string, string> = {
   heart_received: "Menerima Heart",
 };
 
-const ACTIVITY_ICONS: Record<string, string> = {
-  chat_ai: "💬",
-  upload_article: "📝",
-  forum_comment: "💭",
-  breathing: "🧘",
-  accepted_answer: "✅",
-  post_upvote_given: "👍",
-  post_upvote_removed: "👎",
-  story_approved: "📖",
-  heart_received: "❤️",
+const ACTIVITY_ICONS: Record<string, LucideIcon> = {
+  chat_ai: MessageCircle,
+  upload_article: PenLine,
+  forum_comment: MessagesSquare,
+  breathing: Wind,
+  accepted_answer: CheckCircle2,
+  post_upvote_given: ThumbsUp,
+  post_upvote_removed: ThumbsDown,
+  story_approved: BookOpen,
+  heart_received: Heart,
 };
 
 export function ExpHistoryModal({
@@ -180,8 +180,10 @@ export function ExpHistoryModal({
                 unoptimized
                 loader={({ src }) => src}
               />
+            ) : badgeIcon ? (
+              <div className="text-5xl">{badgeIcon}</div>
             ) : (
-              <div className="text-5xl">{badgeIcon || "🌱"}</div>
+              <Sprout className="w-12 h-12 text-primary" />
             )}
             <div>
               <h2 className="text-2xl font-bold">{badgeName}</h2>
@@ -290,7 +292,9 @@ export function ExpHistoryModal({
             </div>
           ) : (
             <div className="space-y-3">
-              {history.map((item) => (
+              {history.map((item) => {
+                const ActivityIcon = ACTIVITY_ICONS[item.activity_type] || Sparkles;
+                return (
                 <div
                   key={item.id}
                   className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
@@ -300,9 +304,7 @@ export function ExpHistoryModal({
                       className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
                       style={{ backgroundColor: "color-mix(in srgb, var(--color-primary) 15%, transparent)" }}
                     >
-                      <span className="text-lg">
-                        {ACTIVITY_ICONS[item.activity_type] || "✨"}
-                      </span>
+                      <ActivityIcon className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
                     </div>
                     <div>
                       <p className="font-medium text-gray-800">{item.description}</p>
@@ -326,7 +328,8 @@ export function ExpHistoryModal({
                     </span>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

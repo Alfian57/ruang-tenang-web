@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FileText } from "lucide-react";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -35,8 +36,8 @@ export function ArticleSidebar({ relatedArticles, backLink }: ArticleSidebarProp
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-2xl">
-                          📄
+                        <div className="w-full h-full flex items-center justify-center">
+                          <FileText className="w-6 h-6 text-gray-300" />
                         </div>
                       )}
                     </div>

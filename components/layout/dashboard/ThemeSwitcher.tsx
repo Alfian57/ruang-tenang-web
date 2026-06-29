@@ -75,6 +75,16 @@ export function ThemeSwitcher() {
         fetchThemes();
     }, [fetchThemes]);
 
+    // Refetch owned/active themes when a theme is claimed or activated elsewhere
+    // (e.g. on the rewards page) so the navbar updates without a page refresh.
+    useEffect(() => {
+        const handleThemesUpdated = () => {
+            fetchThemes();
+        };
+        window.addEventListener("themes-updated", handleThemesUpdated);
+        return () => window.removeEventListener("themes-updated", handleThemesUpdated);
+    }, [fetchThemes]);
+
     useEffect(() => {
         if (user?.role === "user" && user.profile_theme) {
             setActiveTheme(user.profile_theme);

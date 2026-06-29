@@ -85,7 +85,9 @@ export function CompletionModal({
                         <div className="mt-6 text-left">
                             <p className="text-sm font-semibold">Bagaimana perasaanmu sekarang?</p>
                             <div className="mt-3 flex flex-wrap gap-2">
-                                {afterMoodOptions.map((mood) => (
+                                {afterMoodOptions.map((mood) => {
+                                    const MoodIcon = mood.icon;
+                                    return (
                                     <button
                                         key={mood.id}
                                         type="button"
@@ -97,10 +99,11 @@ export function CompletionModal({
                                                 : "bg-muted text-foreground hover:bg-muted/80"
                                         )}
                                     >
-                                        <span>{mood.emoji}</span>
+                                        <MoodIcon className="h-4 w-4" />
                                         <span>{mood.label}</span>
                                     </button>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
 
