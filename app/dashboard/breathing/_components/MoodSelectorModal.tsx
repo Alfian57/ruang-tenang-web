@@ -150,7 +150,9 @@ export function MoodSelectorModal({
                     <section>
                         <h4 className="mb-3 font-semibold">Bagaimana perasaanmu sekarang?</h4>
                         <div className="flex flex-wrap gap-2">
-                            {MOOD_OPTIONS.map((mood) => (
+                            {MOOD_OPTIONS.map((mood) => {
+                                const MoodIcon = mood.icon;
+                                return (
                                 <button
                                     key={mood.id}
                                     type="button"
@@ -162,10 +164,11 @@ export function MoodSelectorModal({
                                             : "bg-muted hover:bg-muted/80"
                                     )}
                                 >
-                                    <span>{mood.emoji}</span>
+                                    <MoodIcon className="h-4 w-4" />
                                     <span>{mood.label}</span>
                                 </button>
-                            ))}
+                                );
+                            })}
                         </div>
                     </section>
 

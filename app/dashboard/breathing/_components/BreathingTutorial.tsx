@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Wind, Play, BarChart3, Heart, ChevronRight } from "lucide-react";
+import { Wind, Play, BarChart3, Heart, ChevronRight, Sparkle } from "lucide-react";
 import { cn } from "@/utils";
 
 interface BreathingTutorialProps {
@@ -12,7 +12,7 @@ interface BreathingTutorialProps {
 const TUTORIAL_STEPS = [
     {
         icon: <Wind className="w-12 h-12 text-primary" />,
-        title: "Selamat Datang! 🧘",
+        title: "Selamat Datang!",
         description: "Latihan pernapasan membantu menenangkan pikiran dan mengurangi stres. Mari kita mulai perjalananmu.",
         tips: ["Pilih teknik yang sesuai dengan kebutuhanmu", "Mulai dari durasi pendek (2-5 menit)", "Latihan rutin lebih efektif dari sesi panjang jarang"],
     },
@@ -84,7 +84,7 @@ export function BreathingTutorial({ isOpen, onComplete }: BreathingTutorialProps
                     <div className="text-left space-y-2 mb-6 bg-muted/50 rounded-lg p-4">
                         {currentStep.tips.map((tip, i) => (
                             <div key={i} className="flex items-start gap-2">
-                                <span className="text-primary font-bold text-sm mt-0.5">✦</span>
+                                <Sparkle className="w-3.5 h-3.5 text-primary shrink-0 mt-1" />
                                 <span className="text-sm">{tip}</span>
                             </div>
                         ))}

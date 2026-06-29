@@ -16,6 +16,9 @@ export interface UserData {
   avatar?: string;
   role: string;
   is_blocked: boolean;
+  is_banned?: boolean;
+  is_suspended?: boolean;
+  suspension_end?: string | null;
   journal_blocked?: boolean;
   is_forum_blocked?: boolean;
   created_at: string;
@@ -98,10 +101,10 @@ export function useAdminUsers() {
     if (!token || !blockId) return;
     try {
       if (blockAction === "block") {
-        await adminService.banUser(token, blockId, "Diblokir oleh admin");
+        await adminService.blockUser(token, blockId, "Diblokir oleh admin");
         toast.success("Akses login pengguna berhasil diblokir");
       } else {
-        await adminService.unbanUser(token, blockId);
+        await adminService.unblockUser(token, blockId);
         toast.success("Akses login pengguna berhasil dibuka");
       }
       setBlockId(null);
@@ -160,6 +163,37 @@ export function useAdminUsers() {
     }
   };
 
+  const handleBanUser = async (userId: number, currentlyBanned: boolean) => {
+    if (!token) return;
+    try {
+      if (currentlyBanned) {
+        await adminService.unbanUser(token, userId);
+        toast.success("Ban pengguna berhasil dicabut");
+      } else {
+        await adminService.banUser(token, userId, "Dibanned oleh admin");
+        toast.success("Pengguna berhasil dibanned");
+      }
+      loadUsers();
+    } catch (error) {
+      console.error("Failed to ban/unban user:", error);
+      toast.error("Gagal memperbarui status ban");
+      throw error;
+    }
+  };
+
+  const handleUnsuspendUser = async (userId: number) => {
+    if (!token) return;
+    try {
+      await adminService.unsuspendUser(token, userId);
+      toast.success("Suspensi pengguna berhasil dicabut");
+      loadUsers();
+    } catch (error) {
+      console.error("Failed to unsuspend user:", error);
+      toast.error("Gagal mencabut suspensi");
+      throw error;
+    }
+  };
+
   const openBlockDialog = (userId: number, action: "block" | "unblock") => {
     setBlockId(userId);
     setBlockAction(action);
@@ -184,5 +218,7 @@ export function useAdminUsers() {
     handleJournalBlockToggle,
     handleForumBlockToggle,
     handleRoleChange,
+    handleBanUser,
+    handleUnsuspendUser,
   };
 }

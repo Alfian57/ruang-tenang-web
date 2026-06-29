@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Search, Shield, Users, Ban, CheckCircle, BookX, BookOpen, MessageSquareOff, MessageSquare, Building2 } from "lucide-react";
+import { Search, Shield, Users, Ban, CheckCircle, BookX, BookOpen, MessageSquareOff, MessageSquare, Building2, Gavel, UserCheck, TimerReset } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -38,6 +38,8 @@ export default function AdminUsersPage() {
     handleJournalBlockToggle,
     handleForumBlockToggle,
     handleRoleChange,
+    handleBanUser,
+    handleUnsuspendUser,
   } = useAdminUsers();
 
   if (user?.role !== "admin") {
@@ -59,9 +61,15 @@ export default function AdminUsersPage() {
     return <span className="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-700">User</span>;
   };
 
-  const getStatusBadge = (isBlocked: boolean) => {
-    if (isBlocked) {
-      return <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">Diblokir</span>;
+  const getStatusBadge = (u: { is_blocked: boolean; is_banned?: boolean; is_suspended?: boolean }) => {
+    if (u.is_banned) {
+      return <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">Dibanned</span>;
+    }
+    if (u.is_suspended) {
+      return <span className="px-2 py-1 text-xs rounded-full bg-amber-100 text-amber-700">Disuspend</span>;
+    }
+    if (u.is_blocked) {
+      return <span className="px-2 py-1 text-xs rounded-full bg-orange-100 text-orange-700">Diblokir</span>;
     }
     return <span className="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">Aktif</span>;
   };
@@ -169,7 +177,7 @@ export default function AdminUsersPage() {
                 </tr>
               ) : (
                 users.map((u) => (
-                  <tr key={u.id} className={`hover:bg-gray-50 ${u.is_blocked ? 'bg-red-50/50' : ''}`}>
+                  <tr key={u.id} className={`hover:bg-gray-50 ${(u.is_blocked || u.is_banned || u.is_suspended) ? 'bg-red-50/50' : ''}`}>
                     <td className="p-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden relative border border-gray-200">
@@ -202,7 +210,7 @@ export default function AdminUsersPage() {
                       {getRoleBadge(u.role)}
                     </td>
                     <td className="p-4">
-                      {getStatusBadge(u.is_blocked)}
+                      {getStatusBadge(u)}
                     </td>
                     <td className="p-4 hidden lg:table-cell">
                       <span className="text-sm text-gray-500">{formatDate(u.created_at)}</span>
@@ -281,6 +289,34 @@ export default function AdminUsersPage() {
                                 <Building2 className="w-4 h-4" />
                               )}
                             </Button>
+                            {/* Ban / Unban (permanent moderation ban) */}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleBanUser(u.id, Boolean(u.is_banned))}
+                              className={u.is_banned
+                                ? "text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                                : "text-red-600 hover:text-red-700 hover:bg-red-50"}
+                              title={u.is_banned ? "Cabut Ban" : "Ban Permanen"}
+                            >
+                              {u.is_banned ? (
+                                <UserCheck className="w-4 h-4" />
+                              ) : (
+                                <Gavel className="w-4 h-4" />
+                              )}
+                            </Button>
+                            {/* Lift suspension (only when suspended) */}
+                            {u.is_suspended && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleUnsuspendUser(u.id)}
+                                className="text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                                title="Cabut Suspensi"
+                              >
+                                <TimerReset className="w-4 h-4" />
+                              </Button>
+                            )}
                           </>
                         )}
                       </div>

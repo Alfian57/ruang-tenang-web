@@ -74,7 +74,7 @@ interface JournalActions {
     tags?: string[];
     is_private?: boolean;
     share_with_ai?: boolean;
-  }) => Promise<void>;
+  }) => Promise<Journal | null>;
   deleteJournal: (token: string, id: string) => Promise<void>;
 
   // Search & Filter
@@ -223,11 +223,13 @@ export const useJournalStore = create<JournalState & JournalActions>((set, get) 
         activeJournal: state.activeJournal?.uuid === id ? updatedJournal : state.activeJournal,
         isSaving: false,
       }));
+      return updatedJournal;
     } catch (error) {
       set({
         isSaving: false,
         error: error instanceof Error ? error.message : "Gagal mengupdate jurnal",
       });
+      return null;
     }
   },
 

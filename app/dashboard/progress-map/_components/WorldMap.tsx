@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { FullMapResponse, MapRegion } from "@/types/progress-map";
-import { Lock, Sparkles } from "lucide-react";
+import { Lock, Sparkles, TreePalm } from "lucide-react";
 
 // Theme colors for each region based on display order
 const REGION_THEMES = [
@@ -88,7 +88,9 @@ export function WorldMap({ mapData, onSelectRegion }: WorldMapProps) {
 
                                     {region.is_unlocked ? (
                                         <>
-                                            <span className="relative z-10 text-3xl md:text-4xl">{region.icon || "🏝️"}</span>
+                                            <span className="relative z-10 text-3xl md:text-4xl">
+                                                {region.icon || <TreePalm className="w-8 h-8 md:w-10 md:h-10 text-white" />}
+                                            </span>
                                             {/* Landmark progress badge */}
                                             {region.total_landmarks > 0 && (
                                                 <span className="absolute z-10 -bottom-1 -right-1 bg-white text-xs font-bold px-1.5 py-0.5 rounded-full shadow text-gray-700">

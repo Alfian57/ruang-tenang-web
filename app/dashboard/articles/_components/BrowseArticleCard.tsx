@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { FileText } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
 import { Card } from "@/components/ui/card";
 import { formatDate } from "@/utils";
@@ -25,7 +26,7 @@ export function BrowseArticleCard({ article, isOwn }: BrowseArticleCardProps) {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/15">
-              <span className="text-4xl">📄</span>
+              <FileText className="w-10 h-10 text-primary/40" />
             </div>
           )}
           <span className="absolute top-2 left-2 px-2.5 py-1 text-xs font-medium rounded-full bg-white/90 backdrop-blur-sm text-primary shadow-sm">

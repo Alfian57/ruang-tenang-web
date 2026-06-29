@@ -228,6 +228,12 @@ export default function BillingPage() {
                             Upgrade Premium
                         </Button>
                     )}
+                    {status?.entitlement_source === "b2b" && (
+                        <span className="inline-flex items-center gap-2 rounded-lg border border-theme-accent/30 bg-theme-accent/10 px-3 py-2 text-xs font-medium text-theme-accent-dark">
+                            <Building2 className="h-4 w-4" />
+                            Premium kamu berasal dari organisasi B2B — pembelian Premium pribadi dinonaktifkan.
+                        </span>
+                    )}
                 </div>
 
                 <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-3">

@@ -10,6 +10,8 @@ import {
     Coins,
     Zap,
     Loader2,
+    MapPin,
+    TreePalm,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -72,7 +74,7 @@ function LandmarkItem({
                         }`}
                 >
                     {landmark.is_unlocked ? (
-                        landmark.icon || "📍"
+                        landmark.icon || <MapPin className="h-4 w-4" />
                     ) : (
                         <Lock className="h-4 w-4 text-gray-400" />
                     )}
@@ -187,7 +189,7 @@ export function RegionDetailPanel({
                     {/* Header */}
                     <div className="flex items-center justify-between p-4 border-b shrink-0">
                         <div className="flex items-center gap-3">
-                            <span className="text-2xl">{region.icon || "🏝️"}</span>
+                            <span className="text-2xl">{region.icon || <TreePalm className="w-6 h-6 text-primary" />}</span>
                             <div>
                                 <h2 className="font-bold text-lg text-gray-900">{region.name}</h2>
                                 <p className="text-xs text-gray-500">

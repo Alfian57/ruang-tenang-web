@@ -20,7 +20,7 @@ import { useMemberDashboard } from "../../_hooks/useMemberDashboard";
 import {
   formatQuotaReset,
   formatSyncTime,
-  getGreetingEmoji,
+  getGreetingIcon,
   isToday,
   isWithinLast7Days,
 } from "./member-dashboard-utils";
@@ -332,7 +332,7 @@ export function useMemberDashboardViewModel() {
     refreshDashboardData,
     theme: {
       greeting: exclusivity.greeting,
-      greetingEmoji: getGreetingEmoji(themeKey),
+      greetingIcon: getGreetingIcon(themeKey),
       prefersReducedMotion,
     },
     header: {

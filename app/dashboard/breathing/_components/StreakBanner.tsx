@@ -33,7 +33,7 @@ export function StreakBanner({ currentStreak, streakAtRisk, needsPractice }: Str
                     {streakAtRisk
                         ? "Streak dalam bahaya!"
                         : currentStreak >= 7
-                            ? `🔥 ${currentStreak} Hari Berturut-turut!`
+                            ? `${currentStreak} Hari Berturut-turut!`
                             : `${currentStreak} Hari Streak`}
                 </h3>
                 <p className="text-sm text-muted-foreground">

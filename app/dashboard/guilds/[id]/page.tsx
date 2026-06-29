@@ -24,6 +24,7 @@ import {
     CalendarDays,
     CalendarClock,
     AlertTriangle,
+    Gift,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -54,12 +55,17 @@ export default function GuildDetailPage({
         isLeader,
         isAdmin,
         isMember,
+        isInAnotherGuild,
+        myGuildId,
+        myGuildName,
+        mustTransferBeforeLeaving,
         handleLeaveGuild,
         handleKickMember,
         handlePromoteMember,
         handleTransferLeadership,
         handleDeleteGuild,
         handleJoinGuild,
+        isJoining,
         // Tasks
         handleClaimTask,
         isClaimingId,
@@ -253,12 +259,46 @@ export default function GuildDetailPage({
 
                     {/* Actions */}
                     <div className="flex flex-wrap items-center gap-2 shrink-0 w-full sm:w-auto mt-2 md:mt-0">
-                        {!isMember && guild.is_public && guild.member_count < guild.max_members && (
-                            <Button onClick={handleJoinGuild} className="gap-2">
-                                <Users className="w-4 h-4" />
-                                Gabung Guild
-                            </Button>
-                        )}
+                        {!isMember && (() => {
+                            const isFull = guild.member_count >= guild.max_members;
+                            if (isInAnotherGuild) {
+                                return (
+                                    <div className="flex flex-col items-stretch gap-1.5 sm:items-end">
+                                        <span className="text-xs text-gray-500">
+                                            Kamu sudah tergabung di guild <strong>{myGuildName}</strong>.
+                                        </span>
+                                        <Button asChild variant="outline" size="sm" className="gap-2">
+                                            <Link href={myGuildId ? ROUTES.guildDetail(myGuildId) : ROUTES.GUILDS}>
+                                                <Shield className="w-4 h-4" />
+                                                Buka Guild Kamu
+                                            </Link>
+                                        </Button>
+                                    </div>
+                                );
+                            }
+                            if (!guild.is_public) {
+                                return (
+                                    <span className="text-xs text-gray-500 inline-flex items-center gap-1.5">
+                                        <Shield className="w-4 h-4" />
+                                        Guild privat — hanya bisa gabung lewat kode undangan.
+                                    </span>
+                                );
+                            }
+                            if (isFull) {
+                                return (
+                                    <span className="text-xs text-red-500 inline-flex items-center gap-1.5">
+                                        <Users className="w-4 h-4" />
+                                        Guild sudah penuh ({guild.member_count}/{guild.max_members}).
+                                    </span>
+                                );
+                            }
+                            return (
+                                <Button onClick={handleJoinGuild} disabled={isJoining} className="gap-2">
+                                    <Users className="w-4 h-4" />
+                                    {isJoining ? "Bergabung..." : "Gabung Guild"}
+                                </Button>
+                            );
+                        })()}
 
                         {isMember && guild.invite_code && (
                             <Button variant="outline" size="sm" className="gap-2" onClick={handleCopyInviteCode}>
@@ -369,7 +409,7 @@ export default function GuildDetailPage({
 
                     {/* Claim info banner */}
                     <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 text-xs text-primary">
-                        <p className="font-medium mb-1">🎁 Cara Claim Tugas Guild:</p>
+                        <p className="flex items-center gap-1.5 font-medium mb-1"><Gift className="w-3.5 h-3.5" /> Cara Claim Tugas Guild:</p>
                         <ul className="space-y-0.5 list-disc list-inside text-primary/80">
                             <li>Tugas dapat dikerjakan bersama oleh semua anggota guild</li>
                             <li>Jika ada anggota yang sudah menyelesaikan tugas, semua anggota bisa melakukan claim</li>
@@ -392,21 +432,45 @@ export default function GuildDetailPage({
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
-                            <AlertTriangle className="w-5 h-5 text-red-500" />
-                            Keluar dari Guild?
+                            <AlertTriangle className="w-5 h-5 text-amber-500" />
+                            {mustTransferBeforeLeaving ? "Transfer kepemimpinan dulu" : "Keluar dari Guild?"}
                         </DialogTitle>
                     </DialogHeader>
-                    <p className="text-sm text-gray-500 py-2">
-                        Apakah kamu yakin ingin keluar dari <strong>{guild.name}</strong>? Kamu akan kehilangan semua progres kontribusi XP di guild ini.
-                    </p>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setShowLeaveConfirm(false)}>
-                            Batal
-                        </Button>
-                        <Button variant="destructive" onClick={handleConfirmLeave}>
-                            Ya, Keluar
-                        </Button>
-                    </DialogFooter>
+                    {mustTransferBeforeLeaving ? (
+                        <>
+                            <p className="text-sm text-gray-500 py-2">
+                                Kamu adalah <strong>Ketua</strong> guild <strong>{guild.name}</strong>. Sebelum keluar, tunjuk salah satu anggota sebagai Ketua baru lewat tab <strong>Anggota</strong>. Atau, jika kamu ingin membubarkan guild, gunakan <strong>Hapus Guild</strong>.
+                            </p>
+                            <DialogFooter>
+                                <Button variant="outline" onClick={() => setShowLeaveConfirm(false)}>
+                                    Batal
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        setShowLeaveConfirm(false);
+                                        setActiveTab("members");
+                                    }}
+                                >
+                                    <Crown className="w-4 h-4 mr-1.5" />
+                                    Pilih Ketua Baru
+                                </Button>
+                            </DialogFooter>
+                        </>
+                    ) : (
+                        <>
+                            <p className="text-sm text-gray-500 py-2">
+                                Apakah kamu yakin ingin keluar dari <strong>{guild.name}</strong>? Kamu akan kehilangan semua progres kontribusi XP di guild ini.
+                            </p>
+                            <DialogFooter>
+                                <Button variant="outline" onClick={() => setShowLeaveConfirm(false)}>
+                                    Batal
+                                </Button>
+                                <Button variant="destructive" onClick={handleConfirmLeave}>
+                                    Ya, Keluar
+                                </Button>
+                            </DialogFooter>
+                        </>
+                    )}
                 </DialogContent>
             </Dialog>
 

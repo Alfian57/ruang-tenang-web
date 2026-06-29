@@ -104,28 +104,36 @@ export function GuildCard({ guild, onJoin, isMemberOfAny, myGuildId }: GuildCard
 
                 {/* Action */}
                 <div className="pt-2 mt-auto border-t border-gray-100/50">
-                    {canJoin ? (
+                    {isMyGuild ? (
+                        <Link
+                            href={ROUTES.guildDetail(guild.id)}
+                            className="block w-full py-2 rounded-xl bg-primary text-center text-sm text-white font-semibold hover:bg-primary/90 transition-colors"
+                        >
+                            Buka Guild
+                        </Link>
+                    ) : canJoin ? (
                         <button
                             onClick={() => onJoin(guild.id)}
                             className="w-full py-2 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors"
                         >
                             Gabung Guild
                         </button>
-                    ) : isMyGuild ? (
+                    ) : isMemberOfAny ? (
                         <Link
                             href={ROUTES.guildDetail(guild.id)}
-                            className="block w-full py-2 rounded-xl bg-primary/10 text-center text-sm text-primary/80 font-semibold hover:bg-primary/10 transition-colors"
+                            className="block w-full py-2 rounded-xl bg-gray-50 text-center text-sm text-gray-600 font-medium hover:bg-gray-100 transition-colors border"
+                            title="Kamu sudah tergabung di guild lain"
                         >
-                            Masuk Guild
+                            Lihat Detail
                         </Link>
-                    ) : isMemberOfAny ? (
-                        <div className="w-full py-2 rounded-xl bg-gray-50 text-center text-xs text-gray-400 font-medium border border-dashed border-gray-200">
-                            Kamu sudah bergabung ke guild lain
-                        </div>
                     ) : isFull ? (
-                        <div className="w-full py-2 rounded-xl bg-red-50 text-center text-xs text-red-500 font-medium border border-dashed border-red-200">
-                            Guild sudah penuh
-                        </div>
+                        <Link
+                            href={ROUTES.guildDetail(guild.id)}
+                            className="block w-full py-2 rounded-xl bg-gray-50 text-center text-sm text-gray-600 font-medium hover:bg-gray-100 transition-colors border"
+                            title="Guild sudah penuh"
+                        >
+                            Lihat Detail
+                        </Link>
                     ) : (
                         <Link
                             href={ROUTES.guildDetail(guild.id)}

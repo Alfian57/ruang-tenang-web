@@ -8,6 +8,7 @@ import {
   AlertTriangle,
   Send,
   X,
+  Check,
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -271,12 +272,12 @@ export default function NewStoryPage() {
               Panduan Menulis Kisah
             </h3>
             <ul className="text-sm text-amber-700 space-y-1">
-              <li>✓ Ceritakan pengalaman pribadimu dengan jujur</li>
-              <li>✓ Fokus pada perjalanan dan pembelajaran</li>
-              <li>✓ Berikan harapan kepada pembaca</li>
-              <li>✗ Jangan berikan saran medis/profesional</li>
-              <li>✗ Hindari detail grafis yang tidak perlu</li>
-              <li>✗ Jangan menyebutkan merek obat/terapi tertentu</li>
+              <li className="flex items-start gap-2"><Check className="w-4 h-4 shrink-0 mt-0.5 text-green-600" /> Ceritakan pengalaman pribadimu dengan jujur</li>
+              <li className="flex items-start gap-2"><Check className="w-4 h-4 shrink-0 mt-0.5 text-green-600" /> Fokus pada perjalanan dan pembelajaran</li>
+              <li className="flex items-start gap-2"><Check className="w-4 h-4 shrink-0 mt-0.5 text-green-600" /> Berikan harapan kepada pembaca</li>
+              <li className="flex items-start gap-2"><X className="w-4 h-4 shrink-0 mt-0.5 text-red-600" /> Jangan berikan saran medis/profesional</li>
+              <li className="flex items-start gap-2"><X className="w-4 h-4 shrink-0 mt-0.5 text-red-600" /> Hindari detail grafis yang tidak perlu</li>
+              <li className="flex items-start gap-2"><X className="w-4 h-4 shrink-0 mt-0.5 text-red-600" /> Jangan menyebutkan merek obat/terapi tertentu</li>
             </ul>
           </div>
 

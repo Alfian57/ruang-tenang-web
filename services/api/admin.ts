@@ -24,20 +24,27 @@ export const adminService = {
     return httpClient.put<ApiResponse<User>>(`/admin/users/${id}/role`, { role }, { token });
   },
 
-  suspendUser(token: string, id: number, duration: number, reason: string) {
-    return httpClient.post<ApiResponse<null>>(`/admin/users/${id}/suspend`, { duration, reason }, { token });
-  },
-
-  unsuspendUser(token: string, id: number) {
-    return httpClient.post<ApiResponse<null>>(`/admin/users/${id}/unsuspend`, {}, { token });
-  },
-
-  banUser(token: string, id: number, reason: string) {
+  // Block (is_blocked) — restricts login/access without a full moderation ban.
+  blockUser(token: string, id: number, reason?: string) {
     return httpClient.put<ApiResponse<null>>(`/admin/users/${id}/block`, { reason }, { token });
   },
 
-  unbanUser(token: string, id: number) {
+  unblockUser(token: string, id: number) {
     return httpClient.put<ApiResponse<null>>(`/admin/users/${id}/unblock`, {}, { token });
+  },
+
+  // Ban (is_banned) — permanent moderation ban.
+  banUser(token: string, id: number, reason: string) {
+    return httpClient.put<ApiResponse<null>>(`/admin/users/${id}/ban`, { reason }, { token });
+  },
+
+  unbanUser(token: string, id: number) {
+    return httpClient.put<ApiResponse<null>>(`/admin/users/${id}/unban`, {}, { token });
+  },
+
+  // Lift an active suspension.
+  unsuspendUser(token: string, id: number) {
+    return httpClient.put<ApiResponse<null>>(`/admin/users/${id}/unsuspend`, {}, { token });
   },
 
   // Articles

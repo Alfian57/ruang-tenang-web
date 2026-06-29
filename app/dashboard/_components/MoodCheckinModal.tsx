@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { Hand } from "lucide-react";
 import { MoodType } from "@/types";
 import {
   Dialog,
@@ -30,7 +31,7 @@ export function MoodCheckinModal({ isOpen, onMoodSelected, isSubmitting }: MoodC
         {/* Header with primary gradient - consistent with dashboard banner */}
         <div className="gradient-primary p-6 text-center rounded-t-2xl">
           <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 backdrop-blur-sm">
-            <span className="text-3xl">👋</span>
+            <Hand className="w-8 h-8 text-white" />
           </div>
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-white text-center">
@@ -70,7 +71,7 @@ export function MoodCheckinModal({ isOpen, onMoodSelected, isSubmitting }: MoodC
           </div>
 
           <p className="text-xs text-center text-gray-400 mt-4">
-            Rekomendasi konten akan disesuaikan dengan mood-mu ✨
+            Rekomendasi konten akan disesuaikan dengan mood-mu
           </p>
         </div>
       </DialogContent>

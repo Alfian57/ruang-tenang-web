@@ -106,7 +106,7 @@ export function ArticleTable({
                                                         className="w-full h-full object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="w-full h-full flex items-center justify-center text-xl">📄</div>
+                                                    <div className="w-full h-full flex items-center justify-center"><FileText className="w-5 h-5 text-gray-300" /></div>
                                                 )}
                                             </div>
                                             <div className="min-w-0">

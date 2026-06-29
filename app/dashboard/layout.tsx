@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { Ban, AlertTriangle } from "lucide-react";
 import { BlockedUsersModal, AppealModal } from "@/components/shared/moderation";
 import { LogoutModal } from "@/components/ui/logout-modal";
 import { EditProfileModal } from "@/components/layout/dashboard";
@@ -313,7 +314,7 @@ function DashboardContent({
           currentExp={user?.exp || 0}
           currentLevel={user?.level || 1}
           badgeName={user?.badge_name || "Pemula"}
-          badgeIcon={user?.badge_icon || "🌱"}
+          badgeIcon={user?.badge_icon || ""}
         />
       )}
       {/* Mobile Header */}
@@ -344,7 +345,7 @@ function DashboardContent({
       {/* Main Content */}
       <div className={cn(
         "min-h-screen min-w-0 max-w-full flex flex-col transition-all duration-200",
-        sidebarCollapsed ? "lg:ml-20" : "lg:ml-60"
+        sidebarCollapsed ? "lg:ml-20" : "lg:ml-64"
       )}>
         {/* Top Header (Desktop) */}
         <TopHeader
@@ -364,10 +365,15 @@ function DashboardContent({
         {(user?.is_suspended || user?.is_banned) && (
           <div className="bg-red-50 border-b border-red-200 px-3 py-3 sm:px-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-w-0 items-center gap-2">
+              {user.is_banned ? (
+                <Ban className="w-4 h-4 shrink-0 text-red-600" />
+              ) : (
+                <AlertTriangle className="w-4 h-4 shrink-0 text-red-600" />
+              )}
               <span className="text-red-600 font-medium text-sm">
                 {user.is_banned
-                  ? "⛔ Akun Anda telah diblokir permanen."
-                  : `⚠️ Akun Anda sedang ditangguhkan${user.suspension_end ? ` hingga ${new Date(user.suspension_end).toLocaleDateString("id-ID")}` : ""}.`}
+                  ? "Akun Anda telah diblokir permanen."
+                  : `Akun Anda sedang ditangguhkan${user.suspension_end ? ` hingga ${new Date(user.suspension_end).toLocaleDateString("id-ID")}` : ""}.`}
               </span>
             </div>
             <button

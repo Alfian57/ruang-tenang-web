@@ -111,12 +111,12 @@ export function Sidebar({
           "sidebar-themed fixed top-0 left-0 h-full max-w-[calc(100vw-1rem)] bg-white border-r z-40 transform transition-all duration-200",
           "lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
-          sidebarCollapsed ? "lg:w-20" : "lg:w-60",
-          "w-60"
+          sidebarCollapsed ? "lg:w-20" : "lg:w-64",
+          "w-64"
         )}>
         {/* Logo */}
         <div className="p-4 h-16 flex items-center justify-between border-b">
-          <Link href={homeHref} className="flex min-w-0 items-center gap-2">
+          <Link href={homeHref} className={cn("sidebar-logo flex min-w-0 items-center gap-2", sidebarCollapsed && "is-collapsed")}>
             {sidebarCollapsed ? (
               <Image src="/logo.webp" alt="Ruang Tenang" width={32} height={32} className="object-contain" />
             ) : (
@@ -178,11 +178,11 @@ export function Sidebar({
                   chatAccessState?.tone === "locked" && "limited",
                   chatAccessState?.tone === "low" && "low-quota",
                   isActive && "active",
-                  sidebarCollapsed && "lg:mx-2 lg:px-3 lg:py-2.5"
+                  sidebarCollapsed && "is-collapsed lg:mx-auto lg:h-12 lg:w-12 lg:p-0 lg:mb-4"
                 )}
                 title={highlightTitle}
               >
-                <div className={cn("flex items-center gap-3 relative z-10", sidebarCollapsed && "lg:justify-center")}>
+                <div className={cn("flex items-center gap-3 relative z-10", sidebarCollapsed && "lg:h-full lg:justify-center")}>
                   <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
                     <Icon className="w-4 h-4 text-white" />
                   </div>

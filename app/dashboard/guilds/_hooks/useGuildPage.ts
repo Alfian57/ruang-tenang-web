@@ -3,8 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { guildService } from "@/services/api/guild";
+import { ApiError } from "@/services/http/types";
 import type { Guild, MyGuildInfo } from "@/types/guild";
 import { toast } from "sonner";
+
+function errorMessage(err: unknown, fallback: string): string {
+  if (err instanceof ApiError && err.message) return err.message;
+  return fallback;
+}
 
 export function useGuildPage() {
   const { token } = useAuthStore();
@@ -83,8 +89,8 @@ export function useGuildPage() {
       setNewProfileImage(null);
       setNewProfileImagePreview(null);
       fetchData();
-    } catch {
-      toast.error("Gagal membuat guild");
+    } catch (err) {
+      toast.error(errorMessage(err, "Gagal membuat guild"));
     } finally {
       setIsSubmitting(false);
     }
@@ -96,8 +102,8 @@ export function useGuildPage() {
       await guildService.joinGuild(token, guildId);
       toast.success("Berhasil bergabung ke guild!");
       fetchData();
-    } catch {
-      toast.error("Gagal bergabung ke guild");
+    } catch (err) {
+      toast.error(errorMessage(err, "Gagal bergabung ke guild"));
     }
   };
 
@@ -110,8 +116,8 @@ export function useGuildPage() {
       setIsJoinOpen(false);
       setInviteCode("");
       fetchData();
-    } catch {
-      toast.error("Kode undangan tidak valid");
+    } catch (err) {
+      toast.error(errorMessage(err, "Kode undangan tidak valid"));
     } finally {
       setIsSubmitting(false);
     }

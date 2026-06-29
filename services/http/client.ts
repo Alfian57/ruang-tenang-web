@@ -1,7 +1,6 @@
 import { env } from "@/config/env";
 import { ApiError, type RequestOptions } from "./types";
 import { toast } from "sonner";
-import { getUploadUrl } from "./upload-url";
 import { normalizeApiTimestampString } from "@/utils/date";
 import { enqueueMutation } from "@/lib/offline/db";
 
@@ -136,8 +135,7 @@ function normalizeApiErrorMessage(message: string): string {
 
 function normalizeUploadsDeep<T>(value: T): T {
   if (typeof value === "string") {
-    const uploadNormalized = value.startsWith("/uploads/") ? getUploadUrl(value) : value;
-    return normalizeApiTimestampString(uploadNormalized) as T;
+    return normalizeApiTimestampString(value) as T;
   }
 
   if (Array.isArray(value)) {

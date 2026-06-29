@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ROUTES } from "@/lib/routes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen } from "lucide-react";
+import { ArrowRight, BookOpen, FileText } from "lucide-react";
 import { Article } from "@/types";
 import { formatDate } from "@/utils";
 
@@ -70,7 +70,7 @@ export function RecommendedArticlesWidget({ articles, isLoading }: RecommendedAr
                       className="object-cover group-hover:scale-110 transition-transform duration-500"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-primary/5 text-2xl">📄</div>
+                    <div className="w-full h-full flex items-center justify-center bg-primary/5"><FileText className="w-7 h-7 text-primary/40" /></div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0 py-1 flex flex-col justify-between h-24">
