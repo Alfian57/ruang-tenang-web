@@ -12,7 +12,7 @@ export interface ChatSessionState {
 export interface ChatSessionActions {
   loadSessions: (token: string) => Promise<void>;
   loadSession: (token: string, sessionId: string) => Promise<void>;
-  createSession: (token: string, title: string, folderId?: number) => Promise<void>;
+  createSession: (token: string, title?: string, folderId?: number) => Promise<string | undefined>;
   deleteSession: (token: string, sessionId: string) => Promise<void>;
   toggleFavorite: (token: string, sessionId: string) => Promise<void>;
   toggleTrash: (token: string, sessionId: string) => Promise<void>;

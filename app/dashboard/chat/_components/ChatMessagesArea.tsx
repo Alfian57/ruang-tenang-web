@@ -186,6 +186,15 @@ export function ChatMessagesArea({
             onOpenBillingFromQuota={onOpenBillingFromQuota}
           />
         </div>
+
+        {/* Direct chat input: sending the first message auto-creates a session
+            and the title is generated automatically (GPT/Gemini/Claude style). */}
+        <ChatInput
+          onSendText={onSendText}
+          onSendAudio={onSendAudio}
+          disabled={isSending || isQuotaExhausted}
+          disabledReason={isQuotaExhausted ? "Kuota chat gratis habis. Upgrade Premium atau tunggu reset kuota." : undefined}
+        />
       </>
     );
   }

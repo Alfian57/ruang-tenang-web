@@ -13,6 +13,7 @@ import { MoodCheckinProvider } from "@/components/providers/MoodCheckinProvider"
 import { GlobalMusicPlayer } from "@/components/layout";
 import { DailyTaskFAB } from "@/components/shared/gamification";
 import { OfflineIndicator } from "@/components/pwa/OfflineIndicator";
+import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
 import { SkipLink } from "@/components/ui/accessibility";
 import { UserFeatureTour } from "./_components/UserFeatureTour";
 import { initAutoSync } from "@/lib/offline/syncOutbox";
@@ -283,6 +284,9 @@ function DashboardContent({
 
       {/* Offline Indicator */}
       <OfflineIndicator />
+
+      {/* PWA install prompt (Android/desktop beforeinstallprompt) */}
+      <PWAInstallPrompt />
 
       {/* Modals */}
       <LogoutModal

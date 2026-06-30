@@ -3,7 +3,6 @@
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 import {
   ChatSidebar,
-  NewSessionDialog,
   ChatMessagesArea,
 } from "./_components";
 import { AIDisclaimerModal } from "@/components/ui/ai-disclaimer-modal";
@@ -26,8 +25,6 @@ export default function ChatPage() {
     folders,
     activeFolderId,
     messagesEndRef,
-    newSessionDialog,
-    setNewSessionDialog,
     showDeleteModal,
     setShowDeleteModal,
     isDeleting,
@@ -54,7 +51,7 @@ export default function ChatPage() {
     setActiveFolderId,
     handleLoadSession,
     handleResumeJourneySession,
-    handleCreateSession,
+    handleStartNewChat,
     handleSendText,
     handleSendAudio,
     handleToggleMessageLike,
@@ -98,7 +95,7 @@ export default function ChatPage() {
           onSendAudio={handleSendAudio}
           onToggleMessageLike={handleToggleMessageLike}
           onToggleMessagePin={handleTogglePin}
-          onCreateSession={() => setNewSessionDialog(true)}
+          onCreateSession={handleStartNewChat}
           onOpenMobileSidebar={() => setMobileSidebarOpen(true)}
           onExport={handleExport}
           summary={currentSummary}
@@ -142,7 +139,7 @@ export default function ChatPage() {
         activeFolderId={activeFolderId}
         onFilterChange={setFilter}
         onSessionSelect={handleLoadSession}
-        onCreateSession={() => setNewSessionDialog(true)}
+        onCreateSession={handleStartNewChat}
         onToggleFavorite={handleToggleFavorite}
         onToggleTrash={handleToggleTrash}
         onDeletePermanent={handleDeletePermanent}
@@ -155,13 +152,6 @@ export default function ChatPage() {
         onClose={() => setMobileSidebarOpen(false)}
         isChatLocked={Boolean(chatQuotaNotice)}
         onOpenBillingFromQuota={handleOpenBillingFromQuota}
-      />
-
-      {/* New Session Dialog */}
-      <NewSessionDialog
-        open={newSessionDialog}
-        onOpenChange={setNewSessionDialog}
-        onCreateSession={handleCreateSession}
       />
 
       {/* AI Disclaimer Modal */}

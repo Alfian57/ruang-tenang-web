@@ -35,6 +35,10 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
     const { activeSession } = get();
     if (!token || !activeSession) return;
 
+    // Track whether this is the first message so we can refresh the
+    // auto-generated session title afterwards (GPT/Gemini/Claude style).
+    const isFirstMessage = get().messages.length === 0;
+
     set({ isSending: true });
 
     // Optimistic update
@@ -70,6 +74,24 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
 
       dispatchBillingStatusRefresh();
 
+      // After the first message the backend auto-generates the session title.
+      // Refresh the session list and active session title to reflect it.
+      if (isFirstMessage) {
+        try {
+          await get().loadSessions(token);
+          const updated = get().sessions.find((s) => s.id === activeSession.id);
+          if (updated?.title) {
+            set((state) => ({
+              activeSession: state.activeSession
+                ? { ...state.activeSession, title: updated.title }
+                : state.activeSession,
+            }));
+          }
+        } catch (refreshError) {
+          console.error("ChatStore.sendTextMessage: title refresh failed", refreshError);
+        }
+      }
+
       // Refresh user to update EXP
       await useAuthStore.getState().refreshUser();
     } catch (error) {
@@ -98,6 +120,8 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
     const { activeSession } = get();
     if (!token || !activeSession) return;
 
+    const isFirstMessage = get().messages.length === 0;
+
     set({ isSending: true, isRecording: true });
 
     try {
@@ -125,6 +149,22 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
       }));
 
       dispatchBillingStatusRefresh();
+
+      if (isFirstMessage) {
+        try {
+          await get().loadSessions(token);
+          const updated = get().sessions.find((s) => s.id === activeSession.id);
+          if (updated?.title) {
+            set((state) => ({
+              activeSession: state.activeSession
+                ? { ...state.activeSession, title: updated.title }
+                : state.activeSession,
+            }));
+          }
+        } catch (refreshError) {
+          console.error("ChatStore.sendAudioMessage: title refresh failed", refreshError);
+        }
+      }
     } catch (error) {
       console.error("ChatStore.sendAudioMessage: failed", error);
       if (isChatQuotaExceededError(error)) {

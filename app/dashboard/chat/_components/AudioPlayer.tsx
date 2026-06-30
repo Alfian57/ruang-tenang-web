@@ -18,6 +18,7 @@ export function AudioPlayer({ src, inverted = false }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [hasError, setHasError] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
@@ -27,25 +28,37 @@ export function AudioPlayer({ src, inverted = false }: AudioPlayerProps) {
     const handleLoadedMetadata = () => setDuration(audio.duration);
     const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
     const handleEnded = () => setIsPlaying(false);
+    const handleError = () => {
+      setHasError(true);
+      setIsPlaying(false);
+    };
 
     audio.addEventListener("loadedmetadata", handleLoadedMetadata);
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("error", handleError);
 
     return () => {
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("error", handleError);
     };
   }, []);
 
   const togglePlay = () => {
     if (!audioRef.current) return;
-    
+
     if (isPlaying) {
       audioRef.current.pause();
     } else {
-      audioRef.current.play();
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          setHasError(true);
+          setIsPlaying(false);
+        });
+      }
     }
     setIsPlaying(!isPlaying);
   };
@@ -65,7 +78,7 @@ export function AudioPlayer({ src, inverted = false }: AudioPlayerProps) {
       }`}
     >
       <audio ref={audioRef} src={getUploadUrl(src)} preload="metadata" />
-      
+
       <Button
         size="icon"
         variant="ghost"
@@ -75,6 +88,7 @@ export function AudioPlayer({ src, inverted = false }: AudioPlayerProps) {
             : "bg-white hover:bg-gray-50"
         }`}
         onClick={togglePlay}
+        disabled={hasError}
         aria-label={isPlaying ? "Pause" : "Play"}
       >
         {isPlaying ? (
@@ -85,25 +99,33 @@ export function AudioPlayer({ src, inverted = false }: AudioPlayerProps) {
       </Button>
 
       <div className="flex-1 space-y-1">
-        {/* Progress bar */}
-        <div className={`h-1 rounded-full w-full overflow-hidden ${
-          inverted ? "bg-white/30" : "bg-gray-200"
-        }`}>
-          <div
-            className={`h-full transition-all duration-100 ${
-              inverted ? "bg-white" : "bg-primary"
-            }`}
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-        
-        {/* Time display */}
-        <div className={`flex justify-between text-[10px] font-medium ${
-          inverted ? "text-white/70" : "text-gray-400"
-        }`}>
-          <span>{formatTime(currentTime)}</span>
-          <span>{formatTime(duration)}</span>
-        </div>
+        {hasError ? (
+          <p className={`text-[11px] font-medium ${inverted ? "text-white/80" : "text-red-500"}`}>
+            Gagal memuat audio
+          </p>
+        ) : (
+          <>
+            {/* Progress bar */}
+            <div className={`h-1 rounded-full w-full overflow-hidden ${
+              inverted ? "bg-white/30" : "bg-gray-200"
+            }`}>
+              <div
+                className={`h-full transition-all duration-100 ${
+                  inverted ? "bg-white" : "bg-primary"
+                }`}
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+
+            {/* Time display */}
+            <div className={`flex justify-between text-[10px] font-medium ${
+              inverted ? "text-white/70" : "text-gray-400"
+            }`}>
+              <span>{formatTime(currentTime)}</span>
+              <span>{formatTime(duration)}</span>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

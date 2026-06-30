@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { Gift, Loader2, ShoppingBag, History, Package, AlertCircle, CheckCircle, Palette, WandSparkles, NotebookPen, MessageCircle, Gamepad2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { CoinIcon } from "@/components/shared/CoinIcon";
 import { cn } from "@/utils";
 import { toast } from "sonner";
@@ -228,8 +229,14 @@ export default function RewardsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+      <div className="p-4 lg:p-6 space-y-4">
+        <Skeleton className="h-8 w-48 rounded-lg" />
+        <Skeleton className="h-24 w-full rounded-2xl" />
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Skeleton key={i} className="aspect-[3/4] w-full rounded-2xl" />
+          ))}
+        </div>
       </div>
     );
   }

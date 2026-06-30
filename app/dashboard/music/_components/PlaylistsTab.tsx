@@ -1,9 +1,10 @@
 "use client";
 
-import { Loader2, Plus, ListMusic } from "lucide-react";
+import { Plus, ListMusic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PlaylistCard } from "./PlaylistCard";
 import { PlaylistListItem } from "@/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface PlaylistsTabProps {
     isLoading: boolean;
@@ -36,8 +37,10 @@ export function PlaylistsTab({
 
             {/* Playlists List */}
             {isLoading ? (
-                <div className="flex items-center justify-center py-12">
-                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                <div className="grid gap-4">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <Skeleton key={i} className="h-20 w-full rounded-xl" />
+                    ))}
                 </div>
             ) : playlists.length > 0 ? (
                 <div className="grid gap-4">

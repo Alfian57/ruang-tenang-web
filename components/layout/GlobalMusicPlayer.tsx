@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import { useMusicPlayerStore } from "@/store/musicPlayerStore";
 import { cn } from "@/utils";
 import { ExpandedPlayer } from "./player/ExpandedPlayer";
@@ -58,11 +59,40 @@ export function GlobalMusicPlayer({ sidebarCollapsed = false }: GlobalMusicPlaye
         const handlePlay = () => setIsPlaying(true);
         const handlePause = () => setIsPlaying(false);
 
+        // Surface load/playback failures (offline & missing asset) instead of
+        // failing silently. Auto-advance to the next track when a queue exists
+        // so one broken asset does not stall the whole listening session.
+        const handleError = () => {
+            // Ignore spurious errors fired when no source is attached yet.
+            if (!audio.src) return;
+
+            const hasNext = useMusicPlayerStore.getState().queue.length > 1;
+            const offline = typeof navigator !== "undefined" && !navigator.onLine;
+
+            toast.error(
+                offline ? "Musik belum tersedia offline" : "Gagal memuat lagu ini",
+                {
+                    description: offline
+                        ? "Putar lagu ini sekali saat online agar tersimpan untuk didengarkan offline."
+                        : hasNext
+                            ? "Melanjutkan ke lagu berikutnya."
+                            : "Silakan coba lagi sebentar lagi.",
+                }
+            );
+
+            if (hasNext) {
+                playNext();
+            } else {
+                setIsPlaying(false);
+            }
+        };
+
         audio.addEventListener("timeupdate", handleTimeUpdate);
         audio.addEventListener("durationchange", handleDurationChange);
         audio.addEventListener("ended", handleEnded);
         audio.addEventListener("play", handlePlay);
         audio.addEventListener("pause", handlePause);
+        audio.addEventListener("error", handleError);
 
         return () => {
             audio.removeEventListener("timeupdate", handleTimeUpdate);
@@ -70,6 +100,7 @@ export function GlobalMusicPlayer({ sidebarCollapsed = false }: GlobalMusicPlaye
             audio.removeEventListener("ended", handleEnded);
             audio.removeEventListener("play", handlePlay);
             audio.removeEventListener("pause", handlePause);
+            audio.removeEventListener("error", handleError);
         };
     }, [setCurrentTime, setDuration, setIsPlaying, playNext]);
 
@@ -169,7 +200,7 @@ export function GlobalMusicPlayer({ sidebarCollapsed = false }: GlobalMusicPlaye
 
     return (
         <>
-            <audio ref={audioRef} />
+            <audio ref={audioRef} preload="metadata" />
             <AnimatePresence>
                 {isPlayerVisible && currentSong && (
                     <motion.div

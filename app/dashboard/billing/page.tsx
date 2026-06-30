@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeftRight, BadgeCheck, Building2, Check, Coins, CreditCard, Crown, Loader2, Lock, ReceiptText, Sparkles } from "lucide-react";
+import { ArrowLeftRight, BadgeCheck, Building2, Check, Coins, CreditCard, Crown, Download, Loader2, Lock, ReceiptText, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/routes";
@@ -72,6 +72,9 @@ export default function BillingPage() {
 
     const [loading, setLoading] = useState(true);
     const [isPaginating, setIsPaginating] = useState(false);
+    const [statusFilter, setStatusFilter] = useState<string>("");
+    const [typeFilter, setTypeFilter] = useState<string>("");
+    const [isExporting, setIsExporting] = useState(false);
 
     const fetchTransactions = useCallback(async (page = 1) => {
         if (!token) return;
@@ -82,7 +85,12 @@ export default function BillingPage() {
         }
 
         try {
-            const txRes = await billingService.getTransactions(token, { page, limit: 10 });
+            const txRes = await billingService.getTransactions(token, {
+                page,
+                limit: 10,
+                status: statusFilter || undefined,
+                item_type: typeFilter || undefined,
+            });
             setTransactions(txRes.data.transactions ?? []);
             setTransactionMeta({
                 page: txRes.data.page ?? 1,
@@ -97,7 +105,7 @@ export default function BillingPage() {
                 setIsPaginating(false);
             }
         }
-    }, [token]);
+    }, [token, statusFilter, typeFilter]);
 
     const refreshData = useCallback(async () => {
         if (!token) {
@@ -126,6 +134,40 @@ export default function BillingPage() {
     useEffect(() => {
         void refreshData();
     }, [refreshData]);
+
+    // Muat ulang daftar transaksi saat filter berubah (tanpa reload seluruh halaman).
+    useEffect(() => {
+        if (!loading) {
+            void fetchTransactions(1);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [statusFilter, typeFilter]);
+
+    const handleExportCsv = useCallback(async () => {
+        if (!token) return;
+        setIsExporting(true);
+        try {
+            await billingService.exportTransactionsCSV(token, {
+                status: statusFilter || undefined,
+                item_type: typeFilter || undefined,
+            });
+            toast.success("Riwayat transaksi diunduh");
+        } catch {
+            toast.error("Gagal mengunduh riwayat transaksi");
+        } finally {
+            setIsExporting(false);
+        }
+    }, [token, statusFilter, typeFilter]);
+
+    const handleDownloadInvoice = useCallback(async (orderId: string) => {
+        if (!token) return;
+        try {
+            await billingService.downloadInvoice(token, orderId);
+            toast.success("Invoice diunduh");
+        } catch {
+            toast.error("Gagal mengunduh invoice");
+        }
+    }, [token]);
 
     const { processingKey, runCheckout } = useBillingCheckout({
         token,
@@ -368,9 +410,44 @@ export default function BillingPage() {
             )}
 
             <section className="rounded-2xl border border-slate-200 bg-white p-4">
-                <div className="flex items-center gap-2 mb-3">
-                    <ReceiptText className="w-5 h-5 text-slate-700" />
-                    <h2 className="text-lg font-semibold text-slate-900">Riwayat Transaksi</h2>
+                <div className="flex flex-col gap-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-2">
+                        <ReceiptText className="w-5 h-5 text-slate-700" />
+                        <h2 className="text-lg font-semibold text-slate-900">Riwayat Transaksi</h2>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <select
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                            aria-label="Filter status"
+                            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700"
+                        >
+                            <option value="">Semua status</option>
+                            <option value="paid">Berhasil</option>
+                            <option value="pending">Menunggu</option>
+                            <option value="failed">Gagal</option>
+                            <option value="expired">Kedaluwarsa</option>
+                        </select>
+                        <select
+                            value={typeFilter}
+                            onChange={(e) => setTypeFilter(e.target.value)}
+                            aria-label="Filter tipe"
+                            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700"
+                        >
+                            <option value="">Semua tipe</option>
+                            <option value="subscription">Premium</option>
+                            <option value="topup">Top Up</option>
+                        </select>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleExportCsv}
+                            disabled={isExporting || transactions.length === 0}
+                        >
+                            <Download className="w-4 h-4 mr-1.5" />
+                            {isExporting ? "Mengunduh..." : "Export CSV"}
+                        </Button>
+                    </div>
                 </div>
 
                 {transactions.length === 0 ? (
@@ -389,6 +466,7 @@ export default function BillingPage() {
                                         <th className="text-left font-medium py-2">Nominal</th>
                                         <th className="text-left font-medium py-2">Status</th>
                                         <th className="text-left font-medium py-2">Order</th>
+                                        <th className="text-right font-medium py-2">Invoice</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -404,6 +482,16 @@ export default function BillingPage() {
                                                 </span>
                                             </td>
                                             <td className="py-2.5 text-slate-500 text-xs">{tx.order_id}</td>
+                                            <td className="py-2.5 text-right">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => handleDownloadInvoice(tx.order_id)}
+                                                    title="Unduh invoice"
+                                                >
+                                                    <Download className="w-4 h-4" />
+                                                </Button>
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>

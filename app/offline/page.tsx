@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import MindfulRunnerGame from "@/components/game/MindfulRunnerGame";
+import MindfulRunnerGame from "@/components/game/LazyMindfulRunnerGame";
 import { WifiOff } from "lucide-react";
 
 export const metadata: Metadata = {
