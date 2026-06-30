@@ -2,7 +2,7 @@
 
 import { Gamepad2, Wind, Heart, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
-import MindfulRunnerGame from "@/components/game/MindfulRunnerGame";
+import MindfulRunnerGame from "@/components/game/LazyMindfulRunnerGame";
 
 export default function GamePage() {
     return (

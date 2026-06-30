@@ -44,11 +44,15 @@ export const createSessionSlice: StateCreator<ChatStore, [], [], ChatSessionStat
     }
   },
 
-  createSession: async (token: string, title: string, folderId?: number) => {
-    if (!token || !title.trim()) return;
+  createSession: async (token: string, title?: string, folderId?: number) => {
+    if (!token) return undefined;
+
+    const trimmedTitle = title?.trim();
 
     try {
-      const response = (await chatService.createSession(token, title)) as {
+      // Title is optional. When omitted, the backend auto-generates a title
+      // from the first message (similar to GPT/Gemini/Claude).
+      const response = (await chatService.createSession(token, trimmedTitle)) as {
         data: Partial<ChatSession> & { id?: number; uuid?: string };
       };
 
@@ -63,14 +67,16 @@ export const createSessionSlice: StateCreator<ChatStore, [], [], ChatSessionStat
           (typeof createdSessionId === "number"
             ? sessions.find((session) => session.id === createdSessionId)
             : undefined) ??
-          sessions.find((session) => session.title === title.trim());
+          (trimmedTitle
+            ? sessions.find((session) => session.title === trimmedTitle)
+            : undefined);
 
         createdSessionUUID = createdSession?.uuid;
       }
 
       if (!createdSessionUUID) {
         console.error("ChatStore.createSession: session UUID not found after creation");
-        return;
+        return undefined;
       }
 
       if (folderId) {
@@ -79,8 +85,11 @@ export const createSessionSlice: StateCreator<ChatStore, [], [], ChatSessionStat
       }
 
       await get().loadSession(token, createdSessionUUID);
+
+      return createdSessionUUID;
     } catch (error) {
       console.error("ChatStore.createSession: failed", error);
+      return undefined;
     }
   },
 

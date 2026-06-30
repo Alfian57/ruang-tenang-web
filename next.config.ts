@@ -64,6 +64,16 @@ const nextConfig: NextConfig = {
   output: "standalone",
   images: {
     remotePatterns: imageRemotePatterns,
+    // Sajikan format modern otomatis (AVIF lalu WebP) — jauh lebih kecil
+    // dari JPG/PNG. next/image akan negosiasi format sesuai dukungan browser.
+    formats: ["image/avif", "image/webp"],
+    // Ukuran responsif yang dioptimalkan untuk layout aplikasi (hindari
+    // mengirim gambar lebih besar dari yang dibutuhkan).
+    deviceSizes: [320, 420, 640, 768, 1024, 1280, 1536, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Cache hasil optimasi gambar lebih lama (31 hari) untuk mengurangi
+    // pemrosesan ulang di server.
+    minimumCacheTTL: 60 * 60 * 24 * 31,
   },
   async rewrites() {
     return [

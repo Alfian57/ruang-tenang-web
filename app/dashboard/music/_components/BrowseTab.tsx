@@ -1,8 +1,9 @@
 "use client";
 
-import { Search, X, Loader2, Music, Play, Pause } from "lucide-react";
+import { Search, X, Music, Play, Pause } from "lucide-react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { cn } from "@/utils";
@@ -57,8 +58,10 @@ export function BrowseTab({
 
             {/* Categories Grid */}
             {isLoading ? (
-                <div className="flex items-center justify-center py-12">
-                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                        <Skeleton key={i} className="aspect-square w-full rounded-xl" />
+                    ))}
                 </div>
             ) : debouncedSearch ? (
                 // Search Results

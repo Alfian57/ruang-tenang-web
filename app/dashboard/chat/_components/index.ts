@@ -5,6 +5,5 @@ export { ChatInput } from "./ChatInput";
 export { ChatSidebar, type FilterType } from "./ChatSidebar";
 export { EmptyState } from "./EmptyState";
 export { TypingIndicator } from "./TypingIndicator";
-export { NewSessionDialog, type NewSessionDialogProps } from "./NewSessionDialog";
 export { ChatMessagesArea, type ChatMessagesAreaProps } from "./ChatMessagesArea";
 export { VoiceInput } from "./VoiceInput";

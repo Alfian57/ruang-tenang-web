@@ -1,9 +1,10 @@
 "use client";
 
-import { Loader2, Sparkles, Compass, AudioLines, ArrowRight, BadgeCheck } from "lucide-react";
+import { Sparkles, Compass, AudioLines, ArrowRight, BadgeCheck } from "lucide-react";
 import { PublicPlaylistCard } from "./PublicPlaylistCard";
 import { PlaylistListItem } from "@/types";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export interface MusicJourneyCard {
     id: string;
@@ -36,8 +37,10 @@ export function ExploreTab({
 }: ExploreTabProps) {
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                    <Skeleton key={i} className="h-40 w-full rounded-xl" />
+                ))}
             </div>
         );
     }

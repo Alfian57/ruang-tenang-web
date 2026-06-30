@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
 import { defaultCache } from "@serwist/next/worker";
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
-import { Serwist, NetworkFirst, StaleWhileRevalidate, ExpirationPlugin } from "serwist";
+import { Serwist, NetworkFirst, StaleWhileRevalidate, CacheFirst, ExpirationPlugin, RangeRequestsPlugin } from "serwist";
 
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
@@ -95,12 +95,45 @@ const apiCacheStrategies = [
   },
 ];
 
+// Dedicated audio caching for relaxation music & voice notes.
+//
+// Why a custom rule instead of relying on Serwist's defaultCache audio entry:
+//  1. defaultCache only matches mp3/wav/ogg by file extension AND only handles
+//     cross-origin requests when the regex matches the *entire* URL — uploaded
+//     audio is served with query strings / from the API origin, so it slips
+//     through. Matching on the `/uploads/audio` & `/storage/audio` path (plus a
+//     broader extension list) reliably catches every track.
+//  2. A larger, longer-lived cache (relaxation tracks are immutable, UUID-named)
+//     gives a dependable offline music experience.
+//  3. RangeRequestsPlugin is required so the <audio> element can seek within a
+//     cached file (browsers issue Range requests for media).
+const audioCacheStrategy = {
+  matcher: ({ url, request }: { url: URL; request: Request }) =>
+    request.destination === "audio" ||
+    /\/(?:uploads|storage)\/audio\//i.test(url.pathname) ||
+    /\.(?:mp3|wav|ogg|m4a|aac|opus)$/i.test(url.pathname),
+  handler: new CacheFirst({
+    cacheName: "audio-assets",
+    plugins: [
+      // Cache only successful full (200) and partial (206) audio responses.
+      // Note: opaque responses (status 0) are skipped to avoid storing errors.
+      new ExpirationPlugin({
+        maxEntries: 120,
+        maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days — tracks are immutable
+        purgeOnQuotaError: true, // free audio cache first under storage pressure
+      }),
+      new RangeRequestsPlugin(),
+    ],
+  }),
+};
+
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: [
+    audioCacheStrategy,
     ...apiCacheStrategies,
     ...defaultCache,
   ],

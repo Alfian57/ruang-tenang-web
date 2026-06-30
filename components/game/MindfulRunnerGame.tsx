@@ -14,6 +14,15 @@ const SPEED_INCREMENT = 0.001;
 const DIFFICULTY_TIER_SCORE = 500;
 const DIFFICULTY_SCALE_PER_TIER = 0.3;
 
+// Fisika lompat lebih kaya (selaras versi mobile)
+const JUMP_HOLD_GRAVITY_MULT = 0.45; // naik & tombol ditahan → lompat lebih tinggi
+const FAST_FALL_GRAVITY_MULT = 1.6;  // turun & tombol dilepas → jatuh lebih cepat
+const DOUBLE_JUMP_FORCE = -9.5;      // dorongan lompatan kedua (di udara)
+const COYOTE_FRAMES = 6;             // toleransi lompat sesaat setelah jatuh
+const MAX_JUMPS = 2;                 // lompatan ganda
+const SHIELD_DURATION_FRAMES = 600;  // ~10 dtk perisai dari lotus
+const NEAR_MISS_DISTANCE = 14;       // jarak "nyaris" untuk bonus
+
 // Colors (matching red mental-health theme)
 const COLORS = {
     sky: "#FEF2F2",
@@ -67,6 +76,8 @@ interface Obstacle {
     height: number;
     type: "thought" | "stress" | "spiral";
     label: string;
+    passed?: boolean;
+    nearMissScored?: boolean;
 }
 
 interface Collectible {
@@ -136,6 +147,11 @@ export default function MindfulRunnerGame() {
         isJumping: false,
         playerFrame: 0,
         frameCount: 0,
+        // Lompat lanjutan & power-up
+        jumpHeld: false,
+        jumpsUsed: 0,
+        coyoteCounter: 0,
+        shieldFrames: 0,
         // Entities
         obstacles: [] as Obstacle[],
         collectibles: [] as Collectible[],
@@ -175,6 +191,24 @@ export default function MindfulRunnerGame() {
         ctx.beginPath();
         ctx.ellipse(x + 12, GROUND_Y + 24, 14, 4, 0, 0, Math.PI * 2);
         ctx.fill();
+
+        // Shield aura (lotus power-up) — cincin bercahaya berdenyut.
+        if (gameStateRef.current.shieldFrames > 0) {
+            const pulse = 0.5 + Math.sin(frame * 0.2) * 0.2;
+            ctx.fillStyle = COLORS.flower;
+            ctx.globalAlpha = 0.18 * pulse;
+            ctx.beginPath();
+            ctx.arc(x + 12, pY - 12, 26, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            ctx.strokeStyle = COLORS.flower;
+            ctx.globalAlpha = 0.5;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x + 12, pY - 12, 24, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+        }
 
         // Body
         ctx.fillStyle = COLORS.player;
@@ -366,16 +400,27 @@ export default function MindfulRunnerGame() {
         const scaledSpeedIncrement = SPEED_INCREMENT * (1 + difficultyTier * DIFFICULTY_SCALE_PER_TIER);
         gs.speed = Math.min(MAX_SPEED, gs.speed + scaledSpeedIncrement);
 
-        // ——— Update player ———
+        // ——— Update player (gravitasi adaptif: variable jump & fast-fall) ———
         if (gs.isJumping) {
-            gs.playerVelocity += GRAVITY;
+            let g = GRAVITY;
+            if (gs.playerVelocity < 0) {
+                g = gs.jumpHeld ? GRAVITY * JUMP_HOLD_GRAVITY_MULT : GRAVITY;
+            } else {
+                g = gs.jumpHeld ? GRAVITY : GRAVITY * FAST_FALL_GRAVITY_MULT;
+            }
+            gs.playerVelocity += g;
             gs.playerY += gs.playerVelocity;
             if (gs.playerY >= GROUND_Y) {
                 gs.playerY = GROUND_Y;
                 gs.isJumping = false;
                 gs.playerVelocity = 0;
+                gs.jumpsUsed = 0;
+                gs.coyoteCounter = COYOTE_FRAMES;
             }
+        } else if (gs.coyoteCounter > 0) {
+            gs.coyoteCounter--;
         }
+        if (gs.shieldFrames > 0) gs.shieldFrames--;
         gs.playerFrame++;
 
         gs.obstacleTravel += gs.speed;
@@ -505,6 +550,34 @@ export default function MindfulRunnerGame() {
                 collisionY = obsBox.y + obsBox.h / 2;
                 break;
             }
+            // Near-miss: berhasil melompati rintangan dengan jarak tipis → bonus.
+            if (!obs.passed && obsBox.x + obsBox.w < playerBox.x) {
+                obs.passed = true;
+                const gap = playerBox.y + playerBox.h - obsBox.y;
+                if (!obs.nearMissScored && gap > 0 && gap < NEAR_MISS_DISTANCE + 12 && gs.isJumping) {
+                    obs.nearMissScored = true;
+                    gs.score += 5;
+                    gs.combo = Math.min(gs.combo + 1, 5);
+                    gs.floatingTexts.push({ x: playerBox.x, y: playerBox.y - 6, text: "Nyaris! +5", life: 45, maxLife: 45 });
+                }
+            }
+        }
+
+        // Perisai (lotus) menyerap satu tabrakan.
+        if (collidedWithObstacle && gs.shieldFrames > 0) {
+            gs.shieldFrames = 0;
+            gs.shakeLife = 6;
+            gs.obstacles = gs.obstacles.filter((o) => !(o.x < 110 && o.x + o.width > 40));
+            for (let i = 0; i < 16; i++) {
+                gs.particles.push({
+                    x: collisionX, y: collisionY,
+                    vx: (Math.random() - 0.5) * 8, vy: (Math.random() - 0.5) * 6,
+                    life: 18 + Math.random() * 12, maxLife: 30,
+                    color: COLORS.flower, size: 2 + Math.random() * 3,
+                });
+            }
+            gs.floatingTexts.push({ x: collisionX, y: collisionY - 10, text: "Perisai!", life: 45, maxLife: 45 });
+            collidedWithObstacle = false;
         }
 
         if (collidedWithObstacle) {
@@ -538,6 +611,12 @@ export default function MindfulRunnerGame() {
                     gs.combo++;
                     const bonus = c.type === "lotus" ? 5 : c.type === "star" ? 3 : 2;
                     gs.score += bonus * Math.min(gs.combo, 5);
+
+                    // Lotus memberi perisai pelindung (menyerap satu tabrakan).
+                    if (c.type === "lotus") {
+                        gs.shieldFrames = SHIELD_DURATION_FRAMES;
+                        gs.floatingTexts.push({ x: c.x, y: c.y - 24, text: "Perisai aktif", life: 50, maxLife: 50 });
+                    }
 
                     // Spawn particles
                     for (let i = 0; i < 8; i++) {
@@ -713,6 +792,11 @@ export default function MindfulRunnerGame() {
             ctx.font = "bold 12px sans-serif";
             ctx.fillText(`Combo x${gs.combo}`, 12, 54);
         }
+        if (gs.shieldFrames > 0) {
+            ctx.fillStyle = COLORS.flower;
+            ctx.font = "bold 12px sans-serif";
+            ctx.fillText(`🛡 Perisai ${Math.ceil(gs.shieldFrames / 60)}s`, 12, 72);
+        }
 
         if (collidedWithObstacle) {
             ctx.fillStyle = "rgba(239, 68, 68, 0.14)";
@@ -765,6 +849,10 @@ export default function MindfulRunnerGame() {
         gs.playerY = GROUND_Y;
         gs.playerVelocity = 0;
         gs.isJumping = false;
+        gs.jumpHeld = false;
+        gs.jumpsUsed = 0;
+        gs.coyoteCounter = 0;
+        gs.shieldFrames = 0;
         gs.playerFrame = 0;
         gs.frameCount = 0;
         gs.obstacles = [];
@@ -795,15 +883,29 @@ export default function MindfulRunnerGame() {
 
     const jump = useCallback(() => {
         const gs = gameStateRef.current;
-        if (!gs.isJumping && gs.running) {
+        if (!gs.running) return;
+        const onGroundish = !gs.isJumping || gs.coyoteCounter > 0;
+        if (onGroundish && gs.jumpsUsed === 0) {
             gs.isJumping = true;
+            gs.jumpHeld = true;
+            gs.jumpsUsed = 1;
+            gs.coyoteCounter = 0;
             gs.playerVelocity = JUMP_FORCE;
+        } else if (gs.jumpsUsed < MAX_JUMPS) {
+            // Lompatan kedua (di udara).
+            gs.jumpHeld = true;
+            gs.jumpsUsed++;
+            gs.playerVelocity = DOUBLE_JUMP_FORCE;
         }
+    }, []);
+
+    const releaseJump = useCallback(() => {
+        gameStateRef.current.jumpHeld = false;
     }, []);
 
     // ——— Input handlers ———
     useEffect(() => {
-        const handleKey = (e: KeyboardEvent) => {
+        const handleKeyDown = (e: KeyboardEvent) => {
             if (e.code === "Space" || e.code === "ArrowUp") {
                 e.preventDefault();
                 if (gameStateRef.current.running) {
@@ -813,9 +915,18 @@ export default function MindfulRunnerGame() {
                 }
             }
         };
-        window.addEventListener("keydown", handleKey);
-        return () => window.removeEventListener("keydown", handleKey);
-    }, [jump, startGame]);
+        const handleKeyUp = (e: KeyboardEvent) => {
+            if (e.code === "Space" || e.code === "ArrowUp") {
+                releaseJump();
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        window.addEventListener("keyup", handleKeyUp);
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+            window.removeEventListener("keyup", handleKeyUp);
+        };
+    }, [jump, releaseJump, startGame]);
 
     // Cleanup animation frame on unmount
     useEffect(() => {
@@ -907,14 +1018,7 @@ export default function MindfulRunnerGame() {
                 height={CANVAS_H}
                 className="rounded-xl border border-red-200 shadow-md cursor-pointer w-full h-auto"
                 style={{ touchAction: "none" }}
-                onClick={() => {
-                    if (gameStateRef.current.running) {
-                        jump();
-                    } else {
-                        startGame();
-                    }
-                }}
-                onTouchStart={(e) => {
+                onPointerDown={(e) => {
                     e.preventDefault();
                     if (gameStateRef.current.running) {
                         jump();
@@ -922,9 +1026,12 @@ export default function MindfulRunnerGame() {
                         startGame();
                     }
                 }}
+                onPointerUp={() => releaseJump()}
+                onPointerCancel={() => releaseJump()}
+                onPointerLeave={() => releaseJump()}
             />
             <p className="text-xs text-gray-400 text-center">
-                SPASI / ↑ / Tap untuk lompat • Hindari pikiran negatif, kumpulkan hati & bintang
+                Tahan SPASI / ↑ / klik untuk lompat lebih tinggi • Tekan lagi di udara untuk lompat ganda • Lotus 🪷 memberi perisai
             </p>
         </div>
     );
