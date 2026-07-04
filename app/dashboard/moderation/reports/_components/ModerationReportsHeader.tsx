@@ -50,17 +50,30 @@ interface ModerationReportsHeaderProps {
     setStatusFilter: (value: string) => void;
     typeFilter: string;
     setTypeFilter: (value: string) => void;
+    reasonFilter: string;
+    setReasonFilter: (value: string) => void;
     searchQuery: string;
     setSearchQuery: (value: string) => void;
     isLoading: boolean;
     onRefresh: () => void;
 }
 
+const REASON_CONFIG: Record<string, string> = {
+    misinformation: "Informasi Keliru",
+    harmful: "Konten Berbahaya",
+    harassment: "Pelecehan",
+    spam: "Spam",
+    impersonation: "Penyamaran",
+    other: "Lainnya",
+};
+
 export function ModerationReportsHeader({
     statusFilter,
     setStatusFilter,
     typeFilter,
     setTypeFilter,
+    reasonFilter,
+    setReasonFilter,
     searchQuery,
     setSearchQuery,
     isLoading,
@@ -145,6 +158,25 @@ export function ModerationReportsHeader({
                                         </DropdownMenuItem>
                                     );
                                 })}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline">
+                                    {reasonFilter === "all" ? "Semua Alasan" : REASON_CONFIG[reasonFilter]}
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => setReasonFilter("all")}>
+                                    Semua Alasan
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                {Object.entries(REASON_CONFIG).map(([key, label]) => (
+                                    <DropdownMenuItem key={key} onClick={() => setReasonFilter(key)}>
+                                        {label}
+                                    </DropdownMenuItem>
+                                ))}
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>

@@ -18,6 +18,7 @@ import type {
   B2BQuote,
   B2BQuoteRequest,
   B2BSeatUpgradeRequest,
+  B2BSSOConfig,
   CreateB2BOrganizationRequest,
   InviteB2BMemberRequest,
   MitraOrganizationListItem,
@@ -45,6 +46,7 @@ export function useMitraDashboard() {
   const [impactReport, setImpactReport] = useState<B2BImpactReport | null>(null);
   const [auditLogs, setAuditLogs] = useState<B2BAuditLog[]>([]);
   const [onboardingTemplate, setOnboardingTemplate] = useState<B2BOnboardingTemplate | null>(null);
+  const [ssoConfig, setSsoConfig] = useState<B2BSSOConfig | null>(null);
   const [pricingRecommendation, setPricingRecommendation] = useState<B2BPricingRecommendation | null>(null);
   const [lastInvite, setLastInvite] = useState<{ response: B2BInviteMemberResponse; link: string } | null>(null);
   const [bulkInviteResult, setBulkInviteResult] = useState<B2BBulkInviteResponse | null>(null);
@@ -97,7 +99,7 @@ export function useMitraDashboard() {
     setErrorMessage(null);
 
     try {
-      const [summaryRes, membersRes, analyticsRes, impactRes, auditRes, onboardingRes, pricingRes] = await Promise.all([
+      const [summaryRes, membersRes, analyticsRes, impactRes, auditRes, onboardingRes, pricingRes, ssoRes] = await Promise.all([
         b2bService.getOrganizationSummary(token, organizationId),
         b2bService.listOrganizationMembers(token, organizationId),
         b2bService.getOrganizationAnalytics(token, organizationId, 30),
@@ -105,6 +107,7 @@ export function useMitraDashboard() {
         b2bService.listAuditLogs(token, organizationId, { limit: 12 }),
         b2bService.getOnboardingTemplate(token, organizationId, "member"),
         b2bService.getPricingRecommendation(token, organizationId).catch(() => null),
+        b2bService.getSSOConfig(token, organizationId).catch(() => null),
       ]);
 
       setSummary(summaryRes.data ?? null);
@@ -114,6 +117,7 @@ export function useMitraDashboard() {
       setAuditLogs(auditRes.data?.items ?? []);
       setOnboardingTemplate(onboardingRes.data ?? null);
       setPricingRecommendation(pricingRes?.data ?? null);
+      setSsoConfig(ssoRes?.data ?? null);
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
       setSummary(null);
@@ -123,6 +127,7 @@ export function useMitraDashboard() {
       setAuditLogs([]);
       setOnboardingTemplate(null);
       setPricingRecommendation(null);
+      setSsoConfig(null);
     } finally {
       setIsLoadingDetail(false);
     }
@@ -208,6 +213,15 @@ export function useMitraDashboard() {
     return runMutation(() => b2bService.runReminders(token, selectedOrganizationId));
   }, [token, selectedOrganizationId, runMutation]);
 
+  const saveSSOConfig = useCallback((payload: Partial<B2BSSOConfig>) => {
+    if (!token || !selectedOrganizationId) throw new Error("Organisasi belum dipilih.");
+    return runMutation(async () => {
+      const res = await b2bService.upsertSSOConfig(token, selectedOrganizationId, payload);
+      setSsoConfig(res.data ?? null);
+      return res;
+    });
+  }, [token, selectedOrganizationId, runMutation]);
+
   useEffect(() => {
     loadBaseData();
   }, [loadBaseData]);
@@ -224,6 +238,7 @@ export function useMitraDashboard() {
       setAuditLogs([]);
       setOnboardingTemplate(null);
       setPricingRecommendation(null);
+      setSsoConfig(null);
       return;
     }
 
@@ -245,6 +260,7 @@ export function useMitraDashboard() {
     impactReport,
     auditLogs,
     onboardingTemplate,
+    ssoConfig,
     pricingRecommendation,
     lastInvite,
     bulkInviteResult,
@@ -268,5 +284,6 @@ export function useMitraDashboard() {
     upgradeSeats,
     saveOnboardingTemplate,
     runReminders,
+    saveSSOConfig,
   };
 }

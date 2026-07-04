@@ -8,6 +8,7 @@ export default function ModerationReportsPage() {
     const {
         statusFilter,
         typeFilter,
+        reasonFilter,
         searchQuery,
         page,
         reports,
@@ -16,6 +17,7 @@ export default function ModerationReportsPage() {
         totalPages,
         setStatusFilter,
         setTypeFilter,
+        setReasonFilter,
         setSearchQuery,
         setPage,
         loadReports,
@@ -28,6 +30,8 @@ export default function ModerationReportsPage() {
                 setStatusFilter={setStatusFilter}
                 typeFilter={typeFilter}
                 setTypeFilter={setTypeFilter}
+                reasonFilter={reasonFilter}
+                setReasonFilter={setReasonFilter}
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
                 isLoading={isLoading}

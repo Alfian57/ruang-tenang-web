@@ -54,8 +54,15 @@ export const ROUTES = {
     MODERATION: "/dashboard/moderation",
     MODERATION_REPORTS: "/dashboard/moderation/reports",
     MODERATION_QUEUE: "/dashboard/moderation/queue",
+    MODERATION_STORIES: "/dashboard/moderation/stories",
+    MODERATION_APPEALS: "/dashboard/moderation/appeals",
+    MODERATION_CRISIS_KEYWORDS: "/dashboard/moderation/crisis-keywords",
+    MODERATION_ACTIONS: "/dashboard/moderation/actions",
+    MODERATION_TRIGGER_WARNINGS: "/dashboard/moderation/trigger-warnings",
     REWARDS: "/dashboard/admin/rewards",
     BROADCASTS: "/dashboard/admin/broadcasts",
+    BILLING: "/dashboard/admin/billing",
+    B2B: "/dashboard/admin/b2b",
   },
 
   // Mitra

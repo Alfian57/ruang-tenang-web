@@ -2,7 +2,7 @@
 
 import { Plus, Pencil, Trash2, Loader2, Save, X, ImageIcon, Star, Shield, Zap, Coins, Info, Sparkles } from "lucide-react";
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,6 +38,13 @@ export default function LevelsManagementPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editFileInputRef = useRef<HTMLInputElement>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (error && errorRef.current) {
+      errorRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [error]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -110,7 +117,7 @@ export default function LevelsManagementPage() {
 
       <div className="p-5 space-y-5">
         {error && (
-          <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm font-medium border border-red-100">
+          <div ref={errorRef} className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm font-medium border border-red-100">
             {error}
           </div>
         )}

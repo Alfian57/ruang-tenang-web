@@ -8,6 +8,8 @@ import type {
   ModeratorAction,
   ReportType,
   UserReport,
+  Appeal,
+  ReviewAppealRequest,
 } from "@/types/moderation";
 
 interface UserStrike {
@@ -26,8 +28,9 @@ interface CrisisKeyword {
   category: string;
   severity: string;
   language?: string;
+  is_active: boolean;
   notes?: string;
-  created_at: string;
+  created_at?: string;
 }
 
 interface BlockedUser {
@@ -112,7 +115,7 @@ export const moderationService = {
     return httpClient.get<ApiResponse<ModerationStats>>("/moderation/stats", { token });
   },
 
-  getQueue(token: string, params?: { status?: string; page?: number; limit?: number }) {
+  getQueue(token: string, params?: { status?: string; severity?: string; page?: number; limit?: number }) {
     return httpClient.get<PaginatedResponse<ModerationQueueItem>>("/moderation/queue", { token, params });
   },
 
@@ -188,5 +191,14 @@ export const moderationService = {
   // Appeals
   submitAppeal(token: string, data: { reason: string; evidence?: string }) {
     return httpClient.post<ApiResponse<null>>("/appeals", data, { token });
+  },
+
+  // Appeals (admin)
+  getAppeals(token: string, params?: { status?: string; page?: number; limit?: number }) {
+    return httpClient.get<PaginatedResponse<Appeal>>("/moderation/appeals", { token, params });
+  },
+
+  reviewAppeal(token: string, appealId: number, data: ReviewAppealRequest) {
+    return httpClient.put<ApiResponse<null>>(`/moderation/appeals/${appealId}`, data, { token });
   },
 };

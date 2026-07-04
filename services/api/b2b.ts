@@ -165,3 +165,54 @@ export const b2bService = {
     );
   },
 };
+
+// ====================================================================
+// Admin B2B management (requires admin role).
+// ====================================================================
+export interface AdminB2BPlanPayload {
+  code: string;
+  name: string;
+  description?: string;
+  billing_cycle: "monthly" | "yearly";
+  base_price_per_seat: number;
+  min_seats: number;
+  max_seats: number;
+  features?: Record<string, unknown>;
+  is_active?: boolean;
+}
+
+export interface AdminB2BSubscriptionPayload {
+  plan_id: number;
+  contracted_seats: number;
+  billing_cycle?: "monthly" | "yearly";
+  starts_at?: string;
+}
+
+export const adminB2bService = {
+  listPlans(token: string, activeOnly = false) {
+    return httpClient.get<ApiResponse<B2BPlan[]>>("/admin/b2b/plans", {
+      token,
+      params: { active_only: activeOnly },
+    });
+  },
+
+  createPlan(token: string, payload: AdminB2BPlanPayload) {
+    return httpClient.post<ApiResponse<B2BPlan>>("/admin/b2b/plans", payload, { token });
+  },
+
+  updatePlan(token: string, planId: number, payload: AdminB2BPlanPayload) {
+    return httpClient.put<ApiResponse<B2BPlan>>(`/admin/b2b/plans/${planId}`, payload, { token });
+  },
+
+  listOrganizations(token: string) {
+    return httpClient.get<ApiResponse<B2BOrganization[]>>("/admin/b2b/organizations", { token });
+  },
+
+  createSubscription(token: string, organizationId: number, payload: AdminB2BSubscriptionPayload) {
+    return httpClient.post<ApiResponse<B2BSubscription>>(
+      `/admin/b2b/organizations/${organizationId}/subscriptions`,
+      payload,
+      { token }
+    );
+  },
+};

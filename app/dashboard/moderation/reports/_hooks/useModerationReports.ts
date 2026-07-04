@@ -17,6 +17,7 @@ export function useModerationReports() {
   // URL state
   const statusFilter = searchParams.get("status") || "pending";
   const typeFilter = searchParams.get("type") || "all";
+  const reasonFilter = searchParams.get("reason") || "all";
   const urlSearchQuery = searchParams.get("search") || "";
   const focusId = searchParams.get("focus") || "";
   const page = parseInt(searchParams.get("page") || "1", 10);
@@ -48,6 +49,7 @@ export function useModerationReports() {
 
   const setStatusFilter = (value: string) => updateUrl({ status: value === "pending" ? null : value, page: null });
   const setTypeFilter = (value: string) => updateUrl({ type: value === "all" ? null : value, page: null });
+  const setReasonFilter = (value: string) => updateUrl({ reason: value === "all" ? null : value, page: null });
   const setSearchQuery = (value: string) => setSearchTerm(value);
   const setPage = (value: number) => updateUrl({ page: value > 1 ? value.toString() : null });
 
@@ -63,6 +65,7 @@ export function useModerationReports() {
       const res = await moderationService.getReports(token, {
         status: statusFilter === "all" ? undefined : statusFilter,
         report_type: typeFilter === "all" ? undefined : typeFilter,
+        reason: reasonFilter === "all" ? undefined : reasonFilter,
         page,
         limit,
       });
@@ -75,7 +78,7 @@ export function useModerationReports() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, statusFilter, typeFilter, page]);
+  }, [token, statusFilter, typeFilter, reasonFilter, page]);
 
   useEffect(() => {
     loadReports();
@@ -90,6 +93,7 @@ export function useModerationReports() {
   return {
     statusFilter,
     typeFilter,
+    reasonFilter,
     searchQuery: searchTerm,
     page,
     reports: filteredReports,
@@ -98,6 +102,7 @@ export function useModerationReports() {
     totalPages,
     setStatusFilter,
     setTypeFilter,
+    setReasonFilter,
     setSearchQuery,
     setPage,
     loadReports,

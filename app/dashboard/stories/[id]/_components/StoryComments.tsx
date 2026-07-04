@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
 import {
   Heart,
   User,
@@ -10,15 +11,25 @@ import {
   Flag,
   MoreVertical,
   MessageCircle,
+  EyeOff,
 } from "lucide-react";
 import { ReportModal, BlockUserButton } from "@/components/shared/moderation";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { StoryComment } from "@/types/gamification";
@@ -30,10 +41,12 @@ interface StoryCommentsProps {
   canComment: boolean;
   token: string | null;
   userId?: number;
+  isAdmin?: boolean;
   newComment: string;
   submittingComment: boolean;
   onNewCommentChange: (value: string) => void;
   onSubmitComment: () => void;
+  onHideComment?: (commentId: string, reason: string) => void | Promise<void>;
 }
 
 export function StoryComments({
@@ -43,12 +56,29 @@ export function StoryComments({
   canComment,
   token,
   userId,
+  isAdmin = false,
   newComment,
   submittingComment,
   onNewCommentChange,
   onSubmitComment,
+  onHideComment,
 }: StoryCommentsProps) {
   const safeComments = Array.isArray(comments) ? comments : [];
+  const [hideTarget, setHideTarget] = useState<string | null>(null);
+  const [hideReason, setHideReason] = useState("");
+  const [hiding, setHiding] = useState(false);
+
+  const submitHide = async () => {
+    if (!hideTarget || !onHideComment) return;
+    setHiding(true);
+    try {
+      await onHideComment(hideTarget, hideReason.trim());
+      setHideTarget(null);
+      setHideReason("");
+    } finally {
+      setHiding(false);
+    }
+  };
 
   return (
     <section>
@@ -141,8 +171,13 @@ export function StoryComments({
                           { locale: idLocale }
                         )}
                       </span>
+                      {comment.is_hidden && (
+                        <Badge variant="muted" icon={<EyeOff className="w-3 h-3" />}>
+                          Disembunyikan
+                        </Badge>
+                      )}
                     </div>
-                    {token && !!comment.author?.id && comment.author.id !== userId && (
+                    {token && (isAdmin || (!!comment.author?.id && comment.author.id !== userId)) && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-6 w-6">
@@ -150,22 +185,38 @@ export function StoryComments({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <ReportModal
-                            type="story_comment"
-                            contentId={comment.id}
-                            userId={comment.author?.id}
-                            trigger={
-                              <div className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 cursor-pointer">
-                                <Flag className="w-4 h-4 mr-2" />
-                                Laporkan
-                              </div>
-                            }
-                          />
-                          <BlockUserButton
-                            userId={comment.author?.id || 0}
-                            userName={comment.author?.name || "User"}
-                            className="w-full justify-start text-sm font-normal px-2 py-1.5 h-auto text-red-600 hover:text-red-600 hover:bg-red-50"
-                          />
+                          {!!comment.author?.id && comment.author.id !== userId && (
+                            <>
+                              <ReportModal
+                                type="story_comment"
+                                contentId={comment.id}
+                                userId={comment.author?.id}
+                                trigger={
+                                  <div className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 cursor-pointer">
+                                    <Flag className="w-4 h-4 mr-2" />
+                                    Laporkan
+                                  </div>
+                                }
+                              />
+                              <BlockUserButton
+                                userId={comment.author?.id || 0}
+                                userName={comment.author?.name || "User"}
+                                className="w-full justify-start text-sm font-normal px-2 py-1.5 h-auto text-red-600 hover:text-red-600 hover:bg-red-50"
+                              />
+                            </>
+                          )}
+                          {isAdmin && onHideComment && !comment.is_hidden && (
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setHideReason("");
+                                setHideTarget(comment.id);
+                              }}
+                              className="text-red-600"
+                            >
+                              <EyeOff className="w-4 h-4 mr-2" />
+                              Sembunyikan Komentar
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     )}
@@ -187,6 +238,34 @@ export function StoryComments({
           ))}
         </div>
       )}
+
+      {/* Admin hide-comment dialog */}
+      <Dialog open={hideTarget !== null} onOpenChange={(open) => { if (!open) setHideTarget(null); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sembunyikan Komentar</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Komentar akan disembunyikan dari publik. Sertakan alasan moderasi.
+            </p>
+            <Textarea
+              placeholder="Alasan menyembunyikan komentar"
+              value={hideReason}
+              onChange={(e) => setHideReason(e.target.value)}
+              rows={3}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setHideTarget(null)} disabled={hiding}>
+              Batal
+            </Button>
+            <Button variant="destructive" onClick={submitHide} disabled={hiding || !hideReason.trim()}>
+              {hiding ? "Menyembunyikan..." : "Sembunyikan"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

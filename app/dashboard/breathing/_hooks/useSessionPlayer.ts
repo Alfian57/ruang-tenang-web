@@ -32,6 +32,9 @@ export function useSessionPlayer({
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
     const startTimeRef = useRef<number>(0);
     const phaseStartTimeRef = useRef<number>(0);
+    // Raw (sub-second) elapsed milliseconds captured at pause, so resume does
+    // not lose up to ~1s per pause cycle from second-flooring.
+    const pausedElapsedMsRef = useRef<number>(0);
 
     const cycleDuration =
         technique.inhale_duration +
@@ -53,16 +56,29 @@ export function useSessionPlayer({
     const getPhaseFromCycleTime = useCallback((cycleTime: number): BreathingPhase => {
         let accumulated = 0;
 
-        accumulated += technique.inhale_duration;
-        if (cycleTime < accumulated) return "inhale";
+        if (technique.inhale_duration > 0) {
+            accumulated += technique.inhale_duration;
+            if (cycleTime < accumulated) return "inhale";
+        }
 
-        accumulated += technique.inhale_hold_duration;
-        if (cycleTime < accumulated) return "inhale_hold";
+        if (technique.inhale_hold_duration > 0) {
+            accumulated += technique.inhale_hold_duration;
+            if (cycleTime < accumulated) return "inhale_hold";
+        }
 
-        accumulated += technique.exhale_duration;
-        if (cycleTime < accumulated) return "exhale";
+        if (technique.exhale_duration > 0) {
+            accumulated += technique.exhale_duration;
+            if (cycleTime < accumulated) return "exhale";
+        }
 
-        return "exhale_hold";
+        if (technique.exhale_hold_duration > 0) {
+            return "exhale_hold";
+        }
+
+        // Degenerate fallback: prefer the first non-zero phase.
+        if (technique.inhale_duration > 0) return "inhale";
+        if (technique.exhale_duration > 0) return "exhale";
+        return "inhale";
     }, [technique]);
 
     const triggerHaptic = useCallback(() => {
@@ -92,6 +108,7 @@ export function useSessionPlayer({
                     phase: "complete",
                     elapsedTime: targetDurationSeconds,
                     remainingTime: 0,
+                    phaseProgress: 100,
                     isActive: false,
                     currentCycle: totalCycles,
                 }));
@@ -164,20 +181,28 @@ export function useSessionPlayer({
     };
 
     const handlePause = () => {
+        // Capture exact elapsed ms so resume doesn't lose the sub-second part.
+        pausedElapsedMsRef.current = Date.now() - startTimeRef.current;
         setState(prev => ({ ...prev, isPaused: true }));
     };
 
     const handleResume = () => {
-        const pausedDuration = state.elapsedTime * 1000;
-        startTimeRef.current = Date.now() - pausedDuration;
+        startTimeRef.current = Date.now() - pausedElapsedMsRef.current;
         setState(prev => ({ ...prev, isPaused: false }));
     };
 
     const handleStop = () => {
-        const completedPercentage = Math.round((state.elapsedTime / targetDurationSeconds) * 100);
+        // Completed cycles is always derived the same way across every exit
+        // path (manual stop, natural timeout) to keep backend stats consistent.
+        const cyclesCompleted = cycleDuration > 0
+            ? Math.min(totalCycles, Math.floor(state.elapsedTime / cycleDuration))
+            : 0;
+        const completedPercentage = targetDurationSeconds > 0
+            ? Math.min(100, Math.round((state.elapsedTime / targetDurationSeconds) * 100))
+            : 0;
         const completionData = {
             durationSeconds: state.elapsedTime,
-            cyclesCompleted: state.currentCycle > 0 ? state.currentCycle - 1 : 0,
+            cyclesCompleted,
             completed: completedPercentage >= 95,
             completedPercentage,
         };
@@ -226,6 +251,9 @@ export function useSessionPlayer({
         totalCycles,
         phaseDurations,
         scale: getAnimationScale(),
+        completedCycles: cycleDuration > 0
+            ? Math.min(totalCycles, Math.floor(state.elapsedTime / cycleDuration))
+            : 0,
         handleStart,
         handlePause,
         handleResume,

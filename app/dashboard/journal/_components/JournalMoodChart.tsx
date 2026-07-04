@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from "recharts";
+import { PieChart as PieChartIcon } from "lucide-react";
 import Image from "next/image";
 import { JournalAnalytics } from "@/types";
 
@@ -78,7 +79,10 @@ export function JournalMoodChart({ analytics }: JournalMoodChartProps) {
                         </div>
                     </div>
                 ) : (
-                    <p className="text-center text-gray-500 py-8">Belum ada data mood</p>
+                    <div className="h-48 flex flex-col items-center justify-center text-center">
+                        <PieChartIcon className="w-12 h-12 text-gray-300 mb-3" />
+                        <p className="text-gray-500">Belum ada data mood</p>
+                    </div>
                 )}
             </CardContent>
         </Card>

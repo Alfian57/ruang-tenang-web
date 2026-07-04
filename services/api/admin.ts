@@ -1,6 +1,6 @@
 import { httpClient } from "@/services/http/client";
 import type { ApiResponse, PaginatedResponse } from "@/services/http/types";
-import type { User, Article, Song, SongCategory, LevelConfig } from "@/types";
+import type { User, Article, ArticleCategory, Song, SongCategory, LevelConfig } from "@/types";
 import type { Forum, ForumCategory, ForumPost } from "@/types/forum";
 import type { AdminMapLandmark, AdminMapLandmarkPayload } from "@/types/progress-map";
 import type { DashboardStats } from "@/types/admin";
@@ -52,12 +52,22 @@ export const adminService = {
     return httpClient.get<PaginatedResponse<Article>>("/admin/articles", { token, params });
   },
 
-  updateArticleStatus(token: string, id: number, status: string) {
-    return httpClient.put<ApiResponse<Article>>(`/admin/articles/${id}/status`, { status }, { token });
+  // Block an article (sets status to "blocked").
+  blockArticle(token: string, id: number) {
+    return httpClient.put<ApiResponse<null>>(`/admin/articles/${id}/block`, {}, { token });
+  },
+
+  // Unblock an article (sets status back to "published").
+  unblockArticle(token: string, id: number) {
+    return httpClient.put<ApiResponse<null>>(`/admin/articles/${id}/unblock`, {}, { token });
   },
 
   deleteArticle(token: string, id: number) {
     return httpClient.delete<ApiResponse<null>>(`/admin/articles/${id}`, { token });
+  },
+
+  getArticleCategories(token: string) {
+    return httpClient.get<ApiResponse<ArticleCategory[]>>("/admin/article-categories", { token });
   },
 
   // Songs

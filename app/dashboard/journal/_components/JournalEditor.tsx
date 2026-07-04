@@ -29,12 +29,12 @@ import { Label } from "@/components/ui/label";
 import { JournalToolbar } from "./JournalToolbar";
 
 const MOOD_OPTIONS = [
-    { id: 1, icon: "/images/1-smile.png", label: "Bahagia", color: "bg-primary/10 text-primary" },
-    { id: 2, icon: "/images/2-netral.png", label: "Netral", color: "bg-gray-100 text-gray-700" },
-    { id: 3, icon: "/images/5-sad.png", label: "Sedih", color: "bg-primary/10 text-primary" },
-    { id: 4, icon: "/images/3-angry.png", label: "Marah", color: "bg-red-100 text-red-700" },
-    { id: 5, icon: "/images/4-disappointed.png", label: "Kecewa", color: "bg-primary/10 text-primary" },
-    { id: 6, icon: "/images/6-cry.png", label: "Menangis", color: "bg-primary/10 text-primary" },
+    { id: 1, icon: "/images/1-happy-active.png", label: "Bahagia", color: "bg-primary/10 text-primary" },
+    { id: 2, icon: "/images/2-netral-active.png", label: "Netral", color: "bg-gray-100 text-gray-700" },
+    { id: 3, icon: "/images/5-sad-active.png", label: "Sedih", color: "bg-primary/10 text-primary" },
+    { id: 4, icon: "/images/3-angry-active.png", label: "Marah", color: "bg-red-100 text-red-700" },
+    { id: 5, icon: "/images/4-disappointed-active.png", label: "Kecewa", color: "bg-primary/10 text-primary" },
+    { id: 6, icon: "/images/6-cry-active.png", label: "Menangis", color: "bg-primary/10 text-primary" },
 ];
 
 interface JournalEditorProps {
@@ -105,6 +105,8 @@ export function JournalEditor({
         handleRemoveTag,
         handleKeyDown,
         handleSave,
+        errors,
+        setErrors,
     } = useJournalEditor({
         initialTitle,
         initialContent,
@@ -128,13 +130,17 @@ export function JournalEditor({
         <div className="w-full">
             <JournalEditorHeader
                 title={title}
-                setTitle={setTitle}
+                setTitle={(val) => {
+                    setTitle(val);
+                    if (errors.title) setErrors({ ...errors, title: undefined });
+                }}
                 isSaving={isSaving}
+                error={errors.title}
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-4">
-                    <div className="min-h-125 border rounded-lg bg-white shadow-sm flex flex-col">
+                    <div className={`min-h-125 border rounded-lg bg-white shadow-sm flex flex-col ${errors.content ? 'border-red-500 ring-1 ring-red-500' : ''}`} id="journal-content">
                         <JournalToolbar
                             editor={editor}
                             onGeneratePrompt={onGeneratePrompt ? () => onGeneratePrompt() : undefined}
@@ -143,6 +149,11 @@ export function JournalEditor({
                             editor={editor}
                             className="flex-1 p-6 prose prose-lg max-w-none focus:outline-none min-h-100"
                         />
+                        {errors.content && (
+                            <p className="px-4 py-2 text-sm text-red-500 font-medium bg-red-50/50 border-t border-red-100">
+                                {errors.content}
+                            </p>
+                        )}
                         <div className="px-4 py-2 border-t text-xs text-gray-500 bg-gray-50 rounded-b-lg flex justify-between items-center">
                             <span>{wordCount} kata</span>
                             {isSaving && (
@@ -157,7 +168,7 @@ export function JournalEditor({
                     <div className="flex justify-end">
                         <Button
                             onClick={handleSave}
-                            disabled={!title.trim() || isSaving}
+                            disabled={isSaving}
                             className="bg-primary hover:bg-primary/90 text-white min-w-30"
                         >
                             {isSaving ? (

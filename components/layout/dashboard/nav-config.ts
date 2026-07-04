@@ -117,6 +117,13 @@ export const adminGroups: NavGroup[] = [
     ],
   },
   {
+    title: "Monetisasi",
+    links: [
+      { href: ROUTES.ADMIN.BILLING, icon: CreditCard, label: "Billing" },
+      { href: ROUTES.ADMIN.B2B, icon: Building2, label: "B2B" },
+    ],
+  },
+  {
     title: "Moderasi",
     links: [
       { href: ROUTES.ADMIN.MODERATION, icon: Shield, label: "Moderasi" },

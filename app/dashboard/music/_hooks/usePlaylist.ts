@@ -39,10 +39,10 @@ export function usePlaylist(playlistIdentifier: string) {
   }, [loadPlaylist]);
 
   const handleSave = async (data: { name: string; description?: string; is_public?: boolean }) => {
-    if (!token || !playlist) return;
+    if (!token || !playlist || !playlist.uuid) return;
     setIsSaving(true);
     try {
-      await songService.updatePlaylist(token, playlist.id, data);
+      await songService.updatePlaylist(token, playlist.uuid, data);
       await loadPlaylist();
       setIsPlaylistDialogOpen(false);
       toast.success("Playlist berhasil diperbarui");
@@ -55,10 +55,10 @@ export function usePlaylist(playlistIdentifier: string) {
   };
 
   const handleDelete = async () => {
-    if (!token || !playlist) return;
+    if (!token || !playlist || !playlist.uuid) return;
     setIsDeleting(true);
     try {
-      await songService.deletePlaylist(token, playlist.id);
+      await songService.deletePlaylist(token, playlist.uuid);
       toast.success("Playlist berhasil dihapus");
       router.push("/dashboard/music?tab=playlists");
     } catch (error) {
@@ -69,9 +69,9 @@ export function usePlaylist(playlistIdentifier: string) {
   };
 
   const handleAddSongs = async (songIds: number[]) => {
-    if (!playlist || !token) return;
+    if (!playlist || !token || !playlist.uuid) return;
     try {
-      await songService.addSongsToPlaylist(token, playlist.id, songIds);
+      await songService.addSongsToPlaylist(token, playlist.uuid, songIds);
       await loadPlaylist();
       toast.success("Lagu berhasil ditambahkan");
       setIsAddSongsDialogOpen(false);
@@ -82,9 +82,9 @@ export function usePlaylist(playlistIdentifier: string) {
   };
 
   const handleRemoveSong = async (itemId: number) => {
-    if (!playlist || !token) return;
+    if (!playlist || !token || !playlist.uuid) return;
     try {
-      await songService.removeItemFromPlaylist(token, playlist.id, itemId);
+      await songService.removeItemFromPlaylist(token, playlist.uuid, itemId);
       await loadPlaylist(); // Refresh to ensure sync
     } catch (error) {
       console.error("Failed to remove song:", error);
@@ -93,9 +93,9 @@ export function usePlaylist(playlistIdentifier: string) {
   };
 
   const handleReorderSongs = async (itemIds: number[]) => {
-    if (!playlist || !token) return;
+    if (!playlist || !token || !playlist.uuid) return;
     try {
-      await songService.reorderPlaylistItems(token, playlist.id, itemIds);
+      await songService.reorderPlaylistItems(token, playlist.uuid, itemIds);
       // Optimistic update handled in UI, but we refresh to be sure
       // await loadPlaylist(); 
     } catch (error) {

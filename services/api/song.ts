@@ -32,31 +32,31 @@ export const songService = {
     return httpClient.post<ApiResponse<Playlist>>("/playlists", data, { token });
   },
 
-  updatePlaylist(token: string, id: number, data: { name: string; description?: string; thumbnail?: string; is_public?: boolean }) {
-    return httpClient.put<ApiResponse<Playlist>>(`/playlists/${id}`, data, { token });
+  updatePlaylist(token: string, id: string | number, data: { name: string; description?: string; thumbnail?: string; is_public?: boolean }) {
+    return httpClient.put<ApiResponse<Playlist>>(`/playlists/${encodeURIComponent(String(id))}`, data, { token });
   },
 
-  deletePlaylist(token: string, id: number) {
-    return httpClient.delete<ApiResponse<null>>(`/playlists/${id}`, { token });
+  deletePlaylist(token: string, id: string | number) {
+    return httpClient.delete<ApiResponse<null>>(`/playlists/${encodeURIComponent(String(id))}`, { token });
   },
 
-  addSongToPlaylist(token: string, playlistId: number, songId: number) {
-    return httpClient.post<ApiResponse<PlaylistItem>>(`/playlists/${playlistId}/songs`, { song_id: songId }, { token });
+  addSongToPlaylist(token: string, playlistId: string | number, songId: number) {
+    return httpClient.post<ApiResponse<PlaylistItem>>(`/playlists/${encodeURIComponent(String(playlistId))}/songs`, { song_id: songId }, { token });
   },
 
-  addSongsToPlaylist(token: string, playlistId: number, songIds: number[]) {
-    return httpClient.post<ApiResponse<PlaylistItem[]>>(`/playlists/${playlistId}/songs/batch`, { song_ids: songIds }, { token });
+  addSongsToPlaylist(token: string, playlistId: string | number, songIds: number[]) {
+    return httpClient.post<ApiResponse<PlaylistItem[]>>(`/playlists/${encodeURIComponent(String(playlistId))}/songs/batch`, { song_ids: songIds }, { token });
   },
 
-  removeSongFromPlaylist(token: string, playlistId: number, songId: number) {
-    return httpClient.delete<ApiResponse<null>>(`/playlists/${playlistId}/songs/${songId}`, { token });
+  removeSongFromPlaylist(token: string, playlistId: string | number, songId: number) {
+    return httpClient.delete<ApiResponse<null>>(`/playlists/${encodeURIComponent(String(playlistId))}/songs/${songId}`, { token });
   },
 
-  removeItemFromPlaylist(token: string, playlistId: number, itemId: number) {
-    return httpClient.delete<ApiResponse<null>>(`/playlists/${playlistId}/items/${itemId}`, { token });
+  removeItemFromPlaylist(token: string, playlistId: string | number, itemId: number) {
+    return httpClient.delete<ApiResponse<null>>(`/playlists/${encodeURIComponent(String(playlistId))}/items/${itemId}`, { token });
   },
 
-  reorderPlaylistItems(token: string, playlistId: number, itemIds: number[]) {
-    return httpClient.put<ApiResponse<null>>(`/playlists/${playlistId}/reorder`, { item_ids: itemIds }, { token });
+  reorderPlaylistItems(token: string, playlistId: string | number, itemIds: number[]) {
+    return httpClient.put<ApiResponse<null>>(`/playlists/${encodeURIComponent(String(playlistId))}/reorder`, { item_ids: itemIds }, { token });
   },
 };

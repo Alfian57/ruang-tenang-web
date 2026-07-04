@@ -49,6 +49,8 @@ export function useMitraDashboardViewModel(initialSection: MitraDashboardSection
     upgradeSeats,
     saveOnboardingTemplate,
     runReminders,
+    ssoConfig,
+    saveSSOConfig,
   } = useMitraDashboard();
 
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -63,6 +65,15 @@ export function useMitraDashboardViewModel(initialSection: MitraDashboardSection
   const [quoteForm, setQuoteForm] = useState({ plan_id: "", requested_seats: "25", billing_cycle: "monthly" });
   const [upgradeForm, setUpgradeForm] = useState({ contracted_seats: "", billing_cycle: "monthly" });
   const [onboardingDraft, setOnboardingDraft] = useState({ title: "", welcome_message: "", checklist: "" });
+  const [ssoDraft, setSsoDraft] = useState({
+    provider: "saml",
+    issuer_url: "",
+    entrypoint_url: "",
+    audience: "",
+    certificate_pem: "",
+    is_enabled: false,
+    enforce_sso: false,
+  });
 
   const activePlans = useMemo(() => plans.filter((plan) => plan.is_active), [plans]);
   const selectedQuotePlan = useMemo(() => {
@@ -150,6 +161,31 @@ export function useMitraDashboardViewModel(initialSection: MitraDashboardSection
       checklist: (onboardingTemplate.checklist ?? []).join("\n"),
     });
   }, [onboardingTemplate]);
+
+  useEffect(() => {
+    if (!ssoConfig) {
+      setSsoDraft({
+        provider: "saml",
+        issuer_url: "",
+        entrypoint_url: "",
+        audience: "",
+        certificate_pem: "",
+        is_enabled: false,
+        enforce_sso: false,
+      });
+      return;
+    }
+
+    setSsoDraft({
+      provider: ssoConfig.provider ?? "saml",
+      issuer_url: ssoConfig.issuer_url ?? "",
+      entrypoint_url: ssoConfig.entrypoint_url ?? "",
+      audience: ssoConfig.audience ?? "",
+      certificate_pem: ssoConfig.certificate_pem ?? "",
+      is_enabled: ssoConfig.is_enabled ?? false,
+      enforce_sso: ssoConfig.enforce_sso ?? false,
+    });
+  }, [ssoConfig]);
 
   useEffect(() => {
     if (activePlans.length === 0) {
@@ -363,6 +399,29 @@ export function useMitraDashboardViewModel(initialSection: MitraDashboardSection
     }
   };
 
+  const handleSaveSSO = async () => {
+    if (ssoDraft.is_enabled) {
+      if (!ssoDraft.issuer_url.trim() || !ssoDraft.entrypoint_url.trim()) {
+        toast.error("Issuer URL dan Entrypoint URL wajib diisi saat SSO diaktifkan.");
+        return;
+      }
+    }
+    try {
+      await saveSSOConfig({
+        provider: ssoDraft.provider.trim() || "saml",
+        issuer_url: ssoDraft.issuer_url.trim(),
+        entrypoint_url: ssoDraft.entrypoint_url.trim(),
+        audience: ssoDraft.audience.trim(),
+        certificate_pem: ssoDraft.certificate_pem.trim(),
+        is_enabled: ssoDraft.is_enabled,
+        enforce_sso: ssoDraft.enforce_sso,
+      });
+      toast.success("Konfigurasi SSO disimpan.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Gagal menyimpan konfigurasi SSO.");
+    }
+  };
+
   const handleApproveMember = async (memberId: number) => {
     try {
       await approveMember(memberId);
@@ -424,6 +483,9 @@ export function useMitraDashboardViewModel(initialSection: MitraDashboardSection
     setUpgradeForm,
     onboardingDraft,
     setOnboardingDraft,
+    ssoDraft,
+    setSsoDraft,
+    ssoConfig,
     activePlans,
     selectedQuotePlan,
     seatUsage,
@@ -459,6 +521,7 @@ export function useMitraDashboardViewModel(initialSection: MitraDashboardSection
     handleUpgradeSeats,
     handleSaveOnboarding,
     handleRunReminders,
+    handleSaveSSO,
     handleApproveMember,
     handleRejectMember,
     handleRemoveMember,

@@ -8,6 +8,11 @@ import {
     FileText,
     Flag,
     Shield,
+    BookOpen,
+    Gavel,
+    ShieldAlert,
+    ScrollText,
+    AlertTriangle,
 } from "lucide-react";
 import { useModerationDashboard } from "./_hooks/useModerationDashboard";
 import { ModerationStatsGrid } from "./_components/ModerationStatsGrid";
@@ -50,7 +55,37 @@ export default function ModerationDashboardPage() {
                         Kelola konten dan laporan pengguna
                     </p>
                 </div>
-                <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:flex">
+                <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:flex sm:flex-wrap sm:justify-end">
+                    <Button asChild variant="outline" className="w-full sm:w-auto">
+                        <Link href={ROUTES.ADMIN.MODERATION_APPEALS} className="w-full justify-center">
+                            <Gavel className="h-4 w-4 mr-2" />
+                            Banding
+                        </Link>
+                    </Button>
+                    <Button asChild variant="outline" className="w-full sm:w-auto">
+                        <Link href={ROUTES.ADMIN.MODERATION_STORIES} className="w-full justify-center">
+                            <BookOpen className="h-4 w-4 mr-2" />
+                            Kisah
+                        </Link>
+                    </Button>
+                    <Button asChild variant="outline" className="w-full sm:w-auto">
+                        <Link href={ROUTES.ADMIN.MODERATION_CRISIS_KEYWORDS} className="w-full justify-center">
+                            <ShieldAlert className="h-4 w-4 mr-2" />
+                            Kata Kunci Krisis
+                        </Link>
+                    </Button>
+                    <Button asChild variant="outline" className="w-full sm:w-auto">
+                        <Link href={ROUTES.ADMIN.MODERATION_ACTIONS} className="w-full justify-center">
+                            <ScrollText className="h-4 w-4 mr-2" />
+                            Log Aksi
+                        </Link>
+                    </Button>
+                    <Button asChild variant="outline" className="w-full sm:w-auto">
+                        <Link href={ROUTES.ADMIN.MODERATION_TRIGGER_WARNINGS} className="w-full justify-center">
+                            <AlertTriangle className="h-4 w-4 mr-2" />
+                            Trigger Warning
+                        </Link>
+                    </Button>
                     <Button asChild variant="outline" className="w-full sm:w-auto">
                         <Link href={ROUTES.ADMIN.MODERATION_REPORTS} className="w-full justify-center">
                             <Flag className="h-4 w-4 mr-2" />

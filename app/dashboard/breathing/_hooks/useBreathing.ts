@@ -283,10 +283,9 @@ export function useBreathing() {
                     const categories = categoriesRes.data || [];
 
                     if (categories.length > 0) {
-                        const shuffledCategories = [...categories].sort(() => Math.random() - 0.5);
-
-                        for (const category of shuffledCategories) {
-                            const songsRes = await songService.getSongsByCategory(category.slug || category.id);
+                        const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+                        if (randomCategory) {
+                            const songsRes = await songService.getSongsByCategory(randomCategory.slug || String(randomCategory.id));
                             const songs = songsRes.data || [];
                             if (songs.length > 0) {
                                 randomSong = songs[Math.floor(Math.random() * songs.length)];
@@ -322,6 +321,12 @@ export function useBreathing() {
     const handleCompleteSession = (data: BreathingSessionDraft) => {
         if (!sessionId) {
             toast.error("Sesi belum siap untuk disimpan");
+            return;
+        }
+
+        // Guard against a double trigger (e.g. manual stop racing the natural
+        // timeout) overwriting the pending data or opening the modal twice.
+        if (showCompletionModal || pendingCompletion) {
             return;
         }
 

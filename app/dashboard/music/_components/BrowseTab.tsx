@@ -4,7 +4,7 @@ import { Search, X, Music, Play, Pause } from "lucide-react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { cn } from "@/utils";
 import { MusicCategoryCard } from "./MusicCategoryCard";
@@ -85,7 +85,7 @@ export function BrowseTab({
                                     )}
                                     onClick={() => onPlay(song)}
                                 >
-                                    <CardContent className="flex h-full gap-4 p-3">
+                                    <div className="flex items-center h-full gap-4 p-4">
                                         <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gray-100 ring-1 ring-gray-100">
                                             {song.thumbnail ? (
                                                 <Image
@@ -100,29 +100,27 @@ export function BrowseTab({
                                             )}
                                         </div>
 
-                                        <div className="flex min-w-0 flex-1 flex-col justify-between gap-3">
-                                            <div className="min-w-0">
-                                                <div className="flex items-start justify-between gap-3">
-                                                    <div className="min-w-0">
-                                                        <h4 className="line-clamp-2 font-semibold leading-snug text-gray-900 group-hover:text-primary">
-                                                            {song.title}
-                                                        </h4>
-                                                        <p className="mt-1 text-xs text-gray-500">Musik relaksasi</p>
-                                                    </div>
-                                                    <div className={cn(
-                                                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors",
-                                                        currentSong?.id === song.id ? "bg-primary text-white" : "bg-red-50 text-primary group-hover:bg-primary group-hover:text-white"
-                                                    )}>
-                                                        {currentSong?.id === song.id && isPlaying ? (
-                                                            <Pause className="h-4 w-4" />
-                                                        ) : (
-                                                            <Play className="ml-0.5 h-4 w-4" />
-                                                        )}
-                                                    </div>
+                                        <div className="flex min-w-0 flex-1 flex-col justify-center gap-2">
+                                            <div className="min-w-0 flex items-center justify-between gap-3">
+                                                <div className="min-w-0">
+                                                    <h4 className="line-clamp-2 font-semibold leading-snug text-gray-900 group-hover:text-primary">
+                                                        {song.title}
+                                                    </h4>
+                                                    <p className="mt-1 text-xs text-gray-500">Musik relaksasi</p>
+                                                </div>
+                                                <div className={cn(
+                                                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors",
+                                                    currentSong?.id === song.id ? "bg-primary text-white" : "bg-red-50 text-primary group-hover:bg-primary group-hover:text-white"
+                                                )}>
+                                                    {currentSong?.id === song.id && isPlaying ? (
+                                                        <Pause className="h-4 w-4" />
+                                                    ) : (
+                                                        <Play className="ml-0.5 h-4 w-4" />
+                                                    )}
                                                 </div>
                                             </div>
 
-                                            <div className="flex flex-wrap items-center gap-2">
+                                            <div className="flex flex-wrap items-center gap-2 mt-1">
                                                 <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
                                                     {categories.find(c => c.id === song.category_id)?.name || song.category?.name || "Musik"}
                                                 </span>
@@ -133,7 +131,7 @@ export function BrowseTab({
                                                 )}
                                             </div>
                                         </div>
-                                    </CardContent>
+                                    </div>
                                 </Card>
                             ))}
                         </div>

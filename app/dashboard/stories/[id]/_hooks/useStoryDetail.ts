@@ -171,9 +171,26 @@ export function useStoryDetail() {
     }
   };
 
+  const isAdmin = user?.role === "admin";
+
+  const handleHideComment = async (commentId: string, reason: string) => {
+    if (!token) return;
+    try {
+      await storyService.hideComment(token, storyId, commentId, reason);
+      setComments((prev) =>
+        prev.map((c) => (c.id === commentId ? { ...c, is_hidden: true } : c))
+      );
+      toast.success("Komentar berhasil disembunyikan");
+    } catch (error) {
+      console.error("Failed to hide comment:", error);
+      toast.error("Gagal menyembunyikan komentar");
+    }
+  };
+
   return {
     token,
     user,
+    isAdmin,
     storyId,
     story,
     comments,
@@ -190,5 +207,6 @@ export function useStoryDetail() {
     handleToggleHeart,
     handleSubmitComment,
     handleShare,
+    handleHideComment,
   };
 }

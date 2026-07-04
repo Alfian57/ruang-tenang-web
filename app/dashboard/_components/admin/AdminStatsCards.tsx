@@ -15,8 +15,8 @@ interface AdminStatsCardsProps {
 export function AdminStatsCards({ stats }: AdminStatsCardsProps) {
   return (
     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      <Card className="border-l-4 border-l-primary">
-        <CardContent className="p-6">
+      <Card className="border-l-4 border-l-primary flex flex-col h-full">
+        <CardContent className="p-6 pt-6 sm:p-6 sm:pt-6 flex-1 flex flex-col justify-center h-full">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Total Pengguna</p>
@@ -49,8 +49,8 @@ export function AdminStatsCards({ stats }: AdminStatsCardsProps) {
         </CardContent>
       </Card>
 
-      <Card className="border-l-4 border-l-blue-500">
-        <CardContent className="p-6">
+      <Card className="border-l-4 border-l-blue-500 flex flex-col h-full">
+        <CardContent className="p-6 pt-6 sm:p-6 sm:pt-6 flex-1 flex flex-col justify-center h-full">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Total Artikel</p>
@@ -63,11 +63,13 @@ export function AdminStatsCards({ stats }: AdminStatsCardsProps) {
               <FileText className="w-6 h-6 text-primary/80" />
             </div>
           </div>
+          {/* Spacer to match Mini Chart height and keep horizontal alignment */}
+          <div className="mt-4 h-10" />
         </CardContent>
       </Card>
 
-      <Card className="border-l-4 border-l-orange-500">
-        <CardContent className="p-6">
+      <Card className="border-l-4 border-l-orange-500 flex flex-col h-full">
+        <CardContent className="p-6 pt-6 sm:p-6 sm:pt-6 flex-1 flex flex-col justify-center h-full">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Sesi Chat</p>
@@ -93,8 +95,8 @@ export function AdminStatsCards({ stats }: AdminStatsCardsProps) {
         </CardContent>
       </Card>
 
-      <Card className="border-l-4 border-l-purple-500">
-        <CardContent className="p-6">
+      <Card className="border-l-4 border-l-purple-500 flex flex-col h-full">
+        <CardContent className="p-6 pt-6 sm:p-6 sm:pt-6 flex-1 flex flex-col justify-center h-full">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Total Pesan</p>
@@ -107,6 +109,8 @@ export function AdminStatsCards({ stats }: AdminStatsCardsProps) {
               <MessageCircle className="w-6 h-6 text-primary/80" />
             </div>
           </div>
+          {/* Spacer to match Mini Chart height and keep horizontal alignment */}
+          <div className="mt-4 h-10" />
         </CardContent>
       </Card>
     </div>

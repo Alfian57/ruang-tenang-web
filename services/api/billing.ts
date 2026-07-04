@@ -7,6 +7,8 @@ import type {
   BillingCheckoutResponse,
   BillingStatus,
   BillingTransactionList,
+  BillingPremiumPlan,
+  BillingTopupPackage,
 } from "@/types";
 
 export const billingService = {
@@ -46,6 +48,84 @@ export const billingService = {
     return downloadCsv(url, token, `invoice_${orderId}.csv`);
   },
 };
+
+// ====================================================================
+// Admin billing management (requires admin role).
+// ====================================================================
+export const adminBillingService = {
+  getTransactions(
+    token: string,
+    params?: { page?: number; limit?: number; status?: string; item_type?: string; user_id?: number }
+  ) {
+    return httpClient.get<ApiResponse<BillingTransactionList>>("/admin/billing/transactions", {
+      token,
+      params,
+    });
+  },
+
+  async exportTransactionsCSV(
+    token: string,
+    params?: { status?: string; item_type?: string; user_id?: number }
+  ) {
+    const search = new URLSearchParams();
+    if (params?.status) search.set("status", params.status);
+    if (params?.item_type) search.set("item_type", params.item_type);
+    if (params?.user_id) search.set("user_id", String(params.user_id));
+    const query = search.toString();
+    const url = `${env.NEXT_PUBLIC_API_BASE_URL}/admin/billing/transactions/export${query ? `?${query}` : ""}`;
+    return downloadCsv(url, token, "transaksi_admin.csv");
+  },
+
+  // Premium plans
+  getPlans(token: string, activeOnly = false) {
+    return httpClient.get<ApiResponse<BillingPremiumPlan[]>>("/admin/billing/plans", {
+      token,
+      params: { active_only: activeOnly },
+    });
+  },
+
+  createPlan(token: string, data: AdminPremiumPlanPayload) {
+    return httpClient.post<ApiResponse<BillingPremiumPlan>>("/admin/billing/plans", data, { token });
+  },
+
+  updatePlan(token: string, id: number, data: AdminPremiumPlanPayload) {
+    return httpClient.put<ApiResponse<BillingPremiumPlan>>(`/admin/billing/plans/${id}`, data, { token });
+  },
+
+  // Topup packages
+  getTopupPackages(token: string, activeOnly = false) {
+    return httpClient.get<ApiResponse<BillingTopupPackage[]>>("/admin/billing/topup-packages", {
+      token,
+      params: { active_only: activeOnly },
+    });
+  },
+
+  createTopupPackage(token: string, data: AdminTopupPackagePayload) {
+    return httpClient.post<ApiResponse<BillingTopupPackage>>("/admin/billing/topup-packages", data, { token });
+  },
+
+  updateTopupPackage(token: string, id: number, data: AdminTopupPackagePayload) {
+    return httpClient.put<ApiResponse<BillingTopupPackage>>(`/admin/billing/topup-packages/${id}`, data, { token });
+  },
+};
+
+export interface AdminPremiumPlanPayload {
+  code: string;
+  name: string;
+  description?: string;
+  price: number;
+  duration_days: number;
+  is_active?: boolean;
+}
+
+export interface AdminTopupPackagePayload {
+  code: string;
+  name: string;
+  coins: number;
+  bonus_coins?: number;
+  price: number;
+  is_active?: boolean;
+}
 
 /// Helper: ambil CSV dengan Authorization lalu picu unduhan di browser.
 async function downloadCsv(url: string, token: string, fallbackName: string): Promise<void> {

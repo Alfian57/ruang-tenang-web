@@ -12,9 +12,11 @@ export default function ModerationQueuePage() {
         page,
         focusId,
         statusFilter,
+        severityFilter,
         searchQuery,
         setPage,
         setStatusFilter,
+        setSeverityFilter,
         setSearchQuery,
         loadQueue,
     } = useModerationQueue();
@@ -24,6 +26,8 @@ export default function ModerationQueuePage() {
             <ModerationQueueHeader
                 statusFilter={statusFilter}
                 setStatusFilter={setStatusFilter}
+                severityFilter={severityFilter}
+                setSeverityFilter={setSeverityFilter}
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
                 isLoading={isLoading}

@@ -74,6 +74,7 @@ export interface BillingStatus {
 export interface BillingCheckoutPayload {
   item_type: CheckoutItemType;
   item_id: number;
+  snap_token?: string;
 }
 
 export interface BillingCheckoutResponse {
@@ -104,6 +105,7 @@ export interface BillingTransaction {
   provider_transaction_id?: string;
   provider_payment_type?: string;
   failure_reason?: string;
+  snap_token?: string;
   paid_at?: string;
   created_at: string;
   updated_at: string;

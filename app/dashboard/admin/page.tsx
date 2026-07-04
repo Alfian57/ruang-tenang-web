@@ -19,6 +19,7 @@ import {
   AlertTriangle
 } from "lucide-react";
 import { formatDate } from "@/utils";
+import { AdminStatsCards } from "../_components/admin/AdminStatsCards";
 import { useAdminStats } from "./_hooks/useAdminStats";
 
 export default function AdminDashboardPage() {
@@ -64,7 +65,7 @@ export default function AdminDashboardPage() {
             <div className="mb-6 grid sm:grid-cols-2 gap-4">
               {stats.users.blocked > 0 && (
                 <Card className="border-primary/20 bg-primary/10">
-                  <CardContent className="p-4 flex items-center justify-between">
+                  <CardContent className="p-4 pt-4 sm:p-4 sm:pt-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                         <Ban className="w-5 h-5 text-primary/80" />
@@ -84,7 +85,7 @@ export default function AdminDashboardPage() {
               )}
               {stats.articles.blocked > 0 && (
                 <Card className="border-red-200 bg-red-50">
-                  <CardContent className="p-4 flex items-center justify-between">
+                  <CardContent className="p-4 pt-4 sm:p-4 sm:pt-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
                         <AlertTriangle className="w-5 h-5 text-red-600" />
@@ -106,102 +107,7 @@ export default function AdminDashboardPage() {
           )}
 
           {/* Stats Cards */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <Card className="border-l-4 border-l-primary">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Pengguna</p>
-                    <h3 className="text-3xl font-bold">{stats.users.total.toLocaleString()}</h3>
-                    <div className="flex items-center gap-1 mt-1">
-                      {stats.users.growth >= 0 ? (
-                        <TrendingUp className="w-4 h-4 text-primary/80" />
-                      ) : (
-                        <TrendingDown className="w-4 h-4 text-red-500" />
-                      )}
-                      <span className={`text-sm ${stats.users.growth >= 0 ? 'text-primary/80' : 'text-red-500'}`}>
-                        {stats.users.growth >= 0 ? '+' : ''}{stats.users.growth.toFixed(1)}% bulan ini
-                      </span>
-                    </div>
-                  </div>
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Users className="w-6 h-6 text-primary" />
-                  </div>
-                </div>
-                {/* Mini Chart */}
-                <div className="flex items-end gap-1 mt-4 h-10">
-                  {stats.users.chart_data.map((value, i) => (
-                    <div
-                      key={i}
-                      className="flex-1 bg-primary/20 rounded-t"
-                      style={{ height: `${Math.max(10, (value / Math.max(...stats.users.chart_data)) * 100)}%` }}
-                    />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-4 border-l-blue-500">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Artikel</p>
-                    <h3 className="text-3xl font-bold">{stats.articles.total}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      +{stats.articles.this_month} bulan ini
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <FileText className="w-6 h-6 text-primary/80" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-4 border-l-orange-500">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Sesi Chat</p>
-                    <h3 className="text-3xl font-bold">{stats.chat_sessions.total.toLocaleString()}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      +{stats.chat_sessions.today} hari ini
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <MessageCircle className="w-6 h-6 text-primary/80" />
-                  </div>
-                </div>
-                {/* Mini Chart */}
-                <div className="flex items-end gap-1 mt-4 h-10">
-                  {stats.chat_sessions.chart_data.map((value, i) => (
-                    <div
-                      key={i}
-                      className="flex-1 bg-primary/20 rounded-t"
-                      style={{ height: `${Math.max(10, (value / Math.max(...stats.chat_sessions.chart_data, 1)) * 100)}%` }}
-                    />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-4 border-l-purple-500">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Pesan</p>
-                    <h3 className="text-3xl font-bold">{stats.messages.total.toLocaleString()}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      +{stats.messages.today} hari ini
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <MessageCircle className="w-6 h-6 text-primary/80" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <AdminStatsCards stats={stats} />
 
           {/* Second Row */}
           <div className="grid lg:grid-cols-3 gap-6 mb-8">
@@ -292,7 +198,7 @@ export default function AdminDashboardPage() {
           {/* Third Row - Summary */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card>
-              <CardContent className="p-4 flex items-center justify-between">
+              <CardContent className="p-4 pt-4 sm:p-4 sm:pt-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <Users className="w-5 h-5 text-primary/80" />
@@ -305,7 +211,7 @@ export default function AdminDashboardPage() {
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-4 flex items-center justify-between">
+              <CardContent className="p-4 pt-4 sm:p-4 sm:pt-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <FolderOpen className="w-5 h-5 text-primary/80" />
@@ -318,7 +224,7 @@ export default function AdminDashboardPage() {
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-4 flex items-center justify-between">
+              <CardContent className="p-4 pt-4 sm:p-4 sm:pt-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <Music className="w-5 h-5 text-primary/80" />
@@ -331,7 +237,7 @@ export default function AdminDashboardPage() {
               </CardContent>
             </Card>
             <Card>
-              <CardContent className="p-4 flex items-center justify-between">
+              <CardContent className="p-4 pt-4 sm:p-4 sm:pt-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <Heart className="w-5 h-5 text-primary/80" />

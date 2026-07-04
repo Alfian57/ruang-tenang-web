@@ -2,10 +2,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { ROUTES } from "@/lib/routes";
 import { Edit, Trash2, Eye, AlertCircle, FileText } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/utils";
 import { getStatusBadge } from "./ArticleStatusBadge";
+import { getUploadUrl } from "@/services/http/upload-url";
 import type { MyArticle } from "../_hooks/useArticlesPage";
 
 interface MyArticleCardProps {
@@ -20,19 +21,21 @@ export function MyArticleCard({ article, onDelete }: MyArticleCardProps) {
 
   return (
     <Card>
-      <CardContent className="p-4 space-y-3">
-        <div className="flex gap-3 min-w-0">
-          <div className="w-20 h-20 sm:w-24 sm:h-20 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+      <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex gap-3 min-w-0 flex-1 items-center">
+          <div className="w-20 h-20 sm:w-28 sm:h-20 rounded-lg overflow-hidden shrink-0 relative">
             {article.thumbnail ? (
               <Image
-                src={article.thumbnail}
+                src={getUploadUrl(article.thumbnail)}
                 alt={article.title}
-                width={96}
-                height={80}
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 640px) 80px, 112px"
+                className="object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center"><FileText className="w-7 h-7 text-gray-300" /></div>
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/15">
+                <FileText className="w-8 h-8 text-primary/40" />
+              </div>
             )}
           </div>
 
@@ -46,32 +49,32 @@ export function MyArticleCard({ article, onDelete }: MyArticleCardProps) {
             </p>
             {article.status === "blocked" && (
               <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
+                <AlertCircle className="w-3 h-3 shrink-0" />
                 Artikel ini diblokir oleh admin
               </p>
             )}
             {article.moderation_status === "pending" && (
               <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
+                <AlertCircle className="w-3 h-3 shrink-0" />
                 Artikel sedang menunggu persetujuan admin
               </p>
             )}
             {article.moderation_status === "rejected" && (
               <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
+                <AlertCircle className="w-3 h-3 shrink-0" />
                 Artikel ditolak oleh admin
               </p>
             )}
             {article.moderation_status === "revision_needed" && (
               <p className="text-xs text-primary/80 mt-1 flex items-center gap-1">
-                <AlertCircle className="w-3 h-3" />
+                <AlertCircle className="w-3 h-3 shrink-0" />
                 Artikel perlu direvisi
               </p>
             )}
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0">
           <Link href={ROUTES.articleRead(article.slug)}>
             <Button variant="outline" size="icon" title="Lihat" className="h-9 w-9">
               <Eye className="w-4 h-4" />
@@ -94,7 +97,7 @@ export function MyArticleCard({ article, onDelete }: MyArticleCardProps) {
             <Trash2 className="w-4 h-4" />
           </Button>
         </div>
-      </CardContent>
+      </div>
     </Card>
   );
 }

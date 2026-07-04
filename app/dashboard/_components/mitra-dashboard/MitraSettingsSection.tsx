@@ -1,8 +1,9 @@
-import { CheckCircle2, RefreshCw } from "lucide-react";
+import { CheckCircle2, RefreshCw, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { PageSection } from "./PageSection";
 import type { MitraDashboardViewModel } from "./useMitraDashboardViewModel";
 
@@ -55,6 +56,81 @@ export function MitraSettingsSection({ viewModel }: MitraSettingsSectionProps) {
             Jalankan Pengingat
           </Button>
         </div>
+      </article>
+
+      <article data-mitra-tour="mitra-sso-settings" className="rounded-2xl border border-red-100 bg-white p-5 shadow-sm xl:col-span-2">
+        <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+          <KeyRound className="h-5 w-5 text-red-600" />
+          Single Sign-On (SSO)
+        </h2>
+        <p className="mt-1 text-sm text-gray-600">
+          Konfigurasikan SSO (SAML/OIDC) agar anggota organisasi dapat login melalui identity provider perusahaan.
+        </p>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="sso-provider">Provider</Label>
+            <Input
+              id="sso-provider"
+              placeholder="saml / oidc"
+              value={viewModel.ssoDraft.provider}
+              onChange={(event) => viewModel.setSsoDraft((prev) => ({ ...prev, provider: event.target.value }))}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="sso-audience">Audience / Entity ID</Label>
+            <Input
+              id="sso-audience"
+              placeholder="ruang-tenang"
+              value={viewModel.ssoDraft.audience}
+              onChange={(event) => viewModel.setSsoDraft((prev) => ({ ...prev, audience: event.target.value }))}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="sso-issuer">Issuer URL</Label>
+            <Input
+              id="sso-issuer"
+              placeholder="https://idp.example.com/metadata"
+              value={viewModel.ssoDraft.issuer_url}
+              onChange={(event) => viewModel.setSsoDraft((prev) => ({ ...prev, issuer_url: event.target.value }))}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="sso-entrypoint">Entrypoint URL</Label>
+            <Input
+              id="sso-entrypoint"
+              placeholder="https://idp.example.com/sso"
+              value={viewModel.ssoDraft.entrypoint_url}
+              onChange={(event) => viewModel.setSsoDraft((prev) => ({ ...prev, entrypoint_url: event.target.value }))}
+            />
+          </div>
+          <div className="space-y-1.5 md:col-span-2">
+            <Label htmlFor="sso-cert">Sertifikat (PEM)</Label>
+            <Textarea
+              id="sso-cert"
+              rows={4}
+              placeholder="-----BEGIN CERTIFICATE-----"
+              value={viewModel.ssoDraft.certificate_pem}
+              onChange={(event) => viewModel.setSsoDraft((prev) => ({ ...prev, certificate_pem: event.target.value }))}
+            />
+          </div>
+          <div className="flex items-center gap-3">
+            <Switch
+              checked={viewModel.ssoDraft.is_enabled}
+              onCheckedChange={(checked) => viewModel.setSsoDraft((prev) => ({ ...prev, is_enabled: checked }))}
+            />
+            <span className="text-sm text-gray-700">Aktifkan SSO</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <Switch
+              checked={viewModel.ssoDraft.enforce_sso}
+              onCheckedChange={(checked) => viewModel.setSsoDraft((prev) => ({ ...prev, enforce_sso: checked }))}
+            />
+            <span className="text-sm text-gray-700">Wajibkan SSO (enforce)</span>
+          </div>
+        </div>
+        <Button type="button" className="mt-4" onClick={viewModel.handleSaveSSO} disabled={viewModel.isSubmitting}>
+          Simpan Konfigurasi SSO
+        </Button>
       </article>
     </PageSection>
   );

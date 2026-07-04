@@ -114,7 +114,7 @@ export function ForumCard({ forum, className }: ForumCardProps) {
               getCategoryBadgeClass(categoryName)
             )}
           >
-            <span className="truncate max-w-45">{categoryName}</span>
+            <span>{categoryName}</span>
           </span>
           {formatLabel && (
             <span className="inline-flex items-center rounded-md border border-primary/20 bg-primary/5 px-2 py-0.5 text-xs font-medium text-primary">

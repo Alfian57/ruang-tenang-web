@@ -482,15 +482,28 @@ export default function BillingPage() {
                                                 </span>
                                             </td>
                                             <td className="py-2.5 text-slate-500 text-xs">{tx.order_id}</td>
-                                            <td className="py-2.5 text-right">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => handleDownloadInvoice(tx.order_id)}
-                                                    title="Unduh invoice"
-                                                >
-                                                    <Download className="w-4 h-4" />
-                                                </Button>
+                                            <td className="py-2.5">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    {tx.status.toLowerCase() === "pending" && tx.snap_token && (
+                                                        <Button
+                                                            size="sm"
+                                                            variant="default"
+                                                            className="h-7 text-xs"
+                                                            disabled={processingKey === `${tx.item_type}-${tx.item_id}`}
+                                                            onClick={() => runCheckout({ item_type: tx.item_type as any, item_id: tx.item_id, snap_token: tx.snap_token }, "Lanjutkan")}
+                                                        >
+                                                            Bayar
+                                                        </Button>
+                                                    )}
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => handleDownloadInvoice(tx.order_id)}
+                                                        title="Unduh invoice"
+                                                    >
+                                                        <Download className="w-4 h-4" />
+                                                    </Button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}

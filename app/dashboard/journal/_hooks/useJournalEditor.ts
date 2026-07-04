@@ -167,6 +167,7 @@ export function useJournalEditor({
     const [showCrisisModal, setShowCrisisModal] = useState(false);
     const [journalMode, setJournalMode] = useState<JournalMode>(initialMode);
     const [completedGuidedSteps, setCompletedGuidedSteps] = useState<GuidedStepId[]>([]);
+    const [errors, setErrors] = useState<{ title?: string; content?: string }>({});
 
     const activeMode = JOURNAL_MODE_MAP[journalMode];
     const editorPlaceholder = writingPrompt || activeMode.prompt;
@@ -198,6 +199,10 @@ export function useJournalEditor({
             const text = editor.getText();
             const words = text.trim().split(/\s+/).filter(Boolean).length;
             setWordCount(words);
+            
+            if (errors.content && !editor.isEmpty && text.trim() !== "") {
+                setErrors(prev => ({ ...prev, content: undefined }));
+            }
         },
     });
 
@@ -273,7 +278,32 @@ export function useJournalEditor({
     };
 
     const handleSave = () => {
-        if (!editor || !title.trim()) return;
+        if (!editor) return;
+
+        const newErrors: { title?: string; content?: string } = {};
+        if (!title.trim()) {
+            newErrors.title = "Judul jurnal wajib diisi";
+        }
+        if (editor.isEmpty || editor.getText().trim() === "") {
+            newErrors.content = "Isi jurnal wajib diisi";
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            // Scroll to the first error
+            setTimeout(() => {
+                if (newErrors.title) {
+                    document.getElementById("journal-title")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                    document.getElementById("journal-title")?.focus();
+                } else if (newErrors.content) {
+                    document.getElementById("journal-content")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                    editor.commands.focus();
+                }
+            }, 100);
+            return;
+        }
+
+        setErrors({});
 
         const modeTag = `mode-${journalMode}`;
         const cleanedTags = tags.filter((tag) => !tag.startsWith("mode-"));
@@ -329,5 +359,7 @@ export function useJournalEditor({
         handleRemoveTag,
         handleKeyDown,
         handleSave,
+        errors,
+        setErrors,
     };
 }

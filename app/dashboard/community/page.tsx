@@ -7,7 +7,6 @@ import { useCommunityData } from "./_hooks/useCommunityData";
 import {
     CommunitySkeleton,
     CommunityAuthContent,
-    LatestDiscussions,
 } from "./_components";
 
 export default function DashboardCommunityPage() {
@@ -15,7 +14,6 @@ export default function DashboardCommunityPage() {
         communityStats,
         personalJourney,
         hallOfFame,
-        latestForums,
         currentLevel,
         maxLevel,
         userBadges,
@@ -90,8 +88,6 @@ export default function DashboardCommunityPage() {
                         isLevelChanging={isLevelChanging}
                         onLevelChange={handleLevelChange}
                     />
-
-                    <LatestDiscussions forums={latestForums} />
                 </>
             )}
         </div>

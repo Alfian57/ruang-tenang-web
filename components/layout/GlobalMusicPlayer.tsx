@@ -63,8 +63,11 @@ export function GlobalMusicPlayer({ sidebarCollapsed = false }: GlobalMusicPlaye
         // failing silently. Auto-advance to the next track when a queue exists
         // so one broken asset does not stall the whole listening session.
         const handleError = () => {
-            // Ignore spurious errors fired when no source is attached yet.
+            // Ignore spurious errors fired when no source is attached yet,
+            // or when the player is not visible (e.g. restored from localStorage
+            // on page load — the audio file may no longer exist on the server).
             if (!audio.src) return;
+            if (!useMusicPlayerStore.getState().isPlayerVisible) return;
 
             const hasNext = useMusicPlayerStore.getState().queue.length > 1;
             const offline = typeof navigator !== "undefined" && !navigator.onLine;
@@ -109,6 +112,10 @@ export function GlobalMusicPlayer({ sidebarCollapsed = false }: GlobalMusicPlaye
         const audio = audioRef.current;
         if (!audio || !currentSong) return;
 
+        // Don't load audio when the player isn't visible. This prevents
+        // 404 errors for songs restored from localStorage on page load.
+        if (!isPlayerVisible) return;
+
         // Construct source URL from API base
         const src = getUploadUrl(currentSong.file_path);
 
@@ -120,7 +127,7 @@ export function GlobalMusicPlayer({ sidebarCollapsed = false }: GlobalMusicPlaye
 
         // If we were already playing, try to play the new song
         // Note: This relies on the separate play/pause effect
-    }, [currentSong]);
+    }, [currentSong, isPlayerVisible]);
 
     // Handle volume change
     useEffect(() => {

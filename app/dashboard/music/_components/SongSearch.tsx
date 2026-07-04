@@ -39,35 +39,37 @@ export function SongSearch({
                 />
             </div>
 
-            <div className="mt-4">
-                {isLoading ? (
-                    <div className="flex items-center justify-center py-8">
-                        <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-                    </div>
-                ) : (
-                    <div className="space-y-1">
-                        {isSearching ? (
-                            <div className="flex items-center justify-center py-8">
-                                <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-                            </div>
-                        ) : searchResults.length > 0 ? (
-                            searchResults.map((song) => (
-                                <SongItem
-                                    key={song.id}
-                                    song={song}
-                                    isSelected={selectedSongs.has(song.id)}
-                                    isAlreadyInPlaylist={existingSongIds.includes(song.id)}
-                                    onToggle={onToggleSong}
-                                />
-                            ))
-                        ) : (
-                            <p className="text-center text-gray-500 py-8">
-                                Tidak ada hasil ditemukan
-                            </p>
-                        )}
-                    </div>
-                )}
-            </div>
+            {search.trim() ? (
+                <div className="mt-4">
+                    {isLoading ? (
+                        <div className="flex items-center justify-center py-8">
+                            <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                        </div>
+                    ) : (
+                        <div className="space-y-1">
+                            {isSearching ? (
+                                <div className="flex items-center justify-center py-8">
+                                    <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+                                </div>
+                            ) : searchResults.length > 0 ? (
+                                searchResults.map((song) => (
+                                    <SongItem
+                                        key={song.id}
+                                        song={song}
+                                        isSelected={selectedSongs.has(song.id)}
+                                        isAlreadyInPlaylist={existingSongIds.includes(song.id)}
+                                        onToggle={onToggleSong}
+                                    />
+                                ))
+                            ) : (
+                                <p className="text-center text-gray-500 py-8">
+                                    Tidak ada hasil ditemukan
+                                </p>
+                            )}
+                        </div>
+                    )}
+                </div>
+            ) : null}
         </>
     );
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
-import { adminService, moderationService, articleService } from "@/services/api";
+import { adminService, moderationService } from "@/services/api";
 import { httpClient } from "@/services/http/client";
 import { ArticleCategory } from "@/types";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -17,6 +17,7 @@ export interface AdminArticle {
   category: { id: number; name: string };
   status: string;
   moderation_status?: string;
+  is_user_generated?: boolean;
   user_id?: number;
   author?: { id: number; name: string };
   created_at: string;
@@ -119,7 +120,7 @@ export function useAdminArticles() {
           page,
           limit,
         }),
-        articleService.getCategories(),
+        adminService.getArticleCategories(token),
       ]);
       
       setArticles(articlesRes.data || []);
@@ -147,8 +148,7 @@ export function useAdminArticles() {
     if (!token) return;
     try {
       // Fetch full article content
-      const articleIdentifier = article.slug || String(article.id);
-      const data = await httpClient.get<{ data: { title: string; content: string; category_id: number; thumbnail: string } }>(`/articles/${encodeURIComponent(articleIdentifier)}`, {
+      const data = await httpClient.get<{ data: { title: string; content: string; category_id: number; thumbnail: string } }>(`/admin/articles/${article.id}`, {
         token,
       });
       const fullArticle = data.data;
@@ -202,9 +202,9 @@ export function useAdminArticles() {
 
     try {
       if (article.status === "blocked") {
-        await adminService.updateArticleStatus(token, blockId, "published");
+        await adminService.unblockArticle(token, blockId);
       } else {
-        await adminService.updateArticleStatus(token, blockId, "blocked");
+        await adminService.blockArticle(token, blockId);
       }
       setBlockId(null);
       loadData();

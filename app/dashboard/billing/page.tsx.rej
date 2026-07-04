@@ -1,0 +1,15 @@
+--- ruang-tenang-web/app/dashboard/billing/page.tsx
++++ ruang-tenang-web/app/dashboard/billing/page.tsx
+@@ -467,5 +467,5 @@
+                                         <th className="text-left font-medium py-2">Nominal</th>
+                                         <th className="text-left font-medium py-2">Status</th>
+                                         <th className="text-left font-medium py-2">Order</th>
+-                                        <th className="text-right font-medium py-2">Aksi</th>
++                                        <th className="text-right font-medium py-2">Invoice</th>
+                                     </tr>
+@@ -482,3 +482,3 @@
+                                             <td className="py-2.5 text-slate-500 text-xs">{tx.order_id}</td>
+-                                            <td className="py-2.5">
+-                                                <div className="flex items-center justify-end gap-2">
++                                            <td className="py-2.5 text-right w-[150px]">
++                                                <div className="flex items-center justify-end gap-1">

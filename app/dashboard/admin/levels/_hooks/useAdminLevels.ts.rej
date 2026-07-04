@@ -1,0 +1,17 @@
+--- ruang-tenang-web/app/dashboard/admin/levels/_hooks/useAdminLevels.ts
++++ ruang-tenang-web/app/dashboard/admin/levels/_hooks/useAdminLevels.ts
+@@ -98,13 +98,6 @@
+   const fetchLevels = useCallback(async () => {
+     setLoading(true);
+     try {
+-      if (!token) {
+-        const response = await communityService.getLevelConfigs();
+-        setLevels(response.data || []);
+-        setMapRegions([]);
+-        setAdminLandmarks([]);
+-        return;
+-      }
+ 
+       const [levelsRes, fullMapRes, landmarksRes] = await Promise.all([
+-        adminService.getLevels(token).catch(() => ({ data: [] })),
++        adminService.getLevels(token),

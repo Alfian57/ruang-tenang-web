@@ -171,12 +171,15 @@ function DashboardContent({
     return () => window.removeEventListener("billing-status-refresh", handleRefresh);
   }, [refreshBillingStatus]);
 
+  // Only poll while a boost is active (to track its countdown / expiry).
+  // When no boost is active, avoid polling to prevent repeated 404 responses.
+  // New boosts are picked up via the "xp-boost-updated" custom event.
   useEffect(() => {
-    if (!token || !isUser) return;
+    if (!token || !isUser || !xpBoostStatus) return;
 
     const interval = setInterval(refreshXPBoostStatus, 30_000);
     return () => clearInterval(interval);
-  }, [token, isUser, refreshXPBoostStatus]);
+  }, [token, isUser, xpBoostStatus, refreshXPBoostStatus]);
 
   useEffect(() => {
     const handleXPBoostUpdated = (event: Event) => {

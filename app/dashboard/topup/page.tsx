@@ -48,6 +48,7 @@ export default function TopupPage() {
     const { token, user, refreshUser } = useAuthStore();
     const [catalog, setCatalog] = useState<BillingCatalog | null>(null);
     const [status, setStatus] = useState<BillingStatus | null>(null);
+    const [transactions, setTransactions] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     const refreshData = useCallback(async () => {
@@ -66,6 +67,9 @@ export default function TopupPage() {
             ]);
             setCatalog(catalogRes.data);
             setStatus(statusRes.data);
+
+            const txRes = await billingService.getTransactions(token, { limit: 5, item_type: "topup" });
+            setTransactions(txRes.data.transactions ?? []);
         } catch {
             toast.error("Gagal memuat data billing", {
                 description: "Silakan muat ulang halaman.",
@@ -213,6 +217,43 @@ export default function TopupPage() {
                     </div>
                 )}
             </section>
+            
+            {transactions.length > 0 && (
+                <section className="rounded-3xl border border-primary/20 bg-white p-5 lg:p-6">
+                    <h2 className="text-xl font-semibold text-slate-900 mb-4">Riwayat Top Up Terakhir</h2>
+                    <div className="space-y-3">
+                        {transactions.map((tx: any) => (
+                            <div key={tx.id} className="flex items-center justify-between rounded-xl border border-slate-100 p-4">
+                                <div>
+                                    <h3 className="font-semibold text-slate-900">{tx.item_name}</h3>
+                                    <p className="text-sm text-slate-500 mt-1">{formatDate(tx.created_at)}</p>
+                                </div>
+                                <div className="text-right flex flex-col items-end">
+                                    <p className="font-semibold text-slate-900">{formatIDR(tx.amount)}</p>
+                                    <div className="flex items-center gap-2 mt-2">
+                                        <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${
+                                            tx.status.toLowerCase() === "paid" ? "bg-primary/10 text-primary" :
+                                            tx.status.toLowerCase() === "pending" ? "bg-amber-100 text-amber-700" :
+                                            "bg-slate-100 text-slate-700"
+                                        }`}>
+                                            {tx.status}
+                                        </span>
+                                        {tx.status.toLowerCase() === "pending" && tx.snap_token && (
+                                            <Button 
+                                                size="sm" 
+                                                className="h-6 text-xs px-2"
+                                                onClick={() => runCheckout({ item_type: tx.item_type as any, item_id: tx.item_id, snap_token: tx.snap_token }, "Lanjutkan")}
+                                            >
+                                                Bayar
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
 
             <section className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                 <article className="rounded-2xl border border-primary/20 bg-white p-4 shadow-sm">

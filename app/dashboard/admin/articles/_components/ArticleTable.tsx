@@ -122,14 +122,18 @@ export function ArticleTable({
                                         <span className="text-sm text-gray-600">{article.author?.name || "-"}</span>
                                     </td>
                                     <td className="p-4 hidden sm:table-cell">
-                                        {getStatusBadge(article.moderation_status === "pending" || article.moderation_status === "rejected" || article.moderation_status === "revision_needed" ? article.moderation_status : article.status)}
+                                        {getStatusBadge(
+                                            article.is_user_generated && (article.moderation_status === "pending" || article.moderation_status === "rejected" || article.moderation_status === "revision_needed")
+                                                ? article.moderation_status
+                                                : article.status
+                                        )}
                                     </td>
                                     <td className="p-4 hidden lg:table-cell">
                                         <span className="text-sm text-gray-500">{formatDate(article.created_at)}</span>
                                     </td>
                                     <td className="p-4">
                                         <div className="flex gap-1 justify-end">
-                                            {(article.moderation_status === "pending" || (article.status === "draft" && !article.moderation_status)) && (
+                                            {article.is_user_generated && (article.moderation_status === "pending" || (article.status === "draft" && !article.moderation_status)) && (
                                                 <>
                                                     <Button
                                                         variant="ghost"

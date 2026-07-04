@@ -23,6 +23,7 @@ export default function StoryDetailPage() {
   const {
     token,
     user,
+    isAdmin,
     storyId,
     story,
     comments,
@@ -39,6 +40,7 @@ export default function StoryDetailPage() {
     handleToggleHeart,
     handleSubmitComment,
     handleShare,
+    handleHideComment,
   } = useStoryDetail();
 
   if (loading) {
@@ -183,10 +185,12 @@ export default function StoryDetailPage() {
               canComment={canComment}
               token={token}
               userId={user?.id}
+              isAdmin={isAdmin}
               newComment={newComment}
               submittingComment={submittingComment}
               onNewCommentChange={setNewComment}
               onSubmitComment={handleSubmitComment}
+              onHideComment={handleHideComment}
             />
           </>
         )}

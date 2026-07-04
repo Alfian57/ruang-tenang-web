@@ -15,6 +15,7 @@ export function useModerationQueue() {
 
     // URL state
     const statusFilter = searchParams.get("status") || "pending";
+    const severityFilter = searchParams.get("severity") || "all";
     const urlSearchQuery = searchParams.get("search") || "";
     const focusId = searchParams.get("focus") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
@@ -49,6 +50,8 @@ export function useModerationQueue() {
 
     const setStatusFilter = (value: string) =>
         updateUrl({ status: value === "pending" ? null : value, page: null });
+    const setSeverityFilter = (value: string) =>
+        updateUrl({ severity: value === "all" ? null : value, page: null });
     const setSearchQuery = (value: string) => setSearchTerm(value);
     const setPage = (value: number) =>
         updateUrl({ page: value > 1 ? value.toString() : null });
@@ -64,6 +67,7 @@ export function useModerationQueue() {
         try {
             const res = await moderationService.getQueue(token, {
                 status: statusFilter === "all" ? undefined : statusFilter,
+                severity: severityFilter === "all" ? undefined : severityFilter,
                 page,
                 limit,
             });
@@ -79,7 +83,7 @@ export function useModerationQueue() {
         } finally {
             setIsLoading(false);
         }
-    }, [token, statusFilter, page]);
+    }, [token, statusFilter, severityFilter, page]);
 
     useEffect(() => {
         loadQueue();
@@ -98,9 +102,11 @@ export function useModerationQueue() {
         totalPages,
         page,
         statusFilter,
+        severityFilter,
         searchQuery: searchTerm,
         setPage,
         setStatusFilter,
+        setSeverityFilter,
         setSearchQuery,
         loadQueue,
     };

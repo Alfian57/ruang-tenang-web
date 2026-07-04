@@ -180,8 +180,11 @@ export function MitraFeatureTour() {
         setTargetRect(null);
         setIsSeekingTarget(true);
 
-        if (pathname !== TOUR_STEPS[0].route) {
-            router.push(TOUR_STEPS[0].route);
+        const currentPath = pathname?.replace(/\/$/, "") || "";
+        const targetPath = TOUR_STEPS[0].route.replace(/\/$/, "");
+
+        if (currentPath !== targetPath) {
+            router.push(targetPath);
         }
     }, [pathname, router]);
 
@@ -192,18 +195,24 @@ export function MitraFeatureTour() {
         setIsSeekingTarget(true);
 
         const nextStep = TOUR_STEPS[boundedIndex];
-        if (pathname !== nextStep.route) {
-            router.push(nextStep.route);
+        const currentPath = pathname?.replace(/\/$/, "") || "";
+        const targetPath = nextStep.route.replace(/\/$/, "");
+
+        if (currentPath !== targetPath) {
+            router.push(targetPath);
         }
     }, [pathname, router]);
 
     useEffect(() => {
         if (!activeStep) return;
 
-        if (pathname !== activeStep.route) {
+        const currentPath = pathname?.replace(/\/$/, "") || "";
+        const targetPath = activeStep.route.replace(/\/$/, "");
+
+        if (currentPath !== targetPath) {
             setIsSeekingTarget(true);
             targetElementRef.current = null;
-            router.push(activeStep.route);
+            router.push(targetPath);
             return;
         }
 
@@ -218,8 +227,9 @@ export function MitraFeatureTour() {
             if (!element) {
                 attempts += 1;
 
-                if (attempts <= 20) {
-                    timeoutId = window.setTimeout(updateTarget, 120);
+                // Wait up to 10 seconds (50 * 200ms) for the page to load
+                if (attempts <= 50) {
+                    timeoutId = window.setTimeout(updateTarget, 200);
                     return;
                 }
 

@@ -32,10 +32,16 @@ export function useBillingCheckout({
     setProcessingKey(nextKey);
 
     try {
-      const checkout = await billingService.createCheckout(token, payload);
+      let snapTokenToUse = payload.snap_token;
+      let snapUrlToUse = undefined;
+      if (!snapTokenToUse) {
+         const checkout = await billingService.createCheckout(token, payload);
+         snapTokenToUse = checkout.data.snap_token;
+         snapUrlToUse = checkout.data.snap_url;
+      }
       const opened = await openMidtransCheckout({
-        snapToken: checkout.data.snap_token,
-        snapUrl: checkout.data.snap_url,
+        snapToken: snapTokenToUse,
+        snapUrl: snapUrlToUse,
         clientKey: env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY,
         environment: env.NEXT_PUBLIC_MIDTRANS_ENV,
         callbacks: {

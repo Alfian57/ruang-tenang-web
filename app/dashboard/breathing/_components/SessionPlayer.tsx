@@ -108,6 +108,7 @@ export function SessionPlayer({
         totalCycles,
         phaseDurations,
         scale,
+        completedCycles,
         handleStart,
         handlePause,
         handleResume,
@@ -285,18 +286,19 @@ export function SessionPlayer({
                             <p className="mt-2 text-sm leading-6 text-muted-foreground">{currentCue.description}</p>
                         </div>
 
-                        <div className="mt-6 grid grid-cols-1 gap-2 xs:grid-cols-2 sm:grid-cols-4">
-                            {ACTIVE_PHASES.map((phase) => (
+                        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                            {ACTIVE_PHASES.filter((phase) => phaseDurations[phase] > 0).map((phase) => (
                                 <div
                                     key={phase}
                                     className={cn(
-                                        "rounded-xl border px-3 py-2 text-center text-xs transition-all",
+                                        "rounded-xl border px-3 py-2 text-center text-xs transition-all flex flex-col items-center justify-center h-full flex-1 min-w-[100px] max-w-[140px]",
                                         state.phase === phase
                                             ? "border-primary bg-primary/10 text-foreground shadow-sm"
                                             : "border-muted bg-muted/30 text-muted-foreground"
                                     )}
                                 >
                                     <span className="font-medium">{getPhaseLabel(phase)}</span>
+                                    <span className="mt-0.5 block text-[10px] text-muted-foreground">{phaseDurations[phase]}s</span>
                                 </div>
                             ))}
                         </div>
@@ -313,41 +315,41 @@ export function SessionPlayer({
                             )}
 
                             {state.isActive && !state.isPaused && state.phase !== "complete" && (
-                                <>
+                                <div className="flex gap-4">
                                     <button
                                         onClick={handlePause}
-                                        className="flex min-h-11 items-center gap-2 rounded-xl bg-muted px-5 py-3 font-medium text-foreground transition-colors hover:bg-muted/80"
+                                        className="flex min-h-11 items-center gap-2 rounded-xl bg-primary/10 px-6 py-3 font-medium text-primary transition-colors hover:bg-primary/20"
                                     >
                                         <Pause className="h-5 w-5" />
                                         Jeda
                                     </button>
                                     <button
                                         onClick={() => onComplete(handleStop())}
-                                        className="flex min-h-11 items-center gap-2 rounded-xl bg-destructive/10 px-5 py-3 font-medium text-destructive transition-colors hover:bg-destructive/20"
+                                        className="flex min-h-11 items-center gap-2 rounded-xl bg-destructive/10 px-6 py-3 font-medium text-destructive transition-colors hover:bg-destructive/20"
                                     >
                                         <Square className="h-5 w-5" />
                                         Selesai
                                     </button>
-                                </>
+                                </div>
                             )}
 
                             {state.isPaused && (
-                                <>
+                                <div className="flex gap-4">
                                     <button
                                         onClick={handleResume}
-                                        className="flex min-h-11 items-center gap-2 rounded-xl bg-primary px-5 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                                        className="flex min-h-11 items-center gap-2 rounded-xl bg-primary px-6 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
                                     >
                                         <Play className="h-5 w-5" />
                                         Lanjut
                                     </button>
                                     <button
                                         onClick={() => onComplete(handleStop())}
-                                        className="flex min-h-11 items-center gap-2 rounded-xl bg-destructive/10 px-5 py-3 font-medium text-destructive transition-colors hover:bg-destructive/20"
+                                        className="flex min-h-11 items-center gap-2 rounded-xl bg-destructive/10 px-6 py-3 font-medium text-destructive transition-colors hover:bg-destructive/20"
                                     >
                                         <Square className="h-5 w-5" />
                                         Selesai
                                     </button>
-                                </>
+                                </div>
                             )}
 
                             {state.phase === "complete" && (
@@ -355,7 +357,7 @@ export function SessionPlayer({
                                     <button
                                         onClick={() => onComplete({
                                             durationSeconds: state.elapsedTime,
-                                            cyclesCompleted: state.currentCycle,
+                                            cyclesCompleted: completedCycles,
                                             completed: true,
                                             completedPercentage: 100,
                                         })}

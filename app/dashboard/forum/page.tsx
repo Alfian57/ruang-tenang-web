@@ -356,7 +356,7 @@ export default function ForumPage() {
       </div>
 
       {/* Forum List */}
-      <div className="grid gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="bg-white p-4 rounded-xl border animate-pulse h-32" />

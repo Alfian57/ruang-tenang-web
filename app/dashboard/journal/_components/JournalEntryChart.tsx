@@ -35,7 +35,10 @@ export function JournalEntryChart({ analytics }: JournalEntryChartProps) {
                         </ResponsiveContainer>
                     </div>
                 ) : (
-                    <p className="text-center text-gray-500 py-8">Belum ada data</p>
+                    <div className="h-48 flex flex-col items-center justify-center text-center">
+                        <BarChart2 className="w-12 h-12 text-gray-300 mb-3" />
+                        <p className="text-gray-500">Belum ada data</p>
+                    </div>
                 )}
             </CardContent>
         </Card>

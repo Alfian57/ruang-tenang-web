@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { adminService, communityService, progressMapService } from "@/services/api";
+import { adminService, progressMapService } from "@/services/api";
 import { LevelConfig } from "@/types";
 import { useAuthStore } from "@/store/authStore";
 import { AdminMapLandmark, MapRegion } from "@/types/progress-map";
@@ -96,18 +96,12 @@ export function useAdminLevels() {
   const fetchLevels = useCallback(async () => {
     setLoading(true);
     try {
-      if (!token) {
-        const response = await communityService.getLevelConfigs();
-        setLevels(response.data || []);
-        setMapRegions([]);
-        setAdminLandmarks([]);
-        return;
-      }
+      if (!token) return;
 
       const [levelsRes, fullMapRes, landmarksRes] = await Promise.all([
-        adminService.getLevels(token).catch(() => communityService.getLevelConfigs()),
-        progressMapService.getFullMap(token),
-        adminService.getAdminMapLandmarks(token),
+        adminService.getLevels(token),
+        progressMapService.getFullMap(token).catch(() => ({ data: { regions: [] } })),
+        adminService.getAdminMapLandmarks(token).catch(() => ({ data: [] })),
       ]);
 
       setLevels(levelsRes.data || []);
@@ -214,7 +208,7 @@ export function useAdminLevels() {
       );
 
       if (!regionForLevel) {
-        throw new Error(`Region untuk Level ${levelValue} belum tersedia. Tambahkan region level terlebih dahulu.`);
+        return;
       }
 
       const existing = adminLandmarks.filter((item) => item.region_id === regionForLevel.id && item.is_active);

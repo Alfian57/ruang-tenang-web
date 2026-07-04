@@ -33,15 +33,26 @@ const STATUS_LABELS: Record<ArticleModerationStatus, { label: string; color: str
 interface ModerationQueueHeaderProps {
     statusFilter: string;
     setStatusFilter: (value: string) => void;
+    severityFilter: string;
+    setSeverityFilter: (value: string) => void;
     searchQuery: string;
     setSearchQuery: (value: string) => void;
     isLoading: boolean;
     onRefresh: () => void;
 }
 
+const SEVERITY_LABELS: Record<string, string> = {
+    all: "Semua Severity",
+    low: "Rendah",
+    medium: "Sedang",
+    high: "Tinggi",
+};
+
 export function ModerationQueueHeader({
     statusFilter,
     setStatusFilter,
+    severityFilter,
+    setSeverityFilter,
     searchQuery,
     setSearchQuery,
     isLoading,
@@ -106,6 +117,29 @@ export function ModerationQueueHeader({
                                 <DropdownMenuItem onClick={() => setStatusFilter("revision_needed")}>
                                     <FileText className="h-4 w-4 mr-2 text-primary/80" />
                                     Perlu Revisi
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline">
+                                    <Filter className="h-4 w-4 mr-2" />
+                                    {SEVERITY_LABELS[severityFilter] || "Semua Severity"}
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => setSeverityFilter("all")}>
+                                    Semua Severity
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setSeverityFilter("low")}>
+                                    Rendah
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setSeverityFilter("medium")}>
+                                    Sedang
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setSeverityFilter("high")}>
+                                    Tinggi
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>

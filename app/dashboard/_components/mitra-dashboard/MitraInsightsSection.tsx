@@ -82,7 +82,7 @@ export function MitraInsightsSection({ viewModel }: MitraInsightsSectionProps) {
                   </div>
                   <div className="rounded-xl bg-white p-3">
                     <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Tingkat</p>
-                    <p className="mt-1 text-xl font-bold text-gray-950">{viewModel.impactEngagement?.engagement_rate_pct ?? 0}%</p>
+                    <p className="mt-1 text-xl font-bold text-gray-950">{Number((viewModel.impactEngagement?.engagement_rate_pct ?? 0).toFixed(2))}%</p>
                   </div>
                   <div className="rounded-xl bg-white p-3">
                     <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">Pesan</p>
@@ -303,13 +303,15 @@ export function MitraInsightsSection({ viewModel }: MitraInsightsSectionProps) {
             <Activity className="h-5 w-5 text-red-600" />
             Audit Terbaru
           </h2>
-          <AuditLogList
-            logs={viewModel.auditLogs}
-            limit={8}
-            variant="detail"
-            emptyTitle="Audit belum tersedia"
-            emptyDescription="Riwayat audit organisasi akan tampil setelah ada aksi pengelolaan anggota, langganan, atau reminder."
-          />
+          <div className="mt-2 max-h-[600px] overflow-y-auto pr-2">
+            <AuditLogList
+              logs={viewModel.auditLogs}
+              limit={50}
+              variant="detail"
+              emptyTitle="Audit belum tersedia"
+              emptyDescription="Riwayat audit organisasi akan tampil setelah ada aksi pengelolaan anggota, langganan, atau reminder."
+            />
+          </div>
         </article>
       </PageSection>
     </>

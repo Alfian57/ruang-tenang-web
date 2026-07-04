@@ -86,7 +86,7 @@ export const storyService = {
   },
 
   setFeatured(token: string, id: string, featured: boolean) {
-    return httpClient.post<ApiResponse<null>>(`/admin/stories/${id}/featured`, { is_featured: featured }, { token });
+    return httpClient.post<ApiResponse<null>>(`/admin/stories/${id}/featured?featured=${featured}`, {}, { token });
   },
 
   hideComment(token: string, storyId: string, commentId: string, reason: string) {

@@ -55,7 +55,7 @@ export function PlaylistCard({
             )}
             onClick={onClick}
         >
-            <div className="flex w-full items-start gap-3 sm:items-center sm:gap-4 min-w-0">
+            <div className="flex w-full items-center gap-3 sm:gap-4 min-w-0">
                 {/* Thumbnail */}
                 <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-linear-to-br from-primary/10 to-primary/10 shrink-0">
                     {playlist.thumbnail && !imgError ? (
@@ -89,17 +89,8 @@ export function PlaylistCard({
 
                 {/* Info */}
                 <div className="flex-1 min-w-0 overflow-hidden pr-1">
-                    <div className="flex items-center gap-2 min-w-0">
-                        <h3 className="font-semibold text-gray-900 truncate min-w-0 flex-1">{playlist.name}</h3>
-                        {playlist.is_admin_playlist ? (
-                            <BadgeCheck className="w-4 h-4 text-primary shrink-0" />
-                        ) : playlist.is_public ? (
-                            <Globe className="w-4 h-4 text-gray-400 shrink-0" />
-                        ) : (
-                            <Lock className="w-4 h-4 text-gray-400 shrink-0" />
-                        )}
-                    </div>
-                    <p className="text-sm text-gray-500">
+                    <h3 className="font-semibold text-gray-900 truncate min-w-0">{playlist.name}</h3>
+                    <p className="text-sm text-gray-500 mt-0.5">
                         {playlist.item_count} lagu
                     </p>
                     {playlist.description && (
@@ -109,36 +100,46 @@ export function PlaylistCard({
                     )}
                 </div>
 
-                {/* Actions */}
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 shrink-0 mr-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <MoreHorizontal className="w-4 h-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onPlay?.(); }}>
-                            <Play className="w-4 h-4 mr-2" />
-                            Putar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit?.(); }}>
-                            <Edit2 className="w-4 h-4 mr-2" />
-                            Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            className="text-red-600"
-                            onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
-                        >
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            Hapus
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                {/* Status & Actions */}
+                <div className="flex items-center gap-3 shrink-0">
+                    {playlist.is_admin_playlist ? (
+                        <BadgeCheck className="w-5 h-5 text-primary" />
+                    ) : playlist.is_public ? (
+                        <Globe className="w-5 h-5 text-gray-400" />
+                    ) : (
+                        <Lock className="w-5 h-5 text-gray-400" />
+                    )}
+
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 shrink-0 mr-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onPlay?.(); }}>
+                                <Play className="w-4 h-4 mr-2" />
+                                Putar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit?.(); }}>
+                                <Edit2 className="w-4 h-4 mr-2" />
+                                Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                className="text-red-600"
+                                onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
+                            >
+                                <Trash2 className="w-4 h-4 mr-2" />
+                                Hapus
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </div>
         </motion.div>
     );

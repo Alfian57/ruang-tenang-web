@@ -2,11 +2,68 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { env } from "./config/env";
 
+type Role = "admin" | "user" | "mitra";
+
+const AUTH_COOKIE = "auth-storage";
+
 /**
- * Next.js middleware to set security headers on all responses.
- * This provides defense-in-depth alongside the backend CSP headers.
+ * Best-effort decode of the persisted auth state cookie (zustand persist).
+ * Returns role + auth flag, or null when the cookie is missing/unparseable.
+ * This is defense-in-depth only; the Go backend remains the source of truth.
+ */
+function readAuthFromCookie(request: NextRequest): { role: Role | null; isAuthenticated: boolean } | null {
+    const raw = request.cookies.get(AUTH_COOKIE)?.value;
+    if (!raw) return null;
+    try {
+        // Cookie may be URI-encoded JSON.
+        const decoded = decodeURIComponent(raw);
+        const parsed = JSON.parse(decoded) as {
+            state?: { user?: { role?: Role }; isAuthenticated?: boolean };
+        };
+        return {
+            role: parsed.state?.user?.role ?? null,
+            isAuthenticated: Boolean(parsed.state?.isAuthenticated),
+        };
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Returns the path the request should be redirected to when the role is not
+ * allowed for the requested route, or null when access is permitted.
+ */
+function getRoleRedirect(pathname: string, role: Role | null, isAuthenticated: boolean): string | null {
+    const isAdminPath = pathname === "/dashboard/admin" || pathname.startsWith("/dashboard/admin/")
+        || pathname === "/dashboard/moderation" || pathname.startsWith("/dashboard/moderation/");
+    const isMitraPath = pathname === "/dashboard/mitra" || pathname.startsWith("/dashboard/mitra/");
+
+    if (!isAdminPath && !isMitraPath) return null;
+
+    // No readable session: let client-side AuthProvider handle login redirect.
+    if (!isAuthenticated || !role) return null;
+
+    if (isAdminPath && role !== "admin") return "/dashboard";
+    if (isMitraPath && role !== "mitra") return "/dashboard";
+
+    return null;
+}
+
+/**
+ * Next.js middleware to enforce role-based access on admin/mitra dashboard
+ * routes at the edge, and to set security headers on all responses.
+ * This provides defense-in-depth alongside the backend role middleware.
  */
 export function middleware(request: NextRequest) {
+    const pathname = request.nextUrl.pathname;
+
+    // Server-side role guard for admin/mitra dashboard segments.
+    const auth = readAuthFromCookie(request);
+    const redirectTarget = getRoleRedirect(pathname, auth?.role ?? null, auth?.isAuthenticated ?? false);
+    if (redirectTarget && redirectTarget !== pathname) {
+        return NextResponse.redirect(new URL(redirectTarget, request.url));
+    }
+
     const response = NextResponse.next();
 
     // Content Security Policy

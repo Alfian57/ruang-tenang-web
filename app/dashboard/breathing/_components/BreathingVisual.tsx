@@ -21,14 +21,58 @@ interface BreathingVisualProps {
     isActive: boolean;
 }
 
-function getPhaseSecondsRemaining(
-    phase: BreathingPhase,
-    phaseProgress: number,
-    phaseDurations: Record<BreathingPhase | "ready" | "complete", number>,
-) {
-    if (phase === "ready" || phase === "complete") return null;
-    const duration = phaseDurations[phase] || 0;
-    return Math.max(0, Math.ceil(duration - (duration * phaseProgress) / 100));
+// Short imperative cue shown inside the orb to keep attention on the breath
+// instead of a ticking number.
+function getPhaseCueWord(phase: BreathingPhase): string {
+    switch (phase) {
+        case "inhale":
+            return "Tarik";
+        case "inhale_hold":
+            return "Tahan";
+        case "exhale":
+            return "Hembus";
+        case "exhale_hold":
+            return "Jeda";
+        case "complete":
+            return "Selesai";
+        default:
+            return "Siap";
+    }
+}
+
+// Gentle per-second pacing dots: one dot per second of the current phase, the
+// elapsed ones softly filled. This paces the breath without a big countdown.
+function PacingDots({
+    phase,
+    phaseDurations,
+    phaseProgress,
+    color,
+}: {
+    phase: BreathingPhase;
+    phaseDurations: Record<BreathingPhase | "ready" | "complete", number>;
+    phaseProgress: number;
+    color: string;
+}) {
+    const total = phaseDurations[phase] || 0;
+    if (phase === "ready" || phase === "complete" || total <= 0) return null;
+
+    const elapsed = (total * phaseProgress) / 100;
+    const dots = Array.from({ length: Math.min(total, 8) }, (_, i) => i);
+
+    return (
+        <div className="mt-2 flex items-center justify-center gap-1.5">
+            {dots.map((i) => {
+                const filled = i < Math.round(elapsed);
+                return (
+                    <span
+                        key={i}
+                        className="h-1.5 w-1.5 rounded-full transition-opacity duration-300"
+                        style={{ backgroundColor: color, opacity: filled ? 0.9 : 0.25 }}
+                    />
+                );
+            })}
+        </div>
+    );
 }
 
 function CircleVisual({ color, scale, reduceMotion }: { color: string; scale: number; reduceMotion: boolean }) {
@@ -164,7 +208,6 @@ export function BreathingVisual({
     isActive,
 }: BreathingVisualProps) {
     const reduceMotion = Boolean(useReducedMotion());
-    const phaseSecondsRemaining = getPhaseSecondsRemaining(phase, phaseProgress, phaseDurations);
     const sessionProgress = Math.min(100, Math.max(0, (elapsedTime / targetDurationSeconds) * 100));
     const visualType = technique.animation_type || "circle";
 
@@ -205,18 +248,41 @@ export function BreathingVisual({
                         animate={{ scale: reduceMotion ? 1 : Math.max(0.96, Math.min(1.08, scale * 0.96)) }}
                         transition={{ duration: reduceMotion ? 0 : 0.45, ease: "easeOut" }}
                     >
+                        {/* Phase-progress ring: a calm sweep that fills over the
+                            current phase instead of showing a ticking number. */}
+                        {isActive && phase !== "ready" && phase !== "complete" && (
+                            <svg className="absolute inset-0 h-full w-full -rotate-90" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="46" fill="none" stroke={`${technique.color}1f`} strokeWidth="3" />
+                                <circle
+                                    cx="50"
+                                    cy="50"
+                                    r="46"
+                                    fill="none"
+                                    stroke={technique.color}
+                                    strokeWidth="3"
+                                    strokeLinecap="round"
+                                    strokeDasharray={`${(phaseProgress / 100) * 289}, 289`}
+                                    style={{ transition: reduceMotion ? "none" : "stroke-dasharray 0.2s linear" }}
+                                />
+                            </svg>
+                        )}
                         <div
                             className="absolute inset-3 rounded-full border"
                             style={{ borderColor: `${technique.color}26` }}
                         />
-                        <p className="relative text-[11px] font-semibold uppercase text-muted-foreground">
+                        <p className="relative text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                             {isActive ? "Ikuti Ritme" : "Perjalanan Napas"}
                         </p>
-                        <p className="relative mt-2 text-3xl font-semibold drop-shadow-sm" style={{ color: technique.color }}>
-                            {phase === "ready" ? "Siap" : phase === "complete" ? "Selesai" : getPhaseLabel(phase)}
+                        <p className="relative mt-1 text-3xl font-semibold drop-shadow-sm" style={{ color: technique.color }}>
+                            {phase === "ready" ? "Siap" : phase === "complete" ? "Selesai" : getPhaseCueWord(phase)}
                         </p>
-                        {phaseSecondsRemaining !== null && (
-                            <p className="relative mt-1 text-sm text-muted-foreground">{phaseSecondsRemaining} detik lagi</p>
+                        {isActive && phase !== "ready" && phase !== "complete" && (
+                            <PacingDots
+                                phase={phase}
+                                phaseDurations={phaseDurations}
+                                phaseProgress={phaseProgress}
+                                color={technique.color}
+                            />
                         )}
                     </motion.div>
                 </div>

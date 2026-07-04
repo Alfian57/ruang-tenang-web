@@ -1,6 +1,11 @@
 // Breathing Exercise Types
 
-import { CloudRain, Annoyed, BatteryLow, Frown, Activity, Meh, Wind, Smile, Zap, Target } from "lucide-react";
+import React from 'react';
+import { 
+  CloudRain, Annoyed, BatteryLow, Frown, Activity, Meh, Wind, Smile, Zap, Target,
+  VolumeX, Trees, Waves, Bird, Flame, Radio,
+  Square, Moon, Heart 
+} from "lucide-react";
 
 export interface BreathingTechnique {
   id: string;
@@ -250,14 +255,14 @@ export interface BreathingState {
 
 // Background Sound Options
 export const BACKGROUND_SOUNDS = [
-  { id: 'none', name: 'Tidak Ada', icon: '🔇' },
-  { id: 'rain', name: 'Hujan', icon: '🌧️' },
-  { id: 'forest', name: 'Hutan', icon: '🌲' },
-  { id: 'ocean', name: 'Laut', icon: '🌊' },
-  { id: 'birds', name: 'Burung', icon: '🐦' },
-  { id: 'fire', name: 'Api Unggun', icon: '🔥' },
-  { id: 'wind', name: 'Angin', icon: '💨' },
-  { id: 'white_noise', name: 'White Noise', icon: '📻' },
+  { id: 'none', name: 'Tidak Ada', icon: React.createElement(VolumeX, { className: "w-4 h-4" }) },
+  { id: 'rain', name: 'Hujan', icon: React.createElement(CloudRain, { className: "w-4 h-4" }) },
+  { id: 'forest', name: 'Hutan', icon: React.createElement(Trees, { className: "w-4 h-4" }) },
+  { id: 'ocean', name: 'Laut', icon: React.createElement(Waves, { className: "w-4 h-4" }) },
+  { id: 'birds', name: 'Burung', icon: React.createElement(Bird, { className: "w-4 h-4" }) },
+  { id: 'fire', name: 'Api Unggun', icon: React.createElement(Flame, { className: "w-4 h-4" }) },
+  { id: 'wind', name: 'Angin', icon: React.createElement(Wind, { className: "w-4 h-4" }) },
+  { id: 'white_noise', name: 'White Noise', icon: React.createElement(Radio, { className: "w-4 h-4" }) },
 ] as const;
 
 export type BackgroundSoundId = typeof BACKGROUND_SOUNDS[number]['id'];
@@ -357,18 +362,18 @@ export const BREATHING_XP_CONFIG = {
 } as const;
 
 // Technique Icons
-export const TECHNIQUE_ICONS: Record<string, string> = {
-  'box-breathing': '⬜',
-  '4-7-8-breathing': '🌙',
-  'coherent-breathing': '💚',
-  'energizing-breath': '⚡',
-  'deep-calm': '🧘',
-  'lungs': '🫁',
-  'default': '💨',
+export const TECHNIQUE_ICONS: Record<string, React.ReactNode> = {
+  'box-breathing': React.createElement(Square, { className: "w-5 h-5" }),
+  '4-7-8-breathing': React.createElement(Moon, { className: "w-5 h-5" }),
+  'coherent-breathing': React.createElement(Heart, { className: "w-5 h-5" }),
+  'energizing-breath': React.createElement(Zap, { className: "w-5 h-5" }),
+  'deep-calm': React.createElement(Waves, { className: "w-5 h-5" }),
+  'lungs': React.createElement(Activity, { className: "w-5 h-5" }),
+  'default': React.createElement(Wind, { className: "w-5 h-5" }),
 };
 
 // Get icon for technique
-export function getTechniqueIcon(technique: BreathingTechnique): string {
+export function getTechniqueIcon(technique: BreathingTechnique): React.ReactNode {
   if (technique.slug && TECHNIQUE_ICONS[technique.slug]) {
     return TECHNIQUE_ICONS[technique.slug];
   }

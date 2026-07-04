@@ -23,6 +23,6 @@ export { guildService } from "./guild";
 export { progressMapService } from "./progress-map";
 export { xpBoostService } from "./xp-boost";
 export { pushService } from "./push";
-export { b2bService } from "./b2b";
-export { billingService } from "./billing";
+export { b2bService, adminB2bService } from "./b2b";
+export { billingService, adminBillingService } from "./billing";
 export { wellnessService } from "./wellness";

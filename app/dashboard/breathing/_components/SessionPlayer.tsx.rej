@@ -1,0 +1,29 @@
+--- ruang-tenang-web/app/dashboard/breathing/_components/SessionPlayer.tsx
++++ ruang-tenang-web/app/dashboard/breathing/_components/SessionPlayer.tsx
+@@ -316,22 +316,22 @@
+                             )}
+ 
+                             {state.isActive && !state.isPaused && state.phase !== "complete" && (
+-                                <div className="flex gap-4">
++                                <>
+                                     <button
+                                         onClick={handlePause}
+-                                        className="flex min-h-11 items-center gap-2 rounded-xl bg-primary/10 px-6 py-3 font-medium text-primary transition-colors hover:bg-primary/20"
++                                        className="flex min-h-11 items-center gap-2 rounded-xl bg-muted px-5 py-3 font-medium text-foreground transition-colors hover:bg-muted/80"
+                                     >
+                                         <Pause className="h-5 w-5" />
+                                         Jeda
+                                     </button>
+                                     <button
+                                         onClick={() => onComplete(handleStop())}
+-                                        className="flex min-h-11 items-center gap-2 rounded-xl bg-destructive/10 px-6 py-3 font-medium text-destructive transition-colors hover:bg-destructive/20"
++                                        className="flex min-h-11 items-center gap-2 rounded-xl bg-destructive/10 px-5 py-3 font-medium text-destructive transition-colors hover:bg-destructive/20"
+                                     >
+                                         <Square className="h-5 w-5" />
+                                         Selesai
+                                     </button>
+-                                </div>
++                                </>
+                             )}
+ 
+                             {state.isPaused && (
