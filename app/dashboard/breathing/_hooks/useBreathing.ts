@@ -289,7 +289,6 @@ export function useBreathing() {
                             const songs = songsRes.data || [];
                             if (songs.length > 0) {
                                 randomSong = songs[Math.floor(Math.random() * songs.length)];
-                                break;
                             }
                         }
                     }

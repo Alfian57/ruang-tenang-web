@@ -490,7 +490,7 @@ export default function BillingPage() {
                                                             variant="default"
                                                             className="h-7 text-xs"
                                                             disabled={processingKey === `${tx.item_type}-${tx.item_id}`}
-                                                            onClick={() => runCheckout({ item_type: tx.item_type as any, item_id: tx.item_id, snap_token: tx.snap_token }, "Lanjutkan")}
+                                                            onClick={() => runCheckout({ item_type: tx.item_type as "subscription" | "topup", item_id: tx.item_id, snap_token: tx.snap_token }, "Lanjutkan")}
                                                         >
                                                             Bayar
                                                         </Button>

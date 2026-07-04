@@ -13,6 +13,7 @@ import type {
     BillingCatalog,
     BillingStatus,
     BillingTopupPackage,
+    BillingTransaction,
 } from "@/types";
 
 const IDR_FORMATTER = new Intl.NumberFormat("id-ID", {
@@ -48,7 +49,7 @@ export default function TopupPage() {
     const { token, user, refreshUser } = useAuthStore();
     const [catalog, setCatalog] = useState<BillingCatalog | null>(null);
     const [status, setStatus] = useState<BillingStatus | null>(null);
-    const [transactions, setTransactions] = useState<any[]>([]);
+    const [transactions, setTransactions] = useState<BillingTransaction[]>([]);
     const [loading, setLoading] = useState(true);
 
     const refreshData = useCallback(async () => {
@@ -222,7 +223,7 @@ export default function TopupPage() {
                 <section className="rounded-3xl border border-primary/20 bg-white p-5 lg:p-6">
                     <h2 className="text-xl font-semibold text-slate-900 mb-4">Riwayat Top Up Terakhir</h2>
                     <div className="space-y-3">
-                        {transactions.map((tx: any) => (
+                        {transactions.map((tx: BillingTransaction) => (
                             <div key={tx.id} className="flex items-center justify-between rounded-xl border border-slate-100 p-4">
                                 <div>
                                     <h3 className="font-semibold text-slate-900">{tx.item_name}</h3>
@@ -242,7 +243,7 @@ export default function TopupPage() {
                                             <Button 
                                                 size="sm" 
                                                 className="h-6 text-xs px-2"
-                                                onClick={() => runCheckout({ item_type: tx.item_type as any, item_id: tx.item_id, snap_token: tx.snap_token }, "Lanjutkan")}
+                                                onClick={() => runCheckout({ item_type: tx.item_type as "subscription" | "topup", item_id: tx.item_id, snap_token: tx.snap_token }, "Lanjutkan")}
                                             >
                                                 Bayar
                                             </Button>

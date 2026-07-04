@@ -32,7 +32,7 @@ export function useArticleDetail() {
       toast.success("Pengguna berhasil diblokir");
       setShowBlockConfirm(false);
       router.back();
-    } catch {
+    } catch (error) {
       console.error("Failed to block user:", error);
       toast.error("Gagal memblokir pengguna");
     } finally {
@@ -85,12 +85,12 @@ export function useArticleDetail() {
       setRelatedArticles(
         (relatedRes.data || []).filter((a) => a.slug !== slug).slice(0, 5)
       );
-    } catch {
+    } catch (error) {
       console.error("Failed to load article:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [params.slug, token]);
+  }, [params.slug, token, isAdmin]);
 
   useEffect(() => {
     loadArticle();

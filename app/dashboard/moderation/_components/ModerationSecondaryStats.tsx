@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { XCircle, Users, Ban } from "lucide-react";
 import { ModerationStats } from "@/types/moderation";
 

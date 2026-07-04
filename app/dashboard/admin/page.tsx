@@ -7,11 +7,8 @@ import { Button } from "@/components/ui/button";
 import {
   Users,
   FileText,
-  MessageCircle,
   Music,
   Heart,
-  TrendingUp,
-  TrendingDown,
   Activity,
   Ban,
   FolderOpen,
