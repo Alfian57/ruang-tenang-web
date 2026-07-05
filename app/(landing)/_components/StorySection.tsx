@@ -1,30 +1,38 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { storyService } from "@/services/api";
 import { ROUTES } from "@/lib/routes";
 import { ArrowRight, BookHeart, Heart, Quote } from "lucide-react";
 import type { StoryCard } from "@/types";
-import { LandingDataNotice } from "./LandingDataNotice";
+
 
 interface Story {
   id: string;
   title: string;
   content: string;
   author_name: string;
+  author_avatar?: string;
   like_count: number;
   created_at: string;
   href?: string;
 }
 
-const GRADIENT_ACCENTS = [
-  "from-rose-500/10 to-pink-500/5",
-  "from-red-500/10 to-rose-500/5",
-  "from-rose-600/10 to-red-500/5",
-  "from-pink-500/10 to-red-500/5",
-];
+function hashString(value: string): number {
+  return Array.from(value).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+}
+
+const AVATAR_GRADIENTS = [
+  "from-blue-400 to-blue-600",
+  "from-emerald-400 to-emerald-600",
+  "from-purple-400 to-purple-600",
+  "from-amber-400 to-amber-600",
+  "from-rose-400 to-rose-600",
+  "from-cyan-400 to-cyan-600",
+] as const;
 
 const FALLBACK_STORIES: Story[] = [
   {
@@ -56,6 +64,7 @@ function truncateContent(content: string, maxLen: number): string {
 }
 
 export function StorySection() {
+  const shouldReduceMotion = useReducedMotion();
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -69,6 +78,7 @@ export function StorySection() {
           title: s.title,
           content: s.excerpt,
           author_name: s.author?.name || "Anonim",
+          author_avatar: s.author?.avatar,
           like_count: s.heart_count,
           created_at: s.published_at || new Date().toISOString()
         }));
@@ -86,12 +96,12 @@ export function StorySection() {
   const usingFallbackStories = stories.length === 0;
 
   return (
-    <section id="stories" className="relative overflow-hidden bg-linear-to-b from-white via-rose-50/45 to-white px-4 py-14 sm:py-16 md:py-20">
+    <section id="stories" className="relative overflow-hidden bg-linear-to-br from-rose-50 via-orange-50/40 to-amber-50/30 px-4 py-14 sm:py-16 md:py-20">
       <div className="container mx-auto max-w-6xl relative z-10">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={shouldReduceMotion ? undefined : { opacity: 0, y: 30 }}
+          whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="mb-10 text-center md:mb-12"
         >
@@ -106,9 +116,7 @@ export function StorySection() {
           <p className="mx-auto max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">
             Cerita yang tampil di sini adalah cerita publik komunitas atau contoh pilihan saat data terbaru belum tersedia.
           </p>
-          <div className="mt-5">
-            <LandingDataNotice variant="public" />
-          </div>
+
         </motion.div>
 
         {/* Story Cards */}
@@ -126,45 +134,61 @@ export function StorySection() {
         ) : (
           <>
             {usingFallbackStories && (
-              <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50/80 px-4 py-3">
-                <p className="text-sm font-medium text-rose-800">
-                  Menampilkan cerita pilihan sementara sambil menunggu cerita komunitas terbaru.
+              <div className="mb-6 rounded-2xl border border-dashed border-rose-200 bg-white/60 px-5 py-4 text-center backdrop-blur">
+                <p className="text-sm font-medium text-gray-600">
+                  ✨ Cerita di bawah adalah contoh inspirasi. <Link href={ROUTES.PUBLIC_STORY_CREATE} className="text-primary font-semibold hover:underline">Bagikan ceritamu</Link> untuk menginspirasi komunitas!
                 </p>
               </div>
             )}
 
-            <div className="mb-8 grid gap-5 md:grid-cols-2">
+            <div className="mb-8 grid gap-6 md:grid-cols-2">
               {displayedStories.map((story, index) => (
                 <motion.div
                   key={story.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={shouldReduceMotion ? undefined : { opacity: 0, y: 30 }}
+                  whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
+                  transition={shouldReduceMotion ? { duration: 0 } : { delay: index * 0.1 }}
+                  className="h-full"
                 >
-                  <Link href={story.href || ROUTES.publicStoryDetail(story.id)}>
-                    <div
-                      className={`group h-full rounded-2xl border border-rose-100 bg-linear-to-br ${GRADIENT_ACCENTS[index % GRADIENT_ACCENTS.length]} p-7 shadow-sm shadow-red-950/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
-                    >
-                      <Quote className="w-8 h-8 text-primary/20 mb-4" />
-                      <h3 className="font-bold text-gray-900 text-lg mb-3 group-hover:text-primary transition-colors line-clamp-2">
-                        {story.title}
-                      </h3>
-                      <p className="text-gray-600 text-sm leading-relaxed mb-5 line-clamp-3">
-                        {truncateContent(story.content, 150)}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-sm font-bold text-primary">
-                            {story.author_name?.charAt(0)?.toUpperCase() || "A"}
+                  <Link href={story.href || ROUTES.publicStoryDetail(story.id)} className="block group h-full">
+                    <div className="relative h-full flex flex-col justify-between rounded-3xl border border-rose-100/80 bg-white p-6 shadow-md shadow-rose-900/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-8">
+                      <div>
+                        <Quote className="absolute top-5 right-5 w-10 h-10 text-rose-200/60 sm:top-6 sm:right-6 sm:w-12 sm:h-12" />
+                        <p className="relative text-gray-700 text-base leading-relaxed mb-6 italic line-clamp-4 sm:text-lg">
+                          &ldquo;{truncateContent(story.content, 180)}&rdquo;
+                        </p>
+                        <h3 className="font-bold text-gray-900 text-base mb-4 group-hover:text-primary transition-colors line-clamp-2">
+                          {story.title}
+                        </h3>
+                      </div>
+                      <div className="flex items-center justify-between border-t border-rose-100/60 pt-4">
+                        <div className="flex items-center gap-3">
+                          {story.author_avatar ? (
+                            <div className="relative w-10 h-10 shrink-0 rounded-full overflow-hidden shadow-sm">
+                              <Image
+                                src={story.author_avatar}
+                                alt={story.author_name}
+                                fill
+                                sizes="40px"
+                                className="object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className={`w-10 h-10 bg-linear-to-br ${AVATAR_GRADIENTS[hashString(story.author_name || "?") % AVATAR_GRADIENTS.length]} rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0 shadow-sm`}>
+                              {story.author_name?.charAt(0)?.toUpperCase() || "A"}
+                            </div>
+                          )}
+                          <div>
+                            <span className="block text-sm font-semibold text-gray-800">
+                              {story.author_name || "Anonim"}
+                            </span>
+                            <span className="block text-xs text-gray-400">Komunitas Ruang Tenang</span>
                           </div>
-                          <span className="text-sm font-medium text-gray-700">
-                            {story.author_name || "Anonim"}
-                          </span>
                         </div>
-                        <div className="flex items-center gap-1 text-gray-400">
-                          <Heart className="w-4 h-4" />
-                          <span className="text-xs">{story.like_count || 0}</span>
+                        <div className="flex items-center gap-1.5 text-rose-400">
+                          <Heart className="w-4 h-4" fill="currentColor" />
+                          <span className="text-xs font-medium">{story.like_count || 0}</span>
                         </div>
                       </div>
                     </div>
@@ -177,8 +201,8 @@ export function StorySection() {
 
         {/* CTA */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={shouldReduceMotion ? undefined : { opacity: 0 }}
+          whileInView={shouldReduceMotion ? undefined : { opacity: 1 }}
           viewport={{ once: true }}
           className="text-center"
         >

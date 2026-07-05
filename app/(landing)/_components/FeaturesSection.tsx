@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 import {
@@ -14,7 +14,6 @@ import {
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { LandingDataNotice } from "./LandingDataNotice";
 
 const SIGNATURE_LOOP = [
   {
@@ -71,6 +70,8 @@ const WOW_MOMENTS = [
 ];
 
 export function FeaturesSection() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section id="features" className="relative overflow-hidden bg-linear-to-b from-white via-rose-50/40 to-white px-4 py-14 sm:py-16 md:py-20">
       <div className="absolute inset-0 opacity-25">
@@ -86,8 +87,8 @@ export function FeaturesSection() {
 
       <div className="container mx-auto max-w-6xl relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={shouldReduceMotion ? undefined : { opacity: 0, y: 30 }}
+          whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="mb-10 text-center md:mb-12"
         >
@@ -102,9 +103,6 @@ export function FeaturesSection() {
           <p className="mx-auto max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg">
             Empat tahap inti ini didesain sebagai satu siklus berulang: refleksi, progres, reward identitas, lalu dukungan komunitas.
           </p>
-          <div className="mt-5">
-            <LandingDataNotice variant="demo" />
-          </div>
         </motion.div>
 
         <div className="grid items-start gap-5 lg:grid-cols-12 lg:gap-8">
@@ -129,10 +127,10 @@ export function FeaturesSection() {
               {SIGNATURE_LOOP.map((stage, index) => (
                 <motion.div
                   key={stage.id}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={shouldReduceMotion ? undefined : { opacity: 0, y: 16 }}
+                  whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.08 }}
+                  transition={shouldReduceMotion ? { duration: 0 } : { delay: index * 0.08 }}
                   className="relative"
                 >
                   {index < SIGNATURE_LOOP.length - 1 && (
@@ -167,10 +165,10 @@ export function FeaturesSection() {
             {WOW_MOMENTS.map((moment, index) => (
               <motion.div
                 key={moment.title}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={shouldReduceMotion ? undefined : { opacity: 0, y: 24 }}
+                whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.12 }}
+                transition={shouldReduceMotion ? { duration: 0 } : { delay: index * 0.12 }}
                 className="rounded-3xl border border-rose-100 bg-white p-5 shadow-sm shadow-red-950/5 md:p-6"
               >
                 <div className="flex items-center gap-2 text-rose-700">
@@ -187,10 +185,10 @@ export function FeaturesSection() {
             ))}
 
             <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={shouldReduceMotion ? undefined : { opacity: 0, y: 24 }}
+              whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.32 }}
+              transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.32 }}
               className="rounded-3xl border border-rose-200 bg-linear-to-br from-rose-50 via-white to-red-50 p-5 md:p-6"
             >
               <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white px-3 py-1 text-xs font-semibold text-rose-700">

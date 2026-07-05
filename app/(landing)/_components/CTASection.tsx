@@ -1,12 +1,14 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/routes";
 import { ArrowRight, Heart } from "lucide-react";
 
 export function CTASection() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section className="relative overflow-hidden px-4 py-14 sm:py-16 md:py-20">
       {/* Background gradient */}
@@ -32,16 +34,16 @@ export function CTASection() {
 
       <div className="container mx-auto max-w-3xl text-center relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={shouldReduceMotion ? undefined : { opacity: 0, y: 30 }}
+          whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6 }}
         >
           <motion.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
+            initial={shouldReduceMotion ? undefined : { scale: 0 }}
+            whileInView={shouldReduceMotion ? undefined : { scale: 1 }}
             viewport={{ once: true }}
-            transition={{ type: "spring", delay: 0.2 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { type: "spring", delay: 0.2 }}
             className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-white/75 shadow-lg backdrop-blur-sm"
           >
             <Heart className="h-8 w-8 text-primary" fill="currentColor" />

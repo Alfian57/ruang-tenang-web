@@ -12,12 +12,25 @@ interface StoryCardProps {
     className?: string;
 }
 
+function hashString(value: string): number {
+    return Array.from(value).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+}
+
+const AVATAR_GRADIENTS = [
+    "from-blue-400 to-blue-600",
+    "from-emerald-400 to-emerald-600",
+    "from-purple-400 to-purple-600",
+    "from-amber-400 to-amber-600",
+    "from-rose-400 to-rose-600",
+    "from-cyan-400 to-cyan-600",
+] as const;
+
 export function StoryCard({ story, className }: StoryCardProps) {
     return (
-        <Link href={ROUTES.publicStoryDetail(story.id)}>
+        <Link href={ROUTES.publicStoryDetail(story.id)} className="block h-full">
             <div
                 className={cn(
-                    "bg-card rounded-xl border shadow-sm overflow-hidden hover:shadow-md transition-all group",
+                    "bg-card rounded-xl border shadow-sm overflow-hidden hover:shadow-md transition-all group h-full flex flex-col justify-between",
                     className
                 )}
             >
@@ -54,7 +67,8 @@ export function StoryCard({ story, className }: StoryCardProps) {
                 </div>
 
                 {/* Content */}
-                <div className="p-4">
+                <div className="p-4 flex-1 flex flex-col justify-between">
+                    <div>
                     {/* Categories */}
                     {story.categories.length > 0 && (
                         <div className="flex flex-wrap gap-1 mb-2">
@@ -79,13 +93,14 @@ export function StoryCard({ story, className }: StoryCardProps) {
                         {story.title}
                     </h3>
 
-                    {/* Excerpt */}
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                        {story.excerpt}
-                    </p>
+                        {/* Excerpt */}
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                            {story.excerpt}
+                        </p>
+                    </div>
 
                     {/* Footer */}
-                    <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center justify-between gap-3 pt-2 border-t border-gray-100/50">
                         {/* Author */}
                         <div className="flex items-center gap-2">
                             {story.is_anonymous || !story.author ? (
@@ -97,13 +112,19 @@ export function StoryCard({ story, className }: StoryCardProps) {
                                 </>
                             ) : (
                                 <>
-                                    <Image
-                                        src={story.author.avatar || "/images/default-avatar.png"}
-                                        alt={story.author.name}
-                                        width={24}
-                                        height={24}
-                                        className="rounded-full"
-                                    />
+                                    {story.author.avatar ? (
+                                        <Image
+                                            src={story.author.avatar}
+                                            alt={story.author.name}
+                                            width={24}
+                                            height={24}
+                                            className="rounded-full h-6 w-6 object-cover"
+                                        />
+                                    ) : (
+                                        <div className={`w-6 h-6 bg-linear-to-br ${AVATAR_GRADIENTS[hashString(story.author.name || "?") % AVATAR_GRADIENTS.length]} rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0 shadow-sm`}>
+                                            {story.author.name.charAt(0).toUpperCase()}
+                                        </div>
+                                    )}
                                     <span className="max-w-24 truncate text-xs text-muted-foreground">
                                         {story.author.name}
                                     </span>

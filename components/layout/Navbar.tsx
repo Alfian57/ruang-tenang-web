@@ -31,9 +31,9 @@ type NavSection = "home" | "features" | "gamification" | "community" | "stories"
 
 const NAV_ITEMS: Array<{ key: NavSection; label: string; href: string }> = [
   { key: "home", label: "Beranda", href: LANDING_SECTION_ROUTES.HOME },
+  { key: "community", label: "Komunitas", href: LANDING_SECTION_ROUTES.COMMUNITY },
   { key: "features", label: "Fitur", href: LANDING_SECTION_ROUTES.FEATURES },
   { key: "gamification", label: "Gamifikasi", href: LANDING_SECTION_ROUTES.GAMIFICATION },
-  { key: "community", label: "Komunitas", href: LANDING_SECTION_ROUTES.COMMUNITY },
   { key: "stories", label: "Cerita", href: LANDING_SECTION_ROUTES.STORIES },
   { key: "leaderboard", label: "Hall of Fame", href: LANDING_SECTION_ROUTES.LEADERBOARD },
   { key: "articles", label: "Artikel", href: LANDING_SECTION_ROUTES.ARTICLES },
@@ -44,6 +44,8 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const [activeSection, setActiveSection] = useState<NavSection>("home");
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const activeLinkClass = useMemo(
     () => "whitespace-nowrap px-3 py-2 text-sm font-medium text-primary bg-primary/5 rounded-full transition-colors xl:px-4",
@@ -129,6 +131,20 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
     };
   }, [pathname, variant]);
 
+  useEffect(() => {
+    const updateScrollInfo = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0;
+      setScrollProgress(progress);
+      setIsScrolled(scrollTop > 60);
+    };
+
+    updateScrollInfo();
+    window.addEventListener("scroll", updateScrollInfo, { passive: true });
+    return () => window.removeEventListener("scroll", updateScrollInfo);
+  }, []);
+
   const isNavItemActive = (section: NavSection) => {
     if (pathname !== ROUTES.HOME) {
       return section === "home";
@@ -143,7 +159,7 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
       transition={{ duration: 0.5 }}
       className="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1rem)] max-w-6xl sm:top-4 sm:w-[95%]"
     >
-      <div className="flex min-w-0 items-center justify-between rounded-[15px] bg-white/95 px-3 py-3 shadow-lg backdrop-blur-md min-[380px]:px-4 md:px-6">
+      <div className={`flex min-w-0 items-center justify-between rounded-[15px] bg-white/95 px-3 py-3 backdrop-blur-md min-[380px]:px-4 md:px-6 transition-shadow duration-300 ${isScrolled ? "shadow-xl shadow-gray-900/10" : "shadow-lg"}`}>
         {/* Logo */}
         <Link href={ROUTES.HOME} className="flex min-w-0 items-center gap-2">
           <Image
@@ -270,6 +286,13 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
           </div>
         </motion.div>
       )}
+      {/* Scroll Progress Bar */}
+      <div className="absolute -bottom-1 left-4 right-4 h-0.5 rounded-full bg-gray-200/50 overflow-hidden">
+        <div
+          className="h-full rounded-full bg-primary transition-[width] duration-150 ease-out"
+          style={{ width: `${scrollProgress * 100}%` }}
+        />
+      </div>
     </motion.nav>
   );
 }

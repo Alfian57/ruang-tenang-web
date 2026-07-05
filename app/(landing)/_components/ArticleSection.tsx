@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -9,7 +9,6 @@ import { ROUTES } from "@/lib/routes";
 import { ArrowRight, BookOpen, Calendar } from "lucide-react";
 import type { PaginatedResponse } from "@/services/http/types";
 import { getHtmlExcerpt } from "@/utils";
-import { LandingDataNotice } from "./LandingDataNotice";
 
 interface Article {
   id: number;
@@ -44,6 +43,7 @@ function getArticleImage(thumbnail: string | undefined): string {
 export function ArticleSection() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -67,8 +67,8 @@ export function ArticleSection() {
       <div className="container mx-auto max-w-6xl relative z-10">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={shouldReduceMotion ? undefined : { opacity: 0, y: 30 }}
+          whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="mb-10 text-center md:mb-12"
         >
@@ -84,9 +84,6 @@ export function ArticleSection() {
             Artikel publik seputar kesehatan mental, tips mengelola stres, dan
             panduan untuk hidup lebih seimbang.
           </p>
-          <div className="mt-5">
-            <LandingDataNotice variant="public" />
-          </div>
         </motion.div>
 
         {/* Article Cards */}
@@ -115,10 +112,10 @@ export function ArticleSection() {
             {articles.map((article, index) => (
               <motion.div
                 key={article.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={shouldReduceMotion ? undefined : { opacity: 0, y: 30 }}
+                whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                transition={shouldReduceMotion ? { duration: 0 } : { delay: index * 0.1 }}
               >
                 <Link href={ROUTES.publicArticleDetail(article.slug)}>
                   <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-rose-100 bg-white shadow-sm shadow-red-950/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
@@ -161,8 +158,8 @@ export function ArticleSection() {
 
         {/* CTA */}
         <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={shouldReduceMotion ? undefined : { opacity: 0 }}
+          whileInView={shouldReduceMotion ? undefined : { opacity: 1 }}
           viewport={{ once: true }}
           className="text-center"
         >

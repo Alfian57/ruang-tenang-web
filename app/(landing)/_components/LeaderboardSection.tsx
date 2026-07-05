@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { communityService } from "@/services/api";
 import Link from "next/link";
@@ -8,7 +8,19 @@ import Image from "next/image";
 import { ROUTES } from "@/lib/routes";
 import { User } from "lucide-react";
 import { LeaderboardEntry } from "@/types";
-import { LandingDataNotice } from "./LandingDataNotice";
+
+function hashString(value: string): number {
+  return Array.from(value).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+}
+
+const AVATAR_GRADIENTS = [
+  "from-blue-400 to-blue-600",
+  "from-emerald-400 to-emerald-600",
+  "from-purple-400 to-purple-600",
+  "from-amber-400 to-amber-600",
+  "from-rose-400 to-rose-600",
+  "from-cyan-400 to-cyan-600",
+] as const;
 
 export default function LeaderboardSection() {
   const [users, setUsers] = useState<LeaderboardEntry[]>([]);
@@ -30,6 +42,7 @@ export default function LeaderboardSection() {
   }, []);
 
   const featuredMembers = users.slice(0, 3);
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <section id="leaderboard" className="relative overflow-hidden bg-linear-to-b from-white via-rose-50/55 to-white px-4 py-14 sm:py-16 md:py-20">
@@ -40,25 +53,22 @@ export default function LeaderboardSection() {
             Hall of Fame
           </div>
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={shouldReduceMotion ? undefined : { opacity: 0, y: 20 }}
+            whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="mb-4 text-2xl font-bold leading-tight text-gray-900 sm:text-3xl md:text-5xl"
           >
             Hall of Fame <span className="text-primary">Publik</span>
           </motion.h2>
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={shouldReduceMotion ? undefined : { opacity: 0, y: 20 }}
+            whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { delay: 0.1 }}
             className="mx-auto max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg"
           >
             Apresiasi publik untuk member yang aktif berbagi ketenangan dan dukungan di komunitas.
           </motion.p>
-          <div className="mt-5">
-            <LandingDataNotice variant="public" />
-          </div>
         </div>
 
         {loading ? (
@@ -84,10 +94,10 @@ export default function LeaderboardSection() {
             {featuredMembers.map((member, index) => (
               <motion.div
                 key={`${member.user_id ?? "anonymous"}-${member.rank ?? index}-${index}`}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={shouldReduceMotion ? undefined : { opacity: 0, y: 40 }}
+                whileInView={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                transition={shouldReduceMotion ? { duration: 0 } : { delay: index * 0.1 }}
                 className="flex flex-col items-center rounded-3xl border border-rose-100 bg-white/90 p-6 shadow-xl shadow-red-950/5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-red-950/10"
               >
                 {member.avatar ? (
@@ -101,7 +111,7 @@ export default function LeaderboardSection() {
                     />
                   </div>
                 ) : (
-                  <div className="w-20 h-20 mt-2 bg-linear-to-br from-primary/80 to-red-600 rounded-2xl mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                  <div className={`w-20 h-20 mt-2 bg-linear-to-br ${AVATAR_GRADIENTS[hashString(member.name || "?") % AVATAR_GRADIENTS.length]} rounded-2xl mb-4 flex items-center justify-center text-3xl font-bold text-white shadow-lg overflow-hidden transform rotate-3 hover:rotate-0 transition-transform duration-300`}>
                     {member.name.charAt(0).toUpperCase()}
                   </div>
                 )}

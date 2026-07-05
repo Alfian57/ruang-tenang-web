@@ -18,10 +18,10 @@ export default function Home() {
       <Navbar />
       <main id="main-content" tabIndex={-1} className="focus:outline-none">
         <HeroSection />
+        <CommunitySection />
         <FeaturesSection />
         <GamificationSection />
         <MarqueeSection />
-        <CommunitySection />
         <StorySection />
         <LeaderboardSection />
         <ArticleSection />

@@ -20,14 +20,16 @@ export function FeaturedStories({ stories }: FeaturedStoriesProps) {
             </h2>
             <div className="grid gap-4 md:grid-cols-3 md:gap-6">
                 {stories.slice(0, 3).map((story) => (
-                    <Link key={story.id} href={ROUTES.publicStoryDetail(story.id)}>
-                        <div className="rounded-xl border border-red-200 bg-linear-to-br from-red-50 to-rose-50 p-4 transition-shadow hover:shadow-lg dark:from-red-950/20 dark:to-rose-950/20">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Star className="h-4 w-4 text-red-500" />
-                                <span className="text-xs font-medium text-red-600">Pilihan</span>
+                    <Link key={story.id} href={ROUTES.publicStoryDetail(story.id)} className="block h-full">
+                        <div className="h-full flex flex-col justify-between rounded-xl border border-rose-200/50 bg-rose-50/60 p-4 shadow-sm transition-shadow hover:shadow-lg dark:from-red-950/10 dark:via-background dark:to-background">
+                            <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Star className="h-4 w-4 text-red-500" />
+                                    <span className="text-xs font-medium text-red-600">Pilihan</span>
+                                </div>
+                                <h3 className="font-semibold line-clamp-2 mb-2">{story.title}</h3>
                             </div>
-                            <h3 className="font-semibold line-clamp-2 mb-2">{story.title}</h3>
-                            <p className="text-sm text-muted-foreground line-clamp-2">
+                            <p className="text-sm text-muted-foreground line-clamp-2 mt-2">
                                 {story.excerpt}
                             </p>
                         </div>

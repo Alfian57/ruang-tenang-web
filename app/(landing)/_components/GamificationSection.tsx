@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 import {
@@ -14,7 +14,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { MockDailyTasksCard } from "./MockDailyTasksCard";
-import { LandingDataNotice } from "./LandingDataNotice";
+
 
 const GAMIFICATION_FEATURES = [
   {
@@ -74,8 +74,10 @@ const GAMIFICATION_FEATURES = [
 ];
 
 export function GamificationSection() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
-    <section className="relative overflow-hidden bg-linear-to-b from-white via-red-50/70 to-rose-50/40 px-4 py-14 sm:py-16 md:py-20" id="gamification">
+    <section className="relative overflow-hidden bg-linear-to-b from-white via-rose-50/70 to-rose-50/40 px-4 py-14 sm:py-16 md:py-20" id="gamification">
       <div className="container mx-auto max-w-6xl relative z-10">
         {/* Header */}
         <motion.div
@@ -98,9 +100,7 @@ export function GamificationSection() {
             Sistem gamifikasi yang memotivasi kamu untuk konsisten menjaga
             kesehatan mental. Kumpulkan XP, Koin Emas, raih badge, dan naik level.
           </p>
-          <div className="mt-5">
-            <LandingDataNotice variant="demo" />
-          </div>
+
         </motion.div>
 
         <div className="grid items-start gap-5 lg:grid-cols-12 lg:gap-8">
@@ -109,7 +109,7 @@ export function GamificationSection() {
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6 }}
             className="lg:col-span-5"
           >
             <MockDailyTasksCard />
@@ -124,7 +124,7 @@ export function GamificationSection() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.08 }}
+                  transition={shouldReduceMotion ? { duration: 0 } : { delay: index * 0.08 }}
                   className={`rounded-2xl border ${feature.borderColor} bg-white p-5 shadow-sm shadow-red-950/5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg group`}
                 >
                   <div
