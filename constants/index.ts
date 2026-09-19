@@ -32,7 +32,6 @@ export const ROUTES = {
   MUSIC: "/dashboard/music",
   FORUM: "/dashboard/forum",
   STORIES: "/dashboard/stories",
-  BREATHING: "/dashboard/breathing",
   MODERATION: "/dashboard/moderation",
   ADMIN: {
     USERS: "/dashboard/admin/users",

@@ -31,10 +31,10 @@ function getArticleActionPlan(article: Article): ArticleActionPlan {
 
   if (/(cemas|panik|gelisah|stress|overthink|tegang)/.test(signal)) {
     return {
-      title: "Tutup bacaan ini dengan napas terstruktur 3 menit",
-      description: "Regulasi tubuh dulu agar insight dari artikel lebih mudah dipraktikkan.",
-      primaryLabel: "Mulai Atur Napas",
-      primaryHref: ROUTES.BREATHING,
+      title: "Tutup bacaan ini dengan refleksi singkat",
+      description: "Catat satu hal yang kamu rasakan agar insight dari artikel lebih mudah dipraktikkan.",
+      primaryLabel: "Catat Refleksi",
+      primaryHref: `${ROUTES.JOURNAL}/create?mode=structured-reflection`,
       secondaryLabel: "Catat Trigger di Jurnal",
       secondaryHref: `${ROUTES.JOURNAL}/create?mode=structured-reflection`,
     };

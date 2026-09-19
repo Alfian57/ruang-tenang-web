@@ -2,9 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuthStore } from "@/store/authStore";
-import { breathingService, moodService, songService, journalService, articleService, chatService, billingService, wellnessService } from "@/services/api";
+import { moodService, songService, journalService, articleService, chatService, billingService, wellnessService } from "@/services/api";
 import { UserMood, SongCategory, Journal, Article, ChatSession, BillingStatus } from "@/types";
-import { BreathingWidgetData } from "@/types/breathing";
 import type { WeeklyInsight, WellnessJourneyMap, WellnessNeedCondition, WellnessNeedNowResponse, WellnessOnboardingResponse, WellnessPlanItem } from "@/types/wellness";
 import { useDashboardStore } from "@/store/dashboardStore";
 
@@ -28,19 +27,15 @@ export function useMemberDashboard() {
   const [isNetworkDegraded, setIsNetworkDegraded] = useState(false);
   const [lastSyncAt, setLastSyncAt] = useState<Date | null>(null);
 
-  // Breathing widget state
-  const [breathingWidgetData, setBreathingWidgetData] = useState<BreathingWidgetData | null>(null);
-
   const { moodRefreshTrigger } = useDashboardStore();
 
   const loadDashboardData = useCallback(async () => {
     if (!token) return;
     setIsLoadingWidgets(true);
     try {
-      const [moodResult, categoriesResult, breathingResult, journalResult, articleResult, chatResult, billingResult, wellnessResult, weeklyInsightResult, journeyMapResult] = await Promise.allSettled([
+      const [moodResult, categoriesResult, journalResult, articleResult, chatResult, billingResult, wellnessResult, weeklyInsightResult, journeyMapResult] = await Promise.allSettled([
         moodService.getHistory(token, { limit: 100 }),
         songService.getCategories(),
-        breathingService.getWidgetData(token),
         journalService.list(token, { limit: 20 }),
         articleService.getArticles({ limit: 3 }),
         chatService.getSessions(token, { page: 1, limit: 20 }),
@@ -50,7 +45,7 @@ export function useMemberDashboard() {
         wellnessService.getJourneyMap(token),
       ]);
 
-      const failedRequests = [moodResult, categoriesResult, breathingResult, journalResult, articleResult, chatResult, billingResult, wellnessResult, weeklyInsightResult, journeyMapResult].filter(
+      const failedRequests = [moodResult, categoriesResult, journalResult, articleResult, chatResult, billingResult, wellnessResult, weeklyInsightResult, journeyMapResult].filter(
         (result) => result.status === "rejected"
       ).length;
       setIsNetworkDegraded(failedRequests > 0);
@@ -69,10 +64,6 @@ export function useMemberDashboard() {
         if (Array.isArray(categoryPayload)) {
           setCategories(categoryPayload);
         }
-      }
-
-      if (breathingResult.status === "fulfilled" && breathingResult.value?.data) {
-        setBreathingWidgetData(breathingResult.value.data as unknown as BreathingWidgetData);
       }
 
       if (journalResult.status === "fulfilled" && journalResult.value?.data) {
@@ -173,7 +164,6 @@ export function useMemberDashboard() {
     isNetworkDegraded,
     lastSyncAt,
     refreshDashboardData: loadDashboardData,
-    breathingWidgetData,
     wellnessData,
     weeklyInsight,
     journeyMap,

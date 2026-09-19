@@ -5,7 +5,7 @@ Landing page, about/contact, privacy/terms, artikel publik, stories publik, hall
 
 ## Area member
 
-Dashboard member mencakup mood tracker, breathing, journal, chat AI, artikel/reading, stories, forum, musik/playlist, komunitas, wellness, progress map, rewards, guild, game, billing/top-up, profile, dan settings.
+Dashboard member mencakup mood tracker, journal, chat AI, artikel/reading, stories, forum, musik/playlist, komunitas, wellness, progress map, rewards, game, billing/top-up, profile, dan settings.
 
 ## Area admin dan moderasi
 

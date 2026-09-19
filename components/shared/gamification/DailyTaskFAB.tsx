@@ -317,13 +317,6 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
                     coins: 8,
                     icon: "✨",
                   },
-                  {
-                    name: "Breathing Pro",
-                    description: "2 sesi pernafasan fokus",
-                    xp: 45,
-                    coins: 7,
-                    icon: "✦",
-                  },
                 ].map((task) => (
                   <div key={task.name} className="p-3 flex items-center justify-between bg-violet-50/50">
                     <div className="flex items-center gap-3">

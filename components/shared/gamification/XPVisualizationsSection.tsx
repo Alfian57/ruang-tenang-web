@@ -36,7 +36,6 @@ function getActivityLabel(type: string): string {
         "post_upvote_received": "Upvote Diterima",
         "story_approved": "Cerita Disetujui",
         "heart_received": "Hati Diterima",
-        "breathing_session": "Latihan Napas",
         "mood_track": "Rekam Mood",
         "journal_create": "Tulis Jurnal",
         "chat_session": "Sesi AI Chat",

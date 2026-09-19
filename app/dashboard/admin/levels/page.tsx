@@ -59,7 +59,7 @@ export default function LevelsManagementPage() {
     name: `Tugas ${index + 1}`,
     description: "",
     unlock_type: "activity_count" as const,
-    unlock_activity: "breathing",
+    unlock_activity: "journal",
     unlock_value: 1,
     xp_reward: 10,
     coin_reward: 5,
@@ -255,7 +255,7 @@ export default function LevelsManagementPage() {
                     <Input
                       value={task.unlock_activity}
                       onChange={(e) => updateTaskField(index, "unlock_activity", e.target.value)}
-                      placeholder="chat, breathing, journal, mood, forum, story"
+                      placeholder="chat, journal, mood, forum, story"
                       disabled={task.unlock_type !== "activity_count"}
                       className="h-9"
                     />

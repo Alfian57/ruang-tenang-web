@@ -57,7 +57,6 @@ export interface ChatMessageContextHints {
   enable_journal_context?: boolean;
   enable_daily_task_context?: boolean;
   enable_xp_level_context?: boolean;
-  enable_breathing_context?: boolean;
   enable_playlist_context?: boolean;
   enable_rewards_context?: boolean;
   enable_progress_map_context?: boolean;
@@ -79,7 +78,6 @@ export interface ChatContextPreferences {
   enable_journal_context: boolean;
   enable_daily_task_context: boolean;
   enable_xp_level_context: boolean;
-  enable_breathing_context: boolean;
   enable_playlist_context: boolean;
   enable_rewards_context: boolean;
   enable_progress_map_context: boolean;
@@ -92,7 +90,6 @@ export interface ChatContextPreferencesUpdate {
   enable_journal_context?: boolean;
   enable_daily_task_context?: boolean;
   enable_xp_level_context?: boolean;
-  enable_breathing_context?: boolean;
   enable_playlist_context?: boolean;
   enable_rewards_context?: boolean;
   enable_progress_map_context?: boolean;
@@ -117,12 +114,6 @@ export interface ChatContextXPLevel {
   next_level?: number;
 }
 
-export interface ChatContextBreathing {
-  sessions_today: number;
-  sessions_last_7_days: number;
-  most_used_technique?: string;
-}
-
 export interface ChatContextPlaylist {
   total_playlists: number;
   total_saved_songs: number;
@@ -143,9 +134,6 @@ export interface ChatContextProgressMap {
 
 export interface ChatContextSocial {
   badge_count: number;
-  guild_name?: string;
-  guild_role?: string;
-  guild_member_count?: number;
 }
 
 export interface ChatContextRuntime {
@@ -153,7 +141,6 @@ export interface ChatContextRuntime {
   journal_shared_count: number;
   daily_task?: ChatContextDailyTask;
   xp_level?: ChatContextXPLevel;
-  breathing?: ChatContextBreathing;
   playlist?: ChatContextPlaylist;
   rewards?: ChatContextRewards;
   progress_map?: ChatContextProgressMap;

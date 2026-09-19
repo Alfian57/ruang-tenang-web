@@ -7,7 +7,6 @@ import { ROUTES } from "@/lib/routes";
 import {
     CalendarCheck,
     Clock3,
-    Swords,
     Map,
     Gift,
     Gamepad2,
@@ -34,9 +33,9 @@ const GAME_LOOP_STEPS = [
     },
     {
         icon: Clock3,
-        title: "Runtunan Pernapasan + Pencapaian",
+        title: "Runtunan Aktivitas + Pencapaian",
         description:
-            "Lakukan sesi pernapasan tiap hari untuk membangun runtunan (streak). Ada pencapaian rahasia untuk konsistensi.",
+            "Lakukan aktivitas reflektif tiap hari untuk membangun runtunan (streak). Ada pencapaian rahasia untuk konsistensi.",
         metric: "Streak memengaruhi bonus progres",
     },
     {
@@ -49,12 +48,6 @@ const GAME_LOOP_STEPS = [
 ];
 
 const THIRTY_DAY_PLAN = [
-    {
-        week: "Guild System",
-        title: "Progres Bareng di Dalam Guild",
-        focus: "Kamu bisa membuat atau bergabung ke guild, mengundang teman lewat kode, lalu membangun kontribusi XP bersama tim.",
-        target: "Selesaikan challenge guild bersama: XP, tugas harian, breathing, jurnal, chat, dan streak.",
-    },
     {
         week: "Peta Perjalanan",
         title: "Unlock Region dan Landmark",
@@ -71,11 +64,6 @@ const THIRTY_DAY_PLAN = [
 
 const STRATEGY_CARDS = [
     {
-        icon: Swords,
-        title: "Guild First",
-        description: "Saat motivasi turun, challenge tim di guild bantu menjaga konsistensi lewat akuntabilitas sosial.",
-    },
-    {
         icon: Map,
         title: "Map Completion",
         description: "Prioritaskan landmark terdekat syaratnya untuk panen XP + koin secara stabil.",
@@ -83,15 +71,11 @@ const STRATEGY_CARDS = [
     {
         icon: Gamepad2,
         title: "Recovery Mode",
-        description: "Saat energi rendah, gunakan mode ringan seperti breathing atau Mindful Runner agar ritme tetap jalan.",
+        description: "Saat energi rendah, gunakan mode ringan seperti jurnal atau Mindful Runner agar ritme tetap jalan.",
     },
 ];
 
 const FAQ_ITEMS = [
-    {
-        q: "Apakah akun bisa ikut lebih dari satu guild sekaligus?",
-        a: "Flow saat ini menggunakan satu guild aktif per akun. Kamu bisa keluar dari guild sekarang lalu gabung guild lain.",
-    },
     {
         q: "Koin emas dipakai untuk apa?",
         a: "Koin dipakai untuk klaim hadiah di halaman Rewards. Sistem mengecek saldo, stok item, dan menyimpan riwayat klaim.",
@@ -137,7 +121,7 @@ export default function GamificationPage() {
                         className="mx-auto max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg"
                     >
                         Semua poin di halaman ini merujuk ke fitur yang sudah aktif di
-                        dashboard: guild, progress map, coin rewards, breathing streak,
+                        dashboard: progress map, coin rewards, activity streak,
                         hingga perjalanan level dan badge.
                     </motion.p>
                 </section>

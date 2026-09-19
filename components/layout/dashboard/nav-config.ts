@@ -8,10 +8,8 @@ import {
   Shield,
   Sparkles,
   BookOpen,
-  Wind,
   Newspaper,
   Gift,
-  Swords,
   Map,
   Gamepad2,
   Bell,
@@ -60,7 +58,6 @@ export const memberGroups: NavGroup[] = [
     title: "Aktivitas",
     links: [
       { href: ROUTES.JOURNAL, icon: BookOpen, label: "Jurnal" },
-      { href: ROUTES.BREATHING, icon: Wind, label: "Pernapasan" },
     ],
   },
   {
@@ -76,7 +73,6 @@ export const memberGroups: NavGroup[] = [
   {
     title: "Komunitas",
     links: [
-      { href: ROUTES.GUILDS, icon: Swords, label: "Guild" },
       { href: ROUTES.DASHBOARD_COMMUNITY, icon: Trophy, label: "Statistik Komunitas" },
     ],
   },

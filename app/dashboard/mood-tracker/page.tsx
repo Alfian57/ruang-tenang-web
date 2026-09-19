@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { CalendarDays, CheckCircle2, Loader2, RefreshCw, PlusCircle, Wind } from "lucide-react";
+import { CalendarDays, CheckCircle2, Loader2, RefreshCw, PlusCircle } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -227,13 +227,6 @@ export default function MoodTrackerPage() {
             <Link href={ROUTES.JOURNAL} className="rounded-2xl border border-slate-100 bg-slate-50 p-4 transition-colors hover:bg-slate-100">
               <p className="text-sm font-semibold text-slate-900">Tulis jurnal singkat</p>
               <p className="mt-1 text-xs leading-relaxed text-slate-600">Ubah mood hari ini menjadi refleksi 3 menit.</p>
-            </Link>
-            <Link href={ROUTES.BREATHING} className="rounded-2xl border border-slate-100 bg-slate-50 p-4 transition-colors hover:bg-slate-100">
-              <div className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-                <Wind className="h-4 w-4 text-primary" />
-                Latihan napas
-              </div>
-              <p className="mt-1 text-xs leading-relaxed text-slate-600">Reset tubuh dengan sesi singkat yang terarah.</p>
             </Link>
           </CardContent>
         </Card>

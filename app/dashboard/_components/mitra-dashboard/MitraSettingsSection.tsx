@@ -30,7 +30,7 @@ export function MitraSettingsSection({ viewModel }: MitraSettingsSectionProps) {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="onboarding-checklist">Checklist</Label>
-            <Textarea id="onboarding-checklist" placeholder={"Lengkapi profil pribadi\nCoba chat refleksi pertama\nSelesaikan breathing session 3 menit"} value={viewModel.onboardingDraft.checklist} onChange={(event) => viewModel.setOnboardingDraft((prev) => ({ ...prev, checklist: event.target.value }))} />
+            <Textarea id="onboarding-checklist" placeholder={"Lengkapi profil pribadi\nCoba chat refleksi pertama\nBaca satu artikel kesehatan mental"} value={viewModel.onboardingDraft.checklist} onChange={(event) => viewModel.setOnboardingDraft((prev) => ({ ...prev, checklist: event.target.value }))} />
           </div>
           <Button type="button" onClick={viewModel.handleSaveOnboarding} disabled={viewModel.isSubmitting}>Simpan Onboarding</Button>
         </div>

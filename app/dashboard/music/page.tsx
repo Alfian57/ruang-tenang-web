@@ -7,7 +7,6 @@ import {
   Library,
   Compass,
   PenLine,
-  Wind,
   MessageCircle,
   ArrowRight,
 } from "lucide-react";
@@ -30,7 +29,7 @@ const MUSIC_JOURNEYS: MusicJourneyCard[] = [
     id: "calm-overthinking",
     title: "Redakan Overthinking",
     situation: "Untuk kepala yang terlalu ramai menjelang malam.",
-    direction: "Turun dari tegang -> tenang -> fokus napas.",
+    direction: "Turun dari tegang -> tenang -> fokus.",
     duration: "8-12 menit",
     categoryKeywords: ["calm", "tenang", "sleep", "malam", "ambient"],
     fallbackSearch: "relax",
@@ -260,7 +259,7 @@ export default function MusicPage() {
               <p className="text-sm text-gray-600 mt-1">
                 {suggestedJourney
                   ? `Rekomendasi berikutnya: ${suggestedJourney.nextActionLabel}.`
-                  : "Pilih journey lalu tutup dengan refleksi singkat, atur napas, atau obrolan suportif."}
+                  : "Pilih journey lalu tutup dengan refleksi singkat, musik, atau obrolan suportif."}
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -271,9 +270,9 @@ export default function MusicPage() {
                 </Link>
               </Button>
               <Button asChild size="sm" variant="outline" className="bg-white">
-                <Link href={ROUTES.BREATHING} className="inline-flex items-center gap-1.5">
-                  <Wind className="w-3.5 h-3.5" />
-                  Atur Napas
+                <Link href={ROUTES.JOURNAL} className="inline-flex items-center gap-1.5">
+                  <PenLine className="w-3.5 h-3.5" />
+                  Tulis Refleksi
                 </Link>
               </Button>
               <Button asChild size="sm">

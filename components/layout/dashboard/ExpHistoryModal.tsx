@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
-import { X, Calendar, Filter, ChevronLeft, ChevronRight, Loader2, Sparkles, Sprout, MessageCircle, PenLine, MessagesSquare, Wind, CheckCircle2, ThumbsUp, ThumbsDown, BookOpen, Heart, type LucideIcon } from "lucide-react";
+import { X, Calendar, Filter, ChevronLeft, ChevronRight, Loader2, Sparkles, Sprout, MessageCircle, PenLine, MessagesSquare, CheckCircle2, ThumbsUp, ThumbsDown, BookOpen, Heart, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { communityService } from "@/services/api";
 import { ExpHistory, LevelConfig } from "@/types";
@@ -21,7 +21,6 @@ const ACTIVITY_LABELS: Record<string, string> = {
   chat_ai: "Chat AI",
   upload_article: "Upload Artikel",
   forum_comment: "Komentar Forum",
-  breathing: "Latihan Pernapasan",
   accepted_answer: "Jawaban Diterima",
   post_upvote_given: "Menerima Upvote",
   post_upvote_removed: "Upvote Dihapus",
@@ -33,7 +32,6 @@ const ACTIVITY_ICONS: Record<string, LucideIcon> = {
   chat_ai: MessageCircle,
   upload_article: PenLine,
   forum_comment: MessagesSquare,
-  breathing: Wind,
   accepted_answer: CheckCircle2,
   post_upvote_given: ThumbsUp,
   post_upvote_removed: ThumbsDown,

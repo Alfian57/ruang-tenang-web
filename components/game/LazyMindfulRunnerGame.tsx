@@ -2,19 +2,26 @@
 
 import dynamic from "next/dynamic";
 
-/// Skeleton ringan saat bundle game dimuat.
 function GameSkeleton() {
     return (
-        <div className="w-full aspect-[10/3] animate-pulse rounded-xl bg-red-50 flex items-center justify-center">
-            <span className="text-sm text-red-300">Memuat game…</span>
+        <div
+            className="flex h-64 w-full animate-pulse items-center justify-center rounded-[1.4rem] border sm:h-80 lg:aspect-[5/2] lg:h-auto"
+            style={{
+                borderColor: "var(--theme-accent-border, #fed7aa)",
+                background: "linear-gradient(145deg, var(--theme-accent-soft, #fff7ed), white)",
+            }}
+        >
+            <div className="text-center">
+                <div
+                    className="mx-auto mb-2 h-8 w-8 rounded-xl"
+                    style={{ backgroundColor: "var(--theme-accent-light, #ffedd5)" }}
+                />
+                <span className="text-xs font-semibold text-slate-400">Menyiapkan perjalanan…</span>
+            </div>
         </div>
     );
 }
 
-/// Lazy-load MindfulRunnerGame agar bundle game (canvas + logika) hanya
-/// diunduh saat benar-benar dibutuhkan (halaman game / offline), bukan ikut
-/// terbawa di bundle awal aplikasi. `ssr: false` karena game butuh `window`
-/// & `requestAnimationFrame`.
 const MindfulRunnerGame = dynamic(() => import("./MindfulRunnerGame"), {
     ssr: false,
     loading: () => <GameSkeleton />,

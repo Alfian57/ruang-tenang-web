@@ -1,11 +1,23 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Heart, Play, RotateCcw, ShieldCheck, Sparkles, Trophy } from "lucide-react";
+import { useTheme } from "@/hooks/useTheme";
+import {
+    CANVAS_H,
+    CANVAS_W,
+    GROUND_Y,
+    renderRunnerRestingScene,
+    renderRunnerScene,
+    resolveRunnerPalette,
+    type RunnerCloud,
+    type RunnerCollectible,
+    type RunnerFloatingText,
+    type RunnerObstacle,
+    type RunnerPalette,
+    type RunnerParticle,
+} from "./mindful-runner-renderer";
 
-// ——— Constants ———
-const CANVAS_W = 1400;
-const CANVAS_H = 420;
-const GROUND_Y = 330;
 const GRAVITY = 0.6;
 const JUMP_FORCE = -11;
 const INITIAL_SPEED = 4;
@@ -13,105 +25,36 @@ const MAX_SPEED = 10;
 const SPEED_INCREMENT = 0.001;
 const DIFFICULTY_TIER_SCORE = 500;
 const DIFFICULTY_SCALE_PER_TIER = 0.3;
+const JUMP_HOLD_GRAVITY_MULT = 0.45;
+const FAST_FALL_GRAVITY_MULT = 1.6;
+const DOUBLE_JUMP_FORCE = -9.5;
+const COYOTE_FRAMES = 6;
+const MAX_JUMPS = 2;
+const SHIELD_DURATION_FRAMES = 600;
+const NEAR_MISS_DISTANCE = 14;
+const HIGH_SCORE_STORAGE_KEY = "mindful-runner-high-score";
 
-// Fisika lompat lebih kaya (selaras versi mobile)
-const JUMP_HOLD_GRAVITY_MULT = 0.45; // naik & tombol ditahan → lompat lebih tinggi
-const FAST_FALL_GRAVITY_MULT = 1.6;  // turun & tombol dilepas → jatuh lebih cepat
-const DOUBLE_JUMP_FORCE = -9.5;      // dorongan lompatan kedua (di udara)
-const COYOTE_FRAMES = 6;             // toleransi lompat sesaat setelah jatuh
-const MAX_JUMPS = 2;                 // lompatan ganda
-const SHIELD_DURATION_FRAMES = 600;  // ~10 dtk perisai dari lotus
-const NEAR_MISS_DISTANCE = 14;       // jarak "nyaris" untuk bonus
-
-// Colors (matching red mental-health theme)
-const COLORS = {
-    sky: "#FEF2F2",
-    ground: "#FCA5A5",
-    groundLine: "#EF4444",
-    player: "#EF4444",
-    playerAlt: "#DC2626",
-    obstacle: "#6B7280",
-    obstacleDark: "#374151",
-    collectible: "#F87171",
-    collectibleGlow: "#FEE2E2",
-    cloud: "#FFFFFF",
-    text: "#111827",
-    textLight: "#6B7280",
-    sun: "#FBBF24",
-    sunGlow: "#FEF3C7",
-    flower: "#F472B6",
-    flowerCenter: "#FBBF24",
-    leaf: "#34D399",
-    heart: "#EF4444",
-    star: "#FBBF24",
-};
-
-// Motivational messages when game ends
 const GAME_OVER_MESSAGES = [
-    "Setiap langkah kecil tetap berarti 💛",
-    "Istirahat juga bagian dari perjalanan",
-    "Kamu sudah berusaha dengan baik hari ini",
-    "Jatuh bukan berarti gagal, coba lagi ya",
-    "Kamu lebih kuat dari yang kamu kira",
-    "Tidak apa-apa, ambil napas dan coba lagi",
-    "Semangat! Ketenangan ada di setiap langkah",
-    "Perjalananmu unik dan berharga",
+    "Setiap langkah kecil tetap berarti.",
+    "Istirahat juga bagian dari perjalanan.",
+    "Kamu sudah berusaha dengan baik hari ini.",
+    "Jatuh bukan berarti gagal. Coba lagi saat siap.",
+    "Kamu lebih kuat dari yang kamu kira.",
+    "Tidak apa-apa. Ambil jeda, lalu coba lagi.",
+    "Ketenangan dapat ditemukan di setiap langkah.",
+    "Perjalananmu unik dan berharga.",
 ];
 
-// Affirmations that appear while playing
 const PLAY_AFFIRMATIONS = [
-    "Kamu hebat!",
-    "Tetap tenang ✨",
+    "Kamu hebat",
+    "Tetap tenang",
     "Terus melangkah",
-    "Kamu berharga 💛",
-    "Hari ini indah",
-    "Napas dalam...",
-    "Kamu kuat 💪",
-    "Semangat!",
+    "Kamu berharga",
+    "Nikmati momennya",
+    "Satu langkah lagi",
+    "Kamu kuat",
+    "Jaga ritmemu",
 ];
-
-interface Obstacle {
-    x: number;
-    width: number;
-    height: number;
-    type: "thought" | "stress" | "spiral";
-    label: string;
-    passed?: boolean;
-    nearMissScored?: boolean;
-}
-
-interface Collectible {
-    x: number;
-    y: number;
-    type: "heart" | "star" | "lotus";
-    collected: boolean;
-}
-
-interface Cloud {
-    x: number;
-    y: number;
-    width: number;
-    speed: number;
-}
-
-interface Particle {
-    x: number;
-    y: number;
-    vx: number;
-    vy: number;
-    life: number;
-    maxLife: number;
-    color: string;
-    size: number;
-}
-
-interface FloatingText {
-    x: number;
-    y: number;
-    text: string;
-    life: number;
-    maxLife: number;
-}
 
 const OBSTACLE_LABELS = [
     "Overthinking",
@@ -126,6 +69,15 @@ const OBSTACLE_LABELS = [
     "Ragu",
 ];
 
+type GameStatus = "idle" | "playing" | "over";
+
+interface HudState {
+    score: number;
+    highScore: number;
+    combo: number;
+    shieldSeconds: number;
+}
+
 function getRandomObstacleGap() {
     return 180 + Math.random() * 200;
 }
@@ -135,330 +87,143 @@ function getRandomCollectibleGap() {
 }
 
 export default function MindfulRunnerGame() {
+    const { themeKey } = useTheme();
+    const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const paletteRef = useRef<RunnerPalette>(resolveRunnerPalette(null));
+    const reducedMotionRef = useRef(false);
     const gameStateRef = useRef({
         running: false,
         score: 0,
         highScore: 0,
         speed: INITIAL_SPEED,
-        // Player
         playerY: GROUND_Y,
         playerVelocity: 0,
         isJumping: false,
         playerFrame: 0,
         frameCount: 0,
-        // Lompat lanjutan & power-up
         jumpHeld: false,
         jumpsUsed: 0,
         coyoteCounter: 0,
         shieldFrames: 0,
-        // Entities
-        obstacles: [] as Obstacle[],
-        collectibles: [] as Collectible[],
-        clouds: [] as Cloud[],
-        particles: [] as Particle[],
-        floatingTexts: [] as FloatingText[],
-        // Timing
+        obstacles: [] as RunnerObstacle[],
+        collectibles: [] as RunnerCollectible[],
+        clouds: [] as RunnerCloud[],
+        particles: [] as RunnerParticle[],
+        floatingTexts: [] as RunnerFloatingText[],
         obstacleTravel: 0,
         collectibleTravel: 0,
         nextObstacleGap: getRandomObstacleGap(),
         nextCollectibleGap: getRandomCollectibleGap(),
-        // Affirmation
         affirmation: "",
         affirmationTimer: 0,
-        // Combo
         combo: 0,
         collected: 0,
-        // Screen feedback
         shakeX: 0,
         shakeY: 0,
         shakeLife: 0,
     });
-    const animFrameRef = useRef<number>(0);
-    const [gameStatus, setGameStatus] = useState<"idle" | "playing" | "over">("idle");
-    const [displayScore, setDisplayScore] = useState(0);
-    const [displayHighScore, setDisplayHighScore] = useState(0);
+    const animFrameRef = useRef(0);
+    const [gameStatus, setGameStatus] = useState<GameStatus>("idle");
     const [overMessage, setOverMessage] = useState("");
+    const [hud, setHud] = useState<HudState>({
+        score: 0,
+        highScore: 0,
+        combo: 0,
+        shieldSeconds: 0,
+    });
 
-    // ——— Drawing helpers ———
-    const drawPlayer = useCallback((ctx: CanvasRenderingContext2D, y: number, frame: number) => {
-        const x = 60;
-        const bobY = gameStateRef.current.isJumping ? 0 : Math.sin(frame * 0.1) * 3;
-        const pY = y + bobY;
+    const syncHud = useCallback(() => {
+        const state = gameStateRef.current;
+        const nextHud: HudState = {
+            score: state.score,
+            highScore: state.highScore,
+            combo: state.combo,
+            shieldSeconds: Math.ceil(state.shieldFrames / 60),
+        };
 
-        // Shadow
-        ctx.fillStyle = "rgba(0,0,0,0.1)";
-        ctx.beginPath();
-        ctx.ellipse(x + 12, GROUND_Y + 24, 14, 4, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Shield aura (lotus power-up) — cincin bercahaya berdenyut.
-        if (gameStateRef.current.shieldFrames > 0) {
-            const pulse = 0.5 + Math.sin(frame * 0.2) * 0.2;
-            ctx.fillStyle = COLORS.flower;
-            ctx.globalAlpha = 0.18 * pulse;
-            ctx.beginPath();
-            ctx.arc(x + 12, pY - 12, 26, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.globalAlpha = 1;
-            ctx.strokeStyle = COLORS.flower;
-            ctx.globalAlpha = 0.5;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(x + 12, pY - 12, 24, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.globalAlpha = 1;
-        }
-
-        // Body
-        ctx.fillStyle = COLORS.player;
-        ctx.beginPath();
-        ctx.arc(x + 12, pY - 8, 10, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Head
-        ctx.fillStyle = COLORS.playerAlt;
-        ctx.beginPath();
-        ctx.arc(x + 12, pY - 24, 8, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Eyes (closed / mindful)
-        ctx.strokeStyle = "#FFF";
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.arc(x + 9, pY - 25, 2, 0, Math.PI);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(x + 15, pY - 25, 2, 0, Math.PI);
-        ctx.stroke();
-
-        // Smile
-        ctx.beginPath();
-        ctx.arc(x + 12, pY - 22, 3, 0.1 * Math.PI, 0.9 * Math.PI);
-        ctx.stroke();
-
-        // Legs walking animation
-        if (!gameStateRef.current.isJumping) {
-            const legAngle = Math.sin(frame * 0.25) * 0.5;
-            ctx.strokeStyle = COLORS.player;
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(x + 8, pY + 2);
-            ctx.lineTo(x + 8 + Math.sin(legAngle) * 8, pY + 20);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(x + 16, pY + 2);
-            ctx.lineTo(x + 16 + Math.sin(-legAngle) * 8, pY + 20);
-            ctx.stroke();
-        } else {
-            // Tucked legs in jump
-            ctx.strokeStyle = COLORS.player;
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(x + 8, pY + 2);
-            ctx.lineTo(x + 4, pY + 12);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(x + 16, pY + 2);
-            ctx.lineTo(x + 20, pY + 12);
-            ctx.stroke();
-        }
-
-        // Arms
-        ctx.strokeStyle = COLORS.playerAlt;
-        ctx.lineWidth = 2.5;
-        if (gameStateRef.current.isJumping) {
-            // Arms up
-            ctx.beginPath();
-            ctx.moveTo(x + 4, pY - 10);
-            ctx.lineTo(x - 4, pY - 20);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(x + 20, pY - 10);
-            ctx.lineTo(x + 28, pY - 20);
-            ctx.stroke();
-        } else {
-            const armSwing = Math.sin(frame * 0.25) * 6;
-            ctx.beginPath();
-            ctx.moveTo(x + 4, pY - 10);
-            ctx.lineTo(x - 2 + armSwing, pY + 4);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(x + 20, pY - 10);
-            ctx.lineTo(x + 26 - armSwing, pY + 4);
-            ctx.stroke();
-        }
-    }, []);
-
-    const drawObstacle = useCallback((ctx: CanvasRenderingContext2D, obs: Obstacle) => {
-        const bx = obs.x;
-        const by = GROUND_Y + 24 - obs.height;
-
-        // Dark thought cloud shape
-        ctx.fillStyle = COLORS.obstacle;
-        ctx.beginPath();
-        if (obs.type === "spiral") {
-            // Spiral obstacle
-            ctx.arc(bx + obs.width / 2, by + obs.height / 2, obs.width / 2, 0, Math.PI * 2);
-            ctx.fill();
-            // Spiral lines
-            ctx.strokeStyle = COLORS.obstacleDark;
-            ctx.lineWidth = 2;
-            for (let i = 0; i < 3; i++) {
-                const r = (obs.width / 2) * (0.3 + i * 0.2);
-                ctx.beginPath();
-                ctx.arc(bx + obs.width / 2, by + obs.height / 2, r, i * 0.5, i * 0.5 + Math.PI);
-                ctx.stroke();
+        setHud((current) => {
+            if (
+                current.score === nextHud.score
+                && current.highScore === nextHud.highScore
+                && current.combo === nextHud.combo
+                && current.shieldSeconds === nextHud.shieldSeconds
+            ) {
+                return current;
             }
-        } else if (obs.type === "stress") {
-            // Jagged stress bolt
-            const cx = bx + obs.width / 2;
-            ctx.moveTo(cx - 5, by);
-            ctx.lineTo(cx + 8, by + obs.height * 0.35);
-            ctx.lineTo(cx + 2, by + obs.height * 0.35);
-            ctx.lineTo(cx + 10, by + obs.height);
-            ctx.lineTo(cx - 3, by + obs.height * 0.55);
-            ctx.lineTo(cx + 3, by + obs.height * 0.55);
-            ctx.closePath();
-            ctx.fill();
-        } else {
-            // Thought bubble
-            const w = obs.width;
-            const h = obs.height;
-            ctx.roundRect(bx, by, w, h, 8);
-            ctx.fill();
-            ctx.fillStyle = COLORS.obstacleDark;
-            ctx.beginPath();
-            ctx.arc(bx + 8, by + h + 4, 4, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(bx + 2, by + h + 10, 2, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        // Label
-        ctx.fillStyle = "#FFF";
-        ctx.font = "bold 9px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText(obs.label, bx + obs.width / 2, by + obs.height / 2 + 3);
-        ctx.textAlign = "left";
+            return nextHud;
+        });
     }, []);
 
-    const drawCollectible = useCallback((ctx: CanvasRenderingContext2D, c: Collectible, frame: number) => {
-        if (c.collected) return;
-        const bob = Math.sin(frame * 0.08 + c.x) * 4;
-        const cx = c.x;
-        const cy = c.y + bob;
-
-        // Glow
-        ctx.fillStyle = COLORS.collectibleGlow;
-        ctx.globalAlpha = 0.3 + Math.sin(frame * 0.1) * 0.15;
-        ctx.beginPath();
-        ctx.arc(cx, cy, 14, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 1;
-
-        if (c.type === "heart") {
-            ctx.fillStyle = COLORS.heart;
-            ctx.beginPath();
-            ctx.moveTo(cx, cy + 4);
-            ctx.bezierCurveTo(cx - 8, cy - 4, cx - 8, cy - 10, cx, cy - 6);
-            ctx.bezierCurveTo(cx + 8, cy - 10, cx + 8, cy - 4, cx, cy + 4);
-            ctx.fill();
-        } else if (c.type === "star") {
-            ctx.fillStyle = COLORS.star;
-            drawStar(ctx, cx, cy, 5, 8, 4);
-        } else {
-            // Lotus flower
-            ctx.fillStyle = COLORS.flower;
-            for (let i = 0; i < 5; i++) {
-                ctx.beginPath();
-                const a = (i * Math.PI * 2) / 5 - Math.PI / 2;
-                ctx.ellipse(cx + Math.cos(a) * 4, cy + Math.sin(a) * 4, 5, 3, a, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            ctx.fillStyle = COLORS.flowerCenter;
-            ctx.beginPath();
-            ctx.arc(cx, cy, 3, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }, []);
-
-    // ——— Game loop ———
     const gameLoop = useCallback(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-        const gs = gameStateRef.current;
-        if (!gs.running) return;
+        const context = canvas.getContext("2d");
+        if (!context) return;
+        const state = gameStateRef.current;
+        if (!state.running) return;
 
-        gs.frameCount++;
+        state.frameCount++;
 
-        // Update speed
-        const difficultyTier = Math.floor(gs.score / DIFFICULTY_TIER_SCORE);
+        const difficultyTier = Math.floor(state.score / DIFFICULTY_TIER_SCORE);
         const scaledSpeedIncrement = SPEED_INCREMENT * (1 + difficultyTier * DIFFICULTY_SCALE_PER_TIER);
-        gs.speed = Math.min(MAX_SPEED, gs.speed + scaledSpeedIncrement);
+        state.speed = Math.min(MAX_SPEED, state.speed + scaledSpeedIncrement);
 
-        // ——— Update player (gravitasi adaptif: variable jump & fast-fall) ———
-        if (gs.isJumping) {
-            let g = GRAVITY;
-            if (gs.playerVelocity < 0) {
-                g = gs.jumpHeld ? GRAVITY * JUMP_HOLD_GRAVITY_MULT : GRAVITY;
+        if (state.isJumping) {
+            let gravity = GRAVITY;
+            if (state.playerVelocity < 0) {
+                gravity = state.jumpHeld ? GRAVITY * JUMP_HOLD_GRAVITY_MULT : GRAVITY;
             } else {
-                g = gs.jumpHeld ? GRAVITY : GRAVITY * FAST_FALL_GRAVITY_MULT;
+                gravity = state.jumpHeld ? GRAVITY : GRAVITY * FAST_FALL_GRAVITY_MULT;
             }
-            gs.playerVelocity += g;
-            gs.playerY += gs.playerVelocity;
-            if (gs.playerY >= GROUND_Y) {
-                gs.playerY = GROUND_Y;
-                gs.isJumping = false;
-                gs.playerVelocity = 0;
-                gs.jumpsUsed = 0;
-                gs.coyoteCounter = COYOTE_FRAMES;
+            state.playerVelocity += gravity;
+            state.playerY += state.playerVelocity;
+            if (state.playerY >= GROUND_Y) {
+                state.playerY = GROUND_Y;
+                state.isJumping = false;
+                state.playerVelocity = 0;
+                state.jumpsUsed = 0;
+                state.coyoteCounter = COYOTE_FRAMES;
             }
-        } else if (gs.coyoteCounter > 0) {
-            gs.coyoteCounter--;
+        } else if (state.coyoteCounter > 0) {
+            state.coyoteCounter--;
         }
-        if (gs.shieldFrames > 0) gs.shieldFrames--;
-        gs.playerFrame++;
 
-        gs.obstacleTravel += gs.speed;
-        gs.collectibleTravel += gs.speed;
+        if (state.shieldFrames > 0) state.shieldFrames--;
+        state.playerFrame++;
+        state.obstacleTravel += state.speed;
+        state.collectibleTravel += state.speed;
 
-        // ——— Spawn obstacles ———
-        if (gs.obstacleTravel >= gs.nextObstacleGap) {
-            const types: Obstacle["type"][] = ["thought", "stress", "spiral"];
+        if (state.obstacleTravel >= state.nextObstacleGap) {
+            const types: RunnerObstacle["type"][] = ["thought", "stress", "spiral"];
             const type = types[Math.floor(Math.random() * types.length)];
-            const w = type === "spiral" ? 28 : 30 + Math.random() * 20;
-            const h = type === "stress" ? 40 + Math.random() * 15 : 25 + Math.random() * 20;
-            gs.obstacles.push({
+            const width = type === "spiral" ? 28 : 30 + Math.random() * 20;
+            const height = type === "stress" ? 40 + Math.random() * 15 : 25 + Math.random() * 20;
+            state.obstacles.push({
                 x: CANVAS_W + 20,
-                width: w,
-                height: h,
+                width,
+                height,
                 type,
                 label: OBSTACLE_LABELS[Math.floor(Math.random() * OBSTACLE_LABELS.length)],
             });
-            gs.obstacleTravel = 0;
-            gs.nextObstacleGap = getRandomObstacleGap();
+            state.obstacleTravel = 0;
+            state.nextObstacleGap = getRandomObstacleGap();
         }
 
-        // ——— Spawn collectibles ———
-        if (gs.collectibleTravel >= gs.nextCollectibleGap) {
-            const types: Collectible["type"][] = ["heart", "star", "lotus"];
-            gs.collectibles.push({
+        if (state.collectibleTravel >= state.nextCollectibleGap) {
+            const types: RunnerCollectible["type"][] = ["heart", "star", "lotus"];
+            state.collectibles.push({
                 x: CANVAS_W + 20,
                 y: GROUND_Y - 20 - Math.random() * 60,
                 type: types[Math.floor(Math.random() * types.length)],
                 collected: false,
             });
-            gs.collectibleTravel = 0;
-            gs.nextCollectibleGap = getRandomCollectibleGap();
+            state.collectibleTravel = 0;
+            state.nextCollectibleGap = getRandomCollectibleGap();
         }
 
-        // ——— Spawn clouds ———
-        if (gs.clouds.length < 4 && Math.random() < 0.005) {
-            gs.clouds.push({
+        if (state.clouds.length < 4 && Math.random() < 0.005) {
+            state.clouds.push({
                 x: CANVAS_W + 50,
                 y: 20 + Math.random() * 60,
                 width: 40 + Math.random() * 60,
@@ -466,178 +231,205 @@ export default function MindfulRunnerGame() {
             });
         }
 
-        // ——— Update obstacles ———
-        for (let i = gs.obstacles.length - 1; i >= 0; i--) {
-            gs.obstacles[i].x -= gs.speed;
-            if (gs.obstacles[i].x + gs.obstacles[i].width < -20) {
-                gs.obstacles.splice(i, 1);
-                gs.score += 1;
+        for (let index = state.obstacles.length - 1; index >= 0; index--) {
+            const obstacle = state.obstacles[index];
+            obstacle.x -= state.speed;
+            if (obstacle.x + obstacle.width < -20) {
+                state.obstacles.splice(index, 1);
+                state.score += 1;
             }
         }
 
-        // ——— Update collectibles ———
-        for (let i = gs.collectibles.length - 1; i >= 0; i--) {
-            const collectible = gs.collectibles[i];
-            collectible.x -= gs.speed;
+        for (let index = state.collectibles.length - 1; index >= 0; index--) {
+            const collectible = state.collectibles[index];
+            collectible.x -= state.speed;
             if (collectible.x < -20) {
                 if (!collectible.collected) {
-                    for (let j = 0; j < 4; j++) {
-                        gs.particles.push({
+                    for (let particleIndex = 0; particleIndex < 4; particleIndex++) {
+                        state.particles.push({
                             x: collectible.x,
                             y: collectible.y,
                             vx: (Math.random() - 0.5) * 2,
                             vy: -1 - Math.random(),
                             life: 15 + Math.random() * 10,
                             maxLife: 25,
-                            color: "#9CA3AF",
+                            color: paletteRef.current.inkSoft,
                             size: 1.5 + Math.random(),
                         });
                     }
-                    gs.combo = 0;
+                    state.combo = 0;
                 }
-                gs.collectibles.splice(i, 1);
+                state.collectibles.splice(index, 1);
             }
         }
 
-        // ——— Update clouds ———
-        for (let i = gs.clouds.length - 1; i >= 0; i--) {
-            gs.clouds[i].x -= gs.clouds[i].speed;
-            if (gs.clouds[i].x + gs.clouds[i].width < -10) {
-                gs.clouds.splice(i, 1);
-            }
+        for (let index = state.clouds.length - 1; index >= 0; index--) {
+            const cloud = state.clouds[index];
+            cloud.x -= cloud.speed;
+            if (cloud.x + cloud.width < -10) state.clouds.splice(index, 1);
         }
 
-        // ——— Update particles ———
-        for (let i = gs.particles.length - 1; i >= 0; i--) {
-            const p = gs.particles[i];
-            p.x += p.vx;
-            p.y += p.vy;
-            p.life--;
-            if (p.life <= 0) gs.particles.splice(i, 1);
+        for (let index = state.particles.length - 1; index >= 0; index--) {
+            const particle = state.particles[index];
+            particle.x += particle.vx;
+            particle.y += particle.vy;
+            particle.life--;
+            if (particle.life <= 0) state.particles.splice(index, 1);
         }
 
-        // ——— Update floating texts ———
-        for (let i = gs.floatingTexts.length - 1; i >= 0; i--) {
-            const ft = gs.floatingTexts[i];
-            ft.y -= 0.8;
-            ft.life--;
-            if (ft.life <= 0) gs.floatingTexts.splice(i, 1);
+        for (let index = state.floatingTexts.length - 1; index >= 0; index--) {
+            const floatingText = state.floatingTexts[index];
+            floatingText.y -= 0.8;
+            floatingText.life--;
+            if (floatingText.life <= 0) state.floatingTexts.splice(index, 1);
         }
 
-        // ——— Affirmation timer ———
-        if (gs.affirmationTimer > 0) {
-            gs.affirmationTimer--;
-        } else if (Math.random() < 0.002 && gs.score > 5) {
-            gs.affirmation = PLAY_AFFIRMATIONS[Math.floor(Math.random() * PLAY_AFFIRMATIONS.length)];
-            gs.affirmationTimer = 120;
+        if (state.affirmationTimer > 0) {
+            state.affirmationTimer--;
+        } else if (Math.random() < 0.002 && state.score > 5) {
+            state.affirmation = PLAY_AFFIRMATIONS[Math.floor(Math.random() * PLAY_AFFIRMATIONS.length)];
+            state.affirmationTimer = 120;
         }
 
-        // ——— Collision: obstacles ———
         let collidedWithObstacle = false;
         let collisionX = 0;
         let collisionY = 0;
-        const playerBox = { x: 52, y: gs.playerY - 32, w: 20, h: 48 };
-        for (const obs of gs.obstacles) {
-            const obsBox = { x: obs.x, y: GROUND_Y + 24 - obs.height, w: obs.width, h: obs.height };
+        const playerBox = { x: 52, y: state.playerY - 32, w: 20, h: 48 };
+
+        for (const obstacle of state.obstacles) {
+            const obstacleBox = {
+                x: obstacle.x,
+                y: GROUND_Y + 24 - obstacle.height,
+                w: obstacle.width,
+                h: obstacle.height,
+            };
             if (
-                playerBox.x < obsBox.x + obsBox.w - 4 &&
-                playerBox.x + playerBox.w > obsBox.x + 4 &&
-                playerBox.y + playerBox.h > obsBox.y + 4 &&
-                playerBox.y < obsBox.y + obsBox.h - 4
+                playerBox.x < obstacleBox.x + obstacleBox.w - 4
+                && playerBox.x + playerBox.w > obstacleBox.x + 4
+                && playerBox.y + playerBox.h > obstacleBox.y + 4
+                && playerBox.y < obstacleBox.y + obstacleBox.h - 4
             ) {
                 collidedWithObstacle = true;
-                collisionX = obsBox.x + obsBox.w / 2;
-                collisionY = obsBox.y + obsBox.h / 2;
+                collisionX = obstacleBox.x + obstacleBox.w / 2;
+                collisionY = obstacleBox.y + obstacleBox.h / 2;
                 break;
             }
-            // Near-miss: berhasil melompati rintangan dengan jarak tipis → bonus.
-            if (!obs.passed && obsBox.x + obsBox.w < playerBox.x) {
-                obs.passed = true;
-                const gap = playerBox.y + playerBox.h - obsBox.y;
-                if (!obs.nearMissScored && gap > 0 && gap < NEAR_MISS_DISTANCE + 12 && gs.isJumping) {
-                    obs.nearMissScored = true;
-                    gs.score += 5;
-                    gs.combo = Math.min(gs.combo + 1, 5);
-                    gs.floatingTexts.push({ x: playerBox.x, y: playerBox.y - 6, text: "Nyaris! +5", life: 45, maxLife: 45 });
+
+            if (!obstacle.passed && obstacleBox.x + obstacleBox.w < playerBox.x) {
+                obstacle.passed = true;
+                const gap = playerBox.y + playerBox.h - obstacleBox.y;
+                if (!obstacle.nearMissScored && gap > 0 && gap < NEAR_MISS_DISTANCE + 12 && state.isJumping) {
+                    obstacle.nearMissScored = true;
+                    state.score += 5;
+                    state.combo = Math.min(state.combo + 1, 5);
+                    state.floatingTexts.push({
+                        x: playerBox.x,
+                        y: playerBox.y - 6,
+                        text: "Nyaris! +5",
+                        life: 45,
+                        maxLife: 45,
+                    });
                 }
             }
         }
 
-        // Perisai (lotus) menyerap satu tabrakan.
-        if (collidedWithObstacle && gs.shieldFrames > 0) {
-            gs.shieldFrames = 0;
-            gs.shakeLife = 6;
-            gs.obstacles = gs.obstacles.filter((o) => !(o.x < 110 && o.x + o.width > 40));
-            for (let i = 0; i < 16; i++) {
-                gs.particles.push({
-                    x: collisionX, y: collisionY,
-                    vx: (Math.random() - 0.5) * 8, vy: (Math.random() - 0.5) * 6,
-                    life: 18 + Math.random() * 12, maxLife: 30,
-                    color: COLORS.flower, size: 2 + Math.random() * 3,
+        if (collidedWithObstacle && state.shieldFrames > 0) {
+            state.shieldFrames = 0;
+            state.shakeLife = 6;
+            state.obstacles = state.obstacles.filter((obstacle) => !(obstacle.x < 110 && obstacle.x + obstacle.width > 40));
+            const particleCount = reducedMotionRef.current ? 5 : 16;
+            for (let index = 0; index < particleCount; index++) {
+                state.particles.push({
+                    x: collisionX,
+                    y: collisionY,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 6,
+                    life: 18 + Math.random() * 12,
+                    maxLife: 30,
+                    color: paletteRef.current.accent,
+                    size: 2 + Math.random() * 3,
                 });
             }
-            gs.floatingTexts.push({ x: collisionX, y: collisionY - 10, text: "Perisai!", life: 45, maxLife: 45 });
+            state.floatingTexts.push({
+                x: collisionX,
+                y: collisionY - 10,
+                text: "Perisai melindungi",
+                life: 45,
+                maxLife: 45,
+            });
             collidedWithObstacle = false;
         }
 
         if (collidedWithObstacle) {
-            gs.shakeLife = 8;
-            gs.shakeX = (Math.random() - 0.5) * 10;
-            gs.shakeY = (Math.random() - 0.5) * 6;
-
-            for (let i = 0; i < 14; i++) {
-                gs.particles.push({
+            state.shakeLife = 8;
+            state.shakeX = (Math.random() - 0.5) * 10;
+            state.shakeY = (Math.random() - 0.5) * 6;
+            const particleCount = reducedMotionRef.current ? 5 : 14;
+            for (let index = 0; index < particleCount; index++) {
+                state.particles.push({
                     x: collisionX,
                     y: collisionY,
                     vx: (Math.random() - 0.5) * 7,
                     vy: (Math.random() - 0.5) * 5,
                     life: 16 + Math.random() * 10,
                     maxLife: 26,
-                    color: i % 2 === 0 ? COLORS.player : COLORS.obstacleDark,
+                    color: index % 2 === 0 ? paletteRef.current.accent : paletteRef.current.obstacleDark,
                     size: 2 + Math.random() * 3,
                 });
             }
         }
 
-        // ——— Collision: collectibles ———
         if (!collidedWithObstacle) {
-            for (const c of gs.collectibles) {
-                if (c.collected) continue;
-                const dx = 72 - c.x;
-                const dy = gs.playerY - 14 - c.y;
+            for (const collectible of state.collectibles) {
+                if (collectible.collected) continue;
+                const dx = 72 - collectible.x;
+                const dy = state.playerY - 14 - collectible.y;
                 if (Math.sqrt(dx * dx + dy * dy) < 22) {
-                    c.collected = true;
-                    gs.collected++;
-                    gs.combo++;
-                    const bonus = c.type === "lotus" ? 5 : c.type === "star" ? 3 : 2;
-                    gs.score += bonus * Math.min(gs.combo, 5);
+                    collectible.collected = true;
+                    state.collected++;
+                    state.combo++;
+                    const bonus = collectible.type === "lotus" ? 5 : collectible.type === "star" ? 3 : 2;
+                    state.score += bonus * Math.min(state.combo, 5);
 
-                    // Lotus memberi perisai pelindung (menyerap satu tabrakan).
-                    if (c.type === "lotus") {
-                        gs.shieldFrames = SHIELD_DURATION_FRAMES;
-                        gs.floatingTexts.push({ x: c.x, y: c.y - 24, text: "Perisai aktif", life: 50, maxLife: 50 });
+                    if (collectible.type === "lotus") {
+                        state.shieldFrames = SHIELD_DURATION_FRAMES;
+                        state.floatingTexts.push({
+                            x: collectible.x,
+                            y: collectible.y - 24,
+                            text: "Perisai aktif",
+                            life: 50,
+                            maxLife: 50,
+                        });
                     }
 
-                    // Spawn particles
-                    for (let i = 0; i < 8; i++) {
-                        gs.particles.push({
-                            x: c.x,
-                            y: c.y,
+                    const particleCount = reducedMotionRef.current ? 4 : 8;
+                    const particleColor = collectible.type === "heart"
+                        ? paletteRef.current.heart
+                        : collectible.type === "star"
+                            ? paletteRef.current.star
+                            : paletteRef.current.accent;
+                    for (let index = 0; index < particleCount; index++) {
+                        state.particles.push({
+                            x: collectible.x,
+                            y: collectible.y,
                             vx: (Math.random() - 0.5) * 4,
                             vy: (Math.random() - 0.5) * 4,
                             life: 20 + Math.random() * 15,
                             maxLife: 35,
-                            color: c.type === "heart" ? COLORS.heart : c.type === "star" ? COLORS.star : COLORS.flower,
+                            color: particleColor,
                             size: 2 + Math.random() * 3,
                         });
                     }
 
-                    // Floating text
-                    const label = c.type === "heart" ? "❤️" : c.type === "star" ? "⭐" : "🪷";
-                    gs.floatingTexts.push({
-                        x: c.x,
-                        y: c.y - 10,
-                        text: `${label} +${bonus * Math.min(gs.combo, 5)}`,
+                    const label = collectible.type === "heart"
+                        ? "Self-care"
+                        : collectible.type === "star"
+                            ? "Clarity"
+                            : "Shield";
+                    state.floatingTexts.push({
+                        x: collectible.x,
+                        y: collectible.y - 10,
+                        text: `${label} +${bonus * Math.min(state.combo, 5)}`,
                         life: 40,
                         maxLife: 40,
                     });
@@ -645,257 +437,131 @@ export default function MindfulRunnerGame() {
             }
         }
 
-        // ——— Score tick ———
-        if (!collidedWithObstacle && gs.frameCount % 8 === 0) {
-            gs.score++;
-            setDisplayScore(gs.score);
-        }
+        if (!collidedWithObstacle && state.frameCount % 8 === 0) state.score++;
 
-        // Update screen shake
-        if (gs.shakeLife > 0) {
-            gs.shakeLife--;
-            gs.shakeX = (Math.random() - 0.5) * 8;
-            gs.shakeY = (Math.random() - 0.5) * 4;
+        if (state.shakeLife > 0) {
+            state.shakeLife--;
+            state.shakeX = (Math.random() - 0.5) * 8;
+            state.shakeY = (Math.random() - 0.5) * 4;
         } else {
-            gs.shakeX = 0;
-            gs.shakeY = 0;
+            state.shakeX = 0;
+            state.shakeY = 0;
         }
 
-        // ——————— DRAW ———————
-        ctx.save();
-        if (gs.shakeLife > 0) {
-            ctx.translate(gs.shakeX, gs.shakeY);
-        }
+        renderRunnerScene(
+            context,
+            paletteRef.current,
+            {
+                frameCount: state.frameCount,
+                speed: state.speed,
+                playerY: state.playerY,
+                playerFrame: state.playerFrame,
+                isJumping: state.isJumping,
+                shieldFrames: state.shieldFrames,
+                obstacles: state.obstacles,
+                collectibles: state.collectibles,
+                clouds: state.clouds,
+                particles: state.particles,
+                floatingTexts: state.floatingTexts,
+                affirmation: state.affirmation,
+                affirmationTimer: state.affirmationTimer,
+                shakeX: state.shakeX,
+                shakeY: state.shakeY,
+                shakeLife: state.shakeLife,
+                collided: collidedWithObstacle,
+            },
+            reducedMotionRef.current,
+        );
 
-        // Sky
-        const skyGrad = ctx.createLinearGradient(0, 0, 0, GROUND_Y);
-        skyGrad.addColorStop(0, "#EFF6FF");
-        skyGrad.addColorStop(1, COLORS.sky);
-        ctx.fillStyle = skyGrad;
-        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
-
-        // Sun
-        ctx.fillStyle = COLORS.sunGlow;
-        ctx.globalAlpha = 0.4;
-        ctx.beginPath();
-        ctx.arc(CANVAS_W - 80, 50, 30, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = COLORS.sun;
-        ctx.beginPath();
-        ctx.arc(CANVAS_W - 80, 50, 18, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Clouds
-        for (const cloud of gs.clouds) {
-            ctx.fillStyle = COLORS.cloud;
-            ctx.globalAlpha = 0.7;
-            ctx.beginPath();
-            ctx.arc(cloud.x, cloud.y, cloud.width * 0.3, 0, Math.PI * 2);
-            ctx.arc(cloud.x + cloud.width * 0.3, cloud.y - 5, cloud.width * 0.25, 0, Math.PI * 2);
-            ctx.arc(cloud.x + cloud.width * 0.6, cloud.y, cloud.width * 0.3, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.globalAlpha = 1;
-        }
-
-        // Ground
-        ctx.fillStyle = COLORS.ground;
-        ctx.fillRect(0, GROUND_Y + 24, CANVAS_W, CANVAS_H - GROUND_Y - 24);
-
-        // Ground line
-        ctx.strokeStyle = COLORS.groundLine;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(0, GROUND_Y + 24);
-        ctx.lineTo(CANVAS_W, GROUND_Y + 24);
-        ctx.stroke();
-
-        // Ground dots (scrolling)
-        ctx.fillStyle = COLORS.groundLine;
-        ctx.globalAlpha = 0.3;
-        const scrollOffset = (gs.frameCount * gs.speed) % 20;
-        for (let i = -1; i < CANVAS_W / 20 + 1; i++) {
-            ctx.beginPath();
-            ctx.arc(i * 20 - scrollOffset, GROUND_Y + 40, 1.5, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        ctx.globalAlpha = 1;
-
-        // Small flowers on ground
-        for (let i = 0; i < 5; i++) {
-            const fx = ((i * 173 + 50 - gs.frameCount * gs.speed * 0.3) % (CANVAS_W + 100)) - 50;
-            ctx.fillStyle = COLORS.leaf;
-            ctx.fillRect(fx, GROUND_Y + 18, 2, 6);
-            ctx.fillStyle = i % 2 === 0 ? COLORS.flower : COLORS.collectible;
-            ctx.beginPath();
-            ctx.arc(fx + 1, GROUND_Y + 16, 3, 0, Math.PI * 2);
-            ctx.fill();
-        }
-
-        // Collectibles
-        for (const c of gs.collectibles) {
-            drawCollectible(ctx, c, gs.frameCount);
-        }
-
-        // Obstacles
-        for (const obs of gs.obstacles) {
-            drawObstacle(ctx, obs);
-        }
-
-        // Player
-        drawPlayer(ctx, gs.playerY, gs.playerFrame);
-
-        // Particles
-        for (const p of gs.particles) {
-            ctx.globalAlpha = p.life / p.maxLife;
-            ctx.fillStyle = p.color;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        ctx.globalAlpha = 1;
-
-        // Floating texts
-        for (const ft of gs.floatingTexts) {
-            ctx.globalAlpha = ft.life / ft.maxLife;
-            ctx.font = "bold 14px sans-serif";
-            ctx.fillStyle = COLORS.text;
-            ctx.textAlign = "center";
-            ctx.fillText(ft.text, ft.x, ft.y);
-            ctx.textAlign = "left";
-        }
-        ctx.globalAlpha = 1;
-
-        // Affirmation
-        if (gs.affirmationTimer > 0 && gs.affirmation) {
-            const alpha = gs.affirmationTimer > 100 ? (120 - gs.affirmationTimer) / 20 : gs.affirmationTimer > 20 ? 1 : gs.affirmationTimer / 20;
-            ctx.globalAlpha = Math.min(1, alpha);
-            ctx.font = "bold 18px sans-serif";
-            ctx.fillStyle = COLORS.player;
-            ctx.textAlign = "center";
-            ctx.fillText(gs.affirmation, CANVAS_W / 2, 40);
-            ctx.textAlign = "left";
-            ctx.globalAlpha = 1;
-        }
-
-        // Score HUD
-        ctx.font = "bold 14px sans-serif";
-        ctx.fillStyle = COLORS.text;
-        ctx.fillText(`Skor: ${gs.score}`, 12, 22);
-        if (gs.highScore > 0) {
-            ctx.fillStyle = COLORS.textLight;
-            ctx.font = "11px sans-serif";
-            ctx.fillText(`Terbaik: ${gs.highScore}`, 12, 38);
-        }
-        if (gs.combo > 1) {
-            ctx.fillStyle = COLORS.collectible;
-            ctx.font = "bold 12px sans-serif";
-            ctx.fillText(`Combo x${gs.combo}`, 12, 54);
-        }
-        if (gs.shieldFrames > 0) {
-            ctx.fillStyle = COLORS.flower;
-            ctx.font = "bold 12px sans-serif";
-            ctx.fillText(`🛡 Perisai ${Math.ceil(gs.shieldFrames / 60)}s`, 12, 72);
-        }
+        if (state.frameCount % 8 === 0 || collidedWithObstacle) syncHud();
 
         if (collidedWithObstacle) {
-            ctx.fillStyle = "rgba(239, 68, 68, 0.14)";
-            ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
-        }
-
-        ctx.restore();
-
-        if (collidedWithObstacle) {
-            gs.running = false;
-            if (gs.score > gs.highScore) {
-                gs.highScore = gs.score;
+            state.running = false;
+            if (state.score > state.highScore) {
+                state.highScore = state.score;
                 try {
-                    localStorage.setItem("mindful-runner-high-score", String(gs.highScore));
+                    localStorage.setItem(HIGH_SCORE_STORAGE_KEY, String(state.highScore));
                 } catch {
-                    // ignore storage errors
+                    // Game tetap dapat digunakan ketika storage tidak tersedia.
                 }
             }
-            setDisplayScore(gs.score);
-            setDisplayHighScore(gs.highScore);
+            syncHud();
             setOverMessage(GAME_OVER_MESSAGES[Math.floor(Math.random() * GAME_OVER_MESSAGES.length)]);
             setGameStatus("over");
             return;
         }
 
         animFrameRef.current = requestAnimationFrame(gameLoop);
-    }, [drawPlayer, drawObstacle, drawCollectible]);
+    }, [syncHud]);
 
-    // ——— Start / Restart ———
     const startGame = useCallback(() => {
-        const gs = gameStateRef.current;
-        if (gs.running) return;
+        const state = gameStateRef.current;
+        if (state.running) return;
 
-        if (animFrameRef.current) {
-            cancelAnimationFrame(animFrameRef.current);
-        }
+        if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
 
-        let hs = gs.highScore;
+        let storedHighScore = state.highScore;
         try {
-            const saved = localStorage.getItem("mindful-runner-high-score");
-            if (saved) hs = Math.max(hs, parseInt(saved, 10) || 0);
+            const savedScore = localStorage.getItem(HIGH_SCORE_STORAGE_KEY);
+            if (savedScore) storedHighScore = Math.max(storedHighScore, Number.parseInt(savedScore, 10) || 0);
         } catch {
-            // ignore
+            // Game tetap dapat digunakan ketika storage tidak tersedia.
         }
 
-        gs.running = true;
-        gs.score = 0;
-        gs.highScore = hs;
-        gs.speed = INITIAL_SPEED;
-        gs.playerY = GROUND_Y;
-        gs.playerVelocity = 0;
-        gs.isJumping = false;
-        gs.jumpHeld = false;
-        gs.jumpsUsed = 0;
-        gs.coyoteCounter = 0;
-        gs.shieldFrames = 0;
-        gs.playerFrame = 0;
-        gs.frameCount = 0;
-        gs.obstacles = [];
-        gs.collectibles = [];
-        gs.clouds = [
-            { x: 100, y: 40, width: 60, speed: 0.4 },
-            { x: 350, y: 25, width: 80, speed: 0.3 },
-            { x: 600, y: 55, width: 50, speed: 0.5 },
+        state.running = true;
+        state.score = 0;
+        state.highScore = storedHighScore;
+        state.speed = INITIAL_SPEED;
+        state.playerY = GROUND_Y;
+        state.playerVelocity = 0;
+        state.isJumping = false;
+        state.jumpHeld = false;
+        state.jumpsUsed = 0;
+        state.coyoteCounter = 0;
+        state.shieldFrames = 0;
+        state.playerFrame = 0;
+        state.frameCount = 0;
+        state.obstacles = [];
+        state.collectibles = [];
+        state.clouds = [
+            { x: 150, y: 35, width: 70, speed: 0.4 },
+            { x: 480, y: 15, width: 90, speed: 0.3 },
+            { x: 860, y: 55, width: 58, speed: 0.5 },
         ];
-        gs.particles = [];
-        gs.floatingTexts = [];
-        gs.obstacleTravel = 0;
-        gs.collectibleTravel = 120;
-        gs.nextObstacleGap = getRandomObstacleGap();
-        gs.nextCollectibleGap = getRandomCollectibleGap();
-        gs.affirmation = "";
-        gs.affirmationTimer = 0;
-        gs.combo = 0;
-        gs.collected = 0;
-        gs.shakeX = 0;
-        gs.shakeY = 0;
-        gs.shakeLife = 0;
+        state.particles = [];
+        state.floatingTexts = [];
+        state.obstacleTravel = 0;
+        state.collectibleTravel = 120;
+        state.nextObstacleGap = getRandomObstacleGap();
+        state.nextCollectibleGap = getRandomCollectibleGap();
+        state.affirmation = "";
+        state.affirmationTimer = 0;
+        state.combo = 0;
+        state.collected = 0;
+        state.shakeX = 0;
+        state.shakeY = 0;
+        state.shakeLife = 0;
 
-        setDisplayScore(0);
+        setOverMessage("");
+        setHud({ score: 0, highScore: storedHighScore, combo: 0, shieldSeconds: 0 });
         setGameStatus("playing");
         animFrameRef.current = requestAnimationFrame(gameLoop);
     }, [gameLoop]);
 
     const jump = useCallback(() => {
-        const gs = gameStateRef.current;
-        if (!gs.running) return;
-        const onGroundish = !gs.isJumping || gs.coyoteCounter > 0;
-        if (onGroundish && gs.jumpsUsed === 0) {
-            gs.isJumping = true;
-            gs.jumpHeld = true;
-            gs.jumpsUsed = 1;
-            gs.coyoteCounter = 0;
-            gs.playerVelocity = JUMP_FORCE;
-        } else if (gs.jumpsUsed < MAX_JUMPS) {
-            // Lompatan kedua (di udara).
-            gs.jumpHeld = true;
-            gs.jumpsUsed++;
-            gs.playerVelocity = DOUBLE_JUMP_FORCE;
+        const state = gameStateRef.current;
+        if (!state.running) return;
+        const canUseGroundJump = !state.isJumping || state.coyoteCounter > 0;
+        if (canUseGroundJump && state.jumpsUsed === 0) {
+            state.isJumping = true;
+            state.jumpHeld = true;
+            state.jumpsUsed = 1;
+            state.coyoteCounter = 0;
+            state.playerVelocity = JUMP_FORCE;
+        } else if (state.jumpsUsed < MAX_JUMPS) {
+            state.jumpHeld = true;
+            state.jumpsUsed++;
+            state.playerVelocity = DOUBLE_JUMP_FORCE;
         }
     }, []);
 
@@ -903,23 +569,58 @@ export default function MindfulRunnerGame() {
         gameStateRef.current.jumpHeld = false;
     }, []);
 
-    // ——— Input handlers ———
     useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.code === "Space" || e.code === "ArrowUp") {
-                e.preventDefault();
-                if (gameStateRef.current.running) {
-                    jump();
-                } else {
-                    startGame();
-                }
+        try {
+            const savedScore = localStorage.getItem(HIGH_SCORE_STORAGE_KEY);
+            const highScore = savedScore ? Number.parseInt(savedScore, 10) || 0 : 0;
+            gameStateRef.current.highScore = highScore;
+            setHud((current) => ({ ...current, highScore }));
+        } catch {
+            // High score hanya peningkatan opsional; game tetap berjalan tanpa storage.
+        }
+    }, []);
+
+    useEffect(() => {
+        paletteRef.current = resolveRunnerPalette(containerRef.current);
+        if (!gameStateRef.current.running) {
+            const context = canvasRef.current?.getContext("2d");
+            if (context) renderRunnerRestingScene(context, paletteRef.current, reducedMotionRef.current);
+        }
+    }, [themeKey]);
+
+    useEffect(() => {
+        if (gameStatus === "playing") return;
+        const context = canvasRef.current?.getContext("2d");
+        if (context) renderRunnerRestingScene(context, paletteRef.current, reducedMotionRef.current);
+    }, [gameStatus]);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+        const updatePreference = () => {
+            reducedMotionRef.current = mediaQuery.matches;
+            if (!gameStateRef.current.running) {
+                const context = canvasRef.current?.getContext("2d");
+                if (context) renderRunnerRestingScene(context, paletteRef.current, mediaQuery.matches);
             }
         };
-        const handleKeyUp = (e: KeyboardEvent) => {
-            if (e.code === "Space" || e.code === "ArrowUp") {
-                releaseJump();
-            }
+        updatePreference();
+        mediaQuery.addEventListener("change", updatePreference);
+        return () => mediaQuery.removeEventListener("change", updatePreference);
+    }, []);
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.code !== "Space" && event.code !== "ArrowUp") return;
+            const target = event.target as HTMLElement | null;
+            if (target?.closest("button, a, input, textarea, select")) return;
+            event.preventDefault();
+            if (gameStateRef.current.running) jump();
+            else startGame();
         };
+        const handleKeyUp = (event: KeyboardEvent) => {
+            if (event.code === "Space" || event.code === "ArrowUp") releaseJump();
+        };
+
         window.addEventListener("keydown", handleKeyDown);
         window.addEventListener("keyup", handleKeyUp);
         return () => {
@@ -928,128 +629,143 @@ export default function MindfulRunnerGame() {
         };
     }, [jump, releaseJump, startGame]);
 
-    // Cleanup animation frame on unmount
     useEffect(() => {
         return () => {
             if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
         };
     }, []);
 
-    // ——— Draw idle / game-over screen ———
-    useEffect(() => {
-        if (gameStatus === "playing") return;
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext("2d");
-        if (!ctx) return;
-
-        // Sky
-        const skyGrad = ctx.createLinearGradient(0, 0, 0, GROUND_Y);
-        skyGrad.addColorStop(0, "#EFF6FF");
-        skyGrad.addColorStop(1, COLORS.sky);
-        ctx.fillStyle = skyGrad;
-        ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
-
-        // Sun
-        ctx.fillStyle = COLORS.sunGlow;
-        ctx.globalAlpha = 0.4;
-        ctx.beginPath();
-        ctx.arc(CANVAS_W - 80, 50, 30, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = COLORS.sun;
-        ctx.beginPath();
-        ctx.arc(CANVAS_W - 80, 50, 18, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Ground
-        ctx.fillStyle = COLORS.ground;
-        ctx.fillRect(0, GROUND_Y + 24, CANVAS_W, CANVAS_H - GROUND_Y - 24);
-        ctx.strokeStyle = COLORS.groundLine;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(0, GROUND_Y + 24);
-        ctx.lineTo(CANVAS_W, GROUND_Y + 24);
-        ctx.stroke();
-
-        // Player standing
-        drawPlayer(ctx, GROUND_Y, 0);
-
-        // Text
-        ctx.textAlign = "center";
-
-        if (gameStatus === "idle") {
-            ctx.font = "bold 24px sans-serif";
-            ctx.fillStyle = COLORS.player;
-            ctx.fillText("🧘 Mindful Runner", CANVAS_W / 2, 100);
-            ctx.font = "14px sans-serif";
-            ctx.fillStyle = COLORS.textLight;
-            ctx.fillText("Hindari pikiran negatif, kumpulkan ketenangan", CANVAS_W / 2, 125);
-            ctx.font = "bold 14px sans-serif";
-            ctx.fillStyle = COLORS.text;
-            ctx.fillText("Tekan SPASI atau TAP untuk mulai", CANVAS_W / 2, 160);
-        } else {
-            ctx.font = "bold 22px sans-serif";
-            ctx.fillStyle = COLORS.player;
-            ctx.fillText("Permainan Selesai", CANVAS_W / 2, 80);
-            ctx.font = "16px sans-serif";
-            ctx.fillStyle = COLORS.textLight;
-            ctx.fillText(overMessage, CANVAS_W / 2, 108);
-            ctx.font = "bold 18px sans-serif";
-            ctx.fillStyle = COLORS.text;
-            ctx.fillText(`Skor: ${displayScore}`, CANVAS_W / 2, 140);
-            if (displayHighScore > 0) {
-                ctx.font = "14px sans-serif";
-                ctx.fillStyle = COLORS.textLight;
-                ctx.fillText(`Skor Terbaik: ${displayHighScore}`, CANVAS_W / 2, 162);
-            }
-            ctx.font = "bold 13px sans-serif";
-            ctx.fillStyle = COLORS.text;
-            ctx.fillText("Tekan SPASI atau TAP untuk coba lagi", CANVAS_W / 2, 192);
-        }
-        ctx.textAlign = "left";
-    }, [gameStatus, drawPlayer, displayScore, displayHighScore, overMessage]);
+    const isPlaying = gameStatus === "playing";
 
     return (
-        <div className="flex flex-col items-center gap-3">
-            <canvas
-                ref={canvasRef}
-                width={CANVAS_W}
-                height={CANVAS_H}
-                className="rounded-xl border border-red-200 shadow-md cursor-pointer w-full h-auto"
-                style={{ touchAction: "none" }}
-                onPointerDown={(e) => {
-                    e.preventDefault();
-                    if (gameStateRef.current.running) {
-                        jump();
-                    } else {
-                        startGame();
-                    }
-                }}
-                onPointerUp={() => releaseJump()}
-                onPointerCancel={() => releaseJump()}
-                onPointerLeave={() => releaseJump()}
-            />
-            <p className="text-xs text-gray-400 text-center">
-                Tahan SPASI / ↑ / klik untuk lompat lebih tinggi • Tekan lagi di udara untuk lompat ganda • Lotus 🪷 memberi perisai
-            </p>
+        <div ref={containerRef} className="space-y-3">
+            <div
+                className="relative overflow-hidden rounded-[1.4rem] border bg-white shadow-[0_24px_70px_-42px_rgba(15,23,42,0.5)]"
+                style={{ borderColor: "var(--theme-accent-border, #fed7aa)" }}
+            >
+                <div className="overflow-hidden">
+                    <canvas
+                        ref={canvasRef}
+                        width={CANVAS_W}
+                        height={CANVAS_H}
+                        role="img"
+                        aria-describedby="mindful-runner-instructions"
+                        aria-label={isPlaying ? `Mindful Runner sedang dimainkan. Skor ${hud.score}.` : "Arena Mindful Runner"}
+                        className="block h-64 w-auto min-w-full max-w-none cursor-pointer select-none sm:h-80 lg:h-auto lg:w-full"
+                        style={{ touchAction: "none" }}
+                        onPointerDown={(event) => {
+                            if (event.button !== 0) return;
+                            event.preventDefault();
+                            if (gameStateRef.current.running) jump();
+                            else startGame();
+                        }}
+                        onPointerUp={releaseJump}
+                        onPointerCancel={releaseJump}
+                        onPointerLeave={releaseJump}
+                    />
+                </div>
+
+                {isPlaying ? (
+                    <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3 sm:p-4">
+                        <div className="rounded-2xl border border-white/80 bg-white/[0.82] px-3 py-2 shadow-sm backdrop-blur-md sm:px-4">
+                            <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-500 sm:text-[10px]">Skor perjalanan</p>
+                            <p className="mt-0.5 text-xl font-black tabular-nums text-slate-800 sm:text-2xl">{hud.score}</p>
+                        </div>
+                        <div className="flex max-w-[62%] flex-wrap justify-end gap-1.5 sm:gap-2">
+                            <div className="inline-flex items-center gap-1.5 rounded-full border border-white/80 bg-white/[0.82] px-2.5 py-1.5 text-xs font-semibold text-slate-600 shadow-sm backdrop-blur-md sm:px-3">
+                                <Trophy className="h-3.5 w-3.5 text-amber-500" />
+                                <span className="hidden min-[390px]:inline">Terbaik</span>
+                                <span className="tabular-nums text-slate-800">{hud.highScore}</span>
+                            </div>
+                            {hud.combo > 1 ? (
+                                <div className="inline-flex items-center gap-1.5 rounded-full border border-white/80 bg-white/[0.82] px-2.5 py-1.5 text-xs font-semibold shadow-sm backdrop-blur-md">
+                                    <Sparkles className="h-3.5 w-3.5" style={{ color: "var(--theme-accent, #f97316)" }} />
+                                    <span className="text-slate-700">×{hud.combo}</span>
+                                </div>
+                            ) : null}
+                            {hud.shieldSeconds > 0 ? (
+                                <div className="inline-flex items-center gap-1.5 rounded-full border border-white/80 bg-white/[0.82] px-2.5 py-1.5 text-xs font-semibold shadow-sm backdrop-blur-md">
+                                    <ShieldCheck className="h-3.5 w-3.5" style={{ color: "var(--theme-accent, #f97316)" }} />
+                                    <span className="tabular-nums text-slate-700">{hud.shieldSeconds}s</span>
+                                </div>
+                            ) : null}
+                        </div>
+                    </div>
+                ) : null}
+
+                {gameStatus !== "playing" ? (
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-slate-950/5 p-3 backdrop-blur-[1px] sm:p-4">
+                        <div className="pointer-events-auto max-h-[calc(100%-1rem)] w-full max-w-[20rem] overflow-y-auto overscroll-contain rounded-[1.35rem] border border-white/90 bg-white/90 p-3 text-center shadow-[0_24px_70px_-30px_rgba(15,23,42,0.45)] backdrop-blur-xl sm:max-w-sm sm:p-5">
+                            <div
+                                className="mx-auto hidden h-11 w-11 items-center justify-center rounded-2xl sm:flex"
+                                style={{ backgroundColor: "var(--theme-accent-light, #ffedd5)" }}
+                            >
+                                {gameStatus === "idle" ? (
+                                    <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: "var(--theme-accent-dark, #c2410c)" }} />
+                                ) : (
+                                    <Heart className="h-4 w-4 text-rose-500 sm:h-5 sm:w-5" />
+                                )}
+                            </div>
+                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400 sm:mt-3 sm:text-[10px]">
+                                {gameStatus === "idle" ? "Mindful break" : "Jeda sejenak"}
+                            </p>
+                            <h2 className="mt-1 text-lg font-black tracking-tight text-slate-900 sm:text-2xl">
+                                {gameStatus === "idle" ? "Mulai perjalanan tenang" : "Perjalanan selesai"}
+                            </h2>
+                            <p className="mx-auto mt-1 max-w-[17rem] text-[11px] leading-4 text-slate-600 sm:mt-1.5 sm:text-sm sm:leading-5">
+                                {gameStatus === "idle"
+                                    ? "Lewati beban pikiran dan kumpulkan momen yang membuat langkahmu terasa lebih ringan."
+                                    : overMessage}
+                            </p>
+
+                            {gameStatus === "over" ? (
+                                <div className="mx-auto mt-2 flex max-w-52 items-center justify-center divide-x divide-slate-200 rounded-xl bg-slate-50 px-2 py-2 sm:mt-3 sm:max-w-56 sm:py-2.5">
+                                    <div className="flex-1 px-2">
+                                        <p className="text-[10px] uppercase tracking-wide text-slate-400">Skor</p>
+                                        <p className="font-black tabular-nums text-slate-800">{hud.score}</p>
+                                    </div>
+                                    <div className="flex-1 px-2">
+                                        <p className="text-[10px] uppercase tracking-wide text-slate-400">Terbaik</p>
+                                        <p className="font-black tabular-nums text-slate-800">{hud.highScore}</p>
+                                    </div>
+                                </div>
+                            ) : null}
+
+                            <button
+                                type="button"
+                                onClick={startGame}
+                                className="mt-3 inline-flex h-9 items-center justify-center gap-2 rounded-xl px-4 text-xs font-bold text-white shadow-lg transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:mt-4 sm:h-11 sm:px-5 sm:text-sm"
+                                style={{
+                                    backgroundColor: "var(--theme-accent, #f97316)",
+                                    boxShadow: "0 12px 28px -14px var(--theme-accent, #f97316)",
+                                }}
+                            >
+                                {gameStatus === "idle" ? <Play className="h-4 w-4 fill-current" /> : <RotateCcw className="h-4 w-4" />}
+                                {gameStatus === "idle" ? "Mulai bermain" : "Coba lagi"}
+                            </button>
+                        </div>
+                    </div>
+                ) : null}
+
+                <p className="sr-only" aria-live="polite">
+                    {gameStatus === "over" ? `Permainan selesai. Skor ${hud.score}. ${overMessage}` : ""}
+                </p>
+            </div>
+
+            <div
+                id="mindful-runner-instructions"
+                className="flex flex-col gap-2 rounded-2xl border border-slate-200/80 bg-white/70 px-3 py-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-4"
+            >
+                <p>
+                    <span className="font-semibold text-slate-700">Tahan</span> untuk melompat lebih tinggi, tekan lagi untuk lompatan ganda.
+                </p>
+                <div className="flex items-center gap-1.5" aria-label="Kontrol game">
+                    <kbd className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 font-sans font-semibold text-slate-600 shadow-sm">SPASI</kbd>
+                    <span>atau</span>
+                    <kbd className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 font-sans font-semibold text-slate-600 shadow-sm">↑</kbd>
+                    <span className="hidden min-[420px]:inline">atau tap</span>
+                </div>
+            </div>
         </div>
     );
-}
-
-// Helper: draw a star shape
-function drawStar(ctx: CanvasRenderingContext2D, cx: number, cy: number, spikes: number, outerR: number, innerR: number) {
-    let rot = (Math.PI / 2) * 3;
-    const step = Math.PI / spikes;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy - outerR);
-    for (let i = 0; i < spikes; i++) {
-        ctx.lineTo(cx + Math.cos(rot) * outerR, cy + Math.sin(rot) * outerR);
-        rot += step;
-        ctx.lineTo(cx + Math.cos(rot) * innerR, cy + Math.sin(rot) * innerR);
-        rot += step;
-    }
-    ctx.lineTo(cx, cy - outerR);
-    ctx.closePath();
-    ctx.fill();
 }

@@ -113,7 +113,6 @@ function formatActivityName(activity?: string): string {
         login: "Login",
         mood: "Catat Mood",
         chat: "Chat AI",
-        breathing: "Sesi Pernapasan",
         article: "Baca Artikel",
         write_article: "Tulis Artikel",
         journal: "Jurnal",

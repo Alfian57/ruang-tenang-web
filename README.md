@@ -53,7 +53,7 @@ Detail route, alur data, dan operasi ada di context/README.md. Aturan kerja untu
 
 ## Fitur dan role
 
-- Member: dashboard, mood, jurnal, chat AI, artikel, stories, forum, musik, breathing, komunitas, wellness, gamifikasi, billing, dan top-up.
+- Member: dashboard, mood, jurnal, chat AI, artikel, stories, forum, musik, komunitas, wellness, gamifikasi, billing, dan top-up.
 - Admin/moderator: pengguna, artikel, musik, forum, level/reward, billing, broadcast, moderasi, serta crisis keywords.
 - Mitra: organisasi, subscription, seat, insight, pembayaran, onboarding, dan SSO configuration.
 - PWA mendukung install prompt, service worker, API cache, dan outbox terbatas. Chat, auth, billing, admin, moderasi, dan push tidak diantrekan offline.

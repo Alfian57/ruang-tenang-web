@@ -72,7 +72,6 @@ assertContains("app/dashboard/_components/member-dashboard/DailyQuestSection.tsx
 assertContains("app/dashboard/chat/_hooks/useChatPage.ts", "chat-quota-limited", "Chat page must react to exhausted quota events");
 assertContains("app/dashboard/chat/_components/ChatMessagesArea.tsx", "isQuotaExhausted", "Chat input must lock when quota is exhausted");
 assertContains("app/dashboard/chat/_components/ChatMessagesArea.tsx", "Tulis Jurnal", "Chat quota exhausted state must offer a non-chat alternative");
-assertContains("app/dashboard/chat/_components/ChatMessagesArea.tsx", "Atur Napas", "Chat quota exhausted state must offer breathing support");
 assertContains("app/dashboard/chat/_components/EmptyState.tsx", "Mulai guided check-in", "Chat empty state must prioritize guided check-in");
 assertContains("components/shared/gamification/DailyTaskFAB.tsx", "showPremiumTeasers", "Daily task FAB must show premium locked tasks for free users");
 
@@ -103,7 +102,6 @@ assertContains("app/dashboard/topup/page.tsx", "useBillingCheckout", "Topup page
 assertContains("app/dashboard/billing/page.tsx", "Premium B2B", "Billing page must compare B2B premium access");
 assertContains("app/dashboard/topup/page.tsx", "Fokus halaman ini adalah saldo koin", "Topup page must keep coin purchase separate from premium decisions");
 assertContains("app/dashboard/_components/mitra-dashboard/MitraOverviewSection.tsx", "Pusat Kendali Mitra", "Mitra dashboard must expose an organization command bar");
-assertContains("components/layout/dashboard/nav-config.ts", "Pernapasan", "Dashboard navigation should use consistent Indonesian copy");
 assertContains("app/dashboard/_components/mitra-dashboard/MitraInsightsSection.tsx", "Belum ada trend analitik", "Mitra dashboard must show localized analytics empty state");
 
 assertContains("components/layout/dashboard/useGlobalSearch.ts", "Musik", "Global search must expose music as an active result section");
@@ -116,13 +114,8 @@ assertContains("app/dashboard/topup/page.tsx", "Muat Ulang", "Topup empty state 
 assertContains("components/pwa/PWAInstallPrompt.tsx", "Pasang Ruang Tenang", "PWA install prompt must use localized copy");
 assertContains("components/notification/PushNotificationToggle.tsx", "Push Notification Aktif", "Push notification toggle must use clear localized product copy");
 
-assertFile("app/dashboard/breathing/_components/BreathingVisual.tsx");
-assertContains("app/dashboard/breathing/_components/BreathingVisual.tsx", "animation_type", "Breathing session must honor technique animation type");
-assertContains("app/dashboard/breathing/_components/SessionPlayer.tsx", "Perjalanan Napas", "Breathing player must present a guided journey, not only a countdown");
-assertContains("app/dashboard/breathing/_components/SessionPlayer.tsx", "speechSynthesis", "Breathing voice guidance toggle must drive browser speech guidance");
-assertContains("app/dashboard/breathing/_hooks/useBreathing.ts", "pendingCompletion", "Breathing completion must collect reflection before saving");
-assertContains("app/dashboard/breathing/_components/CompletionModal.tsx", "Refleksi Setelah Sesi", "Breathing completion must ask for post-session reflection");
-assertContains("app/dashboard/breathing/_components/TechniquesView.tsx", "Mulai Cepat", "Breathing technique selection must expose intent-based quick starts");
+assertNotContains("lib/routes.ts", "/dashboard/breathing", "Breathing route must be removed from the web app");
+assertNotContains("components/layout/dashboard/nav-config.ts", "breathing", "Breathing navigation must be removed from the web app");
 
 assertContains("lib/offline/syncOutbox.ts", "useAuthStore.getState()", "Offline sync must use the current auth token");
 assertContains("services/http/client.ts", "OFFLINE_QUEUEABLE_PREFIXES", "Offline queueing must use an explicit allowlist");

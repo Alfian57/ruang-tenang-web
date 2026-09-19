@@ -33,7 +33,6 @@ const OFFLINE_QUEUEABLE_PREFIXES = [
   "/user-moods",
   "/stories",
   "/forums",
-  "/breathing",
 ];
 
 const OFFLINE_NEVER_QUEUE_PREFIXES = [

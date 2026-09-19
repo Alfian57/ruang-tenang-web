@@ -162,13 +162,6 @@ export function DailyTaskWidget({ tasks, onTaskClaimed, className }: DailyTaskWi
                 coins: 8,
                 icon: "✨",
               },
-              {
-                name: "Breathing Pro",
-                description: "2 sesi pernafasan fokus",
-                xp: 45,
-                coins: 7,
-                icon: "✦",
-              },
             ].map((task) => (
               <div key={task.name} className="p-4 flex items-center justify-between bg-violet-50/60">
                 <div className="flex items-center gap-3">

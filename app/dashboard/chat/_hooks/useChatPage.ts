@@ -92,7 +92,6 @@ const ALWAYS_ON_CONTEXT_PREFERENCES: ChatContextPreferencesUpdate = {
   enable_journal_context: true,
   enable_daily_task_context: true,
   enable_xp_level_context: true,
-  enable_breathing_context: true,
   enable_playlist_context: true,
   enable_rewards_context: true,
   enable_progress_map_context: true,
@@ -107,7 +106,6 @@ function hasAllContextSourcesEnabled(preferences: ChatContextState["preferences"
       && preferences.enable_journal_context
       && preferences.enable_daily_task_context
       && preferences.enable_xp_level_context
-      && preferences.enable_breathing_context
       && preferences.enable_playlist_context
       && preferences.enable_rewards_context
       && preferences.enable_progress_map_context
@@ -231,7 +229,7 @@ export function useChatPage() {
         {
           id: "journey-grounding",
           label: "Grounding 2 Menit",
-          text: "Aku lagi kewalahan. Tolong pimpin aku grounding 2 menit dengan langkah napas yang sederhana.",
+          text: "Aku lagi kewalahan. Tolong pimpin aku grounding 2 menit dengan langkah 5-4-3-2-1 yang sederhana.",
         },
         {
           id: "journey-next-step",
@@ -286,7 +284,7 @@ export function useChatPage() {
     }
 
     if (status.chat_quota.remaining <= 0) {
-      setChatQuotaNotice("Kuota chat gratis periode ini sudah habis. Kuota akan refresh otomatis sesuai jadwal reset, atau lanjutkan dengan jurnal dan latihan napas.");
+      setChatQuotaNotice("Kuota chat gratis periode ini sudah habis. Kuota akan refresh otomatis sesuai jadwal reset, atau lanjutkan dengan jurnal dan musik.");
       return;
     }
 
@@ -597,7 +595,6 @@ export function useChatPage() {
         enable_journal_context: true,
         enable_daily_task_context: true,
         enable_xp_level_context: true,
-        enable_breathing_context: true,
         enable_playlist_context: true,
         enable_rewards_context: true,
         enable_progress_map_context: true,
@@ -673,12 +670,6 @@ export function useChatPage() {
     setShowCrisisModal(true);
   };
 
-  const handleOpenBreathingSupport = () => {
-    setIsSafeModeActive(false);
-    setPendingCrisisMessage(null);
-    setSafeModeSessionId(null);
-    router.push(ROUTES.BREATHING);
-  };
 
   const handleDismissSafeMode = () => {
     setIsSafeModeActive(false);
@@ -862,7 +853,6 @@ export function useChatPage() {
     handleAcceptDisclaimer,
     handleContinueInSafeMode,
     handleOpenCrisisSupport,
-    handleOpenBreathingSupport,
     handleDismissSafeMode,
     handleOpenBillingFromQuota,
   };

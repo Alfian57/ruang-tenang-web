@@ -43,7 +43,6 @@ export function useMemberDashboardViewModel() {
     latestJournal,
     recommendedArticles,
     isLoadingWidgets,
-    breathingWidgetData,
     isNetworkDegraded,
     lastSyncAt,
     refreshDashboardData,
@@ -121,12 +120,6 @@ export function useMemberDashboardViewModel() {
       href: ROUTES.JOURNAL,
     },
     {
-      key: "breathing",
-      label: "Pernapasan",
-      count: breathingWidgetData?.today_sessions ?? 0,
-      href: ROUTES.BREATHING,
-    },
-    {
       key: "article",
       label: "Baca Artikel",
       count: recommendedArticles.length > 0 ? 1 : 0,
@@ -143,7 +136,6 @@ export function useMemberDashboardViewModel() {
   const journalsThisWeek = recentJournals.filter((journal) => isWithinLast7Days(journal.created_at)).length;
   const moodCheckinsThisWeek = moodHistory.filter((mood) => isWithinLast7Days(mood.created_at)).length;
   const chatSessionsThisWeek = chatSessions.filter((session) => !session.is_trash && isWithinLast7Days(session.updated_at)).length;
-  const breathingSessionsToday = breathingWidgetData?.today_sessions ?? 0;
   const articleSignalsToday = recommendedArticles.length > 0 ? 1 : 0;
 
   const crossFeatureSignals: CrossFeatureSignal[] = [
@@ -170,14 +162,6 @@ export function useMemberDashboardViewModel() {
       target: 3,
       windowLabel: "7 hari",
       href: ROUTES.CHAT,
-    },
-    {
-      key: "breathing",
-      label: "Sesi Napas",
-      count: breathingSessionsToday,
-      target: 1,
-      windowLabel: "hari ini",
-      href: ROUTES.BREATHING,
     },
     {
       key: "articles",
@@ -251,7 +235,7 @@ export function useMemberDashboardViewModel() {
   const todayQuestCompletion = Math.round((todayQuestCompletedCount / todayQuestSteps.length) * 100);
   const nextQuestStep = todayQuestSteps.find((step) => !step.completed) ?? todayQuestSteps[todayQuestSteps.length - 1];
   const nextQuestDescription = nextQuestStep.locked
-    ? "Kuota chat sedang habis. Buka billing untuk upgrade, atau lanjutkan refleksi lewat jurnal dan pernapasan."
+    ? "Kuota chat sedang habis. Buka billing untuk upgrade, atau lanjutkan refleksi lewat jurnal dan musik."
     : nextQuestStep.key === "mood"
       ? "Catatan mood singkat akan membuat rekomendasi harian lebih akurat."
       : nextQuestStep.key === "journal"
@@ -297,10 +281,10 @@ export function useMemberDashboardViewModel() {
         locked: false,
       },
       {
-        type: "breathing",
-        title: "Tambah satu sesi napas",
-        description: "Satu sesi pendek membantu menyeimbangkan progres refleksi dan regulasi.",
-        route: ROUTES.BREATHING,
+        type: "article",
+        title: "Baca satu insight",
+        description: "Satu artikel pendek bisa memberi sudut pandang baru untuk refleksi minggu ini.",
+        route: ROUTES.ARTICLES,
         locked: false,
       },
     ];
@@ -328,7 +312,6 @@ export function useMemberDashboardViewModel() {
     latestJournal,
     recommendedArticles,
     isLoadingWidgets,
-    breathingWidgetData,
     refreshDashboardData,
     theme: {
       greeting: exclusivity.greeting,

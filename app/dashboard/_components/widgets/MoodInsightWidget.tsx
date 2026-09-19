@@ -45,7 +45,7 @@ const MOOD_ACTION_PLANS: Record<
   sad: {
     title: "Pulihkan perlahan, tidak perlu sempurna",
     description: "Mulai dari langkah ringan yang bisa mengurangi beban tanpa memaksa diri.",
-    primaryAction: { label: "Atur Napas 2 Menit", href: ROUTES.BREATHING },
+    primaryAction: { label: "Tulis Perasaan di Jurnal", href: ROUTES.JOURNAL },
     secondaryAction: { label: "Curhat Aman di Chat", href: ROUTES.CHAT },
   },
   disappointed: {
@@ -57,7 +57,7 @@ const MOOD_ACTION_PLANS: Record<
   angry: {
     title: "Turunkan intensitas emosi dulu",
     description: "Saat marah, jeda singkat membantu mencegah keputusan yang menyesal belakangan.",
-    primaryAction: { label: "Grounding lewat Pernapasan", href: ROUTES.BREATHING },
+    primaryAction: { label: "Grounding lewat Jurnal", href: ROUTES.JOURNAL },
     secondaryAction: { label: "Rilis Emosi ke Chat", href: ROUTES.CHAT },
   },
   crying: {

@@ -48,13 +48,6 @@ const TOUR_STEPS: TourStep[] = [
   },
   {
     route: ROUTES.DASHBOARD,
-    target: "user-breathing",
-    eyebrow: "Pernapasan",
-    title: "Tenangkan tubuh dulu",
-    description: "Sesi napas singkat menjadi rute cepat untuk kondisi cemas, marah, capek, atau ingin fokus.",
-  },
-  {
-    route: ROUTES.DASHBOARD,
     target: "user-reward",
     eyebrow: "Hadiah",
     title: "Selesaikan misi hari ini",
@@ -72,7 +65,7 @@ const TOUR_STEPS: TourStep[] = [
     target: "user-wellness-plan",
     eyebrow: "Rencana",
     title: "Ikuti rencana 7 hari",
-    description: "Plan ini mengurutkan mood, breathing, jurnal, chat AI, reward, dan progress map agar alur pengguna baru lebih jelas.",
+    description: "Plan ini mengurutkan mood, artikel, jurnal, chat AI, reward, dan progress map agar alur pengguna baru lebih jelas.",
   },
   {
     route: ROUTES.DASHBOARD,
@@ -86,14 +79,14 @@ const TOUR_STEPS: TourStep[] = [
     target: "user-weekly-insight",
     eyebrow: "Wawasan",
     title: "Baca laporan mingguan",
-    description: "Ringkasan ini menggabungkan mood, jurnal, breathing, chat, dan misi menjadi pola serta rekomendasi minggu depan.",
+    description: "Ringkasan ini menggabungkan mood, jurnal, artikel, chat, dan misi menjadi pola serta rekomendasi minggu depan.",
   },
   {
     route: ROUTES.DASHBOARD,
     target: "user-journey-map",
     eyebrow: "Unggulan",
     title: "Peta Perjalanan Tenang",
-    description: "Fitur khas Ruang Tenang yang merangkai streak, mood, jurnal, breathing, dan reward sebagai perjalanan personal.",
+    description: "Fitur khas Ruang Tenang yang merangkai streak, mood, jurnal, artikel, dan reward sebagai perjalanan personal.",
   },
   {
     route: ROUTES.DASHBOARD,

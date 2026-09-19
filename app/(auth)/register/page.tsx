@@ -8,14 +8,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Mail, Lock, ShieldCheck, User } from "lucide-react";
+import { Loader2, Mail, Lock, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/authStore";
 import { AuthIllustration } from "@/components/shared/auth/AuthIllustration";
 import { buildPathWithRedirect, getSafeRedirect } from "@/lib/safe-redirect";
-import { TRUST_CUES } from "@/constants";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter").max(100, "Nama terlalu panjang"),
@@ -81,18 +80,6 @@ export default function RegisterPage() {
               />
             </Link>
             <p className="text-gray-500">Buat akun baru untuk memulai</p>
-          </div>
-
-          <div className="mb-6 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3">
-            <div className="flex items-start gap-2">
-              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-sky-700" />
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-sky-900">
-                  Privasi & Batasan AI
-                </p>
-                <p className="mt-1 text-xs leading-relaxed text-sky-800">{TRUST_CUES.COMBINED}</p>
-              </div>
-            </div>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">

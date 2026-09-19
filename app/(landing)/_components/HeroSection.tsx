@@ -92,7 +92,7 @@ export function HeroSection() {
 
             <p className="mb-4 max-w-xl text-sm leading-relaxed text-gray-700 sm:mb-5 sm:text-base md:text-lg">
               Platform kesehatan mental berbasis AI untuk mahasiswa. Mulai dari mood tracker,
-              jurnal refleksi, chat AI, latihan pernapasan, sampai musik relaksasi dalam satu
+              jurnal refleksi, chat AI, musik relaksasi, sampai komunitas suportif dalam satu
               alur yang mudah diikuti.
             </p>
 

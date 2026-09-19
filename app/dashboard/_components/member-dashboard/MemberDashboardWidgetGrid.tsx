@@ -1,9 +1,4 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ROUTES } from "@/lib/routes";
-import { BreathingWidget } from "@/app/dashboard/breathing/_components";
 import { ConsultationPromoWidget } from "../widgets/ConsultationPromoWidget";
-import { GuildWidget } from "../widgets/GuildWidget";
 import { MapProgressWidget } from "../widgets/MapProgressWidget";
 import { MoodCalendar } from "../widgets/MoodCalendar";
 import { MoodInsightWidget } from "../widgets/MoodInsightWidget";
@@ -37,12 +32,9 @@ export function MemberDashboardWidgetGrid({ viewModel }: MemberDashboardWidgetGr
           <MoodInsightWidget moods={viewModel.moodHistory} isLoading={viewModel.isLoadingWidgets} />
         </div>
 
-        {/* Column 3: Perjalananmu + Guild Kamu (Guild fills remaining height) */}
+        {/* Column 3: Perjalananmu */}
         <div className="flex flex-col gap-6">
           <XPProgressWidget />
-          <div className="flex-1 flex flex-col [&>*]:h-full">
-            <GuildWidget />
-          </div>
         </div>
       </div>
 
@@ -60,22 +52,6 @@ export function MemberDashboardWidgetGrid({ viewModel }: MemberDashboardWidgetGr
 
           <RecommendedArticlesWidget articles={viewModel.recommendedArticles} isLoading={viewModel.isLoadingWidgets} />
 
-          <div data-user-tour="user-breathing">
-            {viewModel.breathingWidgetData ? (
-              <div className="transform transition-transform duration-300 hover:scale-[1.02]">
-                <BreathingWidget data={viewModel.breathingWidgetData} />
-              </div>
-            ) : (
-              <section className="rounded-2xl border border-dashed border-primary/20 bg-white/80 p-4">
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">Pernapasan</p>
-                <p className="mt-1 text-sm font-semibold text-gray-900">Sesi napas siap dipakai</p>
-                <p className="mt-1 text-xs leading-5 text-gray-600">Buka halaman pernapasan untuk memulai latihan singkat saat butuh jeda.</p>
-                <Button asChild size="sm" variant="outline" className="mt-3 border-primary/20 text-primary hover:bg-primary/10">
-                  <Link href={ROUTES.BREATHING}>Mulai Pernapasan</Link>
-                </Button>
-              </section>
-            )}
-          </div>
         </div>
       </div>
     </div>

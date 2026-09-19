@@ -38,7 +38,7 @@ const goalOptions = [
 const habitOptions = [
   "Mood check-in pagi",
   "Jurnal singkat malam",
-  "Breathing 3 menit",
+  "Baca artikel singkat",
   "Musik saat fokus",
   "Chat reflektif",
   "Cek reward harian",
@@ -133,7 +133,7 @@ export function WellnessOnboardingProvider() {
             </div>
             <DialogTitle>Bangun Rencana Tenang 7 Hari</DialogTitle>
             <DialogDescription className="text-gray-600">
-              Jawab singkat agar dashboard menyusun urutan mood, napas, jurnal, chat AI, dan reward yang lebih terarah.
+              Jawab singkat agar dashboard menyusun urutan mood, artikel, jurnal, chat AI, dan reward yang lebih terarah.
             </DialogDescription>
           </DialogHeader>
         </div>

@@ -81,6 +81,10 @@ const nextConfig: NextConfig = {
         source: "/uploads/:path*",
         destination: `${apiBaseUrl}/uploads/:path*`,
       },
+      {
+        source: "/storage/:path*",
+        destination: `${apiBaseUrl}/storage/:path*`,
+      },
     ];
   },
   productionBrowserSourceMaps: true,

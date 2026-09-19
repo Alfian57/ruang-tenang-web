@@ -26,7 +26,6 @@ function resolveTaskIcon(task: Pick<LevelTaskFormData, "unlock_type" | "unlock_a
   if (activity === "login") return "🚪";
   if (activity === "mood") return "😊";
   if (activity === "chat") return "💬";
-  if (activity === "breathing") return "🌬️";
   if (activity === "journal") return "📝";
   if (activity === "forum") return "🗣️";
   if (activity === "story") return "✨";
@@ -47,7 +46,7 @@ function createDefaultTask(index: number): LevelTaskFormData {
     name: `Tugas ${index + 1}`,
     description: "",
     unlock_type: "activity_count",
-    unlock_activity: "breathing",
+    unlock_activity: "journal",
     unlock_value: 1,
     xp_reward: 10,
     coin_reward: 5,

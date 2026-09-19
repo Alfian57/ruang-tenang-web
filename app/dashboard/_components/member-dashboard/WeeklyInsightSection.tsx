@@ -26,7 +26,7 @@ export function WeeklyInsightSection({ viewModel }: WeeklyInsightSectionProps) {
           <p className="text-xs font-semibold uppercase tracking-wide text-primary">Wawasan Mingguan AI</p>
           <h2 className="mt-1 text-xl font-semibold text-gray-900">Laporan minggu {weeklyProgressLabel}</h2>
           <p className="mt-1 text-sm leading-6 text-gray-600">
-            {weeklyInsight?.narrative ?? "Wawasan mingguan akan muncul setelah ada aktivitas mood, jurnal, breathing, chat, dan quest."}
+            {weeklyInsight?.narrative ?? "Wawasan mingguan akan muncul setelah ada aktivitas mood, jurnal, chat, artikel, dan quest."}
           </p>
         </div>
         <span className="w-fit rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
@@ -39,7 +39,7 @@ export function WeeklyInsightSection({ viewModel }: WeeklyInsightSectionProps) {
           <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">Mood</p>
           <p className="mt-1 text-xl font-bold text-gray-900">{weeklyMoodCheckins}</p>
         </div>
-        {["journals", "breathing_sessions", "chat_sessions"].map((key) => (
+        {["journals", "chat_sessions", "tasks_completed"].map((key) => (
           <div key={key} className="rounded-xl bg-gray-50 p-3">
             <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{key.replace("_", " ")}</p>
             <p className="mt-1 text-xl font-bold text-gray-900">{Number(weeklyInsight?.activity_summary?.[key] ?? 0)}</p>

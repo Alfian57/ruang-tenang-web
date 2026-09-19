@@ -23,7 +23,7 @@ export function NeedNowSection({ viewModel }: NeedNowSectionProps) {
           <p className="text-xs font-semibold uppercase tracking-wide text-theme-accent-text">Hari Ini Aku Butuh Apa?</p>
           <h2 className="mt-1 text-xl font-semibold text-gray-900">Pilih kondisi, langsung dapat arah</h2>
           <p className="mt-1 text-sm leading-6 text-gray-600">
-            Satu pintu masuk untuk memilih kombinasi napas, musik, jurnal, atau chat AI sesuai kondisi saat ini.
+            Satu pintu masuk untuk memilih kombinasi musik, jurnal, artikel, atau chat AI sesuai kondisi saat ini.
           </p>
           <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
             {needOptions.map((option) => {

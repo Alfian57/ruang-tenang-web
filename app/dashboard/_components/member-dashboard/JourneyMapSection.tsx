@@ -13,7 +13,7 @@ export function JourneyMapSection({ viewModel }: JourneyMapSectionProps) {
       <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">Fitur Unggulan Kreatif</p>
       <h2 className="mt-1 text-xl font-semibold text-gray-900">{journeyMap?.title ?? "Peta Perjalanan Tenang"}</h2>
       <p className="mt-1 text-sm leading-6 text-gray-600">
-        {journeyMap?.narrative ?? "Gabungan mood, runtunan, jurnal, pernapasan, hadiah, dan peta progres akan tampil sebagai perjalanan personal."}
+        {journeyMap?.narrative ?? "Gabungan mood, runtunan, jurnal, chat, hadiah, dan peta progres akan tampil sebagai perjalanan personal."}
       </p>
       <div className="mt-4 grid gap-2">
         {(journeyMap?.nodes ?? []).slice(0, 5).map((node) => (

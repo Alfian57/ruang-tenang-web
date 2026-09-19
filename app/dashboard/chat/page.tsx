@@ -74,7 +74,6 @@ export default function ChatPage() {
     handleAcceptDisclaimer,
     handleContinueInSafeMode,
     handleOpenCrisisSupport,
-    handleOpenBreathingSupport,
     handleDismissSafeMode,
     handleOpenBillingFromQuota,
   } = useChatPage();
@@ -124,7 +123,6 @@ export default function ChatPage() {
           chatQuotaNotice={chatQuotaNotice}
           onContinueInSafeMode={handleContinueInSafeMode}
           onOpenCrisisSupport={handleOpenCrisisSupport}
-          onOpenBreathingSupport={handleOpenBreathingSupport}
           onDismissSafeMode={handleDismissSafeMode}
           onOpenBillingFromQuota={handleOpenBillingFromQuota}
         />

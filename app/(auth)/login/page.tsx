@@ -15,7 +15,6 @@ import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/authStore";
 import { AuthIllustration } from "@/components/shared/auth/AuthIllustration";
 import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
-import { TRUST_CUES } from "@/constants";
 import { toast } from "sonner";
 import { buildPathWithRedirect, getSafeRedirect } from "@/lib/safe-redirect";
 
@@ -92,13 +91,6 @@ export default function LoginPage() {
             <p className="text-gray-500">Masukan detail Anda untuk Login</p>
           </div>
 
-          <div className="mb-6 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3">
-            <p className="text-[11px] font-semibold uppercase tracking-wide text-sky-900">
-              Privasi & Batasan AI
-            </p>
-            <p className="mt-1 text-xs leading-relaxed text-sky-800">{TRUST_CUES.COMBINED}</p>
-          </div>
-
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {error && (
               <div className="p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm">
@@ -114,7 +106,7 @@ export default function LoginPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="Richard@email.com"
+                  placeholder="nama@email.com"
                   className="pl-12 h-12 rounded-xl border-gray-200 focus:border-primary focus:ring-primary"
                   {...register("email")}
                 />

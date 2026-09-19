@@ -86,7 +86,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href={ROUTES.MUSIC} className="text-sm text-gray-600 hover:text-primary transition-colors">
-                  Terapi Musik & Pernapasan
+                  Terapi Musik & Refleksi
                 </Link>
               </li>
               <li>

@@ -18,7 +18,7 @@ import {
   TypingIndicator,
 } from ".";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, CreditCard, HeartHandshake, History, Lock, MessageSquare, NotebookPen, Phone, SlidersHorizontal, Wind } from "lucide-react";
+import { ChevronDown, ChevronUp, CreditCard, HeartHandshake, History, Lock, MessageSquare, NotebookPen, Phone, SlidersHorizontal } from "lucide-react";
 import { ChatHeader } from "./ChatHeader";
 import { ChatSummaryPanel } from "./ChatSummaryPanel";
 import { JournalContextIndicator } from "./JournalContextIndicator";
@@ -95,7 +95,6 @@ export interface ChatMessagesAreaProps {
   chatQuotaNotice?: string | null;
   onContinueInSafeMode?: () => Promise<void>;
   onOpenCrisisSupport?: () => void;
-  onOpenBreathingSupport?: () => void;
   onDismissSafeMode?: () => void;
   onOpenBillingFromQuota?: () => void;
 }
@@ -137,7 +136,6 @@ export function ChatMessagesArea({
   chatQuotaNotice,
   onContinueInSafeMode,
   onOpenCrisisSupport,
-  onOpenBreathingSupport,
   onDismissSafeMode,
   onOpenBillingFromQuota,
 }: ChatMessagesAreaProps) {
@@ -324,9 +322,6 @@ export function ChatMessagesArea({
                   <Button size="sm" className="bg-primary hover:bg-primary" onClick={onContinueInSafeMode}>
                     Lanjutkan Mode Aman
                   </Button>
-                  <Button size="sm" variant="outline" onClick={onOpenBreathingSupport}>
-                    Atur Napas 2 Menit
-                  </Button>
                   <Button size="sm" variant="outline" className="gap-1" onClick={onOpenCrisisSupport}>
                     <Phone className="w-3.5 h-3.5" />
                     Hubungi Bantuan
@@ -359,12 +354,6 @@ export function ChatMessagesArea({
                     <Link href={ROUTES.JOURNAL}>
                       <NotebookPen className="w-3.5 h-3.5 mr-1" />
                       Tulis Jurnal
-                    </Link>
-                  </Button>
-                  <Button asChild size="sm" variant="outline" className="border-amber-300 bg-white text-amber-800 hover:bg-amber-100">
-                    <Link href={ROUTES.BREATHING}>
-                      <Wind className="w-3.5 h-3.5 mr-1" />
-                      Atur Napas
                     </Link>
                   </Button>
                 </div>

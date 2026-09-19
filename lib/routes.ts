@@ -26,7 +26,6 @@ export const ROUTES = {
   BILLING: "/dashboard/billing",
   
   // Features
-  BREATHING: "/dashboard/breathing",
   JOURNAL: "/dashboard/journal",
   MUSIC: "/dashboard/music",
   ARTICLES: "/dashboard/articles",
@@ -38,7 +37,6 @@ export const ROUTES = {
   READING: "/dashboard/reading",
   CONSULTATION: "/dashboard/consultation",
   MOOD_TRACKER: "/dashboard/mood-tracker",
-  GUILDS: "/dashboard/guilds",
   PROGRESS_MAP: "/dashboard/progress-map",
   REWARDS: "/dashboard/rewards",
   GAME: "/dashboard/game",
@@ -85,5 +83,4 @@ export const ROUTES = {
   adminForumDetail: (id: string | number) => `/dashboard/admin/forums/${id}`,
   moderationArticle: (id: string | number) => `/dashboard/moderation/queue?focus=${encodeURIComponent(String(id))}`,
   moderationReport: (id: string | number) => `/dashboard/moderation/reports?focus=${encodeURIComponent(String(id))}`,
-  guildDetail: (id: string | number) => `/dashboard/guilds/${id}`,
 } as const;

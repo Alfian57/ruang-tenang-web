@@ -57,7 +57,7 @@ const SIGNATURE_LOOP = [
 const WOW_MOMENTS = [
   {
     title: "Momen utama #1: Mood jadi arahan, bukan angka",
-    description: "Setelah check-in, pengguna langsung mendapat langkah berikutnya yang relevan ke jurnal, napas, atau chat.",
+    description: "Setelah check-in, pengguna langsung mendapat langkah berikutnya yang relevan ke jurnal, musik, atau chat.",
     cta: "Lihat Wawasan Mood",
     href: ROUTES.DASHBOARD,
   },

@@ -11,7 +11,6 @@ interface ThemeExclusivity {
   journalEmptyCta: string;
   journalEmptyTitle: string;
   journalEmptyDesc: string;
-  breathingMotivation: string;
   dashboardSubtitle: string;
   storyLabel: string;
   /** Extra decorative CSS class applied to the dashboard wrapper */
@@ -26,7 +25,6 @@ const THEME_EXCLUSIVITY: Record<ThemeKey, ThemeExclusivity> = {
     journalEmptyCta: "Tulis Jurnal Baru",
     journalEmptyTitle: "Hari ini belum menulis?",
     journalEmptyDesc: "Tuangkan pikiranmu dan rasakan kelegaannya.",
-    breathingMotivation: "Pertahankan semangat bernapasmu!",
     dashboardSubtitle: "Luangkan waktu sejenak untuk dirimu",
     storyLabel: "Kisah Minggu Ini",
     dashboardDecor: "",
@@ -38,7 +36,6 @@ const THEME_EXCLUSIVITY: Record<ThemeKey, ThemeExclusivity> = {
     journalEmptyCta: "Mulai Menulis",
     journalEmptyTitle: "Biarkan pikiran mengalir",
     journalEmptyDesc: "Seperti ombak, biarkan kata-kata mengalir dari hatimu.",
-    breathingMotivation: "Bernapas selaras dengan irama laut",
     dashboardSubtitle: "Biarkan ketenangan laut menemanimu",
     storyLabel: "Cerita dari Samudra",
     dashboardDecor: "ocean-decor",
@@ -50,7 +47,6 @@ const THEME_EXCLUSIVITY: Record<ThemeKey, ThemeExclusivity> = {
     journalEmptyCta: "Mulai Ceritamu",
     journalEmptyTitle: "Temukan ketenangan di sini",
     journalEmptyDesc: "Seperti hutan yang tenang, tuliskan apa yang ada di hatimu.",
-    breathingMotivation: "Hirup udara segar hutan dalam-dalam",
     dashboardSubtitle: "Temukan kedamaian di bawah rindangnya pohon",
     storyLabel: "Bisikan Hutan",
     dashboardDecor: "forest-decor",
@@ -62,7 +58,6 @@ const THEME_EXCLUSIVITY: Record<ThemeKey, ThemeExclusivity> = {
     journalEmptyCta: "Tulis di Cahaya Senja",
     journalEmptyTitle: "Senja memanggil ceritamu",
     journalEmptyDesc: "Di bawah cahaya senja, setiap kata terasa lebih bermakna.",
-    breathingMotivation: "Bernapas dengan kehangatan senja",
     dashboardSubtitle: "Nikmati kehangatan dan refleksi bersama senja",
     storyLabel: "Kisah Senja",
     dashboardDecor: "sunset-decor",

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, CreditCard, History, Lock, NotebookPen, Plus, Sparkles, Wind } from "lucide-react";
+import { ChevronDown, ChevronUp, CreditCard, History, Lock, NotebookPen, Plus, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/routes";
 import { SuggestedPrompt, type BillingStatus } from "@/types";
@@ -152,12 +152,6 @@ export function EmptyState({
                   <Link href={ROUTES.JOURNAL}>
                     <NotebookPen className="mr-1.5 h-3.5 w-3.5" />
                     Jurnal
-                  </Link>
-                </Button>
-                <Button asChild size="sm" variant="outline" className="border-amber-300 bg-white text-amber-800 hover:bg-amber-100">
-                  <Link href={ROUTES.BREATHING}>
-                    <Wind className="mr-1.5 h-3.5 w-3.5" />
-                    Napas
                   </Link>
                 </Button>
               </div>
