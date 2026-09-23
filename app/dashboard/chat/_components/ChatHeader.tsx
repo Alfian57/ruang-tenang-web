@@ -4,7 +4,6 @@ import {
     History,
     Download,
     FileText,
-    Sparkles,
     ChevronDown,
     ChevronUp,
     Pin,
@@ -58,7 +57,7 @@ export function ChatHeader({
                         onClick={onToggleSummary}
                         className="text-gray-600 hover:text-primary"
                     >
-                        <Sparkles className="w-4 h-4 mr-1" />
+                        <FileText className="w-4 h-4 mr-1" />
                         <span className="hidden sm:inline">Ringkasan</span>
                         {showSummary ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />}
                     </Button>

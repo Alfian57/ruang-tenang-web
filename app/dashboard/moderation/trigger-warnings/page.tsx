@@ -77,7 +77,7 @@ export default function TriggerWarningsPage() {
   };
 
   return (
-    <div className="p-4 lg:p-6 space-y-6">
+    <div className="space-y-6 py-4 lg:py-6">
       <div className="flex items-center gap-3">
         <Button asChild variant="ghost" size="icon" className="shrink-0">
           <Link href={ROUTES.ADMIN.MODERATION} aria-label="Kembali ke dashboard moderasi">

@@ -71,7 +71,7 @@ export default function EditJournalPage() {
 
     if (isLoading && !activeJournal) {
         return (
-            <div className="p-4 lg:p-6">
+            <div className="py-4 lg:py-6">
                 <div className="mb-6">
                     <div className="flex items-center gap-2 mb-4"><div className="h-4 w-4 rounded bg-gray-200 animate-pulse" /><div className="h-4 w-20 rounded bg-gray-200 animate-pulse" /></div>
                     <div className="h-7 w-28 rounded bg-gray-200 animate-pulse" />
@@ -89,7 +89,7 @@ export default function EditJournalPage() {
 
     if (!activeJournal && !isLoading) {
         return (
-            <div className="p-4 lg:p-6 text-center">
+            <div className="py-4 text-center lg:py-6">
                 <h2 className="text-xl font-semibold mb-4">Jurnal tidak ditemukan</h2>
                 <Button asChild>
                     <Link href="/dashboard/journal">Kembali ke Daftar</Link>
@@ -99,7 +99,7 @@ export default function EditJournalPage() {
     }
 
     return (
-        <div className="p-4 lg:p-6">
+        <div className="py-4 lg:py-6">
             <div className="mb-6">
                 <Button variant="ghost" size="sm" asChild className="mb-4 pl-0 hover:pl-2 transition-all">
                     <Link href={`/dashboard/journal/${identifier}`}>

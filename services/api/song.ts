@@ -11,10 +11,6 @@ export const songService = {
     return httpClient.get<ApiResponse<Song[]>>(`/song-categories/${encodeURIComponent(String(categoryKey))}/songs`);
   },
 
-  getSong(id: number) {
-    return httpClient.get<ApiResponse<Song>>(`/songs/${id}`);
-  },
-
   // Playlists
   getMyPlaylists(token: string) {
     return httpClient.get<ApiResponse<Playlist[]>>("/playlists", { token });
@@ -40,16 +36,8 @@ export const songService = {
     return httpClient.delete<ApiResponse<null>>(`/playlists/${encodeURIComponent(String(id))}`, { token });
   },
 
-  addSongToPlaylist(token: string, playlistId: string | number, songId: number) {
-    return httpClient.post<ApiResponse<PlaylistItem>>(`/playlists/${encodeURIComponent(String(playlistId))}/songs`, { song_id: songId }, { token });
-  },
-
   addSongsToPlaylist(token: string, playlistId: string | number, songIds: number[]) {
     return httpClient.post<ApiResponse<PlaylistItem[]>>(`/playlists/${encodeURIComponent(String(playlistId))}/songs/batch`, { song_ids: songIds }, { token });
-  },
-
-  removeSongFromPlaylist(token: string, playlistId: string | number, songId: number) {
-    return httpClient.delete<ApiResponse<null>>(`/playlists/${encodeURIComponent(String(playlistId))}/songs/${songId}`, { token });
   },
 
   removeItemFromPlaylist(token: string, playlistId: string | number, itemId: number) {

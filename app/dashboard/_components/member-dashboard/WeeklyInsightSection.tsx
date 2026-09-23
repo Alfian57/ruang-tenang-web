@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, CalendarDays, Crown, Sparkles } from "lucide-react";
+import { ArrowRight, Brain, CalendarDays, Crown } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
 import type { MemberDashboardViewModel } from "./useMemberDashboardViewModel";
 
@@ -54,7 +54,7 @@ export function WeeklyInsightSection({ viewModel }: WeeklyInsightSectionProps) {
               <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">Rekomendasi Minggu Ini</p>
               <h3 className="mt-1 text-sm font-semibold text-gray-900">Langkah kecil untuk mengisi wawasan</h3>
             </div>
-            <Sparkles className="h-4 w-4 shrink-0 text-primary/80" />
+            <Brain className="h-4 w-4 shrink-0 text-primary/80" />
           </div>
 
           <div className="mt-3 grid gap-2">

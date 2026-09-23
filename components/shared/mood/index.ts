@@ -1,0 +1,1 @@
+export { MoodAssetIcon } from "./MoodAssetIcon";

@@ -88,7 +88,7 @@ export default function AdminBroadcastsPage() {
 
     if (user?.role !== "admin") {
         return (
-            <div className="p-8 text-center">
+            <div className="py-8 text-center">
                 <h1 className="text-2xl font-bold text-destructive">Akses Ditolak</h1>
                 <p className="text-muted-foreground">
                     Anda tidak memiliki akses ke halaman ini.
@@ -98,7 +98,7 @@ export default function AdminBroadcastsPage() {
     }
 
     return (
-        <div className="p-4 lg:p-6">
+        <div className="py-4 lg:py-6">
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-2xl font-bold">Broadcast Notifikasi</h1>

@@ -12,10 +12,6 @@ export const forumService = {
     return httpClient.get<PaginatedResponse<Forum>>("/forums", { token, params: { limit, offset, search, category_id } });
   },
 
-  getById(token: string, id: number) {
-    return httpClient.get<ApiResponse<Forum>>(`/forums/${id}`, { token });
-  },
-
   getBySlug(token: string, slug: string) {
     return httpClient.get<ApiResponse<Forum>>(`/forums/${slug}`, { token });
   },
@@ -26,14 +22,6 @@ export const forumService = {
 
   toggleLike(token: string, id: string | number) {
     return httpClient.put<ApiResponse<Forum>>(`/forums/${id}/like`, undefined, { token });
-  },
-
-  getAcceptedAnswer(token: string, id: string | number) {
-    return httpClient.get<ApiResponse<ForumPost>>(`/forums/${id}/accepted-answer`, { token });
-  },
-
-  unmarkAcceptedAnswer(token: string, id: string | number) {
-    return httpClient.delete<ApiResponse<null>>(`/forums/${id}/accepted-answer`, { token });
   },
 
   // Posts
@@ -53,10 +41,6 @@ export const forumService = {
     return httpClient.put<ApiResponse<ForumPost>>(`/posts/${postId}/upvote`, undefined, { token });
   },
 
-  downvotePost(token: string, postId: number) {
-    return httpClient.put<ApiResponse<ForumPost>>(`/posts/${postId}/downvote`, undefined, { token });
-  },
-
   removePostVote(token: string, postId: number) {
     return httpClient.delete<ApiResponse<null>>(`/posts/${postId}/vote`, { token });
   },
@@ -65,30 +49,9 @@ export const forumService = {
     return httpClient.put<ApiResponse<ForumPost>>(`/posts/${postId}/accept`, undefined, { token });
   },
 
-  reportPost(token: string, postId: number, data: { reason: string; description?: string }) {
-    return httpClient.post<ApiResponse<null>>(`/posts/${postId}/report`, data, { token });
-  },
-
   // Categories (public)
   getCategories() {
     return httpClient.get<ApiResponse<ForumCategory[]>>("/forum-categories");
   },
 
-  // Helper (public)
-  getReportReasons() {
-    return httpClient.get<ApiResponse<string[]>>("/forums/report-reasons");
-  },
-
-  getSortOptions() {
-    return httpClient.get<ApiResponse<string[]>>("/forums/sort-options");
-  },
-
-  // Post reports (admin)
-  getPendingReports(token: string) {
-    return httpClient.get<ApiResponse<unknown[]>>("/moderation/post-reports", { token });
-  },
-
-  reviewReport(token: string, reportId: number, data: { action: string; notes?: string }) {
-    return httpClient.put<ApiResponse<null>>(`/moderation/post-reports/${reportId}`, data, { token });
-  },
 };

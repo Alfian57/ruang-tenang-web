@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { adminService, uploadService } from "@/services/api";
-import { httpClient } from "@/services/http/client";
 import { SongCategory, Song } from "@/types";
 import { useDebounce } from "@/hooks/use-debounce";
 
@@ -95,13 +94,14 @@ export function useAdminSongs() {
   }, [debouncedSongSearch, debouncedCategorySearch, selectedCategoryId]);
 
   const loadCategories = useCallback(async () => {
+    if (!token) return;
     try {
-      const data = await httpClient.get<{ data?: SongCategory[] }>("/song-categories");
-      setCategories(data.data || []);
+      const response = await adminService.getSongCategories(token);
+      setCategories(response.data || []);
     } catch (error) {
       console.error("Failed to load categories:", error);
     }
-  }, []);
+  }, [token]);
 
   const loadSongs = useCallback(async () => {
     if (!token) return;
@@ -140,11 +140,7 @@ export function useAdminSongs() {
     if (!token || !categoryForm.name) return;
     try {
       if (editingCategory) {
-        await httpClient.put(
-          `/admin/song-categories/${editingCategory.id}`,
-          categoryForm,
-          { token }
-        );
+        await adminService.updateSongCategory(token, editingCategory.id, categoryForm);
       } else {
         await adminService.createSongCategory(token, categoryForm);
       }

@@ -3,7 +3,7 @@ import type { ApiResponse, PaginatedResponse } from "@/services/http/types";
 import type { User, Article, ArticleCategory, Song, SongCategory, LevelConfig } from "@/types";
 import type { Forum, ForumCategory, ForumPost } from "@/types/forum";
 import type { AdminMapLandmark, AdminMapLandmarkPayload } from "@/types/progress-map";
-import type { DashboardStats } from "@/types/admin";
+import type { AdminUser, DashboardStats } from "@/types/admin";
 
 export const adminService = {
   // Dashboard
@@ -13,11 +13,7 @@ export const adminService = {
 
   // Users
   getUsers(token: string, params?: { page?: number; limit?: number; search?: string; role?: string }) {
-    return httpClient.get<PaginatedResponse<User>>("/admin/users", { token, params });
-  },
-
-  getUser(token: string, id: number) {
-    return httpClient.get<ApiResponse<User>>(`/admin/users/${id}`, { token });
+    return httpClient.get<PaginatedResponse<AdminUser>>("/admin/users", { token, params });
   },
 
   updateUserRole(token: string, id: number, role: string) {
@@ -52,6 +48,18 @@ export const adminService = {
     return httpClient.get<PaginatedResponse<Article>>("/admin/articles", { token, params });
   },
 
+  getArticle(token: string, identifier: string | number) {
+    return httpClient.get<ApiResponse<Article>>(`/admin/articles/${encodeURIComponent(String(identifier))}`, { token });
+  },
+
+  createArticle(token: string, data: { title: string; content: string; thumbnail?: string; category_id: number }) {
+    return httpClient.post<ApiResponse<Article>>("/admin/articles", data, { token });
+  },
+
+  updateArticle(token: string, id: number, data: { title: string; content: string; thumbnail?: string; category_id: number }) {
+    return httpClient.put<ApiResponse<Article>>(`/admin/articles/${id}`, data, { token });
+  },
+
   // Block an article (sets status to "blocked").
   blockArticle(token: string, id: number) {
     return httpClient.put<ApiResponse<null>>(`/admin/articles/${id}/block`, {}, { token });
@@ -68,6 +76,18 @@ export const adminService = {
 
   getArticleCategories(token: string) {
     return httpClient.get<ApiResponse<ArticleCategory[]>>("/admin/article-categories", { token });
+  },
+
+  createArticleCategory(token: string, data: { name: string; description?: string }) {
+    return httpClient.post<ApiResponse<ArticleCategory>>("/admin/article-categories", data, { token });
+  },
+
+  updateArticleCategory(token: string, id: number, data: { name: string; description?: string }) {
+    return httpClient.put<ApiResponse<ArticleCategory>>(`/admin/article-categories/${id}`, data, { token });
+  },
+
+  deleteArticleCategory(token: string, id: number) {
+    return httpClient.delete<ApiResponse<null>>(`/admin/article-categories/${id}`, { token });
   },
 
   // Songs

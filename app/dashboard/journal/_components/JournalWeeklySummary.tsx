@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sparkles, FileText, TrendingUp, Brain } from "lucide-react";
+import { FileText, TrendingUp, Brain } from "lucide-react";
 import { format } from "date-fns";
 import { parseApiDate } from "@/utils/date";
 import { id } from "date-fns/locale";
@@ -56,7 +56,7 @@ export function JournalWeeklySummary({
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-lg flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-primary/80" />
+                        <Brain className="w-5 h-5 text-primary/80" />
                         Ringkasan Mingguanmu
                     </CardTitle>
                     <span className="text-sm text-gray-500">

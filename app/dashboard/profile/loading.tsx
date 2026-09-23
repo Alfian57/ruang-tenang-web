@@ -1,6 +1,6 @@
 export default function ProfileLoading() {
   return (
-    <div className="p-6 lg:p-8 space-y-6">
+    <div className="space-y-6 py-6 lg:py-8">
       <div className="rounded-xl border bg-white p-6">
         <div className="flex items-center gap-6">
           <div className="h-20 w-20 rounded-full bg-gray-200 animate-pulse" />

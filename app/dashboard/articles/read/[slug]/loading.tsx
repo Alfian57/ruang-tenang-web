@@ -1,6 +1,6 @@
 export default function ReadArticleLoading() {
   return (
-    <div className="p-4 lg:p-6">
+    <div className="py-4 lg:py-6">
       <div className="max-w-6xl mx-auto">
         {/* Back link */}
         <div className="flex items-center gap-2 mb-6">

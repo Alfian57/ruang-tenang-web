@@ -18,19 +18,19 @@ export interface LevelTaskFormData {
 }
 
 function resolveTaskIcon(task: Pick<LevelTaskFormData, "unlock_type" | "unlock_activity">): string {
-  if (task.unlock_type === "streak") return "🔥";
-  if (task.unlock_type === "xp") return "⭐";
-  if (task.unlock_type === "level") return "🏆";
+  if (task.unlock_type === "streak") return "streak";
+  if (task.unlock_type === "xp") return "xp";
+  if (task.unlock_type === "level") return "level";
 
   const activity = task.unlock_activity.trim().toLowerCase();
-  if (activity === "login") return "🚪";
-  if (activity === "mood") return "😊";
-  if (activity === "chat") return "💬";
-  if (activity === "journal") return "📝";
-  if (activity === "forum") return "🗣️";
-  if (activity === "story") return "✨";
-  if (activity === "article" || activity === "write_article") return "📖";
-  return "🎯";
+  if (activity === "login") return "login";
+  if (activity === "mood") return "mood";
+  if (activity === "chat") return "chat";
+  if (activity === "journal") return "journal";
+  if (activity === "forum") return "forum";
+  if (activity === "story") return "story";
+  if (activity === "article" || activity === "write_article") return "article";
+  return "target";
 }
 
 export interface LevelFormData {

@@ -3,7 +3,7 @@
 import { cn } from "@/utils";
 import { LevelUpCelebration as LevelUpCelebrationData } from "@/types";
 import { FeatureUnlockCelebration } from "./FeatureComponents";
-import { Star, Sparkles, ChevronUp } from "lucide-react";
+import { PartyPopper, Star, ChevronUp } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface LevelUpCelebrationProps {
@@ -110,7 +110,10 @@ export function LevelUpCelebration({ celebration, onClose, className }: LevelUpC
                 </div>
 
                 {/* Title */}
-                <h2 className="text-3xl font-bold mb-2">Naik Level! 🎉</h2>
+                <h2 className="mb-2 inline-flex items-center gap-2 text-3xl font-bold">
+                    Naik Level!
+                    <PartyPopper className="h-7 w-7 text-primary" aria-hidden="true" />
+                </h2>
                 <p
                     className="text-xl font-semibold mb-2"
                     style={{ color: celebration.tier_color }}
@@ -141,7 +144,7 @@ export function LevelUpCelebration({ celebration, onClose, className }: LevelUpC
                                 onClick={() => setShowFeatures(true)}
                                 className="w-full bg-primary text-primary-foreground rounded-lg py-3 font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
                             >
-                                <Sparkles className="h-5 w-5" />
+                                <Star className="h-5 w-5" />
                                 Lihat Fitur Baru ({celebration.unlocked_features.length})
                             </button>
                             <button

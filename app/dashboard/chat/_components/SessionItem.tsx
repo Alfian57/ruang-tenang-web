@@ -1,6 +1,6 @@
 "use client";
 
-import { Heart, MoreVertical, Trash2, Folder, FolderOutput, MessageSquare, NotebookPen } from "lucide-react";
+import { Heart, Mic, MoreVertical, Trash2, Folder, FolderOutput, MessageSquare, NotebookPen } from "lucide-react";
 import { cn } from "@/utils";
 import { ChatSession, ChatFolder } from "@/types";
 import {
@@ -45,6 +45,8 @@ export function SessionItem({
   onDeletePermanent,
   onMoveToFolder,
 }: SessionItemProps) {
+  const isVoiceMessage = session.last_message?.includes("Pesan Suara") ?? false;
+
   return (
     <div
       onClick={onSelect}
@@ -89,8 +91,9 @@ export function SessionItem({
                     )}
                   </div>
                   {!compact && (
-                    <p className="text-xs text-gray-500 truncate mt-0.5">
-                      {session.last_message || "Tidak ada pesan"}
+                    <p className="flex items-center gap-1 text-xs text-gray-500 truncate mt-0.5">
+                      {isVoiceMessage && <Mic className="h-3 w-3 shrink-0" aria-hidden="true" />}
+                      <span className="truncate">{isVoiceMessage ? "Pesan Suara" : session.last_message || "Tidak ada pesan"}</span>
                     </p>
                   )}
                 </div>

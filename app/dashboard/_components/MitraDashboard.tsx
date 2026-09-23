@@ -26,7 +26,7 @@ export function MitraDashboard({ initialSection = "overview" }: MitraDashboardPr
   }
 
   return (
-    <div className="mx-auto min-h-screen w-full max-w-[112rem] space-y-6 bg-gradient-to-br from-gray-50 via-white to-red-50/40 p-3 xs:p-4 lg:p-6">
+    <div className="min-h-screen w-full space-y-6 py-3 xs:py-4 lg:py-6">
       <MitraDashboardHeader viewModel={viewModel} />
 
       {viewModel.errorMessage && (

@@ -44,7 +44,7 @@ export default function AdminUsersPage() {
 
   if (user?.role !== "admin") {
     return (
-      <div className="p-8 text-center">
+      <div className="py-8 text-center">
         <h1 className="text-2xl font-bold text-destructive">Akses Ditolak</h1>
         <p className="text-muted-foreground">Anda tidak memiliki akses ke halaman ini.</p>
       </div>
@@ -102,7 +102,7 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="py-4 lg:py-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Kelola Pengguna</h1>
         <p className="text-gray-500">Lihat dan kelola semua pengguna terdaftar</p>

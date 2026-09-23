@@ -1,6 +1,6 @@
 import { ChatSessionSummary } from "@/types";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2 } from "lucide-react";
+import { FileText, Loader2 } from "lucide-react";
 
 function normalizeSummary(summary?: ChatSessionSummary | null): ChatSessionSummary | null {
     if (!summary) return null;
@@ -44,7 +44,7 @@ export function ChatSummaryPanel({ summary, isGenerating, onGenerate }: ChatSumm
         <div className="border-b bg-linear-to-r from-primary/5 to-primary/10 p-4">
             <div className="flex items-center justify-between mb-2">
                 <h4 className="font-medium text-gray-800 flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-primary" />
+                    <FileText className="w-4 h-4 text-primary" />
                     Ringkasan Percakapan
                 </h4>
                 {(!normalizedSummary || !normalizedSummary.summary) && (
@@ -61,7 +61,7 @@ export function ChatSummaryPanel({ summary, isGenerating, onGenerate }: ChatSumm
                             </>
                         ) : (
                             <>
-                                <Sparkles className="w-3 h-3 mr-1" />
+                                <FileText className="w-3 h-3 mr-1" />
                                 Buat Ringkasan
                             </>
                         )}
@@ -104,7 +104,7 @@ export function ChatSummaryPanel({ summary, isGenerating, onGenerate }: ChatSumm
                             </>
                         ) : (
                             <>
-                                <Sparkles className="w-3 h-3 mr-1" />
+                                <FileText className="w-3 h-3 mr-1" />
                                 Perbarui Ringkasan
                             </>
                         )}

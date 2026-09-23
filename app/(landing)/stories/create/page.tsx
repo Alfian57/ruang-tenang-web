@@ -7,7 +7,7 @@ import { Navbar, Footer } from "@/components/layout";
 import { useAuthStore } from "@/store/authStore";
 import { StoryForm } from "@/components/shared/stories";
 import { StoryCategory, StoryStats, CreateStoryRequest } from "@/types";
-import { ArrowLeft, AlertTriangle, Lock } from "lucide-react";
+import { ArrowLeft, AlertTriangle, BarChart3, Lock } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -189,8 +189,9 @@ export default function CreateStoryPage() {
                             transition={{ delay: 0.1 }}
                             className="mb-6 rounded-lg border border-red-100 bg-white/80 p-4"
                         >
-                            <p className="text-sm text-muted-foreground">
-                                📊 Cerita bulan ini: {myStats.stories_this_month}/{myStats.max_stories_per_month}
+                            <p className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                                <BarChart3 className="h-4 w-4" aria-hidden="true" />
+                                <span>Cerita bulan ini: {myStats.stories_this_month}/{myStats.max_stories_per_month}</span>
                                 {myStats.total_stories > 0 && ` • Total cerita: ${myStats.total_stories}`}
                                 {myStats.total_hearts > 0 && ` • Total hati: ${myStats.total_hearts}`}
                             </p>

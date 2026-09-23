@@ -5,17 +5,9 @@ import type {
   ExpHistory,
   ExpHistoryResponse,
   CommunityStats,
-  HallOfFameEntry,
-  HallOfFameCategoryInfo,
   LevelHallOfFameResponse,
   PersonalJourney,
   WeeklyProgress,
-  AllTimeStats,
-  LevelUpCelebration,
-  FeatureUnlock,
-  Badge,
-  BadgeProgress,
-  UserFeatures,
   UserBadges,
   DailyTask,
   DailyTaskSummary,
@@ -33,14 +25,6 @@ export const communityService = {
     return httpClient.get<ApiResponse<LevelHallOfFameResponse>>(`/community/hall-of-fame/level/${level}`);
   },
 
-  getMonthlyHallOfFame() {
-    return httpClient.get<ApiResponse<HallOfFameEntry[]>>("/community/hall-of-fame/monthly");
-  },
-
-  getHallOfFameCategories() {
-    return httpClient.get<ApiResponse<HallOfFameCategoryInfo[]>>("/community/hall-of-fame/categories");
-  },
-
   // Protected
   getPersonalJourney(token: string) {
     return httpClient.get<ApiResponse<PersonalJourney>>("/community/my-journey", { token });
@@ -50,74 +34,8 @@ export const communityService = {
     return httpClient.get<ApiResponse<WeeklyProgress>>("/community/my-progress/weekly", { token });
   },
 
-  getMonthlyProgress(token: string) {
-    return httpClient.get<ApiResponse<WeeklyProgress>>("/community/my-progress/monthly", { token });
-  },
-
-  getAllTimeStats(token: string) {
-    return httpClient.get<ApiResponse<AllTimeStats>>("/community/my-stats", { token });
-  },
-
-  getLevelUpCelebration(token: string, level: number) {
-    return httpClient.get<ApiResponse<LevelUpCelebration>>(`/community/celebrate/${level}`, { token });
-  },
-
-  // Features
-  getAllFeatures() {
-    return httpClient.get<ApiResponse<FeatureUnlock[]>>("/features");
-  },
-
-  getFeaturesByCategory(category: string) {
-    return httpClient.get<ApiResponse<FeatureUnlock[]>>(`/features/category/${category}`);
-  },
-
-  getFeatureCategories() {
-    return httpClient.get<ApiResponse<string[]>>("/features/categories");
-  },
-
-  getUserFeatures(token: string) {
-    return httpClient.get<ApiResponse<UserFeatures>>("/features/my-features", { token });
-  },
-
-  checkFeatureAccess(token: string, featureKey: string) {
-    return httpClient.get<ApiResponse<{ has_access: boolean; required_level: number }>>(`/features/check/${featureKey}`, { token });
-  },
-
-  getUpcomingFeatures(token: string) {
-    return httpClient.get<ApiResponse<FeatureUnlock[]>>("/features/upcoming", { token });
-  },
-
-  // Badges
-  getAllBadges() {
-    return httpClient.get<ApiResponse<Badge[]>>("/badges");
-  },
-
-  getBadgesByCategory(category: string) {
-    return httpClient.get<ApiResponse<Badge[]>>(`/badges/category/${category}`);
-  },
-
-  getBadgeCategories() {
-    return httpClient.get<ApiResponse<string[]>>("/badges/categories");
-  },
-
   getUserBadges(token: string) {
     return httpClient.get<ApiResponse<UserBadges>>("/badges/my-badges", { token });
-  },
-
-  getBadgeProgress(token: string) {
-    return httpClient.get<ApiResponse<BadgeProgress[]>>("/badges/progress", { token });
-  },
-
-  getRecentlyEarnedBadges(token: string) {
-    return httpClient.get<ApiResponse<Badge[]>>("/badges/recent", { token });
-  },
-
-  getDisplayBadges(token: string) {
-    return httpClient.get<ApiResponse<Badge[]>>("/badges/display", { token });
-  },
-
-  checkNewBadges(token: string) {
-    return httpClient.post<ApiResponse<Badge[]>>("/badges/check", {}, { token });
   },
 
   // Leaderboard
@@ -162,19 +80,8 @@ export const communityService = {
     return httpClient.get<ApiResponse<DailyTask[] | DailyTaskSummary>>("/daily-tasks", { token });
   },
 
-  claimDailyLogin(token: string) {
-    return httpClient.post<ApiResponse<{ exp_earned: number }>>("/daily-tasks/login", {}, { token });
-  },
-
   claimTaskReward(token: string, taskId: number) {
     return httpClient.post<ApiResponse<ClaimTaskResponse>>(`/daily-tasks/${taskId}/claim`, {}, { token });
   },
 
-  claimAllRewards(token: string) {
-    return httpClient.post<ApiResponse<{ total_exp_earned: number }>>("/daily-tasks/claim-all", {}, { token });
-  },
-
-  getTaskHistory(token: string, params?: { page?: number; limit?: number }) {
-    return httpClient.get<PaginatedResponse<DailyTask>>("/daily-tasks/history", { token, params });
-  },
 };

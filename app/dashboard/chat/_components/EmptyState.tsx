@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, CreditCard, History, Lock, NotebookPen, Plus, Sparkles } from "lucide-react";
+import { ChevronDown, ChevronUp, CreditCard, History, Lock, NotebookPen, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/routes";
 import { SuggestedPrompt, type BillingStatus } from "@/types";
@@ -205,7 +205,7 @@ export function EmptyState({
           </article>
 
           <article className="rounded-2xl border border-primary/20 bg-primary/10 p-4">
-            <Sparkles className="h-5 w-5 text-primary" />
+            <NotebookPen className="h-5 w-5 text-primary" />
             <h4 className="mt-3 text-base font-semibold text-gray-900">Pilih prompt cepat</h4>
             <p className="mt-1 text-sm text-gray-600">Gunakan prompt siap pakai untuk memulai percakapan terarah.</p>
             <Button
@@ -249,7 +249,7 @@ export function EmptyState({
         {suggestedPrompts && suggestedPrompts.length > 0 && (
           <section className="mt-5 rounded-2xl border border-gray-200 bg-white/85 p-4 sm:p-5">
             <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
-              <Sparkles className="w-4 h-4 text-primary" />
+              <NotebookPen className="w-4 h-4 text-primary" />
               <span>Atau mulai dengan prompt ini:</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">

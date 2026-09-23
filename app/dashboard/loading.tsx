@@ -1,6 +1,6 @@
 export default function DashboardLoading() {
   return (
-    <div className="p-6 lg:p-8 space-y-6">
+    <div className="space-y-6 py-6 lg:py-8">
       {/* Header */}
       <div className="space-y-2">
         <div className="h-6 w-32 rounded bg-gray-200 animate-pulse" />

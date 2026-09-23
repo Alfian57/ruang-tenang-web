@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { progressMapService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import type { MapProgressSummary } from "@/types/progress-map";
-import { Map, Flag, Compass, ArrowRight, Sparkles } from "lucide-react";
+import { Map, Flag, Compass, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,7 +46,7 @@ export function MapProgressWidget() {
                     </div>
                     <h4 className="font-semibold text-sm text-gray-800">Peta Perjalanan</h4>
                     <p className="text-xs text-gray-500">Mulai petualangan dan buka area baru!</p>
-                    <Link href={ROUTES.PROGRESS_MAP}>
+                    <Link href={ROUTES.journeyTab("map")}>
                         <Button size="sm" variant="outline" className="text-xs h-7 gap-1">
                             Lihat Peta <ArrowRight className="w-3 h-3" />
                         </Button>
@@ -65,7 +65,7 @@ export function MapProgressWidget() {
                     <Map className="w-4 h-4 text-theme-story-icon" />
                     Peta Perjalanan
                 </CardTitle>
-                <Link href={ROUTES.PROGRESS_MAP}>
+                <Link href={ROUTES.journeyTab("map")}>
                     <Button variant="ghost" size="sm" className="text-xs text-theme-story-link hover:text-theme-story-heading h-7 px-2">
                         Buka <ArrowRight className="w-3 h-3 ml-1" />
                     </Button>
@@ -109,7 +109,7 @@ export function MapProgressWidget() {
                 {/* Latest unlock */}
                 {summary.latest_unlock && (
                     <div className="flex items-center gap-2 bg-white/70 border border-theme-story-border rounded-lg px-3 py-2">
-                        <Sparkles className="w-3.5 h-3.5 text-theme-story-icon shrink-0" />
+                        <Flag className="w-3.5 h-3.5 text-theme-story-icon shrink-0" />
                         <div className="min-w-0">
                             <p className="text-[10px] text-gray-400">Terakhir Dibuka</p>
                             <p className="text-xs font-medium text-gray-700 truncate">{summary.latest_unlock}</p>

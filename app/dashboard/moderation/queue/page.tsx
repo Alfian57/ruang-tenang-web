@@ -22,7 +22,7 @@ export default function ModerationQueuePage() {
     } = useModerationQueue();
 
     return (
-        <div className="p-4 lg:p-6 space-y-6">
+        <div className="space-y-6 py-4 lg:py-6">
             <ModerationQueueHeader
                 statusFilter={statusFilter}
                 setStatusFilter={setStatusFilter}

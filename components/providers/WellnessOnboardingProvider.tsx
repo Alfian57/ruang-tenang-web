@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Check, Loader2, Sparkles } from "lucide-react";
+import { Brain, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -129,7 +129,7 @@ export function WellnessOnboardingProvider() {
         <div className="border-b border-primary/20 bg-primary/5 px-5 py-5 sm:px-6">
           <DialogHeader>
             <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-primary shadow-sm">
-              <Sparkles className="h-5 w-5" />
+              <Brain className="h-5 w-5" />
             </div>
             <DialogTitle>Bangun Rencana Tenang 7 Hari</DialogTitle>
             <DialogDescription className="text-gray-600">

@@ -1,7 +1,6 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Activity } from "lucide-react";
 import { useAdminDashboard } from "../_hooks/useAdminDashboard";
 import { AdminAlertCards } from "./admin/AdminAlertCards";
 import { AdminStatsCards } from "./admin/AdminStatsCards";
@@ -12,13 +11,9 @@ export function AdminDashboard() {
   const { user, stats, isLoading } = useAdminDashboard();
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="py-4 lg:py-6">
       {/* Header */}
       <div className="mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm mb-4">
-          <Activity className="w-4 h-4" />
-          Admin Dashboard
-        </div>
         <h1 className="text-2xl md:text-3xl font-bold mb-2">Selamat Datang, {user?.name}!</h1>
         <p className="text-muted-foreground">
           Pantau performa platform dan kelola konten Ruang Tenang

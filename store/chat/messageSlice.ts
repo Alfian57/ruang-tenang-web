@@ -142,7 +142,7 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
           response.data.ai_message,
         ],
         sessions: state.sessions.map((s) =>
-          s.id === activeSession.id ? { ...s, last_message: "🎤 Pesan Suara" } : s
+          s.id === activeSession.id ? { ...s, last_message: "Pesan Suara" } : s
         ),
         isSending: false,
         isRecording: false,

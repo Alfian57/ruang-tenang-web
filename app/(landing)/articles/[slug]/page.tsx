@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { Calendar, Tag } from "lucide-react";
+import { Calendar, FileText, Tag } from "lucide-react";
 import { Navbar, Footer } from "@/components/layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -155,7 +155,7 @@ export default function ArticleDetailPage() {
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-2xl">
-                              📄
+                              <FileText className="h-8 w-8 text-gray-400" aria-hidden="true" />
                             </div>
                           )}
                         </div>

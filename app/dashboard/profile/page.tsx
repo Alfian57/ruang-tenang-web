@@ -91,7 +91,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="py-4 lg:py-6">
       <div className="mb-8">
         <h1 className="text-2xl font-bold mb-2">Profil</h1>
         <p className="text-muted-foreground">

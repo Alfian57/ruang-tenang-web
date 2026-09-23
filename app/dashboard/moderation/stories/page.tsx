@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, FileEdit, Sparkles, Eye, ArrowLeft, BookOpen } from "lucide-react";
+import { CheckCircle2, XCircle, FileEdit, Eye, ArrowLeft, BookOpen } from "lucide-react";
 import { formatDate, getHtmlExcerpt } from "@/utils";
 import { useModerationStories, type StoryModerationAction } from "./_hooks/useModerationStories";
 
@@ -44,7 +44,7 @@ export default function ModerationStoriesPage() {
   };
 
   return (
-    <div className="p-4 lg:p-6 space-y-6">
+    <div className="space-y-6 py-4 lg:py-6">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
@@ -174,7 +174,7 @@ export default function ModerationStoriesPage() {
                         onClick={() => setFeatured(story.id, !story.is_featured)}
                         disabled={isProcessing}
                       >
-                        <Sparkles className="h-4 w-4 mr-1" />
+                        <BookOpen className="h-4 w-4 mr-1" />
                         {story.is_featured ? "Hapus Unggulan" : "Jadikan Unggulan"}
                       </Button>
                     </div>

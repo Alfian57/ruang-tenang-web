@@ -9,7 +9,6 @@ import {
   FileText,
   Music,
   Heart,
-  Activity,
   Ban,
   FolderOpen,
   ChevronRight,
@@ -24,7 +23,7 @@ export default function AdminDashboardPage() {
 
   if (user?.role !== "admin") {
     return (
-      <div className="p-8 text-center">
+      <div className="py-8 text-center">
         <h1 className="text-2xl font-bold text-destructive">Akses Ditolak</h1>
         <p className="text-muted-foreground">Anda tidak memiliki akses ke halaman ini.</p>
       </div>
@@ -32,13 +31,9 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="py-4 lg:py-6">
       {/* Header */}
       <div className="mb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm mb-4">
-          <Activity className="w-4 h-4" />
-          Admin Dashboard
-        </div>
         <h1 className="text-2xl md:text-3xl font-bold mb-2">Selamat Datang, {user?.name}!</h1>
         <p className="text-muted-foreground">
           Pantau performa platform dan kelola konten Ruang Tenang

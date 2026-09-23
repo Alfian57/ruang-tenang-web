@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ROUTES } from "@/lib/routes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, HeartPulse, Sparkles } from "lucide-react";
+import { ArrowRight, HeartPulse } from "lucide-react";
 import { MoodType, UserMood } from "@/types";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
@@ -34,7 +34,7 @@ const MOOD_ACTION_PLANS: Record<
     title: "Pertahankan energi positif",
     description: "Gunakan momen ini untuk memperkuat kebiasaan baik agar efeknya bertahan.",
     primaryAction: { label: "Catat Syukur di Jurnal", href: ROUTES.JOURNAL },
-    secondaryAction: { label: "Bagikan Victory Note", href: ROUTES.FORUM },
+    secondaryAction: { label: "Bagikan Victory Note", href: ROUTES.COMMUNITY },
   },
   neutral: {
     title: "Jaga ritme tetap stabil",
@@ -52,7 +52,7 @@ const MOOD_ACTION_PLANS: Record<
     title: "Ubah kecewa jadi langkah konkret",
     description: "Validasi dulu perasaanmu, lalu pilih satu hal yang masih bisa kamu kendalikan.",
     primaryAction: { label: "Refleksi Penyebab di Jurnal", href: ROUTES.JOURNAL },
-    secondaryAction: { label: "Minta Saran di Forum", href: ROUTES.FORUM },
+    secondaryAction: { label: "Minta Saran di Forum", href: ROUTES.COMMUNITY },
   },
   angry: {
     title: "Turunkan intensitas emosi dulu",
@@ -172,7 +172,7 @@ export function MoodInsightWidget({ moods, isLoading }: MoodInsightWidgetProps) 
 
             {dominantMood && sortedMoods.length > 5 && (
               <div className="flex items-center justify-center gap-2 text-xs text-theme-accent-text bg-theme-accent-soft py-1.5 px-3 rounded-full">
-                <Sparkles className="w-3 h-3" />
+                <HeartPulse className="w-3 h-3" />
                 <span>Kamu sering merasa <strong>{dominantMood[0]}</strong> minggu ini.</span>
               </div>
             )}

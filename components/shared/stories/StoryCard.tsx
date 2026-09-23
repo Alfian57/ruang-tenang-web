@@ -45,7 +45,7 @@ export function StoryCard({ story, className }: StoryCardProps) {
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary/20 to-primary/5">
-                            <span className="text-4xl">📖</span>
+                            <BookOpen className="h-10 w-10 text-primary/70" aria-hidden="true" />
                         </div>
                     )}
 

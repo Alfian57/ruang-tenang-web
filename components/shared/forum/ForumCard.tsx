@@ -57,7 +57,7 @@ export function ForumCard({ forum, className }: ForumCardProps) {
 
   return (
     <Link
-      href={ROUTES.forumDetail(forum.slug)}
+      href={ROUTES.communityForum(forum.slug)}
       className={cn(
         "group relative block overflow-hidden rounded-2xl border bg-card p-5 transition-all",
         "hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5",

@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
 import { sanitizeHtml } from "@/utils/sanitize";
+import { MoodAssetIcon } from "@/components/shared/mood";
 
 interface JournalDetailProps {
     journal: Journal;
@@ -87,10 +88,8 @@ export function JournalDetail({
             <div className="flex-1 overflow-auto p-6">
                 {/* Title & Mood */}
                 <div className="flex items-start gap-3 mb-4">
-                    {journal.mood_emoji && (
-                        <span className="text-4xl" title={journal.mood_label}>
-                            {journal.mood_emoji}
-                        </span>
+                    {journal.mood_label && (
+                        <MoodAssetIcon moodLabel={journal.mood_label} moodId={journal.mood_id} size={40} className="h-10 w-10 object-contain" />
                     )}
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">

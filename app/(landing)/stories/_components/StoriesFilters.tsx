@@ -10,6 +10,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { StoryCategory } from "@/types";
+import { StoryCategoryIcon } from "@/components/shared/stories/StoryCategoryIcon";
 
 const SORT_OPTIONS = [
     { value: "recent" as const, label: "Terbaru", icon: Clock },
@@ -72,7 +73,8 @@ export function StoriesFilters({
                             key={category.id}
                             onClick={() => onCategoryChange(category.id)}
                         >
-                            {category.icon} {category.name}
+                            <StoryCategoryIcon slug={category.slug} name={category.name} className="mr-2 h-4 w-4" />
+                            {category.name}
                         </DropdownMenuItem>
                     ))}
                 </DropdownMenuContent>

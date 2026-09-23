@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
-import { httpClient } from "@/services/http/client";
-import type { ApiResponse } from "@/services/http/types";
+import { adminService } from "@/services/api";
 import { DashboardStats } from "@/types/admin";
 
 export function useAdminStats() {
@@ -21,9 +20,7 @@ export function useAdminStats() {
   const loadStats = async () => {
     if (!token) return;
     try {
-      const response = await httpClient.get<ApiResponse<DashboardStats>>("/admin/stats", {
-        token,
-      });
+      const response = await adminService.getStats(token);
       setStats(response.data);
     } catch (error) {
       console.error("Failed to load stats:", error);

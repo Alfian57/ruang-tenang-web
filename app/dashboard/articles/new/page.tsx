@@ -73,7 +73,7 @@ export default function NewArticlePage() {
   };
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="py-4 lg:py-6">
       <div className="flex items-center gap-4 mb-6">
         <Link href={ROUTES.ARTICLES}>
           <Button variant="ghost" size="icon">

@@ -35,7 +35,7 @@ export default function DashboardArticleDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="p-4 lg:p-6">
+      <div className="py-4 lg:py-6">
         <div className="flex items-center gap-4 mb-6">
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="w-5 h-5" />
@@ -80,7 +80,7 @@ export default function DashboardArticleDetailPage() {
 
   if (!article) {
     return (
-      <div className="p-4 lg:p-6">
+      <div className="py-4 lg:py-6">
         <div className="flex items-center gap-4 mb-6">
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="w-5 h-5" />
@@ -102,7 +102,7 @@ export default function DashboardArticleDetailPage() {
   }
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="py-4 lg:py-6">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
         <Link href={getBackLink()}>

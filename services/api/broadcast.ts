@@ -46,10 +46,6 @@ export const broadcastService = {
     });
   },
 
-  getById(token: string, id: string) {
-    return httpClient.get<ApiResponse<BroadcastNotification>>(`/admin/broadcasts/${id}`, { token });
-  },
-
   create(token: string, data: CreateBroadcastPayload) {
     return httpClient.post<ApiResponse<BroadcastNotification>>("/admin/broadcasts", data, { token });
   },

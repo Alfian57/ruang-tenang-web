@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Loader2, Lock, Eye, EyeOff, CheckCircle, ShieldCheck, KeyRound, Sparkles } from "lucide-react";
+import { Loader2, Lock, Eye, EyeOff, CheckCircle, ShieldCheck, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -189,7 +189,7 @@ export default function ResetPasswordPage() {
         floatingElements={
           <>
             <FloatingIcon className="top-20 right-10" delay={0}>
-              <Sparkles className="w-8 h-8 text-yellow-300" />
+              <ShieldCheck className="w-8 h-8 text-yellow-300" />
             </FloatingIcon>
 
             <FloatingIcon className="bottom-32 left-10" delay={1.5}>

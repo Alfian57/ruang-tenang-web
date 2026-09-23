@@ -24,7 +24,7 @@ function getEstimatedReadTime(article: Article): string {
 export function RecommendedArticlesWidget({ articles, isLoading }: RecommendedArticlesWidgetProps) {
   if (isLoading) {
     return (
-      <Card className="h-full border-none shadow-none bg-transparent">
+      <Card className="h-full border-none bg-transparent shadow-none">
         <CardHeader className="px-0 pt-0">
           <div className="h-6 w-1/3 bg-gray-200 rounded animate-pulse" />
         </CardHeader>
@@ -44,7 +44,7 @@ export function RecommendedArticlesWidget({ articles, isLoading }: RecommendedAr
   }
 
   return (
-    <Card className="flex flex-col border border-gray-100 shadow-sm">
+    <Card className="flex h-full flex-col border border-gray-100 shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-lg font-bold flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-primary" />
@@ -58,7 +58,7 @@ export function RecommendedArticlesWidget({ articles, isLoading }: RecommendedAr
       </CardHeader>
       <CardContent className="flex-1 space-y-4 pt-2">
         {articles.length > 0 ? (
-          articles.slice(0, 3).map((article) => (
+          articles.slice(0, 4).map((article) => (
             <Link key={article.id} href={ROUTES.articleRead(article.slug)} className="block group relative">
               <div className="flex gap-4 items-start p-3 rounded-2xl hover:bg-gray-50 transition-all duration-300 border border-transparent hover:border-gray-100">
                 <div className="w-24 h-24 rounded-xl overflow-hidden bg-gray-100 shrink-0 relative shadow-sm group-hover:shadow-md transition-shadow">

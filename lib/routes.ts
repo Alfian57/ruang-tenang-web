@@ -19,10 +19,10 @@ export const ROUTES = {
 
   // Dashboard - General
   DASHBOARD: "/dashboard",
-  DASHBOARD_COMMUNITY: "/dashboard/community",
+  COMMUNITY: "/dashboard/community",
+  JOURNEY: "/dashboard/journey",
   PROFILE: "/dashboard/profile",
   SETTINGS: "/dashboard/settings",
-  TOPUP: "/dashboard/topup",
   BILLING: "/dashboard/billing",
   
   // Features
@@ -30,15 +30,9 @@ export const ROUTES = {
   MUSIC: "/dashboard/music",
   ARTICLES: "/dashboard/articles",
   ARTICLE_CREATE: "/dashboard/articles/new",
-  STORIES: "/dashboard/stories",
-  FORUM: "/dashboard/forum",
-  FORUM_CREATE: "/dashboard/forum/create",
   CHAT: "/dashboard/chat",
-  READING: "/dashboard/reading",
   CONSULTATION: "/dashboard/consultation",
   MOOD_TRACKER: "/dashboard/mood-tracker",
-  PROGRESS_MAP: "/dashboard/progress-map",
-  REWARDS: "/dashboard/rewards",
   GAME: "/dashboard/game",
 
   // Admin
@@ -76,10 +70,17 @@ export const ROUTES = {
   // Dynamic Builders
   articleDetail: (slug: string) => `/dashboard/articles/${slug}`,
   articleRead: (slug: string) => `/dashboard/articles/read/${slug}`,
-  storyDetail: (id: string | number) => `/dashboard/stories/${id}`,
+  communityTab: (tab: "forum" | "stories" | "journals" | "stats") =>
+    tab === "forum" ? "/dashboard/community" : `/dashboard/community?tab=${tab}`,
+  communityForum: (slug: string | number) => `/dashboard/community/forum/${slug}`,
+  communityStory: (id: string | number) => `/dashboard/community/stories/${id}`,
+  COMMUNITY_STORY_CREATE: "/dashboard/community/stories/new",
+  journeyTab: (tab: "summary" | "map" | "rewards") =>
+    tab === "summary" ? "/dashboard/journey" : `/dashboard/journey?tab=${tab}`,
+  billingTab: (tab: "packages" | "coins" | "transactions") =>
+    tab === "packages" ? "/dashboard/billing" : `/dashboard/billing?tab=${tab}`,
   publicArticleDetail: (slug: string) => `/articles/${slug}`,
   publicStoryDetail: (id: string | number) => `/stories/${id}`,
-  forumDetail: (id: string | number) => `/dashboard/forum/${id}`,
   adminForumDetail: (id: string | number) => `/dashboard/admin/forums/${id}`,
   moderationArticle: (id: string | number) => `/dashboard/moderation/queue?focus=${encodeURIComponent(String(id))}`,
   moderationReport: (id: string | number) => `/dashboard/moderation/reports?focus=${encodeURIComponent(String(id))}`,

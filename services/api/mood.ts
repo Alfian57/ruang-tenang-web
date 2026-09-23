@@ -24,10 +24,6 @@ export const moodService = {
     return httpClient.post<ApiResponse<UserMood>>("/user-moods", { mood }, { token });
   },
 
-  getLatest(token: string) {
-    return httpClient.get<ApiResponse<UserMood>>("/user-moods/latest", { token });
-  },
-
   checkToday(token: string) {
     return httpClient.get<ApiResponse<TodayMoodResponse>>("/user-moods/today", { token });
   },
@@ -36,4 +32,3 @@ export const moodService = {
     return httpClient.get<ApiResponse<MoodStats>>("/user-moods/stats", { token, params: days ? { days } : undefined });
   },
 };
-

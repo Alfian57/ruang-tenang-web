@@ -24,7 +24,7 @@ import {
     FileText,
     MessageSquare,
     User,
-    Sparkles,
+    BookOpen,
     MessageCircle,
 } from "lucide-react";
 import { ReportStatus, ReportType } from "@/types/moderation";
@@ -41,7 +41,7 @@ const TYPE_CONFIG: Record<ReportType, { label: string; icon: React.ElementType }
     forum: { label: "Forum", icon: MessageSquare },
     forum_post: { label: "Postingan", icon: MessageSquare },
     user: { label: "Pengguna", icon: User },
-    story: { label: "Kisah Inspiratif", icon: Sparkles },
+    story: { label: "Kisah Inspiratif", icon: BookOpen },
     story_comment: { label: "Komentar Kisah", icon: MessageCircle },
 };
 

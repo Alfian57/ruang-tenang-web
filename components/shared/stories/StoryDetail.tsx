@@ -21,6 +21,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ROUTES } from "@/lib/routes";
 import { ReportModal, BlockUserButton } from "@/components/shared/moderation";
+import { StoryCategoryIcon } from "./StoryCategoryIcon";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -99,7 +100,8 @@ export function StoryDetail({
                                 key={cat.id}
                                 className="text-sm bg-primary/10 text-primary px-3 py-1 rounded-full"
                             >
-                                {cat.icon} {cat.name}
+                                <StoryCategoryIcon slug={cat.slug} name={cat.name} className="h-4 w-4" />
+                                {cat.name}
                             </span>
                         ))}
                     </div>

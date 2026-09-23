@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { cn } from "@/utils";
 import { Badge, BadgeProgress, UserBadges } from "@/types";
-import { Trophy, Lock, CheckCircle } from "lucide-react";
+import { Award, CheckCircle, ChevronDown, Flame, Heart, Lock, Sparkles, Star, Trophy, Zap } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { GamificationIcon } from "./GamificationIcon";
 
 interface BadgeCardProps {
     badge: Badge;
@@ -37,7 +40,7 @@ export function BadgeCard({ badge, size = "md", showDescription = false, classNa
                         : "bg-gray-100 border-gray-300 opacity-50 grayscale"
                 )}
             >
-                <span>{badge.icon}</span>
+                <GamificationIcon name={badge.badge_key || badge.category} fallback={Award} className="h-7 w-7" />
             </div>
             <p className="mt-2 text-sm font-medium line-clamp-1">{badge.badge_name}</p>
             <p className="text-xs capitalize text-muted-foreground">{badge.category}</p>
@@ -76,7 +79,7 @@ export function BadgeProgressCard({ progress, className }: BadgeProgressCardProp
                     progress.earned ? "" : "opacity-60"
                 )}
             >
-                <span>{progress.icon}</span>
+                <GamificationIcon name={progress.badge_key || progress.category} fallback={Award} className="h-6 w-6" />
             </div>
 
             <div className="flex-1 min-w-0">
@@ -120,27 +123,51 @@ interface BadgeShowcaseProps {
 }
 
 export function BadgeShowcase({ badges, className }: BadgeShowcaseProps) {
+    const [showAll, setShowAll] = useState(false);
     const allBadges = Array.isArray(badges.all_badges) ? badges.all_badges : [];
-    const earnedBadges = allBadges.filter(b => b.is_earned);
+    const sortedBadges = [...allBadges].sort((a, b) => Number(b.is_earned) - Number(a.is_earned));
+    const visibleBadges = showAll ? sortedBadges : sortedBadges.slice(0, 8);
     const badgesByCategory = badges.badges_by_category || {};
     const categoryNames = Object.keys(badgesByCategory);
+    const earnedCount = Number(badges.earned_badges ?? 0);
+    const totalCount = Number(badges.total_badges ?? 0);
+    const collectionProgress = totalCount > 0 ? Math.min(100, (earnedCount / totalCount) * 100) : 0;
 
     return (
-        <div className={cn("bg-card rounded-xl border shadow-sm p-6", className)}>
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2">
-                    <Trophy className="h-5 w-5 text-yellow-500" />
-                    <h3 className="font-semibold">Koleksi Badge</h3>
+        <div className={cn("relative overflow-hidden rounded-3xl border border-white/80 bg-white/90 p-5 shadow-sm sm:p-6", className)}>
+            <div className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-amber-200/25 blur-3xl" />
+            <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
+                    <div
+                        className="relative grid h-16 w-16 shrink-0 place-items-center rounded-full bg-slate-950 text-white shadow-lg"
+                        style={{ background: `conic-gradient(#f59e0b ${collectionProgress}%, #e2e8f0 0)` }}
+                    >
+                        <div className="grid h-12 w-12 place-items-center rounded-full bg-white text-amber-500">
+                            <Trophy className="h-6 w-6" />
+                        </div>
+                        <Star className="absolute -right-1 -top-1 h-4 w-4 text-amber-400" aria-hidden="true" />
+                    </div>
+                    <div>
+                        <p className="text-xs font-bold uppercase tracking-[0.12em] text-amber-600">Koleksi badge</p>
+                        <h3 className="mt-1 text-xl font-black tracking-tight text-slate-950">
+                            {earnedCount} dari {totalCount} diraih
+                        </h3>
+                        <p className="mt-0.5 text-sm text-slate-500">Teruskan kebiasaan baik untuk membuka pencapaian berikutnya.</p>
+                    </div>
                 </div>
-                <span className="text-sm text-muted-foreground">
-                    {Number(badges.earned_badges ?? 0)}/{Number(badges.total_badges ?? 0)} diraih
-                </span>
+                <div className="min-w-40 rounded-2xl border border-amber-100 bg-amber-50/70 px-4 py-3">
+                    <div className="mb-2 flex items-center justify-between text-xs font-semibold text-amber-800">
+                        <span>Progres koleksi</span>
+                        <span>{Math.round(collectionProgress)}%</span>
+                    </div>
+                    <div className="h-2 overflow-hidden rounded-full bg-white">
+                        <div className="h-full rounded-full bg-linear-to-r from-amber-400 to-orange-500 transition-[width] duration-700" style={{ width: `${collectionProgress}%` }} />
+                    </div>
+                </div>
             </div>
 
-            {/* Category Stats */}
             {categoryNames.length > 0 && (
-                <div className="mb-6 grid grid-cols-1 gap-3 xs:grid-cols-2 md:grid-cols-4">
+                <div className="relative mt-6 grid grid-cols-2 gap-2.5 md:grid-cols-4">
                     {categoryNames.map((category) => {
                         const catBadges = badgesByCategory[category] || [];
                         const earned = catBadges.filter(b => b.is_earned).length;
@@ -156,22 +183,38 @@ export function BadgeShowcase({ badges, className }: BadgeShowcaseProps) {
                 </div>
             )}
 
-            {/* Earned Badges */}
-            {earnedBadges.length > 0 ? (
-                <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
-                    {earnedBadges.map((badge) => (
-                        <BadgeCard key={badge.id} badge={badge} size="sm" />
+            {visibleBadges.length > 0 ? (
+                <div className="relative mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
+                    {visibleBadges.map((badge) => (
+                        <div
+                            key={badge.id}
+                            className={cn(
+                                "rounded-2xl border p-3 transition duration-200 hover:-translate-y-0.5 hover:shadow-md",
+                                badge.is_earned ? "border-amber-100 bg-amber-50/45" : "border-slate-200 bg-slate-50/70"
+                            )}
+                        >
+                            <BadgeCard badge={badge} size="sm" />
+                        </div>
                     ))}
                 </div>
             ) : (
                 <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
                     <Trophy className="w-16 h-16 text-gray-300 mb-4" />
                     <h3 className="text-lg font-medium text-gray-500 mb-1">Belum Ada Badge</h3>
-                    <p className="text-sm text-gray-400 max-w-sm">
-                        Teruslah aktif di komunitas untuk membuka berbagai pencapaian menarik!
+                        <p className="text-sm text-gray-400 max-w-sm">
+                        Mulai aktivitas pertamamu untuk membuka pencapaian perjalanan.
                     </p>
                 </div>
             )}
+
+            {sortedBadges.length > 8 ? (
+                <div className="relative mt-5 flex justify-center border-t border-slate-100 pt-4">
+                    <Button type="button" variant="ghost" className="gap-2 rounded-xl text-slate-600" onClick={() => setShowAll((current) => !current)}>
+                        {showAll ? "Tampilkan lebih sedikit" : `Lihat semua ${sortedBadges.length} badge`}
+                        <ChevronDown className={cn("h-4 w-4 transition-transform", showAll && "rotate-180")} />
+                    </Button>
+                </div>
+            ) : null}
         </div>
     );
 }
@@ -183,20 +226,21 @@ interface CategoryStatCardProps {
 }
 
 function CategoryStatCard({ category, earned, total }: CategoryStatCardProps) {
-    const categoryIcons: Record<string, string> = {
-        streak: "🔥",
-        activity: "⚡",
-        contribution: "💝",
-        special: "🌟",
-        level: "🎖️",
+    const categoryIcons = {
+        streak: Flame,
+        activity: Zap,
+        contribution: Heart,
+        special: Sparkles,
+        level: Award,
     };
+    const CategoryIcon = categoryIcons[category as keyof typeof categoryIcons] || Trophy;
 
     const progress = total > 0 ? (earned / total) * 100 : 0;
 
     return (
-        <div className="bg-muted/30 rounded-lg p-3">
+        <div className="rounded-xl border border-slate-100 bg-slate-50/80 p-3">
             <div className="flex items-center gap-2 mb-2">
-                <span>{categoryIcons[category] || "🏆"}</span>
+                <CategoryIcon className="h-4 w-4" aria-hidden="true" />
                 <span className="text-sm font-medium capitalize">{category}</span>
             </div>
             <div className="h-1.5 bg-muted rounded-full overflow-hidden">

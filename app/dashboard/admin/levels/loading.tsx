@@ -1,6 +1,6 @@
 export default function AdminLevelsLoading() {
   return (
-    <div className="p-6 lg:p-8 space-y-6">
+    <div className="space-y-6 py-6 lg:py-8">
       <div className="flex items-center justify-between">
         <div className="h-8 w-36 rounded bg-gray-200 animate-pulse" />
         <div className="h-10 w-28 rounded-lg bg-gray-200 animate-pulse" />

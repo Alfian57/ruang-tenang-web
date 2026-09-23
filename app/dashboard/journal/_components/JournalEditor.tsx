@@ -7,8 +7,7 @@ import { JournalMoodPicker } from "./JournalMoodPicker";
 import { JournalTagsInput } from "./JournalTagsInput";
 import { EditorContent } from "@tiptap/react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Save, Lock, Eye, EyeOff, Info, AlertTriangle, Loader2, WandSparkles, CheckCircle2, ArrowRight, Lightbulb, Compass } from "lucide-react";
+import { Save, Lock, Eye, EyeOff, Info, AlertTriangle, Loader2, CheckCircle2, ArrowRight, Lightbulb, Compass } from "lucide-react";
 import {
     Tooltip,
     TooltipContent,
@@ -189,12 +188,7 @@ export function JournalEditor({
                 <div className="space-y-6">
                     <div className="bg-white p-4 rounded-lg border shadow-sm space-y-6">
                         <div className="space-y-3">
-                            <div className="flex items-center justify-between">
-                                <Label className="text-sm text-gray-500">Mode Menulis</Label>
-                                <Badge variant="outline" className="text-[10px]">
-                                    JOURNAL-2
-                                </Badge>
-                            </div>
+                            <Label className="text-sm text-gray-500">Mode Menulis</Label>
                             <div className="grid grid-cols-1 gap-2">
                                 {modeOptions.map((mode) => {
                                     const isActive = mode.id === journalMode;
@@ -228,7 +222,7 @@ export function JournalEditor({
                                 }}
                             >
                                 <span className="inline-flex items-center gap-2">
-                                    <WandSparkles className="w-4 h-4 text-primary" />
+                                    <Lightbulb className="w-4 h-4 text-primary" />
                                     Gunakan Template Mode
                                 </span>
                                 <ArrowRight className="w-4 h-4" />
@@ -239,12 +233,7 @@ export function JournalEditor({
                         </div>
 
                         <div className="border-t pt-4 space-y-3">
-                            <div className="flex items-center justify-between">
-                                <Label className="text-sm text-gray-500">Guided Path 3 Langkah</Label>
-                                <Badge variant="outline" className="text-[10px]">
-                                    JOURNAL-1
-                                </Badge>
-                            </div>
+                            <Label className="text-sm text-gray-500">Guided Path 3 Langkah</Label>
 
                             <div className="space-y-2">
                                 {guidedSteps.map((step) => {

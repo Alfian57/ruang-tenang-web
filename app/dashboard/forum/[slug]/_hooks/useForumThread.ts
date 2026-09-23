@@ -6,6 +6,7 @@ import { forumService } from "@/services/api";
 import { Forum, ForumPost } from "@/types/forum";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/authStore";
+import { ROUTES } from "@/lib/routes";
 
 const SORT_STORAGE_KEY = "forum_sort_preference";
 
@@ -122,7 +123,7 @@ export function useForumThread() {
     try {
       await forumService.delete(token, slug);
       toast.success("Topik dihapus");
-      router.push("/dashboard/forum");
+      router.push(ROUTES.COMMUNITY);
     } catch (error) {
       console.error(error);
       toast.error("Gagal menghapus topik");

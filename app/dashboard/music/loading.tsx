@@ -1,6 +1,6 @@
 export default function MusicLoading() {
   return (
-    <div className="p-6 lg:p-8 space-y-6">
+    <div className="space-y-6 py-6 lg:py-8">
       <div className="space-y-2">
         <div className="h-8 w-40 rounded bg-gray-200 animate-pulse" />
         <div className="h-4 w-60 rounded bg-gray-200 animate-pulse" />

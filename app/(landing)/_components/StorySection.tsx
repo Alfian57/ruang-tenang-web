@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { storyService } from "@/services/api";
 import { ROUTES } from "@/lib/routes";
-import { ArrowRight, BookHeart, Heart, Quote } from "lucide-react";
+import { ArrowRight, BookHeart, Heart, Quote, Sparkles } from "lucide-react";
 import type { StoryCard } from "@/types";
 
 
@@ -135,8 +135,9 @@ export function StorySection() {
           <>
             {usingFallbackStories && (
               <div className="mb-6 rounded-2xl border border-dashed border-rose-200 bg-white/60 px-5 py-4 text-center backdrop-blur">
-                <p className="text-sm font-medium text-gray-600">
-                  ✨ Cerita di bawah adalah contoh inspirasi. <Link href={ROUTES.PUBLIC_STORY_CREATE} className="text-primary font-semibold hover:underline">Bagikan ceritamu</Link> untuk menginspirasi komunitas!
+                <p className="flex items-center justify-center gap-1.5 text-sm font-medium text-gray-600">
+                  <Sparkles className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                  <span>Cerita di bawah adalah contoh inspirasi. <Link href={ROUTES.PUBLIC_STORY_CREATE} className="text-primary font-semibold hover:underline">Bagikan ceritamu</Link> untuk menginspirasi komunitas!</span>
                 </p>
               </div>
             )}

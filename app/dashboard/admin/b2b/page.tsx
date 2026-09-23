@@ -64,7 +64,7 @@ export default function AdminB2BPage() {
   });
 
   if (user?.role !== "admin") {
-    return <div className="p-8 text-center">Akses ditolak</div>;
+    return <div className="py-8 text-center">Akses ditolak</div>;
   }
 
   const openPlanDialog = (plan?: B2BPlan) => {
@@ -122,7 +122,7 @@ export default function AdminB2BPage() {
   };
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="py-4 lg:py-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Kelola B2B</h1>
         <p className="text-gray-500">Kelola paket B2B dan langganan organisasi mitra</p>

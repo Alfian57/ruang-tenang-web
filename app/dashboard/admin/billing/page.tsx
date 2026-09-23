@@ -78,7 +78,7 @@ export default function AdminBillingPage() {
   });
 
   if (user?.role !== "admin") {
-    return <div className="p-8 text-center">Akses ditolak</div>;
+    return <div className="py-8 text-center">Akses ditolak</div>;
   }
 
   const openPlanDialog = (plan?: BillingPremiumPlan) => {
@@ -136,7 +136,7 @@ export default function AdminBillingPage() {
   };
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="py-4 lg:py-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Kelola Billing</h1>
         <p className="text-gray-500">Pantau transaksi serta kelola paket premium dan paket koin</p>

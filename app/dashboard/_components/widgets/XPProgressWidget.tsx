@@ -100,7 +100,7 @@ export function XPProgressWidget() {
                     <Zap className="w-5 h-5 text-primary/80" />
                     Perjalananmu
                 </CardTitle>
-                <Link href={ROUTES.DASHBOARD_COMMUNITY}>
+                <Link href={ROUTES.JOURNEY}>
                     <Button variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-primary/80">
                         Detail <ArrowRight className="w-3 h-3 ml-1" />
                     </Button>

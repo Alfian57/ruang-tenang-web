@@ -1,10 +1,9 @@
 import {
     Clock3,
-    Gamepad2,
     Heart,
     MousePointer2,
     ShieldCheck,
-    Sparkles,
+    Palette,
     Star,
     WifiOff,
 } from "lucide-react";
@@ -13,7 +12,7 @@ import MindfulRunnerGame from "@/components/game/LazyMindfulRunnerGame";
 const SESSION_DETAILS = [
     { icon: Clock3, label: "Jeda 2–3 menit" },
     { icon: WifiOff, label: "Tersedia offline" },
-    { icon: Sparkles, label: "Mengikuti tema" },
+    { icon: Palette, label: "Mengikuti tema" },
 ];
 
 const GAME_GUIDE = [
@@ -36,7 +35,7 @@ const GAME_GUIDE = [
 
 export default function GamePage() {
     return (
-        <div className="relative isolate min-h-full overflow-hidden px-4 py-5 sm:px-6 lg:px-8 lg:py-7">
+        <div className="relative isolate min-h-full overflow-hidden py-5 lg:py-7">
             <div
                 className="pointer-events-none absolute -right-28 -top-28 -z-10 h-80 w-80 rounded-full blur-3xl"
                 style={{ backgroundColor: "color-mix(in srgb, var(--theme-accent-light, #ffedd5) 55%, transparent)" }}
@@ -49,17 +48,6 @@ export default function GamePage() {
             <div className="mx-auto max-w-[92rem] space-y-5 lg:space-y-6">
                 <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div className="max-w-2xl">
-                        <div
-                            className="mb-3 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em]"
-                            style={{
-                                borderColor: "var(--theme-accent-border, #fed7aa)",
-                                backgroundColor: "var(--theme-accent-soft, #fff7ed)",
-                                color: "var(--theme-accent-dark, #c2410c)",
-                            }}
-                        >
-                            <Gamepad2 className="h-3.5 w-3.5" />
-                            Mindful break
-                        </div>
                         <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl lg:text-[2.15rem]">
                             Mindful Runner
                         </h1>

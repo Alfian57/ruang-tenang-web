@@ -36,7 +36,7 @@ export default function ArticlesPage() {
   const router = useRouter();
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="py-4 lg:py-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Artikel</h1>
         <p className="text-gray-500 text-sm mt-1">

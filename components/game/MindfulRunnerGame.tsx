@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Heart, Play, RotateCcw, ShieldCheck, Sparkles, Trophy } from "lucide-react";
+import { Heart, Play, RotateCcw, ShieldCheck, Trophy, Zap } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
 import {
     CANVAS_H,
@@ -679,7 +679,7 @@ export default function MindfulRunnerGame() {
                             </div>
                             {hud.combo > 1 ? (
                                 <div className="inline-flex items-center gap-1.5 rounded-full border border-white/80 bg-white/[0.82] px-2.5 py-1.5 text-xs font-semibold shadow-sm backdrop-blur-md">
-                                    <Sparkles className="h-3.5 w-3.5" style={{ color: "var(--theme-accent, #f97316)" }} />
+                                    <Zap className="h-3.5 w-3.5" style={{ color: "var(--theme-accent, #f97316)" }} />
                                     <span className="text-slate-700">×{hud.combo}</span>
                                 </div>
                             ) : null}
@@ -701,7 +701,7 @@ export default function MindfulRunnerGame() {
                                 style={{ backgroundColor: "var(--theme-accent-light, #ffedd5)" }}
                             >
                                 {gameStatus === "idle" ? (
-                                    <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: "var(--theme-accent-dark, #c2410c)" }} />
+                                    <Zap className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: "var(--theme-accent-dark, #c2410c)" }} />
                                 ) : (
                                     <Heart className="h-4 w-4 text-rose-500 sm:h-5 sm:w-5" />
                                 )}

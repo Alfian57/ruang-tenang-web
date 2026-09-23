@@ -5,7 +5,7 @@ import {
   Calendar,
   Tag,
   User,
-  Sparkles,
+  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ import { sanitizeHtml } from "@/utils/sanitize";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
 import { InspiringStory } from "@/types/gamification";
+import { StoryCategoryIcon } from "@/components/shared/stories/StoryCategoryIcon";
 
 interface StoryContentProps {
   story: InspiringStory;
@@ -40,7 +41,7 @@ export function StoryContent({ story, heartLoading, onToggleHeart }: StoryConten
       <div className="mb-8">
         {story.is_featured && (
           <Badge className="inline-flex items-center gap-1 bg-amber-500 text-white mb-3">
-            <Sparkles className="w-3.5 h-3.5" /> Kisah Pilihan
+            <Star className="w-3.5 h-3.5" /> Kisah Pilihan
           </Badge>
         )}
         <h1 className="text-3xl md:text-4xl font-bold mb-4">
@@ -92,7 +93,8 @@ export function StoryContent({ story, heartLoading, onToggleHeart }: StoryConten
       <div className="flex flex-wrap gap-2 mb-8">
         {story.categories?.map((cat) => (
           <Badge key={cat.id} variant="secondary" className="gap-1">
-            {cat.icon} {cat.name}
+            <StoryCategoryIcon slug={cat.slug} name={cat.name} className="h-4 w-4" />
+            {cat.name}
           </Badge>
         ))}
         {story.tags?.map((tag, i) => (

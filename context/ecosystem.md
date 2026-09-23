@@ -8,3 +8,5 @@
 Web memakai NEXT_PUBLIC_API_BASE_URL lengkap dengan /api/v1; mobile memakai BASE_URL tanpa prefix lalu menambahkannya sendiri. Perubahan response harus dicek pada services/api/, datasource Dart, dan snapshot OpenAPI.
 
 Member adalah role lintas web/mobile. Admin dan mitra hanya didukung web. AI, journal, mood, moderation, billing, upload, dan data pribadi memerlukan perhatian khusus pada privacy, role, dan error handling.
+
+API dapat mengirim route web melalui push notification, rekomendasi wellness, dan context AI. Route dashboard member kanonis adalah `/dashboard/community`, `/dashboard/journey`, dan `/dashboard/billing`; detail forum menggunakan slug pada `/dashboard/community/forum/[slug]`.

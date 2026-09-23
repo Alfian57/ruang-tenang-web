@@ -4,25 +4,9 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { adminService } from "@/services/api";
-import { httpClient } from "@/services/http/client";
-import type { PaginatedResponse } from "@/services/http/types";
+import type { AdminUser } from "@/types/admin";
 import { useDebounce } from "@/hooks/use-debounce";
 import { toast } from "sonner";
-
-export interface UserData {
-  id: number;
-  name: string;
-  email: string;
-  avatar?: string;
-  role: string;
-  is_blocked: boolean;
-  is_banned?: boolean;
-  is_suspended?: boolean;
-  suspension_end?: string | null;
-  journal_blocked?: boolean;
-  is_forum_blocked?: boolean;
-  created_at: string;
-}
 
 export function useAdminUsers() {
   const { token, user } = useAuthStore();
@@ -65,7 +49,7 @@ export function useAdminUsers() {
   const setRole = (value: string) => updateUrl({ role: value || null, page: null });
   const setPage = (value: number) => updateUrl({ page: value > 1 ? value.toString() : null });
 
-  const [users, setUsers] = useState<UserData[]>([]);
+  const [users, setUsers] = useState<AdminUser[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [blockId, setBlockId] = useState<number | null>(null);
@@ -75,14 +59,11 @@ export function useAdminUsers() {
     if (!token) return;
     setIsLoading(true);
     try {
-      const response = await httpClient.get<PaginatedResponse<UserData>>("/admin/users", {
-        token,
-        params: {
-          search: urlSearch || undefined,
-          role: urlRole || undefined,
-          page: page.toString(),
-          limit: "10",
-        },
+      const response = await adminService.getUsers(token, {
+        search: urlSearch || undefined,
+        role: urlRole || undefined,
+        page,
+        limit: 10,
       });
       setUsers(response.data || []);
       setTotalPages(response.meta?.total_pages || 1);

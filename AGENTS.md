@@ -24,10 +24,10 @@ CLAUDE.md, GEMINI.md, dan .github/copilot-instructions.md adalah adapter tipis y
 
 ## Validasi
 
-- Perubahan TypeScript/React: npm run lint dan npm run typecheck.
-- Perubahan route, API service, auth, atau offline: npm run test:smoke juga wajib.
-- Perubahan build/config/PWA: npm run build.
-- Sebelum selesai, jalankan npm run verify bila dependency tersedia dan periksa git diff --check.
+- Perubahan TypeScript/React: jalankan `npm run lint` dan `npm run typecheck`.
+- Perubahan route, API service, auth, atau offline: jalankan `npm run test:smoke` juga.
+- `npm run build` tidak wajib untuk perubahan UI, styling, copy, atau TypeScript biasa. Jalankan build hanya jika diminta pengguna atau perubahan menyentuh build/config/PWA/deployment.
+- Jangan menjalankan `npm run verify` sebagai langkah default karena script tersebut juga menjalankan build. Gunakan validasi yang sesuai dengan scope perubahan, lalu periksa `git diff --check`.
 - Jika environment tidak memungkinkan command dijalankan, laporkan command dan error sebenarnya; jangan menyatakan lulus.
 
 ## Generated files dan deployment

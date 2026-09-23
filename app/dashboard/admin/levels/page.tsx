@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Pencil, Trash2, Loader2, Save, X, ImageIcon, Star, Shield, Zap, Coins, Info, Sparkles } from "lucide-react";
+import { Award, Plus, Pencil, Trash2, Loader2, Save, X, ImageIcon, Star, Shield, Zap, Coins, Info } from "lucide-react";
 import Image from "next/image";
 import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 import { useAdminLevels } from "./_hooks/useAdminLevels";
 import { Pagination } from "@/components/ui/pagination";
+import { GamificationIcon } from "@/components/shared/gamification/GamificationIcon";
 
 export default function LevelsManagementPage() {
   const {
@@ -102,7 +103,7 @@ export default function LevelsManagementPage() {
         <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
           {mode === "add" ? (
             <>
-              <Sparkles className="w-5 h-5 text-primary" /> Tambah Level Baru
+              <Plus className="w-5 h-5 text-primary" /> Tambah Level Baru
             </>
           ) : (
             <>
@@ -323,7 +324,7 @@ export default function LevelsManagementPage() {
   );
 
   return (
-    <div className="p-4 lg:p-6 space-y-6">
+    <div className="space-y-6 py-4 lg:py-6">
       <DeleteConfirmationModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
@@ -398,6 +399,7 @@ export default function LevelsManagementPage() {
           {paginatedLevels.map((level) => {
             const isEditing = editingId === level.id;
             const taskLines = (level.task_description?.split("\n").filter(Boolean) || []);
+            const badgeImage = level.badge_icon && /^(https?:\/\/|\/|data:image\/)/.test(level.badge_icon);
 
             return (
               <div
@@ -413,7 +415,7 @@ export default function LevelsManagementPage() {
                   <div className="flex items-start gap-3.5">
                     {/* Badge Image */}
                     <div className="w-14 h-14 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
-                      {level.badge_icon ? (
+                      {badgeImage ? (
                         <Image
                           src={level.badge_icon}
                           alt={level.badge_name}
@@ -422,7 +424,7 @@ export default function LevelsManagementPage() {
                           className="object-contain w-full h-full p-1"
                         />
                       ) : (
-                        <Star className="w-6 h-6 text-gray-300" />
+                        <GamificationIcon name={level.badge_name} fallback={Award} className="h-6 w-6 text-gray-300" />
                       )}
                     </div>
 

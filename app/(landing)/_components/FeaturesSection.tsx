@@ -9,7 +9,6 @@ import {
   Compass,
   Gift,
   MessageCircle,
-  Sparkles,
   Trophy,
   Users,
 } from "lucide-react";
@@ -31,7 +30,7 @@ const SIGNATURE_LOOP = [
     title: "Progres",
     description: "Langkah harian mengalir ke peta perjalanan sehingga kemajuan terasa nyata, bukan abstrak.",
     highlight: "Misi Harian + Peta Perjalanan",
-    href: ROUTES.PROGRESS_MAP,
+    href: ROUTES.journeyTab("map"),
     style: "from-amber-500 to-orange-500",
   },
   {
@@ -40,7 +39,7 @@ const SIGNATURE_LOOP = [
     title: "Reward Identitas",
     description: "Koin ditukar menjadi perubahan atmosfer dashboard, sehingga reward terasa hidup setiap hari.",
     highlight: "Tema Dasbor",
-    href: ROUTES.REWARDS,
+    href: ROUTES.journeyTab("rewards"),
     style: "from-red-500 to-rose-600",
   },
   {
@@ -49,7 +48,7 @@ const SIGNATURE_LOOP = [
     title: "Komunitas",
     description: "Misi bersama dan diskusi aman menjaga momentum agar pemulihan tidak berjalan sendirian.",
     highlight: "Misi Bersama + Forum",
-    href: ROUTES.DASHBOARD_COMMUNITY,
+    href: ROUTES.COMMUNITY,
     style: "from-rose-600 to-red-700",
   },
 ];
@@ -65,7 +64,7 @@ const WOW_MOMENTS = [
     title: "Momen utama #2: Reward mengubah suasana dashboard",
     description: "Setelah klaim tema, atmosfer dashboard berubah agar progres terasa personal.",
     cta: "Coba Klaim Tema",
-    href: ROUTES.REWARDS,
+    href: ROUTES.journeyTab("rewards"),
   },
 ];
 
@@ -93,7 +92,7 @@ export function FeaturesSection() {
           className="mb-10 text-center md:mb-12"
         >
           <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-rose-200 bg-white px-4 py-2 text-sm font-semibold text-rose-700 shadow-sm">
-            <Sparkles className="w-4 h-4" />
+            <Compass className="w-4 h-4" />
             Alur Utama Ruang Tenang
           </div>
           <h2 className="font-brand-display mb-4 text-2xl font-bold leading-tight text-gray-900 sm:text-3xl md:text-5xl">

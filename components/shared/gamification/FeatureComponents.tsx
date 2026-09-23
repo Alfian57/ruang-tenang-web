@@ -2,7 +2,9 @@
 
 import { cn } from "@/utils";
 import { FeatureUnlock, UserFeatures, FeaturesByLevel } from "@/types";
-import { Lock, Unlock, Sparkles, Gift } from "lucide-react";
+import { Lock, Unlock, Gift } from "lucide-react";
+import { PartyPopper } from "lucide-react";
+import { GamificationIcon } from "./GamificationIcon";
 
 interface FeatureCardProps {
     feature: FeatureUnlock;
@@ -25,7 +27,7 @@ export function FeatureCard({ feature, isLocked = false, levelsAway, className }
                     "w-10 h-10 rounded-lg flex items-center justify-center text-xl",
                     isLocked ? "bg-muted" : "bg-primary/10"
                 )}>
-                    {feature.icon || "✨"}
+                    <GamificationIcon name={feature.feature_key || feature.category} fallback={Gift} className="h-5 w-5 text-primary" />
                 </div>
 
                 <div className="flex-1 min-w-0">
@@ -115,7 +117,7 @@ export function UserFeaturesOverview({ features, className }: UserFeaturesOvervi
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-primary" />
+                    <Gift className="h-5 w-5 text-primary" />
                     <h3 className="font-semibold">Fitur Terbuka</h3>
                 </div>
                 <span className="text-sm text-muted-foreground">
@@ -198,10 +200,13 @@ export function FeatureUnlockCelebration({
             <div className="bg-card rounded-2xl p-8 max-w-md w-full mx-4 text-center animate-in fade-in zoom-in">
                 {/* Celebration Icon */}
                 <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Sparkles className="h-10 w-10 text-primary" />
+                    <Gift className="h-10 w-10 text-primary" />
                 </div>
 
-                <h2 className="text-2xl font-bold mb-2">Selamat! 🎉</h2>
+                <h2 className="mb-2 inline-flex items-center gap-2 text-2xl font-bold">
+                    Selamat!
+                    <PartyPopper className="h-6 w-6 text-primary" aria-hidden="true" />
+                </h2>
                 <p className="text-muted-foreground mb-6">
                     Kamu telah mencapai {levelName} dan membuka fitur baru!
                 </p>
@@ -213,7 +218,7 @@ export function FeatureUnlockCelebration({
                             key={feature.id}
                             className="bg-muted/50 rounded-lg p-3 flex items-center gap-3"
                         >
-                            <span className="text-2xl">{feature.icon || "✨"}</span>
+                            <GamificationIcon name={feature.feature_key || feature.category} fallback={Gift} className="h-6 w-6 text-primary" />
                             <div className="text-left">
                                 <p className="font-medium">{feature.feature_name}</p>
                                 <p className="text-sm text-muted-foreground">{feature.description}</p>

@@ -65,7 +65,7 @@ export default function AdminSongsPage() {
   } = useAdminSongs();
 
   if (user?.role !== "admin") {
-    return <div className="p-8 text-center">Akses ditolak</div>;
+    return <div className="py-8 text-center">Akses ditolak</div>;
   }
 
   const filteredSongs = songs.filter(s =>
@@ -77,7 +77,7 @@ export default function AdminSongsPage() {
   );
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="py-4 lg:py-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Kelola Musik</h1>
         <p className="text-gray-500">Kelola kategori dan lagu</p>

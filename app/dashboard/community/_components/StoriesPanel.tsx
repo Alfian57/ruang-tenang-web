@@ -1,0 +1,307 @@
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import {
+  Heart,
+  MessageCircle,
+  Search,
+  Filter,
+  Star,
+  BookOpen,
+  AlertTriangle,
+  User,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { useStoriesPage } from "@/app/dashboard/stories/_hooks/useStoriesPage";
+import { ROUTES } from "@/lib/routes";
+import { StoryCategoryIcon } from "@/components/shared/stories/StoryCategoryIcon";
+
+function getStatusLabel(status?: string): string {
+  switch (status) {
+    case "pending":
+      return "Menunggu Moderasi";
+    case "rejected":
+      return "Ditolak";
+    case "revision_requested":
+      return "Perlu Revisi";
+    case "approved":
+      return "Disetujui";
+    default:
+      return "Status Tidak Diketahui";
+  }
+}
+
+function getStatusBadgeClass(status?: string): string {
+  switch (status) {
+    case "pending":
+      return "bg-amber-100 text-amber-800 border-amber-200";
+    case "rejected":
+      return "bg-primary/10 text-primary border-primary/20";
+    case "revision_requested":
+      return "bg-primary/10 text-primary border-primary/20";
+    case "approved":
+      return "bg-primary/10 text-primary border-primary/20";
+    default:
+      return "bg-gray-100 text-gray-700 border-gray-200";
+  }
+}
+
+export default function StoriesPanel() {
+  const {
+    router,
+    stories,
+    featuredStories,
+    categories,
+    loading,
+    page,
+    setPage,
+    totalPages,
+    searchQuery,
+    selectedCategory,
+    sortBy,
+    setSearchQuery,
+    setSelectedCategory,
+    setSortBy,
+  } = useStoriesPage();
+
+  return (
+    <div className="min-h-screen">
+      <div className="py-4 lg:py-6">
+        {/* Featured Stories */}
+        {featuredStories.length > 0 && (
+          <section className="mb-12">
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <Star className="w-5 h-5" style={{ color: `var(--theme-story-icon)` }} />
+              Kisah Pilihan
+            </h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {featuredStories.map((story) => (
+                <Link
+                  key={story.id}
+                  href={ROUTES.communityStory(story.id)}
+                  className="group relative theme-story-bg rounded-2xl overflow-hidden border theme-story-border hover:shadow-lg transition-all"
+                >
+                  {story.cover_image && (
+                    <div className="relative h-40 overflow-hidden">
+                      <Image
+                        src={story.cover_image}
+                        alt={story.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <Badge className="text-white mb-2" style={{ backgroundColor: `var(--theme-story-icon)` }}>Pilihan</Badge>
+                    <h3 className="font-bold text-lg mb-2 group-hover:text-amber-600 transition-colors line-clamp-2">
+                      {story.title}
+                    </h3>
+                    <div className="flex items-center justify-between text-sm text-gray-600">
+                      <div className="flex items-center gap-1">
+                        {story.is_anonymous ? (
+                          <User className="w-4 h-4" />
+                        ) : (
+                          story.author?.name
+                        )}
+                        {story.is_anonymous && "Anonim"}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="flex items-center gap-1">
+                          <Heart className="w-4 h-4 text-primary/80" />
+                          {story.heart_count}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Filters */}
+        <section className="mb-8">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
+              <Input
+                placeholder="Cari kisah..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-white"
+              />
+            </div>
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-full md:w-48">
+                <Filter className="w-4 h-4 mr-2" />
+                <SelectValue placeholder="Kategori" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Semua Kategori</SelectItem>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.slug}>
+                    <StoryCategoryIcon slug={cat.slug} name={cat.name} className="h-4 w-4" />
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as "recent" | "hearts" | "featured")}>
+              <SelectTrigger className="w-full md:w-48">
+                <SelectValue placeholder="Urutkan" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="recent">Terbaru</SelectItem>
+                <SelectItem value="hearts">Paling Disukai</SelectItem>
+                <SelectItem value="featured">Kisah Pilihan</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </section>
+
+        {/* Stories Grid */}
+        {loading ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div
+                key={i}
+                className="bg-white rounded-xl border animate-pulse h-64"
+              />
+            ))}
+          </div>
+        ) : stories.length === 0 ? (
+          <div className="text-center py-16">
+            <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-500">Belum ada kisah</h3>
+            <p className="text-gray-400 text-sm mt-1">
+              Jadilah yang pertama berbagi kisah inspiratif!
+            </p>
+            <Button
+              onClick={() => router.push(ROUTES.COMMUNITY_STORY_CREATE)}
+              variant="outline"
+              className="mt-4"
+            >
+              Tulis Kisah
+            </Button>
+          </div>
+        ) : (
+          <>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {stories.map((story) => (
+                <Link
+                  key={story.id}
+                  href={ROUTES.communityStory(story.id)}
+                  className="group bg-white rounded-xl border hover:shadow-lg transition-all overflow-hidden"
+                >
+                  {story.cover_image && (
+                    <div className="relative h-40 overflow-hidden bg-gray-100">
+                      <Image
+                        src={story.cover_image}
+                        alt={story.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                    </div>
+                  )}
+                  <div className="p-4">
+                    {story.is_own && (
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <Badge className="bg-primary/10 text-primary border border-primary/20">Milik Anda</Badge>
+                        <Badge className={getStatusBadgeClass(story.status)}>
+                          {getStatusLabel(story.status)}
+                        </Badge>
+                        {story.status !== "approved" && (
+                          <span className="text-[11px] font-medium text-amber-700">Tidak Publik</span>
+                        )}
+                      </div>
+                    )}
+
+                    {story.has_trigger_warning && (
+                      <Badge variant="destructive" className="mb-2 gap-1">
+                        <AlertTriangle className="w-3 h-3" />
+                        Peringatan Konten
+                      </Badge>
+                    )}
+                    <h3 className="font-bold text-lg mb-2 group-hover:text-amber-600 transition-colors line-clamp-2">
+                      {story.title}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                      {story.excerpt}
+                    </p>
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {story.categories?.slice(0, 2).map((cat) => (
+                        <Badge
+                          key={cat.id}
+                          variant="secondary"
+                          className="text-xs"
+                        >
+                          <StoryCategoryIcon slug={cat.slug} name={cat.name} className="h-3.5 w-3.5" />
+                          {cat.name}
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-between text-sm text-gray-500 pt-3 border-t">
+                      <div className="flex items-center gap-1">
+                        {story.is_anonymous ? (
+                          <>
+                            <User className="w-4 h-4" />
+                            <span>Anonim</span>
+                          </>
+                        ) : (
+                          <span>{story.author?.name}</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="flex items-center gap-1">
+                          <Heart className="w-4 h-4" />
+                          {story.heart_count}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <MessageCircle className="w-4 h-4" />
+                          {story.comment_count}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center gap-2 mt-8">
+                <Button
+                  variant="outline"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                >
+                  Sebelumnya
+                </Button>
+                <span className="flex items-center px-4 text-sm text-gray-600">
+                  Halaman {page} dari {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                >
+                  Selanjutnya
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

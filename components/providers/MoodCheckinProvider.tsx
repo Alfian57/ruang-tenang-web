@@ -6,8 +6,10 @@ import { moodService } from "@/services/api";
 import { MoodType } from "@/types";
 import { ApiError } from "@/services/http/types";
 import { toast } from "sonner";
+import { Sparkles } from "lucide-react";
 import { MoodCheckinModal } from "@/app/dashboard/_components/MoodCheckinModal";
 import { useDashboardStore } from "@/store/dashboardStore";
+import { useDailyTaskStore } from "@/store/dailyTaskStore";
 
 export function MoodCheckinProvider() {
   const { token, refreshUser } = useAuthStore();
@@ -15,7 +17,8 @@ export function MoodCheckinProvider() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasChecked, setHasChecked] = useState(false);
   const [isWellnessOnboardingOpen, setIsWellnessOnboardingOpen] = useState(false);
-  const { triggerMoodRefresh, triggerTaskRefresh } = useDashboardStore();
+  const { triggerMoodRefresh } = useDashboardStore();
+  const loadDailyTasks = useDailyTaskStore((state) => state.loadTasks);
 
   const checkTodayMood = useCallback(async () => {
     if (!token || hasChecked || isWellnessOnboardingOpen) return;
@@ -65,11 +68,16 @@ export function MoodCheckinProvider() {
       const response = await moodService.record(token, mood);
       if (response.data) {
         toast.success("Mood berhasil dicatat!", {
-          description: "Semoga harimu menyenangkan 😊",
+          description: (
+            <span className="inline-flex items-center gap-1.5">
+              Semoga harimu menyenangkan
+              <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+            </span>
+          ),
         });
         setShowModal(false);
         triggerMoodRefresh();
-        triggerTaskRefresh();
+        void loadDailyTasks(token, true);
         refreshUser(); // Refresh user data to update EXP in navbar
       } else {
         toast.error("Gagal mencatat mood");

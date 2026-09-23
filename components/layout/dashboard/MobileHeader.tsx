@@ -48,11 +48,6 @@ export function MobileHeader({
   const isPremium = Boolean(billingStatus?.is_premium || user.is_premium);
   const chatQuota = billingStatus?.chat_quota;
   const isChatLimitExhausted = isUser && Boolean(chatQuota && !isPremium && !chatQuota.is_unlimited && chatQuota.remaining <= 0);
-  const quotaLabel = !chatQuota
-    ? "cek kuota"
-    : chatQuota.is_unlimited
-    ? "Tanpa batas"
-    : `${Math.max(0, chatQuota?.remaining ?? 0)}/${chatQuota?.limit ?? 0}`;
   const homeRoute = isAdmin
     ? ROUTES.ADMIN.DASHBOARD
     : isMitra
@@ -128,7 +123,7 @@ export function MobileHeader({
                   ) : (
                     <CreditCard className="mr-2 h-4 w-4 text-amber-600" />
                   )}
-                  <span>{isPremium ? "Premium • Chat tanpa batas" : isChatLimitExhausted ? "Limit chat habis • Upgrade" : `Gratis • ${chatQuota ? `${quotaLabel} chat` : quotaLabel}`}</span>
+                  <span>Paket &amp; Koin</span>
                 </Link>
               </DropdownMenuItem>
             )}

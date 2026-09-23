@@ -1,18 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useCallback } from "react";
-import { Check, Gift, Lock, RefreshCw, Trophy, X, ClipboardList, Rocket, Crown } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Check, Gift, Lock, RefreshCw, Sparkles, Trophy, X, ClipboardList, Rocket, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
-import type { DailyTask, DailyTaskSummary, XPBoostStatus } from "@/types";
-import { communityService } from "@/services/api";
+import type { DailyTask, XPBoostStatus } from "@/types";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/authStore";
-import { useDashboardStore } from "@/store/dashboardStore";
 import { useMusicPlayerStore } from "@/store/musicPlayerStore";
+import { useDailyTaskStore } from "@/store/dailyTaskStore";
 import { CoinIcon } from "@/components/shared/CoinIcon";
 import { ROUTES } from "@/lib/routes";
+import { GamificationIcon } from "./GamificationIcon";
 
 interface DailyTaskFABProps {
   className?: string;
@@ -20,19 +20,10 @@ interface DailyTaskFABProps {
   xpBoost: XPBoostStatus | null;
 }
 
-function extractDailyTasks(payload: DailyTask[] | DailyTaskSummary | null | undefined): DailyTask[] {
-  if (Array.isArray(payload)) return payload;
-  if (payload && Array.isArray(payload.tasks)) return payload.tasks;
-  return [];
-}
-
 export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: DailyTaskFABProps) {
   const { token, user, refreshUser } = useAuthStore();
-  const [tasks, setTasks] = useState<DailyTask[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [claimingId, setClaimingId] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const { taskRefreshTrigger } = useDashboardStore();
+  const { tasks, isLoading, claimingId, loadTasks, claimTask } = useDailyTaskStore();
   const isPlayerVisible = useMusicPlayerStore((s) => s.isPlayerVisible);
   const currentSong = useMusicPlayerStore((s) => s.currentSong);
   const isMinimized = useMusicPlayerStore((s) => s.isMinimized);
@@ -53,35 +44,23 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
     return `${Math.max(1, minutes)}m`;
   };
 
-  const loadTasks = useCallback(async () => {
-    if (!token) return;
-    setIsLoading(true);
-    try {
-      const response = await communityService.getDailyTasks(token);
-      setTasks(extractDailyTasks(response.data));
-    } catch (error) {
-      console.error("Failed to load daily tasks:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [token]);
-
   useEffect(() => {
-    loadTasks();
-  }, [loadTasks, taskRefreshTrigger]);
+    void loadTasks(token);
+  }, [loadTasks, token]);
 
   // Refresh tasks when the panel is opened
   useEffect(() => {
     if (isOpen) {
-      loadTasks();
+      void loadTasks(token, true);
     }
-  }, [isOpen, loadTasks]);
+  }, [isOpen, loadTasks, token]);
 
   // Poll every 30s so FAB stays in sync with other components
   useEffect(() => {
-    const interval = setInterval(loadTasks, 30_000);
+    if (!token) return;
+    const interval = setInterval(() => void loadTasks(token, true), 30_000);
     return () => clearInterval(interval);
-  }, [loadTasks]);
+  }, [loadTasks, token]);
 
   useEffect(() => {
     if (isSidebarOpen) {
@@ -92,27 +71,30 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
   const handleClaim = async (task: DailyTask) => {
     if (!token || claimingId !== null) return;
 
-    setClaimingId(task.id);
     try {
-      const response = await communityService.claimTaskReward(token, task.id);
-      if (response.data) {
-        const parts = [`+${response.data.xp_earned} XP`];
-        if (response.data.coin_earned) parts.push(`+${response.data.coin_earned} koin`);
+      const response = await claimTask(token, task.id);
+      if (response) {
+        const parts = [`+${response.xp_earned} XP`];
+        if (response.coin_earned) parts.push(`+${response.coin_earned} koin`);
         if (hasXPBoost) parts.push(`Boost x${boostMultiplier}`);
         toast.success(`Berhasil klaim! ${parts.join(", ")}`);
-        if (response.data.level_up) {
+        if (response.level_up) {
           toast.success("Naik Level!", {
-            description: "Selamat! Kamu naik level 🎉",
+            description: (
+              <span className="inline-flex items-center gap-1.5">
+                Selamat! Kamu naik level
+                <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+              </span>
+            ),
           });
         }
-        loadTasks();
         refreshUser(); // Refresh user data to update EXP in navbar
       }
     } catch (error) {
       console.error("Failed to claim task:", error);
       toast.error("Gagal mengklaim hadiah");
     } finally {
-      setClaimingId(null);
+      // State klaim dibersihkan oleh store bersama.
     }
   };
 
@@ -232,7 +214,7 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
                               : "bg-gray-100 text-gray-400"
                         )}
                       >
-                        {task.task_icon}
+                        <GamificationIcon name={task.task_type || task.task_icon} className="h-4 w-4" />
                       </div>
                       <div>
                         <h4
@@ -315,13 +297,15 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
                     description: "6 pesan reflektif dengan AI",
                     xp: 55,
                     coins: 8,
-                    icon: "✨",
+                    icon: Sparkles,
                   },
-                ].map((task) => (
+                ].map((task) => {
+                  const TaskIcon = task.icon;
+                  return (
                   <div key={task.name} className="p-3 flex items-center justify-between bg-violet-50/50">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-base bg-violet-100 text-violet-600">
-                        {task.icon}
+                        <TaskIcon className="h-4 w-4" aria-hidden="true" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
@@ -351,7 +335,8 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
                       </Link>
                     </Button>
                   </div>
-                ))}
+                  );
+                })}
               </>
             )}
           </div>

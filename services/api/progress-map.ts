@@ -1,6 +1,6 @@
 import { httpClient } from "@/services/http/client";
 import type { ApiResponse } from "@/services/http/types";
-import type { FullMapResponse, MapProgressSummary, MapRegion } from "@/types/progress-map";
+import type { FullMapResponse, MapProgressSummary } from "@/types/progress-map";
 
 export const progressMapService = {
   getFullMap(token: string) {
@@ -9,10 +9,6 @@ export const progressMapService = {
 
   getProgressSummary(token: string) {
     return httpClient.get<ApiResponse<MapProgressSummary>>("/map/summary", { token });
-  },
-
-  getRegionDetail(token: string, regionKey: string) {
-    return httpClient.get<ApiResponse<MapRegion>>(`/map/regions/${regionKey}`, { token });
   },
 
   claimLandmarkReward(token: string, landmarkId: string) {

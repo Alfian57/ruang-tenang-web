@@ -1,6 +1,6 @@
 export default function AdminDashboardLoading() {
   return (
-    <div className="p-6 lg:p-8 space-y-6">
+    <div className="space-y-6 py-6 lg:py-8">
       <div className="space-y-2">
         <div className="h-6 w-28 rounded-full bg-gray-200 animate-pulse" />
         <div className="h-8 w-56 rounded bg-gray-200 animate-pulse" />

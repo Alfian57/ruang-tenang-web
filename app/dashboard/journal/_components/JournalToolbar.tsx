@@ -12,7 +12,7 @@ import {
     Redo,
     Heading1,
     Heading2,
-    Sparkles,
+    Lightbulb,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
@@ -139,7 +139,7 @@ export function JournalToolbar({ editor, onGeneratePrompt }: JournalToolbarProps
                             className="text-primary/80 hover:text-primary hover:bg-primary/10 h-8 px-2"
                             title="Generate Prompt"
                         >
-                            <Sparkles className="h-4 w-4" />
+                            <Lightbulb className="h-4 w-4" />
                         </Button>
                     </>
                 )}

@@ -1,6 +1,6 @@
 export default function NewArticleLoading() {
   return (
-    <div className="p-4 lg:p-6">
+    <div className="py-4 lg:py-6">
       <div className="flex items-center gap-4 mb-6">
         <div className="h-10 w-10 rounded-lg bg-gray-200 animate-pulse" />
         <div className="space-y-1">

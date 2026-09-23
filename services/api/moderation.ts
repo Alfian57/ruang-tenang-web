@@ -12,16 +12,6 @@ import type {
   ReviewAppealRequest,
 } from "@/types/moderation";
 
-interface UserStrike {
-  id: number;
-  user_id: number;
-  reason: string;
-  issued_by: number;
-  is_active: boolean;
-  expires_at?: string;
-  created_at: string;
-}
-
 interface CrisisKeyword {
   id: number;
   keyword: string;
@@ -128,15 +118,6 @@ export const moderationService = {
     return httpClient.get<PaginatedResponse<UserReport>>("/moderation/reports", { token, params });
   },
 
-  handleReport(token: string, reportId: number, data: { action: string; notes?: string; duration?: number }) {
-    return httpClient.put<ApiResponse<null>>(`/moderation/reports/${reportId}`, data, { token });
-  },
-
-  // User strikes
-  getUserStrikes(token: string, userId: number, activeOnly?: boolean) {
-    return httpClient.get<ApiResponse<UserStrike[]>>(`/moderation/users/${userId}/strikes`, { token, params: activeOnly ? { active_only: true } : undefined });
-  },
-
   // Trigger warnings
   addTriggerWarnings(token: string, data: { content_type: string; content_id: number; trigger_warnings: string[] }) {
     return httpClient.post<ApiResponse<null>>("/moderation/trigger-warnings", data, { token });
@@ -182,10 +163,6 @@ export const moderationService = {
   // User settings
   acceptAIDisclaimer(token: string) {
     return httpClient.post<ApiResponse<null>>("/user/accept-ai-disclaimer", {}, { token });
-  },
-
-  updateContentWarningPreference(token: string, preference: string) {
-    return httpClient.put<ApiResponse<null>>("/user/content-warning-preference", { preference }, { token });
   },
 
   // Appeals

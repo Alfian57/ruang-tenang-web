@@ -7,7 +7,7 @@ set -e
 # nilai env yang sebenarnya saat container start
 # ============================================
 
-echo "🔧 Injecting runtime environment variables..."
+echo "Injecting runtime environment variables..."
 
 API_BASE_URL="${NEXT_PUBLIC_API_BASE_URL:-${NEXT_PUBLIC_API_URL:-https://ruang-tenang.site/api/v1}}"
 API_HOST=$(echo "$API_BASE_URL" | sed -E 's|https?://([^/]+).*|\1|')
@@ -34,7 +34,7 @@ if [ -f /app/server.js ]; then
   if [ -w /app/server.js ]; then
     cat "${SERVER_TMP}" > /app/server.js
   else
-    echo "⚠️  /app/server.js is not writable; skipping inline replacement."
+    echo "/app/server.js is not writable; skipping inline replacement."
   fi
   rm -f "${SERVER_TMP}"
 fi
@@ -44,7 +44,7 @@ fi
 #   -e "s|__NEXT_PUBLIC_OTHER_VAR__|${NEXT_PUBLIC_OTHER_VAR:-default}|g" \
 #   {} \;
 
-echo "✅ Environment variables injected:"
+echo "Environment variables injected:"
 echo "   NEXT_PUBLIC_API_BASE_URL=${API_BASE_URL}"
 
 # Jalankan command utama (node server.js)

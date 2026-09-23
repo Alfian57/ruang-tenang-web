@@ -37,7 +37,7 @@ export function useMemberDashboard() {
         moodService.getHistory(token, { limit: 100 }),
         songService.getCategories(),
         journalService.list(token, { limit: 20 }),
-        articleService.getArticles({ limit: 3 }),
+        articleService.getArticles({ limit: 4 }),
         chatService.getSessions(token, { page: 1, limit: 20 }),
         billingService.getStatus(token),
         wellnessService.getCurrentPlan(token),

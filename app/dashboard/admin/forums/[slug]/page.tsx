@@ -45,7 +45,7 @@ export default function AdminForumTopicPage() {
   } = useAdminForumDetail();
 
   if (loading) return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] lg:h-[calc(100vh-0rem)] bg-gray-50">
+    <div className="flex h-[calc(100vh-4rem)] flex-col lg:h-[calc(100vh-0rem)]">
       <div className="bg-white border-b px-4 lg:px-6 py-4 flex items-center gap-4 sticky top-0 z-10 shrink-0 shadow-sm">
         <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse" />
         <div className="space-y-1.5">
@@ -54,7 +54,7 @@ export default function AdminForumTopicPage() {
         </div>
       </div>
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto p-4 lg:p-6 space-y-6">
+        <div className="mx-auto max-w-4xl space-y-6 py-4 lg:py-6">
           <div className="bg-white p-6 rounded-2xl shadow-sm border space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse" />
@@ -77,7 +77,7 @@ export default function AdminForumTopicPage() {
       </div>
     </div>
   );
-  if (!forum) return <div className="p-10 text-center text-gray-500">Topik tidak ditemukan</div>;
+  if (!forum) return <div className="py-10 text-center text-gray-500">Topik tidak ditemukan</div>;
 
   return (
     <>
@@ -108,7 +108,7 @@ export default function AdminForumTopicPage() {
         isLoading={isDeleting}
       />
 
-      <div className="flex flex-col h-[calc(100vh-4rem)] lg:h-[calc(100vh-0rem)] bg-gray-50">
+      <div className="flex h-[calc(100vh-4rem)] flex-col lg:h-[calc(100vh-0rem)]">
         {/* Header */}
         <div className="bg-white border-b px-4 lg:px-6 py-4 flex items-center justify-between sticky top-0 z-10 shrink-0 shadow-sm">
           <div className="flex items-center gap-4">
@@ -165,7 +165,7 @@ export default function AdminForumTopicPage() {
 
         {/* Content Scroll Area */}
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto p-4 lg:p-6 space-y-6">
+          <div className="mx-auto max-w-4xl space-y-6 py-4 lg:py-6">
             {forum.is_flagged && (
               <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 flex items-center gap-3 text-primary">
                 <div className="bg-primary/10 p-2 rounded-full shrink-0">

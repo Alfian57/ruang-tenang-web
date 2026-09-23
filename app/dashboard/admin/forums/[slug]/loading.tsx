@@ -1,6 +1,6 @@
 export default function AdminForumDetailLoading() {
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] lg:h-[calc(100vh-0rem)] bg-gray-50">
+    <div className="flex h-[calc(100vh-4rem)] flex-col lg:h-[calc(100vh-0rem)]">
       {/* Header */}
       <div className="bg-white border-b px-4 lg:px-6 py-4 flex items-center justify-between sticky top-0 z-10 shrink-0 shadow-sm">
         <div className="flex items-center gap-4">
@@ -19,7 +19,7 @@ export default function AdminForumDetailLoading() {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-4xl mx-auto p-4 lg:p-6 space-y-6">
+        <div className="mx-auto max-w-4xl space-y-6 py-4 lg:py-6">
           {/* Main Topic Card */}
           <div className="bg-white p-6 rounded-2xl shadow-sm border space-y-4">
             <div className="flex items-center gap-3">

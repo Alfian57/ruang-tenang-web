@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { Search, BookOpen } from "lucide-react";
+import { FileText, Search, BookOpen } from "lucide-react";
 import { Navbar, Footer } from "@/components/layout";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -164,7 +164,7 @@ function ArticlesContent() {
                             />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center text-3xl">
-                              📄
+                              <FileText className="h-9 w-9 text-gray-400" aria-hidden="true" />
                             </div>
                           )}
                         </div>
@@ -237,7 +237,7 @@ function ArticlesContent() {
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center text-2xl">
-                                📄
+                                <FileText className="h-8 w-8 text-gray-400" aria-hidden="true" />
                               </div>
                             )}
                           </div>

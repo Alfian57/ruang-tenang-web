@@ -7,6 +7,7 @@ import { useAuthStore } from "@/store/authStore";
 import { StoryCategory, CreateStoryRequest } from "@/types";
 import { ApiError } from "@/services/http/types";
 import { toast } from "sonner";
+import { ROUTES } from "@/lib/routes";
 
 const STORY_CHALLENGE_PRESETS: Record<string, { title: string; description: string; defaultTag: string }> = {
   "weekly-reset": {
@@ -41,7 +42,7 @@ export function useNewStory() {
 
   useEffect(() => {
     if (!token) {
-      router.push("/dashboard/stories");
+      router.push(ROUTES.communityTab("stories"));
     }
   }, [token, router]);
 
@@ -149,7 +150,7 @@ export function useNewStory() {
             JSON.stringify(response.data)
           );
         }
-        router.push(`/dashboard/stories/${response.data.id}`);
+        router.push(ROUTES.communityStory(response.data.id));
       }
     } catch (error: unknown) {
       console.error("Failed to submit story:", error);

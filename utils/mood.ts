@@ -4,16 +4,6 @@ import { MoodType } from "@/types";
  * Mood-related utilities for the mental health tracking feature.
  */
 
-/** Emoji representations for each mood type */
-const MOOD_EMOJIS: Record<MoodType, string> = {
-  happy: "😊",
-  neutral: "😐",
-  angry: "😠",
-  disappointed: "😞",
-  sad: "😢",
-  crying: "😭",
-} as const;
-
 /** Indonesian labels for each mood type */
 const MOOD_LABELS: Record<MoodType, string> = {
   happy: "Bahagia",
@@ -35,13 +25,6 @@ const MOOD_COLORS: Record<MoodType, string> = {
 } as const;
 
 /**
- * Get the emoji for a mood type.
- */
-export function getMoodEmoji(mood: string): string {
-  return MOOD_EMOJIS[mood as MoodType] ?? "🙂";
-}
-
-/**
  * Get the Indonesian label for a mood type.
  */
 export function getMoodLabel(mood: string): string {
@@ -59,5 +42,5 @@ export function getMoodColor(mood: string): string {
  * Get all available mood types.
  */
 export function getAllMoods(): MoodType[] {
-  return Object.keys(MOOD_EMOJIS) as MoodType[];
+  return Object.keys(MOOD_LABELS) as MoodType[];
 }

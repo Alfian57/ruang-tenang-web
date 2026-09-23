@@ -2,7 +2,7 @@
  * Utility modules index - re-exports all utilities for convenient imports.
  *
  * Usage:
- *   import { formatDate, truncate, getMoodEmoji } from "@/utils";
+ *   import { formatDate, truncate, getMoodLabel } from "@/utils";
  *   OR
  *   import { formatDate } from "@/utils/date";
  */
@@ -17,4 +17,4 @@ export { formatDate, formatDateTime, formatRelativeTime } from "./date";
 export { truncate, capitalize, slugify, getHtmlExcerpt } from "./string";
 
 // Mood helpers
-export { getMoodEmoji, getMoodLabel, getMoodColor, getAllMoods } from "./mood";
+export { getMoodLabel, getMoodColor, getAllMoods } from "./mood";

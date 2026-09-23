@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { adminService, moderationService } from "@/services/api";
-import { httpClient } from "@/services/http/client";
 import { ArticleCategory } from "@/types";
 import { useDebounce } from "@/hooks/use-debounce";
 
@@ -148,10 +147,7 @@ export function useAdminArticles() {
     if (!token) return;
     try {
       // Fetch full article content
-      const data = await httpClient.get<{ data: { title: string; content: string; category_id: number; thumbnail: string } }>(`/admin/articles/${article.id}`, {
-        token,
-      });
-      const fullArticle = data.data;
+      const fullArticle = (await adminService.getArticle(token, article.id)).data;
       
       setEditingArticle(article);
       setFormData({
@@ -171,9 +167,9 @@ export function useAdminArticles() {
     setIsSaving(true);
     try {
       if (editingArticle) {
-        await httpClient.put(`/admin/articles/${editingArticle.id}`, formData, { token });
+        await adminService.updateArticle(token, editingArticle.id, formData);
       } else {
-        await httpClient.post("/admin/articles", formData, { token });
+        await adminService.createArticle(token, formData);
       }
       setEditDialog(false);
       loadData();
@@ -250,9 +246,9 @@ export function useAdminArticles() {
     setIsCategorySaving(true);
     try {
       if (editingCategory) {
-        await httpClient.put(`/admin/article-categories/${editingCategory.id}`, categoryForm, { token });
+        await adminService.updateArticleCategory(token, editingCategory.id, categoryForm);
       } else {
-        await httpClient.post("/admin/article-categories", categoryForm, { token });
+        await adminService.createArticleCategory(token, categoryForm);
       }
       setCategoryDialog(false);
       loadData();
@@ -266,7 +262,7 @@ export function useAdminArticles() {
   const handleDeleteCategory = async () => {
     if (!token || !deleteCategoryId) return;
     try {
-      await httpClient.delete(`/admin/article-categories/${deleteCategoryId}`, { token });
+      await adminService.deleteArticleCategory(token, deleteCategoryId);
       setDeleteCategoryId(null);
       loadData();
     } catch (error) {

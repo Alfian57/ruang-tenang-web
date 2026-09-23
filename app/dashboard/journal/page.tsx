@@ -8,7 +8,6 @@ import {
     JournalAnalytics,
     JournalWeeklySummary,
     JournalFilters,
-    JournalCommunity,
 } from "./_components";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,9 +28,8 @@ import {
     Download,
     Filter,
     X,
-    WandSparkles,
+    Lightbulb,
     NotebookPen,
-    Users,
 } from "lucide-react";
 import { cn } from "@/utils";
 import { useJournalPage } from "./_hooks/useJournalPage";
@@ -94,7 +92,7 @@ export default function JournalPage() {
 
     // Main layout
     return (
-        <div className="p-4 lg:p-6">
+        <div className="py-4 lg:py-6">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
@@ -134,7 +132,7 @@ export default function JournalPage() {
                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                         <div>
                             <p className="text-sm font-semibold text-gray-900 inline-flex items-center gap-2">
-                                <WandSparkles className="w-4 h-4 text-primary" />
+                                <Lightbulb className="w-4 h-4 text-primary" />
                                 Mulai journaling sesuai kondisimu
                             </p>
                             <p className="text-xs text-gray-600 mt-1">
@@ -165,10 +163,6 @@ export default function JournalPage() {
                     <TabsTrigger value="journals" className="flex items-center gap-2">
                         <BookOpen className="w-4 h-4" />
                         Jurnal
-                    </TabsTrigger>
-                    <TabsTrigger value="community" className="flex items-center gap-2">
-                        <Users className="w-4 h-4" />
-                        Komunitas
                     </TabsTrigger>
                     <TabsTrigger value="analytics" className="flex items-center gap-2">
                         <BarChart2 className="w-4 h-4" />
@@ -290,11 +284,6 @@ export default function JournalPage() {
                             </div>
                         </div>
                     </div>
-                </TabsContent>
-
-                {/* Community Tab */}
-                <TabsContent value="community">
-                    <JournalCommunity />
                 </TabsContent>
 
                 {/* Analytics Tab */}

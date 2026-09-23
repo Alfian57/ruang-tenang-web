@@ -32,17 +32,45 @@ type XPBoostUpdatedEventDetail = {
 };
 
 const SHARED_DASHBOARD_PATHS = [
-  ROUTES.DASHBOARD,
   ROUTES.PROFILE,
   ROUTES.SETTINGS,
 ];
+
+const WIDE_MEMBER_DASHBOARD_PATHS = new Set([
+  ROUTES.ARTICLE_CREATE,
+  ROUTES.GAME,
+  `${ROUTES.JOURNAL}/create`,
+  ROUTES.COMMUNITY_STORY_CREATE,
+]);
+
+const JOURNAL_EDIT_PATH_PATTERN = /^\/dashboard\/journal\/[^/]+\/edit$/;
+
+type DashboardFrameVariant = "standard" | "wide" | "immersive";
 
 function isPathAtOrBelow(pathname: string, basePath: string): boolean {
   return pathname === basePath || pathname.startsWith(`${basePath}/`);
 }
 
 function isSharedDashboardPath(pathname: string): boolean {
-  return SHARED_DASHBOARD_PATHS.some((path) => isPathAtOrBelow(pathname, path));
+  return pathname === ROUTES.DASHBOARD
+    || SHARED_DASHBOARD_PATHS.some((path) => isPathAtOrBelow(pathname, path));
+}
+
+function getDashboardFrameVariant(pathname: string, role: UserRole): DashboardFrameVariant {
+  if (isPathAtOrBelow(pathname, ROUTES.CHAT)) {
+    return "immersive";
+  }
+
+  if (
+    role === "admin"
+    || role === "mitra"
+    || WIDE_MEMBER_DASHBOARD_PATHS.has(pathname)
+    || JOURNAL_EDIT_PATH_PATTERN.test(pathname)
+  ) {
+    return "wide";
+  }
+
+  return "standard";
 }
 
 function getRoleHome(role: UserRole): string {
@@ -275,13 +303,12 @@ function DashboardContent({
   const activeDashboardTheme = user.role === "user" && user.profile_theme && user.profile_theme !== "default"
     ? user.profile_theme
     : null;
+  const dashboardFrameVariant = getDashboardFrameVariant(pathname, user.role);
 
   return (
     <div className={cn(
-      "min-h-screen",
-      activeDashboardTheme
-        ? `theme-${activeDashboardTheme} theme-bg`
-        : "bg-gray-50"
+      "dashboard-shell min-h-screen",
+      activeDashboardTheme && `theme-${activeDashboardTheme}`
     )}>
       <SkipLink href="#main-content" className="focus:z-70" />
 
@@ -394,14 +421,21 @@ function DashboardContent({
 
         {/* Page Content */}
         <main className={cn(
-          "focus:outline-none w-full min-w-0 max-w-[120rem] mx-auto overflow-x-clip",
+          "dashboard-page-surface focus:outline-none w-full min-w-0 overflow-x-clip",
           "flex-1 pt-16 lg:pt-0 transition-[padding-bottom] duration-200",
           showMusicPlayer && "pb-28"
         )}
           id="main-content"
           tabIndex={-1}
         >
-          {children}
+          <div className={cn(
+            "w-full min-w-0",
+            dashboardFrameVariant === "standard" && "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8",
+            dashboardFrameVariant === "wide" && "mx-auto max-w-[92rem] px-4 sm:px-6 lg:px-8",
+            dashboardFrameVariant === "immersive" && "max-w-none"
+          )}>
+            {children}
+          </div>
         </main>
 
         {/* Wellness onboarding and mood check-in modal (for regular users only) */}

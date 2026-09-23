@@ -25,10 +25,6 @@ export const storyService = {
     return httpClient.get<ApiResponse<StoryCard[]>>("/stories/featured");
   },
 
-  getMostAppreciated() {
-    return httpClient.get<ApiResponse<StoryCard[]>>("/stories/most-appreciated");
-  },
-
   getStory(id: string, token?: string) {
     return httpClient.get<ApiResponse<InspiringStory>>(`/stories/${id}`, token ? { token } : undefined);
   },
@@ -66,10 +62,6 @@ export const storyService = {
 
   createComment(token: string, storyId: string, data: { content: string }) {
     return httpClient.post<ApiResponse<StoryComment>>(`/stories/${storyId}/comments`, data, { token });
-  },
-
-  deleteComment(token: string, storyId: string, commentId: string) {
-    return httpClient.delete<ApiResponse<null>>(`/stories/${storyId}/comments/${commentId}`, { token });
   },
 
   heartComment(token: string, storyId: string, commentId: string) {

@@ -14,8 +14,9 @@ import {
     Trash2,
     Edit,
     FileText,
-    Sparkles,
+    Brain,
 } from "lucide-react";
+import { MoodAssetIcon } from "@/components/shared/mood";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -79,11 +80,15 @@ export function JournalListItem({
                 <div
                     className={cn(
                         "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl",
-                        journal.mood_emoji ? "bg-primary/10" : "bg-gray-100 text-gray-400"
+                        journal.mood_label ? "bg-primary/10" : "bg-gray-100 text-gray-400"
                     )}
                     title={journal.mood_label}
                 >
-                    {journal.mood_emoji || <FileText className="h-5 w-5" />}
+                    {journal.mood_label ? (
+                        <MoodAssetIcon moodLabel={journal.mood_label} moodId={journal.mood_id} size={28} className="h-7 w-7 object-contain" />
+                    ) : (
+                        <FileText className="h-5 w-5" />
+                    )}
                 </div>
 
                 <div className="min-w-0 flex-1">
@@ -155,7 +160,7 @@ export function JournalListItem({
                                     className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 font-medium text-primary"
                                     title="AI dapat membaca jurnal ini"
                                 >
-                                    <Sparkles className="h-3 w-3" />
+                                    <Brain className="h-3 w-3" />
                                     AI
                                 </span>
                             ) : (

@@ -26,7 +26,7 @@ export function CategoryDetailView({
     onPlay
 }: CategoryDetailViewProps) {
     return (
-        <div className="p-4 lg:p-6 pb-32">
+        <div className="pb-32 pt-4 lg:pt-6">
             <AnimatePresence mode="wait">
                 <motion.div
                     key="category-detail"

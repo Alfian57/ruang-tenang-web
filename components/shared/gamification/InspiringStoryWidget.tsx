@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Sparkles, Heart, ChevronRight, User } from "lucide-react";
+import { BookOpen, Heart, ChevronRight, User } from "lucide-react";
 import Image from "next/image";
 import { storyService } from "@/services/api";
 import { StoryCard } from "@/types";
@@ -44,11 +44,11 @@ export function InspiringStoryWidget() {
   if (!featuredStory) {
     return (
       <Link
-        href={ROUTES.STORIES}
+        href={ROUTES.communityTab("stories")}
         className="block theme-story-bg border theme-story-border rounded-xl p-6 hover:shadow-md transition-all group"
       >
         <div className="flex items-center gap-2 mb-4">
-          <Sparkles className="w-5 h-5" style={{ color: `var(--theme-story-icon)` }} />
+          <BookOpen className="w-5 h-5" style={{ color: `var(--theme-story-icon)` }} />
           <h3 className="font-semibold" style={{ color: `var(--theme-story-heading)` }}>Kisah Inspiratif</h3>
         </div>
         <p className="text-sm mb-4" style={{ color: `var(--theme-story-heading)` }}>
@@ -65,7 +65,7 @@ export function InspiringStoryWidget() {
 
   return (
     <Link
-      href={ROUTES.storyDetail(featuredStory.id)}
+      href={ROUTES.communityStory(featuredStory.id)}
       className="block theme-story-bg border theme-story-border rounded-xl overflow-hidden hover:shadow-md transition-all group"
     >
       {featuredStory.cover_image && (
@@ -80,7 +80,7 @@ export function InspiringStoryWidget() {
       )}
       <div className="p-4">
         <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="w-4 h-4" style={{ color: `var(--theme-story-icon)` }} />
+          <BookOpen className="w-4 h-4" style={{ color: `var(--theme-story-icon)` }} />
           <span className="text-xs font-medium uppercase tracking-wide" style={{ color: `var(--theme-story-link)` }}>
             Kisah Pilihan
           </span>

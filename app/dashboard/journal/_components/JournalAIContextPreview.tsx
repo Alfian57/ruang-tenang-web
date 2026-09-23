@@ -4,6 +4,7 @@ import { Info, EyeOff, ChevronDown, ChevronUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
+import { MoodAssetIcon } from "@/components/shared/mood";
 
 interface JournalAIContextPreviewProps {
     context: JournalAIContext | null;
@@ -68,8 +69,8 @@ export function JournalAIContextPreview({
                                     className="p-3 bg-primary/10 border border-primary/20 rounded-lg"
                                 >
                                     <div className="flex items-center gap-2 mb-1">
-                                        {entry.mood_emoji && (
-                                            <span className="text-sm">{entry.mood_emoji}</span>
+                                        {entry.mood_label && (
+                                            <MoodAssetIcon moodLabel={entry.mood_label} size={20} className="h-5 w-5 object-contain" />
                                         )}
                                         <p className="font-medium text-sm">{entry.title}</p>
                                     </div>

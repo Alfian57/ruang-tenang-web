@@ -1,6 +1,6 @@
 export default function EditJournalLoading() {
   return (
-    <div className="p-4 lg:p-6">
+    <div className="py-4 lg:py-6">
       {/* Back button */}
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-4">

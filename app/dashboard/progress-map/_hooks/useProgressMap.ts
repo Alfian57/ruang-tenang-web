@@ -11,16 +11,23 @@ export function useProgressMap() {
   const [mapData, setMapData] = useState<FullMapResponse | null>(null);
   const [selectedRegion, setSelectedRegion] = useState<MapRegion | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const [claimingLandmark, setClaimingLandmark] = useState<string | null>(null);
   const selectedRegionKey = selectedRegion?.region_key;
 
   const fetchMap = useCallback(async () => {
-    if (!token) return null;
+    if (!token) {
+      setLoading(false);
+      return null;
+    }
+    setLoading(true);
+    setHasError(false);
     try {
       const response = await progressMapService.getFullMap(token);
       setMapData(response.data);
       return response.data;
     } catch {
+      setHasError(true);
       toast.error("Gagal memuat peta progress");
       return null;
     } finally {
@@ -81,9 +88,11 @@ export function useProgressMap() {
     mapData,
     selectedRegion,
     loading,
+    hasError,
     claimingLandmark,
     handleSelectRegion,
     handleCloseRegion,
     handleClaimReward,
+    retry: fetchMap,
   };
 }

@@ -1,6 +1,6 @@
 export default function ModerationLoading() {
   return (
-    <div className="p-6 lg:p-8 space-y-6">
+    <div className="space-y-6 py-6 lg:py-8">
       <div className="h-8 w-36 rounded bg-gray-200 animate-pulse" />
       <div className="grid sm:grid-cols-3 gap-4">
         {[1, 2, 3].map((i) => (

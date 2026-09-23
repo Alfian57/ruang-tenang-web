@@ -4,12 +4,13 @@ import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Book, Clock3, ListChecks, PenTool, Plus, Sparkles } from "lucide-react";
+import { ArrowRight, Book, Clock3, ListChecks, PenTool, Plus } from "lucide-react";
 import { Journal } from "@/types";
 import { formatDistanceToNow } from "date-fns";
 import { id } from "date-fns/locale";
 import { getHtmlExcerpt } from "@/utils";
 import { useTheme } from "@/hooks/useTheme";
+import { MoodAssetIcon } from "@/components/shared/mood";
 
 interface QuickJournalWidgetProps {
   latestJournal: Journal | null;
@@ -92,8 +93,10 @@ export function QuickJournalWidget({ latestJournal, isLoading }: QuickJournalWid
             <div className="rounded-xl border theme-accent-border-soft bg-white/70 p-3">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2 min-w-0">
-                  {latestJournal.mood_emoji && (
-                    <span className="text-2xl bg-white p-1.5 rounded-full shadow-sm shrink-0">{latestJournal.mood_emoji}</span>
+                  {latestJournal.mood_label && (
+                    <span className="shrink-0 rounded-full bg-white p-1.5 shadow-sm">
+                      <MoodAssetIcon moodLabel={latestJournal.mood_label} moodId={latestJournal.mood_id} size={28} className="h-7 w-7 object-contain" />
+                    </span>
                   )}
                   <div className="min-w-0">
                     <h4 className="font-semibold text-gray-900 line-clamp-1">{journalTitle}</h4>
@@ -167,7 +170,7 @@ export function QuickJournalWidget({ latestJournal, isLoading }: QuickJournalWid
               <ul className="mt-2 space-y-2">
                 {emptyStatePrompts.map((prompt) => (
                   <li key={prompt} className="flex items-start gap-2 text-xs text-gray-700">
-                    <Sparkles className="w-3.5 h-3.5 mt-0.5 shrink-0 theme-accent-text" />
+                    <ListChecks className="w-3.5 h-3.5 mt-0.5 shrink-0 theme-accent-text" />
                     <span>{prompt}</span>
                   </li>
                 ))}

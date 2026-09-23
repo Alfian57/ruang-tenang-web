@@ -75,7 +75,7 @@ export default function JournalDetailPage() {
 
     if (isLoading && !activeJournal) {
         return (
-            <div className="p-4 lg:p-6">
+            <div className="py-4 lg:py-6">
                 <div className="flex items-center gap-3 mb-6">
                     <div className="h-9 w-9 rounded-lg bg-gray-200 animate-pulse" />
                     <div className="h-5 w-32 rounded bg-gray-200 animate-pulse" />
@@ -100,7 +100,7 @@ export default function JournalDetailPage() {
 
     if (!activeJournal && !isLoading) {
         return (
-            <div className="p-4 lg:p-6 text-center">
+            <div className="py-4 text-center lg:py-6">
                 <h2 className="text-xl font-semibold mb-4">Jurnal tidak ditemukan</h2>
                 <Button asChild>
                     <Link href="/dashboard/journal">Kembali ke Daftar</Link>
@@ -110,7 +110,7 @@ export default function JournalDetailPage() {
     }
 
     return (
-        <div className="p-4 lg:p-6">
+        <div className="py-4 lg:py-6">
             {activeJournal && (
                 <>
                     <JournalDetail

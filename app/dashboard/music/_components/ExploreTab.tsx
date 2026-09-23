@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles, Compass, AudioLines, ArrowRight, BadgeCheck } from "lucide-react";
+import { Compass, AudioLines, ArrowRight, BadgeCheck } from "lucide-react";
 import { PublicPlaylistCard } from "./PublicPlaylistCard";
 import { PlaylistListItem } from "@/types";
 import { Button } from "@/components/ui/button";
@@ -84,7 +84,7 @@ export function ExploreTab({
             {adminPlaylists.length > 0 && (
                 <div className="space-y-4">
                     <div className="flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-primary" />
+                        <Compass className="w-5 h-5 text-primary" />
                         <h2 className="font-semibold text-gray-900">Playlist Resmi</h2>
                         <span className="text-[10px] px-2 py-1 rounded-full border border-primary/20 bg-primary/10 text-primary font-semibold inline-flex items-center gap-1">
                             <BadgeCheck className="w-3 h-3" />

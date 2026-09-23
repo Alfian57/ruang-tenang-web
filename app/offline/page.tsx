@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import MindfulRunnerGame from "@/components/game/LazyMindfulRunnerGame";
-import { WifiOff } from "lucide-react";
+import { Brain, Lightbulb, WifiOff } from "lucide-react";
 
 export const metadata: Metadata = {
     title: "Offline - Ruang Tenang",
@@ -19,7 +19,10 @@ export default function OfflinePage() {
                         Kamu Sedang Offline
                     </h1>
                     <p className="text-gray-500 max-w-md">
-                        Sepertinya koneksi internetmu sedang terputus. Sambil menunggu, yuk mainkan game ini untuk menenangkan pikiran 🧘
+                        <span className="inline-flex items-center justify-center gap-1">
+                            Sepertinya koneksi internetmu sedang terputus. Sambil menunggu, yuk mainkan game ini untuk menenangkan pikiran
+                            <Brain className="h-4 w-4 shrink-0" aria-hidden="true" />
+                        </span>
                     </p>
                 </div>
 
@@ -31,7 +34,10 @@ export default function OfflinePage() {
                 {/* Tips section */}
                 <div className="bg-white/80 rounded-xl p-5 border border-red-100 text-left max-w-md mx-auto">
                     <h3 className="font-semibold text-gray-800 mb-2">
-                        💡 Tips saat offline:
+                        <span className="inline-flex items-center gap-1.5">
+                            <Lightbulb className="h-4 w-4" aria-hidden="true" />
+                            Tips saat offline:
+                        </span>
                     </h3>
                     <ul className="space-y-1.5 text-sm text-gray-600">
                         <li>• Tarik napas dalam selama 4 detik, tahan 4 detik, hembuskan 4 detik</li>

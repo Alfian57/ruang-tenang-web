@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { StoryCategoryIcon } from "./StoryCategoryIcon";
 
 interface StoryFormProps {
     categories: StoryCategory[];
@@ -148,7 +149,8 @@ export function StoryForm({
                                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                             )}
                         >
-                            {category.icon} {category.name}
+                            <StoryCategoryIcon slug={category.slug} name={category.name} className="h-4 w-4" />
+                            {category.name}
                         </button>
                     ))}
                 </div>

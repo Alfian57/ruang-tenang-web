@@ -1,175 +1,164 @@
 "use client";
 
-import { cn } from "@/utils";
-import { PersonalJourney } from "@/types";
-import { Flame, Target, Star, TrendingUp, Activity, Info } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
+import {
+    Activity,
+    ArrowRight,
+    Flame,
+    Gift,
+    Map,
+    Star,
+    Target,
+    TrendingUp,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { PersonalJourney } from "@/types";
+import { cn } from "@/utils";
 import { useAuthStore } from "@/store/authStore";
+import { GamificationIcon } from "./GamificationIcon";
 
 interface PersonalJourneyCardProps {
     journey: PersonalJourney;
     className?: string;
     onShowLevelGuide?: () => void;
+    onShowRewards?: () => void;
 }
 
-export function PersonalJourneyCard({ journey, className, onShowLevelGuide }: PersonalJourneyCardProps) {
+export function PersonalJourneyCard({
+    journey,
+    className,
+    onShowLevelGuide,
+    onShowRewards,
+}: PersonalJourneyCardProps) {
+    const user = useAuthStore((state) => state.user);
+    const [imageError, setImageError] = useState(false);
     const currentExp = Number(journey.current_exp ?? 0);
     const progressPercent = Math.min(100, Math.max(0, Number(journey.progress_percent ?? 0)));
     const expToNextLevel = Number(journey.exp_to_next_level ?? 0);
     const monthlyXp = Number(journey.monthly_xp ?? 0);
+    const badgeImage = journey.badge_icon && /^(https?:\/\/|\/|data:image\/)/.test(journey.badge_icon);
 
-    const { user } = useAuthStore();
-    const [imageError, setImageError] = useState(false);
+    const stats = [
+        { icon: Flame, label: "Streak sekarang", value: `${journey.current_streak} hari`, tone: "bg-orange-50 text-orange-600" },
+        { icon: Target, label: "Streak terbaik", value: `${journey.longest_streak} hari`, tone: "bg-sky-50 text-sky-600" },
+        { icon: TrendingUp, label: "XP bulan ini", value: `+${monthlyXp.toLocaleString("id-ID")}`, tone: "bg-emerald-50 text-emerald-600" },
+        { icon: Activity, label: "Total aktivitas", value: Number(journey.total_activities ?? 0).toLocaleString("id-ID"), tone: "bg-violet-50 text-violet-600" },
+    ];
 
     return (
-        <div className={cn("bg-card rounded-xl border shadow-sm p-6", className)}>
-            {/* Header with tier */}
-            <div className="flex items-center gap-4 mb-6">
-                <div className="relative">
-                    <div
-                        className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold overflow-hidden shadow-sm"
-                        style={{ backgroundColor: journey.tier_color || "#EF4444" }}
-                    >
-                        {user?.avatar ? (
-                            <Image src={user.avatar} alt="Avatar" width={64} height={64} className="object-cover w-full h-full" />
-                        ) : (
-                            <span className="text-white">{user?.name?.charAt(0).toUpperCase() || journey.current_level}</span>
-                        )}
-                    </div>
-                    {/* Level indicator overlay */}
-                    <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-lg border border-gray-100">
-                        <span className="text-xs font-bold" style={{ color: journey.tier_color || "#EF4444" }}>
-                            {journey.current_level}
-                        </span>
-                    </div>
-                </div>
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                        {!imageError && journey.badge_icon ? (
-                            <div className="w-6 h-6 rounded-md bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
-                                <Image 
-                                    src={journey.badge_icon} 
-                                    alt={journey.badge_name} 
-                                    width={24} 
-                                    height={24} 
-                                    className="object-contain"
-                                    onError={() => setImageError(true)}
-                                />
-                            </div>
-                        ) : (
-                            <div className="w-6 h-6 rounded-md bg-red-50 text-red-600 border border-red-100 flex items-center justify-center shrink-0 text-xs font-bold">
-                                {journey.badge_name?.charAt(0).toUpperCase() || <Star className="w-3 h-3" />}
-                            </div>
-                        )}
-                        <h3 className="text-lg font-bold text-gray-900 truncate">
-                            {journey.badge_name}
-                        </h3>
-                    </div>
-                    <p
-                        className="text-sm font-medium"
-                        style={{ color: journey.tier_color }}
-                    >
-                        {journey.tier_name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                        Peringkat #{journey.rank_in_level} dari {journey.total_in_level} di level ini
-                    </p>
-                </div>
-            </div>
-
-            {/* EXP Progress Bar */}
-            <div className="mb-6">
-                <div className="flex justify-between text-sm mb-2">
-                    <span className="text-muted-foreground">Progress Level</span>
-                    <span className="font-medium">{currentExp.toLocaleString()} EXP</span>
-                </div>
-                <div className="h-3 bg-muted rounded-full overflow-hidden">
-                    <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{
-                            width: `${progressPercent}%`,
-                            backgroundColor: journey.tier_color
-                        }}
-                    />
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                    {expToNextLevel.toLocaleString()} EXP lagi ke level berikutnya
-                </p>
-            </div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 gap-4 xs:grid-cols-2">
-                <StatItem
-                    icon={Flame}
-                    label="Streak Saat Ini"
-                    value={`${journey.current_streak} hari`}
-                    color="theme-accent-text"
-                />
-                <StatItem
-                    icon={Target}
-                    label="Streak Terpanjang"
-                    value={`${journey.longest_streak} hari`}
-                    color="text-blue-500"
-                />
-                <StatItem
-                    icon={TrendingUp}
-                    label="EXP Bulan Ini"
-                    value={`+${monthlyXp.toLocaleString()}`}
-                    color="text-green-500"
-                />
-                <StatItem
-                    icon={Star}
-                    label="Badge Diraih"
-                    value={`${journey.new_badges_count ?? 0} badge`}
-                    color="text-yellow-500"
-                />
-            </div>
-
-            {/* Activity Summary */}
-            <div className="mt-6 pt-6 border-t">
-                <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground flex items-center gap-2">
-                        <Activity className="h-4 w-4" />
-                        Total Aktivitas
-                    </span>
-                    <span className="font-medium">
-                        {Number(journey.total_activities ?? 0).toLocaleString()}
-                    </span>
-                </div>
-            </div>
-
-            {/* Level Guide Button */}
-            {onShowLevelGuide && (
-                <button
-                    onClick={onShowLevelGuide}
-                    className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-linear-to-r from-indigo-50 to-purple-50 border border-indigo-200 text-indigo-700 text-sm font-medium hover:shadow-md hover:border-indigo-300 transition-all"
-                >
-                    <Info className="h-4 w-4" />
-                    Lihat Panduan Level & Tier
-                </button>
+        <section
+            className={cn(
+                "relative isolate overflow-hidden rounded-3xl border border-white/80 bg-white/90 p-5 shadow-[0_24px_70px_-42px_rgba(239,68,68,0.5)] backdrop-blur sm:p-7",
+                className
             )}
-        </div>
-    );
-}
-
-interface StatItemProps {
-    icon: React.ElementType;
-    label: string;
-    value: string;
-    color: string;
-}
-
-function StatItem({ icon: Icon, label, value, color }: StatItemProps) {
-    return (
-        <div className="flex items-center gap-3">
-            <div className="p-2 bg-muted rounded-lg">
-                <Icon className={cn("h-4 w-4", color)} />
+        >
+            <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-primary/12 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-24 left-1/4 h-48 w-48 rounded-full bg-amber-200/25 blur-3xl" />
+            <div className="pointer-events-none absolute right-8 top-8 hidden text-primary/10 lg:block" aria-hidden="true">
+                <Map className="h-36 w-36 rotate-12" strokeWidth={1} />
             </div>
-            <div>
-                <p className="text-sm font-medium">{value}</p>
-                <p className="text-xs text-muted-foreground">{label}</p>
+
+            <div className="relative grid gap-7 lg:grid-cols-[minmax(0,1.15fr)_minmax(21rem,0.85fr)] lg:items-center">
+                <div>
+                    <div className="flex items-center gap-4">
+                        <div className="relative shrink-0">
+                            <div
+                                className="grid h-20 w-20 place-items-center overflow-hidden rounded-[1.6rem] border-4 border-white text-2xl font-black text-white shadow-xl"
+                                style={{ background: `linear-gradient(135deg, ${journey.tier_color || "#ef4444"}, var(--theme-fab-to))` }}
+                            >
+                                {user?.avatar ? (
+                                    <Image src={user.avatar} alt={`Avatar ${user.name}`} width={80} height={80} className="h-full w-full object-cover" />
+                                ) : (
+                                    user?.name?.charAt(0).toUpperCase() || journey.current_level
+                                )}
+                            </div>
+                            <div className="absolute -bottom-2 -right-2 grid h-9 min-w-9 place-items-center rounded-xl border-2 border-white bg-slate-950 px-1.5 text-xs font-black text-white shadow-lg">
+                                Lv.{journey.current_level}
+                            </div>
+                        </div>
+
+                        <div className="min-w-0">
+                            <div className="flex min-w-0 items-center gap-2">
+                                {!imageError && badgeImage ? (
+                                    <span className="grid h-7 w-7 shrink-0 place-items-center overflow-hidden rounded-lg border bg-white shadow-sm">
+                                        <Image
+                                            src={journey.badge_icon}
+                                            alt=""
+                                            width={28}
+                                            height={28}
+                                            className="h-full w-full object-contain"
+                                            onError={() => setImageError(true)}
+                                        />
+                                    </span>
+                                ) : (
+                                    <GamificationIcon name={journey.badge_name} fallback={Star} className="h-5 w-5 shrink-0 text-amber-500" />
+                                )}
+                                <h2 className="truncate text-xl font-black tracking-tight text-slate-950 sm:text-2xl">
+                                    {journey.badge_name || "Penjelajah Baru"}
+                                </h2>
+                            </div>
+                            <p className="mt-0.5 text-sm font-semibold" style={{ color: journey.tier_color || "var(--color-primary)" }}>
+                                Tier {journey.tier_name || "Awal"}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="mt-7 rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm">
+                        <div className="mb-2.5 flex flex-wrap items-end justify-between gap-2">
+                            <div>
+                                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Menuju level berikutnya</p>
+                                <p className="mt-0.5 text-sm font-bold text-slate-900">
+                                    {expToNextLevel > 0 ? `${expToNextLevel.toLocaleString("id-ID")} XP lagi` : "Level maksimum tercapai"}
+                                </p>
+                            </div>
+                            <p className="text-right text-sm font-black text-slate-900">
+                                {currentExp.toLocaleString("id-ID")} XP <span className="text-xs font-semibold text-slate-400">· {Math.round(progressPercent)}%</span>
+                            </p>
+                        </div>
+                        <div className="h-3 overflow-hidden rounded-full bg-slate-100 p-0.5">
+                            <div
+                                className="h-full rounded-full bg-[linear-gradient(90deg,var(--theme-fab-from),var(--color-primary),var(--theme-fab-to))] shadow-sm transition-[width] duration-700"
+                                style={{ width: `${progressPercent}%` }}
+                            />
+                        </div>
+                        <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+                            <span>Peringkat #{journey.rank_in_level || "–"} di level ini</span>
+                            <span className="inline-flex items-center gap-1 font-semibold text-amber-600">
+                                <Star className="h-3.5 w-3.5" /> {journey.new_badges_count ?? 0} badge baru
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="mt-4 flex flex-col gap-2.5 sm:flex-row">
+                        {onShowLevelGuide ? (
+                            <Button onClick={onShowLevelGuide} className="h-11 flex-1 gap-2 rounded-xl shadow-sm">
+                                <Map className="h-4 w-4" />
+                                Lanjutkan perjalanan
+                                <ArrowRight className="h-4 w-4" />
+                            </Button>
+                        ) : null}
+                        {onShowRewards ? (
+                            <Button onClick={onShowRewards} variant="outline" className="h-11 flex-1 gap-2 rounded-xl border-amber-200 bg-amber-50/70 text-amber-800 hover:bg-amber-100">
+                                <Gift className="h-4 w-4" />
+                                Lihat hadiah
+                            </Button>
+                        ) : null}
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                    {stats.map(({ icon: Icon, label, value, tone }) => (
+                        <div key={label} className="group rounded-2xl border border-slate-200/70 bg-white/82 p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
+                            <div className={cn("mb-4 grid h-10 w-10 place-items-center rounded-xl", tone)}>
+                                <Icon className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" aria-hidden="true" />
+                            </div>
+                            <p className="text-lg font-black tracking-tight text-slate-950 sm:text-xl">{value}</p>
+                            <p className="mt-0.5 text-xs font-medium text-slate-500">{label}</p>
+                        </div>
+                    ))}
+                </div>
             </div>
-        </div>
+        </section>
     );
 }

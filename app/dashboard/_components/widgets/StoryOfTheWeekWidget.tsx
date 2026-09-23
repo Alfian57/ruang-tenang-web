@@ -65,7 +65,7 @@ export function StoryOfTheWeekWidget() {
                 </span>
             </div>
 
-            <Link href={ROUTES.storyDetail(story.id)} className="group">
+            <Link href={ROUTES.communityStory(story.id)} className="group">
                 <h3 className="font-semibold text-gray-900 transition-colors line-clamp-2 mb-2" style={{ ['--hover-color' as string]: `var(--theme-story-heading)` }}>
                     {story.title}
                 </h3>
@@ -91,7 +91,7 @@ export function StoryOfTheWeekWidget() {
                     )}
                 </div>
                 <Link
-                    href={ROUTES.STORIES}
+                    href={ROUTES.communityTab("stories")}
                     className="text-xs flex items-center gap-1 font-medium"
                     style={{ color: `var(--theme-story-link)` }}
                 >

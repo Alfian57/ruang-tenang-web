@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { communityService } from "@/services/api";
 import { Navbar, Footer } from "@/components/layout";
-import { Users, Sparkles, Layers, Award, Star } from "lucide-react";
+import { Users, Layers, Award, Star } from "lucide-react";
 import { LeaderboardEntry } from "@/types";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -270,7 +270,7 @@ export default function HallOfFamePage() {
             animate={{ opacity: 1, y: 0 }}
             className="mb-5 inline-flex items-center gap-2 rounded-full border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-700 shadow-sm"
           >
-            <Sparkles className="w-4 h-4" />
+            <Star className="w-4 h-4" />
             Hall of Fame Komunitas
           </motion.div>
 

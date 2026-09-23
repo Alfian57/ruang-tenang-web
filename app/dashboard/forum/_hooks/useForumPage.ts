@@ -9,6 +9,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useBlockStore } from "@/store/blockStore";
 import { toast } from "sonner";
 import { ApiError } from "@/services/http/types";
+import { ROUTES } from "@/lib/routes";
 
 export type ForumPostFormat =
   | "curhat"
@@ -199,7 +200,7 @@ export function useForumPage() {
       toast.success("Topik berhasil dibuat, mengalihkan...");
 
       if (response.data && response.data.slug) {
-        router.push(`/dashboard/forum/${response.data.slug}`);
+        router.push(ROUTES.communityForum(response.data.slug));
       } else {
         loadData();
       }

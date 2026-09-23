@@ -6,7 +6,6 @@ import {
   Music,
   Trophy,
   Shield,
-  Sparkles,
   BookOpen,
   Newspaper,
   Gift,
@@ -55,38 +54,18 @@ export const memberGroups: NavGroup[] = [
     ],
   },
   {
-    title: "Aktivitas",
-    links: [
-      { href: ROUTES.JOURNAL, icon: BookOpen, label: "Jurnal" },
-    ],
-  },
-  {
     title: "Fokus Inti",
     links: [
       { href: ROUTES.ARTICLES, icon: Newspaper, label: "Artikel" },
       { href: ROUTES.MUSIC, icon: Music, label: "Musik" },
-      { href: ROUTES.FORUM, icon: Users, label: "Forum" },
-      { href: ROUTES.PROGRESS_MAP, icon: Map, label: "Peta Perjalanan" },
-      { href: ROUTES.REWARDS, icon: Gift, label: "Klaim Hadiah" },
+      { href: ROUTES.COMMUNITY, icon: Users, label: "Komunitas" },
+      { href: ROUTES.JOURNEY, icon: Map, label: "Perjalanan" },
     ],
   },
   {
-    title: "Komunitas",
+    title: "Lainnya",
     links: [
-      { href: ROUTES.DASHBOARD_COMMUNITY, icon: Trophy, label: "Statistik Komunitas" },
-    ],
-  },
-  {
-    title: "Akun",
-    links: [
-      { href: ROUTES.TOPUP, icon: Wallet, label: "Top Up Koin" },
-      { href: ROUTES.BILLING, icon: CreditCard, label: "Premium & Billing" },
-    ],
-  },
-  {
-    title: "Eksplorasi Opsional",
-    links: [
-      { href: ROUTES.STORIES, icon: Sparkles, label: "Kisah Inspiratif", secondary: true },
+      { href: ROUTES.JOURNAL, icon: BookOpen, label: "Jurnal" },
       { href: ROUTES.GAME, icon: Gamepad2, label: "Mini Game", secondary: true },
     ],
   },

@@ -45,11 +45,11 @@ export default function AdminForumsPage() {
   } = useAdminForums();
 
   if (user?.role !== "admin") {
-    return <div className="p-8 text-center">Akses ditolak</div>;
+    return <div className="py-8 text-center">Akses ditolak</div>;
   }
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="py-4 lg:py-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Kelola Forum</h1>
         <p className="text-gray-500">Kelola topik diskusi dan kategori forum</p>

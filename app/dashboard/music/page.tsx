@@ -6,8 +6,6 @@ import {
   ListMusic,
   Library,
   Compass,
-  PenLine,
-  MessageCircle,
   ArrowRight,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -65,8 +63,6 @@ const JOURNEY_CONTEXT_BY_ID: Record<string, string> = {
   "focus-reset": "focus-reset",
   "gentle-mood-lift": "gentle-mood-lift",
 };
-
-const DEFAULT_REFLECTION_JOURNEY_ID = "focus-reset";
 
 function withQuery(href: string, params: Record<string, string>): string {
   const [path, rawQuery = ""] = href.split("?");
@@ -156,11 +152,6 @@ export default function MusicPage() {
     return MUSIC_JOURNEYS.find((journey) => journey.id === activeJourneyId) || null;
   }, [activeJourneyId, suggestedJourney]);
 
-  const reflectionJourney = activeJourney
-    || suggestedJourney
-    || MUSIC_JOURNEYS.find((journey) => journey.id === DEFAULT_REFLECTION_JOURNEY_ID)
-    || MUSIC_JOURNEYS[0];
-
   const resolveJourneyNextActionHref = (journey: MusicJourneyCard) => {
     const context = JOURNEY_CONTEXT_BY_ID[journey.id] || journey.id;
     const params: Record<string, string> = {
@@ -185,32 +176,6 @@ export default function MusicPage() {
     }
 
     return withQuery(journey.nextActionHref, params);
-  };
-
-  const resolveMusicReflectionHref = (journey: MusicJourneyCard) => {
-    const context = JOURNEY_CONTEXT_BY_ID[journey.id] || journey.id;
-    const params: Record<string, string> = {
-      source: "music",
-      journey: journey.id,
-      context,
-      journeyTitle: journey.title,
-      journeyDirection: journey.direction,
-      nextAction: journey.nextActionLabel,
-    };
-
-    if (currentSong?.id) {
-      params.track = String(currentSong.id);
-    }
-
-    if (currentSong?.title) {
-      params.trackTitle = currentSong.title;
-    }
-
-    if (currentSong?.category?.name) {
-      params.trackCategory = currentSong.category.name;
-    }
-
-    return withQuery("/dashboard/journal/create?mode=structured-reflection", params);
   };
 
   // Navigation handlers
@@ -238,7 +203,7 @@ export default function MusicPage() {
         isLoading={isDeleting}
       />
 
-      <div className="p-4 lg:p-6 pb-32 overflow-x-hidden">
+      <div className="overflow-x-hidden pb-32 pt-4 lg:pt-6">
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-2xl font-bold">Musik Relaksasi</h1>
@@ -246,44 +211,6 @@ export default function MusicPage() {
             Biarkan musik menenangkan harimu
           </p>
         </div>
-
-        <section className="mb-6 rounded-2xl border border-primary/20 bg-linear-to-r from-primary/10 to-primary/10 p-4">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-xs font-semibold text-primary uppercase tracking-wide">MUSIC-2</p>
-              <h2 className="text-lg font-semibold text-gray-900 mt-1">
-                {currentSong
-                  ? `Setelah mendengar "${currentSong.title}", lanjutkan aksi kecil.`
-                  : "Ubah sesi dengar jadi langkah pemulihan yang nyata."}
-              </h2>
-              <p className="text-sm text-gray-600 mt-1">
-                {suggestedJourney
-                  ? `Rekomendasi berikutnya: ${suggestedJourney.nextActionLabel}.`
-                  : "Pilih journey lalu tutup dengan refleksi singkat, musik, atau obrolan suportif."}
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button asChild size="sm" variant="outline" className="bg-white">
-                <Link href={resolveMusicReflectionHref(reflectionJourney)} className="inline-flex items-center gap-1.5">
-                  <PenLine className="w-3.5 h-3.5" />
-                  Refleksi 3 Menit
-                </Link>
-              </Button>
-              <Button asChild size="sm" variant="outline" className="bg-white">
-                <Link href={ROUTES.JOURNAL} className="inline-flex items-center gap-1.5">
-                  <PenLine className="w-3.5 h-3.5" />
-                  Tulis Refleksi
-                </Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link href={ROUTES.CHAT} className="inline-flex items-center gap-1.5">
-                  <MessageCircle className="w-3.5 h-3.5" />
-                  Teman Cerita AI
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </section>
 
         {activeJourney && (
           <section className="mb-6 rounded-2xl border border-primary/20 bg-primary/10 p-4">

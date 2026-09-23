@@ -24,7 +24,7 @@ export default function ModerationReportsPage() {
     } = useModerationReports();
 
     return (
-        <div className="p-4 lg:p-6 space-y-6">
+        <div className="space-y-6 py-4 lg:py-6">
             <ModerationReportsHeader
                 statusFilter={statusFilter}
                 setStatusFilter={setStatusFilter}

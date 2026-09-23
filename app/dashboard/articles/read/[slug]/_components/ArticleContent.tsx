@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Calendar, Tag, Ban, Edit, ArrowRight, Sparkles } from "lucide-react";
+import { Calendar, Tag, Ban, Edit, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/utils";
@@ -47,7 +47,7 @@ function getArticleActionPlan(article: Article): ArticleActionPlan {
       primaryLabel: "Lanjut ke Jurnal Syukur",
       primaryHref: `${ROUTES.JOURNAL}/create?mode=gratitude`,
       secondaryLabel: "Diskusi di Community",
-      secondaryHref: ROUTES.DASHBOARD_COMMUNITY,
+      secondaryHref: ROUTES.COMMUNITY,
     };
   }
 
@@ -56,7 +56,7 @@ function getArticleActionPlan(article: Article): ArticleActionPlan {
       title: "Hubungkan insight ini ke dukungan sosial",
       description: "Pilih satu langkah interaksi sehat agar dampak artikel terasa di kehidupan nyata.",
       primaryLabel: "Buka Community Mission",
-      primaryHref: ROUTES.DASHBOARD_COMMUNITY,
+      primaryHref: ROUTES.COMMUNITY,
       secondaryLabel: "Mulai Obrolan Aman",
       secondaryHref: ROUTES.CHAT,
     };
@@ -147,7 +147,7 @@ export function ArticleContent({
 
         <div className="mt-8 rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-white to-primary/10 p-5 md:p-6">
           <div className="flex items-center gap-2 text-primary mb-2">
-            <Sparkles className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4" />
             <span className="text-xs font-semibold uppercase tracking-wide">Langkah Lanjutan</span>
           </div>
           <h3 className="text-lg md:text-xl font-bold text-gray-900">{actionPlan.title}</h3>

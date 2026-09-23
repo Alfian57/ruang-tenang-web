@@ -11,7 +11,7 @@ export function MemberDashboard() {
   const viewModel = useMemberDashboardViewModel();
 
   return (
-    <div className="mx-auto w-full max-w-[112rem] space-y-6 bg-gray-50/50 p-3 xs:p-4 lg:p-6">
+    <div className="w-full space-y-6 py-3 xs:py-4 lg:py-6">
       <MemberDashboardHeader viewModel={viewModel} />
       <NetworkDegradedBanner viewModel={viewModel} />
 

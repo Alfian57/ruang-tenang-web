@@ -47,7 +47,7 @@ export default function PlaylistPage() {
   }
 
   return (
-    <div className="p-4 lg:p-6 pb-32">
+    <div className="pb-32 pt-4 lg:pt-6">
       <PlaylistDetail
         playlist={playlist}
         onBack={() => router.back()} // Or router.push('/dashboard/music')

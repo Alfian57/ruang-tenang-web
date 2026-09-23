@@ -30,8 +30,8 @@ export const ROUTES = {
   JOURNAL: "/dashboard/journal",
   ARTICLES: "/dashboard/articles",
   MUSIC: "/dashboard/music",
-  FORUM: "/dashboard/forum",
-  STORIES: "/dashboard/stories",
+  COMMUNITY: "/dashboard/community",
+  JOURNEY: "/dashboard/journey",
   MODERATION: "/dashboard/moderation",
   ADMIN: {
     USERS: "/dashboard/admin/users",

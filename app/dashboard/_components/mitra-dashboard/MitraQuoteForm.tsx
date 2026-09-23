@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { MessageSquareQuote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +20,7 @@ export function MitraQuoteForm({ viewModel, title = "Penawaran dan Rekomendasi",
   return (
     <article data-mitra-tour="mitra-quote-form" className="rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
       <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
-        <Sparkles className="h-5 w-5 text-red-600" />
+        <MessageSquareQuote className="h-5 w-5 text-red-600" />
         {title}
       </h2>
       <form onSubmit={viewModel.handleCreateQuote} className="mt-4 space-y-3">

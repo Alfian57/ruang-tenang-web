@@ -93,7 +93,7 @@ export default function MoodTrackerPage() {
   };
 
   return (
-    <div className="p-4 lg:p-6 space-y-6">
+    <div className="space-y-6 py-4 lg:py-6">
       <section className="rounded-3xl border border-primary/20 bg-linear-to-br from-primary/10 via-white to-primary/10 p-5 lg:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>

@@ -13,7 +13,6 @@ import {
     ArrowRight,
     Users,
     Trophy,
-    Sparkles,
 } from "lucide-react";
 
 const GAME_LOOP_STEPS = [
@@ -128,7 +127,7 @@ export default function GamificationPage() {
 
                 <section className="mx-auto mb-10 max-w-6xl sm:mb-14">
                     <div className="flex items-center gap-2 mb-5">
-                        <Sparkles className="h-5 w-5 text-red-500" />
+                        <Trophy className="h-5 w-5 text-red-500" />
                         <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">Loop Progres yang Aktif di Produk</h2>
                     </div>
 

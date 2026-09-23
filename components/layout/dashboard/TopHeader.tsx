@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Settings, KeyRound, LogOut, Ban, MapIcon, Rocket, Building2, Crown, CreditCard, Lock } from "lucide-react";
+import { ChevronDown, Settings, KeyRound, LogOut, Ban, MapIcon, Rocket, Building2, Crown, CreditCard, Lock, Sprout } from "lucide-react";
 import { GlobalSearch, ThemeSwitcher } from "@/components/layout/dashboard";
+import { GamificationIcon } from "@/components/shared/gamification/GamificationIcon";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,6 +44,7 @@ export function TopHeader({
 }: TopHeaderProps) {
   const router = useRouter();
   const isUser = !isAdmin && !isMitra;
+  const badgeImage = user.badge_icon && /^(https?:\/\/|\/|data:image\/)/.test(user.badge_icon);
 
   const hasXPBoost = isUser && Boolean(xpBoost && xpBoost.remaining_seconds > 0);
   const isPremium = Boolean(billingStatus?.is_premium || user.is_premium);
@@ -80,7 +82,7 @@ export function TopHeader({
           {isAdmin ? (
             <div className="hidden md:flex items-center bg-linear-to-r from-primary/10 to-primary/10 border border-primary/20 rounded-full px-4 py-1.5 shadow-sm">
               <div className="flex items-center gap-2">
-                <span className="text-lg">👑</span>
+                <Crown className="h-4 w-4 text-primary" aria-hidden="true" />
                 <span className="text-primary/80 font-semibold">Admin</span>
               </div>
             </div>
@@ -103,8 +105,8 @@ export function TopHeader({
                       ? "border-amber-300 bg-amber-100 text-amber-800 hover:bg-amber-200"
                     : "border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100"
                 }`}
-                title={isPremium ? "Premium aktif" : isChatLimitExhausted ? "Limit chat habis, buka Billing" : "Buka Billing & Paket"}
-                aria-label={isPremium ? "Premium aktif" : isChatLimitExhausted ? "Limit chat habis, buka Billing" : "Buka Billing dan Paket"}
+                title={isPremium ? "Premium aktif" : isChatLimitExhausted ? "Limit chat habis, buka Paket & Koin" : "Buka Paket & Koin"}
+                aria-label={isPremium ? "Premium aktif" : isChatLimitExhausted ? "Limit chat habis, buka Paket dan Koin" : "Buka Paket dan Koin"}
               >
                 {isPremium ? <Crown className="h-3.5 w-3.5" /> : isChatLimitExhausted ? <Lock className="h-3.5 w-3.5" /> : <CreditCard className="h-3.5 w-3.5" />}
                 <span className="text-xs font-semibold whitespace-nowrap">
@@ -138,7 +140,7 @@ export function TopHeader({
                 aria-label="Lihat riwayat EXP"
               >
                 <div className="flex items-center gap-2">
-                  {user?.badge_icon ? (
+                  {badgeImage ? (
                     <div className="w-6 h-6 shrink-0 flex items-center justify-center ml-0.5">
                       <Image
                         src={user.badge_icon}
@@ -151,7 +153,7 @@ export function TopHeader({
                       />
                     </div>
                   ) : (
-                    <span className="text-lg ml-0.5">🌱</span>
+                    <GamificationIcon name={user?.badge_icon || "sprout"} fallback={Sprout} className="ml-0.5 h-5 w-5 text-emerald-600" />
                   )}
                   <span className="text-xs flex items-center gap-3">
                     <span className="text-yellow-600 font-semibold whitespace-nowrap">Level {user?.level || 1}</span>
@@ -162,7 +164,7 @@ export function TopHeader({
               </button>
               <button
                 type="button"
-                onClick={() => router.push(ROUTES.PROGRESS_MAP)}
+                onClick={() => router.push(ROUTES.journeyTab("map"))}
                 className="hidden md:flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 border border-primary/20 hover:bg-primary/10 hover:border-primary/40 transition-all"
                 title="Lihat Journey Tier di Peta Perjalanan"
                 aria-label="Buka peta perjalanan"
@@ -211,6 +213,12 @@ export function TopHeader({
                 <KeyRound className="mr-2 h-4 w-4" />
                 <span>Ganti Password</span>
               </DropdownMenuItem>
+              {isUser && (
+                <DropdownMenuItem onClick={() => router.push(ROUTES.BILLING)} className="cursor-pointer">
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  <span>Paket &amp; Koin</span>
+                </DropdownMenuItem>
+              )}
               {isUser && (
                 <DropdownMenuItem onClick={onShowBlockedUsers} className="cursor-pointer">
                   <Ban className="mr-2 h-4 w-4" />

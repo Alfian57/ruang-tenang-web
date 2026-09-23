@@ -68,7 +68,7 @@ export default function CategoryPage() {
 
   if (error || !category) {
     return (
-      <div className="p-4 lg:p-6">
+      <div className="py-4 lg:py-6">
         <EmptyState
           icon={<Music className="w-12 h-12 text-gray-300" />}
           title="Kategori Tidak Ditemukan"

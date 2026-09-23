@@ -90,7 +90,7 @@ export function useMemberDashboardViewModel() {
       key: "progress",
       title: "Progres",
       detail: "Task harian mendorong perjalananmu",
-      href: ROUTES.PROGRESS_MAP,
+      href: ROUTES.journeyTab("map"),
       icon: Compass,
       completed: (user?.exp ?? 0) >= 300,
     },
@@ -98,7 +98,7 @@ export function useMemberDashboardViewModel() {
       key: "reward",
       title: "Hadiah",
       detail: "Klaim hadiah yang mengubah atmosfer",
-      href: ROUTES.REWARDS,
+      href: ROUTES.journeyTab("rewards"),
       icon: Gift,
       completed: Boolean(user?.profile_theme && user.profile_theme !== "default"),
     },
@@ -106,7 +106,7 @@ export function useMemberDashboardViewModel() {
       key: "community",
       title: "Komunitas",
       detail: "Mission dan diskusi menjaga momentum",
-      href: ROUTES.DASHBOARD_COMMUNITY,
+      href: ROUTES.COMMUNITY,
       icon: Users,
       completed: (user?.exp ?? 0) >= 1000,
     },
@@ -129,7 +129,7 @@ export function useMemberDashboardViewModel() {
       key: "community",
       label: "Komunitas",
       count: (user?.exp ?? 0) >= 1000 ? 1 : 0,
-      href: ROUTES.DASHBOARD_COMMUNITY,
+      href: ROUTES.COMMUNITY,
     },
   ];
 
@@ -228,7 +228,7 @@ export function useMemberDashboardViewModel() {
       key: "reward",
       label: "Cek hadiah",
       completed: loopCompletion >= 50,
-      href: ROUTES.REWARDS,
+      href: ROUTES.journeyTab("rewards"),
     },
   ];
   const todayQuestCompletedCount = todayQuestSteps.filter((step) => step.completed).length;

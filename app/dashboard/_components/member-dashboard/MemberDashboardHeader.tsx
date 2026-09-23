@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Calendar, Lock, Sparkles } from "lucide-react";
+import { Bot, Calendar, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/routes";
 import type { MemberDashboardViewModel } from "./useMemberDashboardViewModel";
@@ -29,7 +29,7 @@ export function MemberDashboardHeader({ viewModel }: MemberDashboardHeaderProps)
         </Link>
         <Link data-user-tour="user-chat-ai" href={viewModel.header.isChatLimitExhausted ? ROUTES.BILLING : ROUTES.CHAT}>
           <Button className={`rounded-full shadow-lg hover:shadow-xl transition-all gap-2 border-0 ${viewModel.header.isChatLimitExhausted ? "bg-amber-600 hover:bg-amber-700" : "bg-linear-to-r from-primary to-primary hover:from-primary/90 hover:to-primary"}`}>
-            {viewModel.header.isChatLimitExhausted ? <Lock className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
+            {viewModel.header.isChatLimitExhausted ? <Lock className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
             {viewModel.header.isChatLimitExhausted ? "Limit Chat Habis" : "Teman Cerita AI"}
           </Button>
         </Link>

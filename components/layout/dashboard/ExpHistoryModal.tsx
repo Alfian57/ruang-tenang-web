@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
-import { X, Calendar, Filter, ChevronLeft, ChevronRight, Loader2, Sparkles, Sprout, MessageCircle, PenLine, MessagesSquare, CheckCircle2, ThumbsUp, ThumbsDown, BookOpen, Heart, type LucideIcon } from "lucide-react";
+import { X, Calendar, Filter, ChevronLeft, ChevronRight, Loader2, Trophy, Sprout, MessageCircle, PenLine, MessagesSquare, CheckCircle2, ThumbsUp, ThumbsDown, BookOpen, Heart, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { communityService } from "@/services/api";
 import { ExpHistory, LevelConfig } from "@/types";
@@ -206,7 +206,7 @@ export function ExpHistoryModal({
               </p>
             ) : (
               <p className="text-xs text-white/80 mt-1 flex items-center gap-1">
-                <Sparkles className="w-3 h-3" /> Level maksimum tercapai!
+                <Trophy className="w-3 h-3" /> Level maksimum tercapai!
               </p>
             )}
           </div>
@@ -291,7 +291,7 @@ export function ExpHistoryModal({
           ) : (
             <div className="space-y-3">
               {history.map((item) => {
-                const ActivityIcon = ACTIVITY_ICONS[item.activity_type] || Sparkles;
+                const ActivityIcon = ACTIVITY_ICONS[item.activity_type] || Trophy;
                 return (
                 <div
                   key={item.id}

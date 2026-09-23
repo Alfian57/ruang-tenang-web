@@ -26,10 +26,6 @@ export const chatService = {
     return httpClient.post<ApiResponse<ChatSession>>("/chat-sessions", { title }, { token });
   },
 
-  updateSession(token: string, id: string, data: { title?: string }) {
-    return httpClient.put<ApiResponse<ChatSession>>(`/chat-sessions/${id}`, data, { token });
-  },
-
   deleteSession(token: string, id: string) {
     return httpClient.delete<ApiResponse<null>>(`/chat-sessions/${id}`, { token });
   },
@@ -69,18 +65,6 @@ export const chatService = {
     return httpClient.put<ApiResponse<null>>(`/chat-sessions/${id}/trash`, undefined, { token });
   },
 
-  restoreFromTrash(token: string, id: string) {
-    return httpClient.put<ApiResponse<null>>(`/chat-sessions/${id}/restore`, undefined, { token });
-  },
-
-  permanentDelete(token: string, id: string) {
-    return httpClient.delete<ApiResponse<null>>(`/chat-sessions/${id}/permanent`, { token });
-  },
-
-  emptyTrash(token: string) {
-    return httpClient.delete<ApiResponse<null>>("/chat-sessions/trash/empty", { token });
-  },
-
   toggleTrash(token: string, id: string) {
     return this.moveToTrash(token, id);
   },
@@ -96,10 +80,6 @@ export const chatService = {
 
   togglePin(token: string, messageId: number) {
     return httpClient.put<ApiResponse<ChatMessage>>(`/chat-messages/${messageId}/pin`, undefined, { token });
-  },
-
-  regenerateMessage(token: string, messageId: number) {
-    return httpClient.post<ApiResponse<ChatMessage>>(`/chat-messages/${messageId}/regenerate`, {}, { token, timeout: 60000 });
   },
 
   // Summary

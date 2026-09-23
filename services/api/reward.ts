@@ -8,10 +8,6 @@ export const rewardService = {
     return httpClient.get<ApiResponse<Reward[]>>("/rewards", { token });
   },
 
-  getRewardDetail(token: string, id: number) {
-    return httpClient.get<ApiResponse<Reward>>(`/rewards/${id}`, { token });
-  },
-
   claimReward(token: string, id: number) {
     return httpClient.post<ApiResponse<RewardClaimResult>>(`/rewards/${id}/claim`, {}, { token });
   },
