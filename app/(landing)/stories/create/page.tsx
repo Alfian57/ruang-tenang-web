@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { storyService } from "@/services/api";
 import { Navbar, Footer } from "@/components/layout";
+import { PublicPageHero } from "../../_components/PublicPageHero";
 import { useAuthStore } from "@/store/authStore";
 import { StoryForm } from "@/components/shared/stories";
 import { StoryCategory, StoryStats, CreateStoryRequest } from "@/types";
@@ -71,7 +72,7 @@ export default function CreateStoryPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-background">
+            <div className="public-page">
                 <Navbar variant="back" />
                 <div className="container mx-auto px-4 pt-28 pb-16 sm:pt-32 sm:pb-20">
                     <div className="max-w-2xl mx-auto space-y-6">
@@ -94,14 +95,15 @@ export default function CreateStoryPage() {
     // Level restriction
     if (!canCreate) {
         return (
-            <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-background">
+            <div className="public-page">
                 <Navbar variant="back" />
                 <main className="container mx-auto px-4 pt-28 pb-16 sm:pt-32 sm:pb-20">
+                    <PublicPageHero compact eyebrow="Ruang bercerita" title={<>Cerita akan <span>menunggu</span></>} description="Teruslah melangkah. Kesempatan untuk berbagi akan terbuka seiring perjalananmu." pose="map" />
                     <div className="max-w-md mx-auto text-center">
                         <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
                             <Lock className="h-10 w-10 text-muted-foreground" />
                         </div>
-                        <h1 className="text-2xl font-bold mb-4">Level 3 Diperlukan</h1>
+                        <h2 className="text-2xl font-bold mb-4">Level 3 Diperlukan</h2>
                         <p className="text-muted-foreground mb-6">
                             Untuk berbagi cerita, kamu perlu mencapai level 3.
                             Level kamu saat ini: <strong>Level {user?.level || 1}</strong>
@@ -117,7 +119,7 @@ export default function CreateStoryPage() {
                         </Link>
                     </div>
                 </main>
-                <Footer />
+                <Footer variant="landing" />
             </div>
         );
     }
@@ -125,14 +127,15 @@ export default function CreateStoryPage() {
     // Monthly limit reached
     if (!canSubmitMore) {
         return (
-            <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-background">
+            <div className="public-page">
                 <Navbar variant="back" />
                 <main className="container mx-auto px-4 pt-28 pb-16 sm:pt-32 sm:pb-20">
+                    <PublicPageHero compact eyebrow="Ruang bercerita" title={<>Sampai jumpa <span>bulan depan</span></>} description="Ceritamu sudah menemukan tempatnya bulan ini. Terima kasih sudah berbagi." pose="listen" />
                     <div className="max-w-md mx-auto text-center">
                         <div className="w-20 h-20 bg-orange-100 dark:bg-orange-950/30 rounded-full flex items-center justify-center mx-auto mb-6">
                             <AlertTriangle className="h-10 w-10 text-orange-500" />
                         </div>
-                        <h1 className="text-2xl font-bold mb-4">Batas Bulanan Tercapai</h1>
+                        <h2 className="text-2xl font-bold mb-4">Batas Bulanan Tercapai</h2>
                         <p className="text-muted-foreground mb-6">
                             Kamu sudah membagikan {myStats?.stories_this_month} cerita bulan ini
                             (maksimal {myStats?.max_stories_per_month} cerita per bulan).
@@ -149,16 +152,17 @@ export default function CreateStoryPage() {
                         </Link>
                     </div>
                 </main>
-                <Footer />
+                <Footer variant="landing" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-background">
+        <div className="public-page">
             <Navbar variant="back" />
 
             <main className="container mx-auto px-4 pt-28 pb-16 sm:pt-32 sm:pb-20">
+                <PublicPageHero compact headingLevel={2} eyebrow="Ruang bercerita" title={<>Ceritamu punya <span>tempat</span></>} description="Tulis perjalananmu dengan nyaman. Kamu bisa menjadi alasan seseorang merasa tidak sendirian." pose="message" />
                 <div className="max-w-2xl mx-auto">
                     {/* Back Link */}
                     <Link
@@ -226,7 +230,7 @@ export default function CreateStoryPage() {
                 </div>
             </main>
 
-            <Footer />
+            <Footer variant="landing" />
         </div>
     );
 }

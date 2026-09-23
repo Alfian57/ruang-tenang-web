@@ -1,6 +1,7 @@
 import { Navbar, Footer } from "@/components/layout";
 import { ROUTES } from "@/lib/routes";
 import { FileText, Shield, AlertTriangle, Ban, Mail } from "lucide-react";
+import { PublicPageHero } from "../_components/PublicPageHero";
 
 const sections = [
     {
@@ -42,25 +43,13 @@ const sections = [
 
 export default function TermsOfServicePage() {
     return (
-        <div className="min-h-screen overflow-x-hidden bg-linear-to-b from-red-50/50 via-white to-background">
+        <div className="public-page">
             <Navbar variant="back" backHref={ROUTES.HOME} backLabel="Kembali ke Beranda" />
 
             <main className="pt-28 pb-16">
                 <section className="px-4">
                     <div className="container mx-auto max-w-4xl">
-                        <div className="rounded-3xl border border-primary/10 bg-linear-to-br from-red-50 via-white to-rose-50 p-5 shadow-sm md:p-12">
-                            <p className="inline-flex items-center rounded-full bg-white/80 px-4 py-2 text-sm font-medium text-primary mb-5">
-                                Syarat Layanan
-                            </p>
-                            <h1 className="mb-4 text-3xl font-bold leading-tight text-gray-900 md:text-5xl">
-                                Syarat dan Ketentuan Penggunaan Ruang Tenang
-                            </h1>
-                            <p className="text-gray-600 text-base md:text-lg leading-relaxed max-w-3xl">
-                                Dokumen ini mengatur hak, kewajiban, dan batas tanggung jawab antara pengguna dan Ruang Tenang.
-                                Mohon baca dengan saksama sebelum menggunakan layanan.
-                            </p>
-                            <p className="text-sm text-gray-500 mt-6">Terakhir diperbarui: 20 Februari 2026</p>
-                        </div>
+                        <PublicPageHero compact eyebrow="Syarat Layanan" title={<>Syarat dan Ketentuan Penggunaan <span>Ruang Tenang</span></>} description="Dokumen ini mengatur hak, kewajiban, dan batas tanggung jawab antara pengguna dan Ruang Tenang. Mohon baca dengan saksama sebelum menggunakan layanan." pose="secure"><span className="text-sm text-slate-500">Terakhir diperbarui: 20 Februari 2026</span></PublicPageHero>
                     </div>
                 </section>
 
@@ -108,7 +97,7 @@ export default function TermsOfServicePage() {
                 </section>
             </main>
 
-            <Footer />
+            <Footer variant="landing" />
         </div>
     );
 }

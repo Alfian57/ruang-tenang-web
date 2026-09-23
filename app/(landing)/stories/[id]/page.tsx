@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { storyService } from "@/services/api";
 import { Navbar, Footer } from "@/components/layout";
+import { PublicPageHero } from "../../_components/PublicPageHero";
 import { useAuthStore } from "@/store/authStore";
 import { StoryDetail, StoryCommentsList, StoryCommentInput } from "@/components/shared/stories";
 import { InspiringStory, StoryComment } from "@/types";
@@ -133,7 +134,7 @@ export default function StoryDetailPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-background">
+            <div className="public-page">
                 <Navbar variant="back" />
                 <div className="container mx-auto px-4 pt-32 pb-20">
                     <div className="max-w-3xl mx-auto space-y-6">
@@ -168,25 +169,26 @@ export default function StoryDetailPage() {
 
     if (error || !story) {
         return (
-            <div className="min-h-screen bg-background">
+            <div className="public-page">
                 <Navbar variant="back" />
                 <div className="container mx-auto px-4 py-32 text-center sm:py-40">
-                    <h1 className="text-2xl font-bold mb-4">Cerita Tidak Ditemukan</h1>
+                    <PublicPageHero compact eyebrow="Cerita komunitas" title={<>Cerita belum <span>ditemukan</span></>} description="Mungkin kisah ini sudah tidak tersedia. Masih ada banyak cerita lain yang bisa kamu baca." pose="listen" />
                     <p className="text-muted-foreground mb-6">{error || "Cerita yang kamu cari tidak ada."}</p>
                     <Link href={ROUTES.PUBLIC_STORIES}>
                         <Button>Kembali ke Daftar Cerita</Button>
                     </Link>
                 </div>
-                <Footer />
+                <Footer variant="landing" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-background">
+        <div className="public-page">
             <Navbar variant="back" />
 
             <main className="container mx-auto px-4 pt-28 pb-16 sm:pt-32 sm:pb-20">
+                <PublicPageHero compact headingLevel={2} eyebrow="Cerita komunitas" title={<>Setiap cerita <span>berarti</span></>} description="Luangkan waktu untuk mendengarkan, lalu bagikan dukungan dengan sepenuh hati." pose="listen" />
                 {/* Story Content */}
                 <StoryDetail
                     story={story}
@@ -255,7 +257,7 @@ export default function StoryDetailPage() {
                 </section>
             </main>
 
-            <Footer />
+            <Footer variant="landing" />
         </div>
     );
 }

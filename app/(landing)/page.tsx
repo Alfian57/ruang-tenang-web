@@ -1,33 +1,21 @@
 import { Navbar, Footer } from "@/components/layout";
-import {
-  HeroSection,
-  MarqueeSection,
-  FeaturesSection,
-  GamificationSection,
-  ArticleSection,
-  StorySection,
-  CommunitySection,
-  LeaderboardSection,
-  CTASection,
-} from "./_components";
 import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
+import { LandingStatic } from "./_components/LandingStatic";
+import { LandingCommunity } from "./_components/LandingCommunity";
+import { LandingArticles } from "./_components/LandingArticles";
+import "./landing.css";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
+    <div className="landing-page min-h-screen overflow-x-clip bg-[#fffcfa] text-slate-800">
       <Navbar />
       <main id="main-content" tabIndex={-1} className="focus:outline-none">
-        <HeroSection />
-        <CommunitySection />
-        <FeaturesSection />
-        <GamificationSection />
-        <MarqueeSection />
-        <StorySection />
-        <LeaderboardSection />
-        <ArticleSection />
-        <CTASection />
+        <LandingStatic part="intro" />
+        <LandingCommunity />
+        <LandingArticles />
+        <LandingStatic part="outro" />
       </main>
-      <Footer />
+      <Footer variant="landing" />
       <PWAInstallPrompt />
     </div>
   );

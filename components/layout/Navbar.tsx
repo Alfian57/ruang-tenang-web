@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -20,22 +20,18 @@ interface NavbarProps {
 const LANDING_SECTION_ROUTES = {
   HOME: `${ROUTES.HOME}#home`,
   FEATURES: `${ROUTES.HOME}#features`,
-  GAMIFICATION: `${ROUTES.HOME}#gamification`,
+  JOURNEY: `${ROUTES.HOME}#journey`,
   COMMUNITY: `${ROUTES.HOME}#community`,
-  STORIES: `${ROUTES.HOME}#stories`,
-  LEADERBOARD: `${ROUTES.HOME}#leaderboard`,
   ARTICLES: `${ROUTES.HOME}#articles`,
 } as const;
 
-type NavSection = "home" | "features" | "gamification" | "community" | "stories" | "leaderboard" | "articles";
+type NavSection = "home" | "features" | "journey" | "community" | "articles";
 
 const NAV_ITEMS: Array<{ key: NavSection; label: string; href: string }> = [
   { key: "home", label: "Beranda", href: LANDING_SECTION_ROUTES.HOME },
-  { key: "community", label: "Komunitas", href: LANDING_SECTION_ROUTES.COMMUNITY },
   { key: "features", label: "Fitur", href: LANDING_SECTION_ROUTES.FEATURES },
-  { key: "gamification", label: "Gamifikasi", href: LANDING_SECTION_ROUTES.GAMIFICATION },
-  { key: "stories", label: "Cerita", href: LANDING_SECTION_ROUTES.STORIES },
-  { key: "leaderboard", label: "Hall of Fame", href: LANDING_SECTION_ROUTES.LEADERBOARD },
+  { key: "journey", label: "Perjalanan", href: LANDING_SECTION_ROUTES.JOURNEY },
+  { key: "community", label: "Komunitas", href: LANDING_SECTION_ROUTES.COMMUNITY },
   { key: "articles", label: "Artikel", href: LANDING_SECTION_ROUTES.ARTICLES },
 ];
 
@@ -46,6 +42,7 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
   const [activeSection, setActiveSection] = useState<NavSection>("home");
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   const activeLinkClass = useMemo(
     () => "whitespace-nowrap px-3 py-2 text-sm font-medium text-primary bg-primary/5 rounded-full transition-colors xl:px-4",
@@ -154,12 +151,12 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
 
   return (
     <motion.nav
-      initial={{ y: -100, opacity: 0 }}
+      initial={shouldReduceMotion ? false : { y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: shouldReduceMotion ? 0 : 0.5 }}
       className="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1rem)] max-w-6xl sm:top-4 sm:w-[95%]"
     >
-      <div className={`flex min-w-0 items-center justify-between rounded-[15px] bg-white/95 px-3 py-3 backdrop-blur-md min-[380px]:px-4 md:px-6 transition-shadow duration-300 ${isScrolled ? "shadow-xl shadow-gray-900/10" : "shadow-lg"}`}>
+      <div className={`relative flex min-w-0 items-center justify-between overflow-hidden bg-white/95 px-3 py-3 backdrop-blur-md min-[380px]:px-4 md:px-6 transition-shadow duration-300 ${variant === "default" ? "rounded-full border border-white/90 shadow-[0_16px_45px_-26px_rgba(114,66,94,0.45)]" : "rounded-full border border-[#f3e2e1] shadow-[0_16px_45px_-26px_rgba(114,66,94,0.45)]"} ${isScrolled ? "shadow-xl shadow-gray-900/10" : "shadow-lg"}`}>
         {/* Logo */}
         <Link href={ROUTES.HOME} className="flex min-w-0 items-center gap-2">
           <Image
@@ -203,14 +200,7 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
                     </Button>
                   </Link>
                 ) : (
-                  <Link href={ROUTES.LOGIN}>
-                    <Button
-                      variant="outline"
-                      className="text-gray-700 hover:text-primary border-gray-200 hover:border-primary rounded-full px-6"
-                    >
-                      Masuk
-                    </Button>
-                  </Link>
+                  <Link href={ROUTES.LOGIN}><Button className="rounded-full bg-[#d94f5c] px-6 text-white hover:bg-[#bd3d4e]">Masuk</Button></Link>
                 )}
               </div>
             </>
@@ -233,6 +223,10 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
         */}
         {variant === "default" && (
           <button
+            type="button"
+            aria-label={mobileMenuOpen ? "Tutup menu navigasi" : "Buka menu navigasi"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="landing-mobile-menu"
             className="xl:hidden p-2 hover:bg-gray-100 rounded-full transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
@@ -243,12 +237,16 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
             )}
           </button>
         )}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[3px] bg-slate-200/40" aria-hidden="true">
+          <div className="h-full rounded-full bg-primary transition-[width] duration-150 ease-out" style={{ width: `${scrollProgress * 100}%` }} />
+        </div>
       </div>
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
+          id="landing-mobile-menu"
+          initial={shouldReduceMotion ? false : { opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="xl:hidden mt-2 max-h-[calc(100svh-5.5rem)] overflow-y-auto rounded-2xl bg-white p-3 shadow-lg space-y-1.5 min-[380px]:p-4 min-[380px]:space-y-2"
         >
@@ -277,22 +275,11 @@ export function Navbar({ variant = "default", backHref = ROUTES.HOME, backLabel 
                 </Button>
               </Link>
             ) : (
-              <Link href={ROUTES.LOGIN} onClick={() => setMobileMenuOpen(false)}>
-                <Button className="w-full bg-primary hover:bg-primary/90 text-white rounded-full">
-                  Masuk
-                </Button>
-              </Link>
+              <Link href={ROUTES.LOGIN} onClick={() => setMobileMenuOpen(false)}><Button className="w-full rounded-full bg-[#d94f5c] text-white hover:bg-[#bd3d4e]">Masuk</Button></Link>
             )}
           </div>
         </motion.div>
       )}
-      {/* Scroll Progress Bar */}
-      <div className="absolute -bottom-1 left-4 right-4 h-0.5 rounded-full bg-gray-200/50 overflow-hidden">
-        <div
-          className="h-full rounded-full bg-primary transition-[width] duration-150 ease-out"
-          style={{ width: `${scrollProgress * 100}%` }}
-        />
-      </div>
     </motion.nav>
   );
 }

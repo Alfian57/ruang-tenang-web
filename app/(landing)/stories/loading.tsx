@@ -1,12 +1,11 @@
+import { PublicPageHero } from "../_components/PublicPageHero";
+
 export default function StoriesPublicLoading() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="public-page">
       <div className="h-16 border-b bg-white" />
       <div className="mx-auto w-full max-w-6xl space-y-6 px-4 pt-28 pb-16 sm:px-6 sm:pt-32 sm:pb-20 lg:px-8">
-        <div className="text-center space-y-2">
-          <div className="h-8 w-48 rounded bg-gray-200 animate-pulse mx-auto" />
-          <div className="h-4 w-full max-w-72 rounded bg-gray-200 animate-pulse mx-auto" />
-        </div>
+        <PublicPageHero eyebrow="Dari hati ke hati" title={<>Cerita <span>Inspiratif</span></>} description="Sedang menyiapkan kisah-kisah komunitas." pose="listen" />
         <div className="space-y-4">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="rounded-xl border bg-white p-5 space-y-3">

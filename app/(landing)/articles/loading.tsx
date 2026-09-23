@@ -1,12 +1,11 @@
+import { PublicPageHero } from "../_components/PublicPageHero";
+
 export default function ArticlesPublicLoading() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="public-page">
       <div className="h-16 border-b bg-white" />
-      <div className="max-w-6xl mx-auto p-6 space-y-6">
-        <div className="text-center space-y-2">
-          <div className="h-8 w-36 rounded bg-gray-200 animate-pulse mx-auto" />
-          <div className="h-4 w-64 rounded bg-gray-200 animate-pulse mx-auto" />
-        </div>
+      <div className="max-w-6xl mx-auto px-4 pt-12 pb-16 sm:px-6 space-y-6">
+        <PublicPageHero eyebrow="Ruang baca" title={<>Artikel <span>Kesehatan Mental</span></>} description="Menyiapkan bacaan untuk menemani langkahmu." pose="read" />
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="rounded-xl border bg-white overflow-hidden">

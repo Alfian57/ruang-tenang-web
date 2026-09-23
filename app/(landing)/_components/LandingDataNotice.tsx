@@ -1,5 +1,3 @@
-"use client";
-
 import { Info, ShieldCheck } from "lucide-react";
 
 type LandingDataNoticeProps = {

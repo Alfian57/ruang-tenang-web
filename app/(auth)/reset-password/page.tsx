@@ -3,12 +3,12 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Loader2, Lock, Eye, EyeOff, CheckCircle, ShieldCheck, KeyRound } from "lucide-react";
+import { Loader2, Lock, Eye, EyeOff, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/lib/routes";
-import { AuthIllustration, FloatingIcon } from "@/components/shared/auth/AuthIllustration";
+import { AuthIllustration, AuthMascotMini } from "@/components/shared/auth/AuthIllustration";
 import { useResetPassword } from "./_hooks/useResetPassword";
 
 function ResetPasswordForm() {
@@ -150,10 +150,10 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen flex">
+    <div className="auth-page flex min-h-screen">
       {/* Left Side */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
-        <div className="w-full max-w-md">
+      <div className="auth-form-panel w-full lg:w-1/2 flex items-center justify-center p-8">
+        <div className="auth-form-content w-full max-w-md">
           <div className="text-center mb-10">
             <Link href={ROUTES.HOME} className="inline-block mb-6">
               <Image
@@ -165,6 +165,7 @@ export default function ResetPasswordPage() {
                 style={{ width: "auto", height: "auto" }}
               />
             </Link>
+            <AuthMascotMini pose="key" />
             <h1 className="text-2xl font-bold mb-2">Buat Password Baru</h1>
             <p className="text-gray-500">
               Masukkan password baru untuk akun Anda.
@@ -179,28 +180,9 @@ export default function ResetPasswordPage() {
 
       {/* Right Side */}
       <AuthIllustration
-        title="Mulai Lembaran Baru"
-        description="Pastikan password baru Anda kuat dan unik untuk menjaga keamanan akun Anda."
-        visual={
-          <div className="w-64 h-64 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-            <CheckCircle className="w-32 h-32 text-white drop-shadow-lg" />
-          </div>
-        }
-        floatingElements={
-          <>
-            <FloatingIcon className="top-20 right-10" delay={0}>
-              <ShieldCheck className="w-8 h-8 text-yellow-300" />
-            </FloatingIcon>
-
-            <FloatingIcon className="bottom-32 left-10" delay={1.5}>
-              <ShieldCheck className="w-8 h-8 text-green-500" />
-            </FloatingIcon>
-
-            <FloatingIcon className="top-1/2 right-0" delay={0.8}>
-              <KeyRound className="w-8 h-8 text-blue-500" />
-            </FloatingIcon>
-          </>
-        }
+        title="Pintu baru terbuka"
+        description="Buat password yang kuat dan unik. Setelah ini, perjalananmu bisa berlanjut dengan nyaman."
+        pose="key"
       />
     </div>
   );

@@ -6,7 +6,23 @@ import { motion } from "framer-motion";
 import { Phone, MapPin, Mail } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
 
-export function Footer() {
+export function Footer({ variant = "default" }: { variant?: "default" | "landing" }) {
+  if (variant === "landing") {
+    return (
+      <footer className="border-t border-[#f5e2e2] bg-[#fff6f4] px-5 pb-8 pt-14 text-[#343b53]">
+        <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1.5fr_1fr_1fr]">
+          <div className="max-w-sm">
+            <Link href={ROUTES.HOME} className="inline-flex"><Image src="/logo-full.webp" alt="Ruang Tenang" width={140} height={50} className="h-auto w-[140px] object-contain" /></Link>
+            <p className="mt-5 text-sm leading-7 text-slate-600">Tempat kecil untuk berhenti sejenak, mengenali perasaan, dan melanjutkan hari dengan lebih lembut.</p>
+          </div>
+          <div><h2 className="font-brand-display text-base font-extrabold">Jelajahi</h2><div className="mt-4 flex flex-col gap-3 text-sm font-medium text-slate-600"><Link href={`${ROUTES.HOME}#features`} className="hover:text-[#bd4857]">Fitur</Link><Link href={ROUTES.GAMIFICATION} className="hover:text-[#bd4857]">Perjalanan &amp; reward</Link><Link href={ROUTES.PUBLIC_STORIES} className="hover:text-[#bd4857]">Cerita komunitas</Link><Link href={ROUTES.PUBLIC_ARTICLES} className="hover:text-[#bd4857]">Artikel</Link></div></div>
+          <div><h2 className="font-brand-display text-base font-extrabold">Ruang Tenang</h2><div className="mt-4 flex flex-col gap-3 text-sm font-medium text-slate-600"><Link href={ROUTES.CONTACT} className="hover:text-[#bd4857]">Hubungi kami</Link><Link href={ROUTES.HALL_OF_FAME} className="hover:text-[#bd4857]">Hall of Fame</Link><Link href={ROUTES.PRIVACY_POLICY} className="hover:text-[#bd4857]">Kebijakan Privasi</Link><Link href={ROUTES.TERMS_OF_SERVICE} className="hover:text-[#bd4857]">Syarat Layanan</Link></div></div>
+        </div>
+        <div className="mx-auto mt-12 max-w-7xl border-t border-[#eedcdd] pt-6 text-xs text-slate-500">© {new Date().getFullYear()} Ruang Tenang. Dibuat untuk langkah kecil yang berarti.</div>
+      </footer>
+    );
+  }
+
   return (
     <motion.footer
       initial={{ opacity: 0 }}

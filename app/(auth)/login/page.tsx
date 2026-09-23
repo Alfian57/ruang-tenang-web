@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/authStore";
-import { AuthIllustration } from "@/components/shared/auth/AuthIllustration";
+import { AuthIllustration, AuthMascotMini } from "@/components/shared/auth/AuthIllustration";
 import { PWAInstallPrompt } from "@/components/pwa/PWAInstallPrompt";
 import { toast } from "sonner";
 import { buildPathWithRedirect, getSafeRedirect } from "@/lib/safe-redirect";
@@ -72,10 +72,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="auth-page flex min-h-screen">
       {/* Left Side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
-        <div className="w-full max-w-md">
+      <div className="auth-form-panel w-full lg:w-1/2 flex items-center justify-center p-8">
+        <div className="auth-form-content w-full max-w-md">
           {/* Logo */}
           <div className="text-center mb-10">
             <Link href={ROUTES.HOME} className="inline-block mb-6">
@@ -88,7 +88,9 @@ export default function LoginPage() {
                 style={{ width: "auto", height: "auto" }}
               />
             </Link>
-            <p className="text-gray-500">Masukan detail Anda untuk Login</p>
+            <AuthMascotMini pose="welcome" />
+            <h1 className="mb-2 text-3xl font-bold">Selamat datang kembali</h1>
+            <p className="text-gray-500">Masukkan detail akunmu untuk masuk.</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -179,8 +181,9 @@ export default function LoginPage() {
 
       {/* Right Side - Illustration */}
       <AuthIllustration
-        title="RuangTenang"
-        description="RuangTenang adalah platform konsultasi berbasis AI yang dirancang untuk membantu mahasiswa menghadapi tantangan kesehatan mental dalam dunia akademik. Melalui interaksi percakapan yang empatik, RuangTenang hadir sebagai teman virtual yang siap mendengarkan."
+        title="Ada ruang untukmu di sini"
+        description="Masuk dan lanjutkan langkah kecilmu bersama Ruang Tenang. Bulan Pulih siap menemanimu, pelan-pelan."
+        pose="welcome"
       />
 
       <PWAInstallPrompt />

@@ -5,7 +5,6 @@ import {
     BookOpen,
     Brain,
     CalendarCheck,
-    Compass,
     Crown,
     FileText,
     Flame,
@@ -21,7 +20,6 @@ import {
     Sprout,
     Target,
     Trophy,
-    UserRound,
     Zap,
 } from "lucide-react";
 

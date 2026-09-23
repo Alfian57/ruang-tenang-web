@@ -13,6 +13,7 @@ import { articleService } from "@/services/api";
 import { Article, ArticleCategory } from "@/types";
 import { formatDate, getHtmlExcerpt } from "@/utils";
 import { ROUTES } from "@/lib/routes";
+import { PublicPageHero } from "../_components/PublicPageHero";
 
 import { Suspense } from "react";
 
@@ -76,19 +77,11 @@ function ArticlesContent() {
   }, [loadArticles]);
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-white">
+    <div className="public-page">
       <Navbar variant="back" backHref={ROUTES.HOME} backLabel="Kembali ke Beranda" />
 
       <main className="mx-auto w-full max-w-6xl px-4 pt-28 pb-16 sm:px-6 sm:pt-32 sm:pb-20 lg:px-8">
-        <div className="mx-auto mb-9 max-w-3xl text-center sm:mb-12">
-          <h1 className="mb-4 text-3xl font-bold leading-tight md:text-5xl">
-            Artikel <span className="text-primary">Kesehatan Mental</span>
-          </h1>
-          <p className="mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
-            Kumpulan bacaan praktis untuk memahami emosi, menjaga rutinitas sehat,
-            dan mengenali langkah awal saat butuh dukungan.
-          </p>
-        </div>
+        <PublicPageHero eyebrow="Ruang baca" title={<>Artikel <span>Kesehatan Mental</span></>} description="Kumpulan bacaan praktis untuk memahami emosi, menjaga rutinitas sehat, dan mengenali langkah awal saat butuh dukungan." pose="read" />
 
         <div className="grid gap-5 lg:grid-cols-12 lg:gap-8">
           {/* Main Content */}
@@ -273,14 +266,14 @@ function ArticlesContent() {
         </div>
       </main>
 
-      <Footer />
+      <Footer variant="landing" />
     </div>
   );
 }
 
 function ArticlesFallback() {
   return (
-    <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-white">
+    <div className="public-page">
       <Navbar variant="back" backHref={ROUTES.HOME} backLabel="Kembali ke Beranda" />
       <main className="mx-auto w-full max-w-6xl px-4 pt-28 pb-16 sm:px-6 sm:pt-32 sm:pb-20 lg:px-8">
         <div className="animate-pulse space-y-4">
@@ -290,7 +283,7 @@ function ArticlesFallback() {
           <div className="h-28 rounded-xl bg-gray-200" />
         </div>
       </main>
-      <Footer />
+      <Footer variant="landing" />
     </div>
   );
 }

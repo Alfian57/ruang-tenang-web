@@ -14,6 +14,7 @@ import { formatDate } from "@/utils";
 import { sanitizeHtml } from "@/utils/sanitize";
 import { getHtmlExcerpt } from "@/utils";
 import { ROUTES } from "@/lib/routes";
+import { PublicPageHero } from "../../_components/PublicPageHero";
 
 export default function ArticleDetailPage() {
   const params = useParams();
@@ -49,7 +50,7 @@ export default function ArticleDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-white">
+      <div className="public-page">
         <Navbar variant="back" backHref={ROUTES.PUBLIC_ARTICLES} backLabel="Kembali ke Artikel" />
         <main className="mx-auto w-full max-w-6xl px-4 pt-28 pb-16 sm:px-6 sm:pt-32 sm:pb-20 lg:px-8">
           <div className="animate-pulse space-y-4">
@@ -63,31 +64,33 @@ export default function ArticleDetailPage() {
             </div>
           </div>
         </main>
-        <Footer />
+        <Footer variant="landing" />
       </div>
     );
   }
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-white">
+      <div className="public-page">
         <Navbar variant="back" backHref={ROUTES.PUBLIC_ARTICLES} backLabel="Kembali ke Artikel" />
         <main className="mx-auto w-full max-w-6xl px-4 pt-28 pb-16 text-center sm:px-6 sm:pt-32 sm:pb-20 lg:px-8">
+          <PublicPageHero compact eyebrow="Ruang baca" title={<>Bacaan belum <span>ditemukan</span></>} description="Artikel yang kamu cari mungkin sudah dipindahkan atau belum tersedia." pose="read" />
           <p className="text-gray-500">Artikel tidak ditemukan</p>
           <Button asChild variant="outline" className="mt-4">
             <Link href={ROUTES.PUBLIC_ARTICLES}>Kembali ke Artikel</Link>
           </Button>
         </main>
-        <Footer />
+        <Footer variant="landing" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-white">
+    <div className="public-page">
       <Navbar variant="back" backHref={ROUTES.PUBLIC_ARTICLES} backLabel="Kembali ke Artikel" />
 
       <main className="mx-auto w-full max-w-6xl px-4 pt-28 pb-16 sm:px-6 sm:pt-32 sm:pb-20 lg:px-8">
+        <PublicPageHero compact headingLevel={2} eyebrow="Ruang baca" title={<>Baca dengan <span>tenang</span></>} description="Satu bacaan kecil bisa membuka cara baru untuk memahami diri." pose="read" />
         <div className="grid gap-5 lg:grid-cols-12 lg:gap-8">
           {/* Main Content */}
           <div className="lg:col-span-8">
@@ -191,7 +194,7 @@ export default function ArticleDetailPage() {
         </div>
       </main>
 
-      <Footer />
+      <Footer variant="landing" />
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Navbar, Footer } from "@/components/layout";
+import { PublicPageHero } from "../_components/PublicPageHero";
 import { ROUTES } from "@/lib/routes";
 import {
     CalendarCheck,
@@ -87,43 +88,11 @@ const FAQ_ITEMS = [
 
 export default function GamificationPage() {
     return (
-        <div className="relative min-h-screen overflow-hidden bg-linear-to-b from-red-50/50 via-white to-white">
+        <div className="public-page">
             <Navbar variant="back" />
 
             <main className="container relative z-10 mx-auto px-4 pt-28 pb-16 sm:pt-32 sm:pb-20">
-                <section className="mb-10 text-center sm:mb-14">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="mb-5 inline-flex items-center gap-2 rounded-full border border-red-200 bg-white px-4 py-2 text-sm font-semibold text-red-700 shadow-sm"
-                    >
-                        <Trophy className="w-4 h-4" />
-                        Panduan Gamifikasi
-                    </motion.div>
-
-                    <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.08 }}
-                        className="mb-5 text-3xl font-bold leading-tight text-gray-900 md:text-5xl"
-                    >
-                        Cara Kerja Gamifikasi{" "}
-                        <span className="bg-linear-to-r from-red-600 to-rose-500 bg-clip-text text-transparent">
-                            Ruang Tenang
-                        </span>
-                    </motion.h1>
-
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.16 }}
-                        className="mx-auto max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg"
-                    >
-                        Semua poin di halaman ini merujuk ke fitur yang sudah aktif di
-                        dashboard: progress map, coin rewards, activity streak,
-                        hingga perjalanan level dan badge.
-                    </motion.p>
-                </section>
+                <PublicPageHero eyebrow="Panduan gamifikasi" title={<>Cara Kerja Gamifikasi <span>Ruang Tenang</span></>} description="Semua poin di halaman ini merujuk ke fitur yang sudah aktif di dashboard: progress map, coin rewards, activity streak, hingga perjalanan level dan badge." pose="map" />
 
                 <section className="mx-auto mb-10 max-w-6xl sm:mb-14">
                     <div className="flex items-center gap-2 mb-5">
@@ -247,7 +216,7 @@ export default function GamificationPage() {
                 </motion.section>
             </main>
 
-            <Footer />
+            <Footer variant="landing" />
         </div>
     );
 }

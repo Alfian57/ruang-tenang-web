@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/authStore";
-import { AuthIllustration } from "@/components/shared/auth/AuthIllustration";
+import { AuthIllustration, AuthMascotMini } from "@/components/shared/auth/AuthIllustration";
 import { buildPathWithRedirect, getSafeRedirect } from "@/lib/safe-redirect";
 
 const registerSchema = z.object({
@@ -63,10 +63,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="auth-page flex min-h-screen">
       {/* Left Side - Register Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
-        <div className="w-full max-w-md">
+      <div className="auth-form-panel w-full lg:w-1/2 flex items-center justify-center p-8">
+        <div className="auth-form-content w-full max-w-md">
           {/* Logo */}
           <div className="text-center mb-8">
             <Link href={ROUTES.HOME} className="inline-block mb-6">
@@ -79,6 +79,8 @@ export default function RegisterPage() {
                 style={{ width: "auto", height: "auto" }}
               />
             </Link>
+            <AuthMascotMini pose="heart" />
+            <h1 className="mb-2 text-3xl font-bold">Mulai dari sini</h1>
             <p className="text-gray-500">Buat akun baru untuk memulai</p>
           </div>
 
@@ -96,7 +98,7 @@ export default function RegisterPage() {
                 <Input
                   id="name"
                   type="text"
-                  placeholder="John Doe"
+                  placeholder="Nama lengkapmu"
                   className="pl-12 h-12 rounded-xl border-gray-200 focus:border-primary focus:ring-primary"
                   {...register("name")}
                 />
@@ -190,8 +192,9 @@ export default function RegisterPage() {
 
       {/* Right Side - Illustration */}
       <AuthIllustration
-        title="RuangTenang"
-        description="Bergabunglah dengan ribuan mahasiswa yang telah menemukan ketenangan dalam menghadapi tekanan akademik. Platform kami hadir untuk membantu Anda mengelola stres, memahami emosi, dan menemukan keseimbangan dalam hidup."
+        title="Langkah kecil, ruang baru"
+        description="Buat akunmu dan mulai mengenali emosi, merawat rutinitas, serta menemukan dukungan yang terasa pas."
+        pose="heart"
       />
     </div>
   );

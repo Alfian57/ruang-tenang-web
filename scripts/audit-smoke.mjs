@@ -103,11 +103,32 @@ assertContains("app/dashboard/chat/_components/EmptyState.tsx", "Mulai check-in 
 assertContains("components/shared/gamification/DailyTaskFAB.tsx", "showPremiumTeasers", "Daily task FAB must show premium locked tasks for free users");
 
 assertContains("app/(landing)/_components/LandingDataNotice.tsx", "Simulasi pengalaman publik", "Landing demo data must be clearly labeled");
-assertContains("app/(landing)/_components/HeroSection.tsx", "/images/landing/about-doctor.webp", "Landing hero must use the Figma hero visual asset");
-assertNotContains("app/(landing)/_components/HeroSection.tsx", "/images/avatar/hero-mascot.jpg", "Landing hero must not use the watermarked mascot sheet");
-assertNotContains("app/(landing)/_components/HeroSection.tsx", "/images/dummy-article-5.png", "Landing hero must not use dummy article imagery");
-assertNotContains("app/(landing)/_components/ArticleSection.tsx", "dummy-article", "Landing articles must not fall back to dummy article imagery");
-assertNotContains("app/(landing)/_components/ArticleSection.tsx", "/images/avatar/community-illustration.jpg", "Landing article fallback must not use watermarked avatar imagery");
+assertContains("app/(landing)/_components/LandingStatic.tsx", "/welcome.webp", "Landing hero must use the canonical mascot family");
+for (const pose of ["welcome", "mood", "journal", "companion", "breathe", "celebrate", "community", "heart"]) {
+  assertFile(`public/images/landing/mascot/${pose}.webp`);
+}
+for (const pose of ["read", "listen", "map", "trophy", "message", "secure", "key"]) {
+  assertFile(`assets/mascot/mascot-${pose}.png`);
+  assertFile(`public/images/landing/mascot/${pose}.webp`);
+}
+for (const pose of ["welcome", "heart", "secure", "key"]) {
+  assertFile(`assets/mascot/mascot-auth-${pose}.png`);
+  assertFile(`assets/mascot/mascot-auth-${pose}-cutout.png`);
+  assertFile(`public/images/landing/mascot/auth-${pose}-cutout.webp`);
+}
+assertNotContains("app/(landing)/_components/LandingStatic.tsx", "Teman kecil untuk hari yang besar", "Landing hero badge must stay removed");
+assertContains("app/(landing)/articles/page.tsx", "PublicPageHero", "Article directory must use public mascot hero");
+assertContains("app/(landing)/stories/page.tsx", "PublicPageHero", "Stories directory must use public mascot hero");
+assertContains("components/shared/auth/AuthIllustration.tsx", "mascot/${pose}.webp", "Auth illustration must use mascot pose assets");
+assertContains("components/shared/auth/AuthIllustration.tsx", "auth-${pose}-cutout.webp", "Desktop auth art must use clean mascot cutouts");
+assertContains("app/(landing)/_components/LandingStatic.tsx", 'id="gamification"', "Old gamification anchor must remain usable");
+assertContains("app/(landing)/_components/LandingCommunity.tsx", 'id="stories"', "Old stories anchor must remain usable");
+assertContains("app/(landing)/_components/LandingCommunity.tsx", 'id="leaderboard"', "Old leaderboard anchor must remain usable");
+assertNotContains("app/(landing)/_components/LandingStatic.tsx", "about-doctor.webp", "Landing hero must not use the old generic image");
+assertNotContains("app/(landing)/_components/LandingStatic.tsx", "/images/avatar/hero-mascot.jpg", "Landing hero must not use the watermarked mascot sheet");
+assertNotContains("app/(landing)/_components/LandingStatic.tsx", "/images/dummy-article-5.png", "Landing hero must not use dummy article imagery");
+assertNotContains("app/(landing)/_components/LandingArticles.tsx", "dummy-article", "Landing articles must not fall back to dummy article imagery");
+assertNotContains("app/(landing)/_components/LandingArticles.tsx", "/images/avatar/community-illustration.jpg", "Landing article fallback must not use watermarked avatar imagery");
 assertContains("middleware.ts", "frame-src", "CSP must allow explicit frame sources for payment popups");
 assertContains("middleware.ts", "https://app.sandbox.midtrans.com", "CSP must include sandbox Midtrans app origin");
 assertContains("middleware.ts", "https://app.midtrans.com", "CSP must include production Midtrans app origin");

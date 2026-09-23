@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { PublicPageHero } from "../_components/PublicPageHero";
 import { Navbar, Footer } from "@/components/layout";
 import { StoryList } from "@/components/shared/stories";
 import { Button } from "@/components/ui/button";
@@ -32,29 +33,11 @@ export default function StoriesPage() {
   } = useStoriesData();
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-red-50/50 via-white to-background">
+    <div className="public-page">
       <Navbar variant="back" />
 
       <main className="mx-auto w-full max-w-6xl px-4 pt-28 pb-16 sm:px-6 sm:pt-32 sm:pb-20 lg:px-8">
-        {/* Header */}
-        <div className="mx-auto mb-9 max-w-3xl text-center sm:mb-12">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-4 text-3xl font-bold leading-tight md:text-5xl"
-          >
-            Cerita <span className="text-primary">Inspiratif</span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg"
-          >
-            Kisah nyata dari perjalanan pemulihan. Ceritamu bisa menginspirasi orang lain
-            dan menunjukkan bahwa mereka tidak sendirian.
-          </motion.p>
-        </div>
+        <PublicPageHero eyebrow="Dari hati ke hati" title={<>Cerita <span>Inspiratif</span></>} description="Kisah nyata dari perjalanan pemulihan. Ceritamu bisa menginspirasi orang lain dan menunjukkan bahwa mereka tidak sendirian." pose="listen" />
 
         {loading && stories.length === 0 ? (
           <StoriesSkeleton />
@@ -127,7 +110,7 @@ export default function StoriesPage() {
         )}
       </main>
 
-      <Footer />
+      <Footer variant="landing" />
     </div>
   );
 }
