@@ -138,7 +138,7 @@ export function HeroSection() {
           >
             <div className="relative w-full max-w-[258px] min-[380px]:max-w-[310px] sm:max-w-md lg:max-w-[500px] xl:max-w-[540px]">
               <Image
-                src="/images/landing/about-doctor.png"
+                src="/images/landing/about-doctor.webp"
                 alt="Ilustrasi aplikasi Ruang Tenang dengan pendamping kesehatan di layar ponsel."
                 width={500}
                 height={600}

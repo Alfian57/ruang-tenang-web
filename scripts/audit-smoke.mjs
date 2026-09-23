@@ -103,7 +103,7 @@ assertContains("app/dashboard/chat/_components/EmptyState.tsx", "Mulai check-in 
 assertContains("components/shared/gamification/DailyTaskFAB.tsx", "showPremiumTeasers", "Daily task FAB must show premium locked tasks for free users");
 
 assertContains("app/(landing)/_components/LandingDataNotice.tsx", "Simulasi pengalaman publik", "Landing demo data must be clearly labeled");
-assertContains("app/(landing)/_components/HeroSection.tsx", "/images/landing/about-doctor.png", "Landing hero must use the Figma hero visual asset");
+assertContains("app/(landing)/_components/HeroSection.tsx", "/images/landing/about-doctor.webp", "Landing hero must use the Figma hero visual asset");
 assertNotContains("app/(landing)/_components/HeroSection.tsx", "/images/avatar/hero-mascot.jpg", "Landing hero must not use the watermarked mascot sheet");
 assertNotContains("app/(landing)/_components/HeroSection.tsx", "/images/dummy-article-5.png", "Landing hero must not use dummy article imagery");
 assertNotContains("app/(landing)/_components/ArticleSection.tsx", "dummy-article", "Landing articles must not fall back to dummy article imagery");

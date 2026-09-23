@@ -82,7 +82,7 @@ export function MockDailyTasksCard() {
                                 +{task.xp} XP
                             </span>
                             <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
-                                <Image src="/coin.png" alt="Koin Emas" width={12} height={12} />
+                                <Image src="/coin.webp" alt="Koin Emas" width={12} height={12} />
                                 +{task.coin}
                             </span>
                             {task.done && <Check className="h-4 w-4 text-red-500" />}
@@ -102,7 +102,7 @@ export function MockDailyTasksCard() {
                         +25 XP
                     </span>
                     <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-sm font-bold text-amber-700">
-                        <Image src="/coin.png" alt="Koin Emas" width={14} height={14} />
+                        <Image src="/coin.webp" alt="Koin Emas" width={14} height={14} />
                         +3
                     </span>
                 </div>

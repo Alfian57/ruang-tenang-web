@@ -26,16 +26,34 @@ CLAUDE.md, GEMINI.md, dan .github/copilot-instructions.md adalah adapter tipis y
 
 - Perubahan TypeScript/React: jalankan `npm run lint` dan `npm run typecheck`.
 - Perubahan route, API service, auth, atau offline: jalankan `npm run test:smoke` juga.
-- `npm run build` tidak wajib untuk perubahan UI, styling, copy, atau TypeScript biasa. Jalankan build hanya jika diminta pengguna atau perubahan menyentuh build/config/PWA/deployment.
-- Jangan menjalankan `npm run verify` sebagai langkah default karena script tersebut juga menjalankan build. Gunakan validasi yang sesuai dengan scope perubahan, lalu periksa `git diff --check`.
+- **Jangan menjalankan `npm run build` atau perintah build lain secara otomatis. Build hanya boleh dijalankan jika pengguna memintanya secara eksplisit pada percakapan saat ini**, termasuk ketika perubahan menyentuh build/config/PWA/deployment.
+- Jangan menjalankan `npm run verify` sebagai langkah default karena script tersebut juga menjalankan build. Jika build dibutuhkan untuk verifikasi tetapi belum diminta, laporkan sebagai belum dijalankan dan minta instruksi pengguna. Gunakan validasi non-build yang sesuai dengan scope perubahan, lalu periksa `git diff --check`.
 - Jika environment tidak memungkinkan command dijalankan, laporkan command dan error sebenarnya; jangan menyatakan lulus.
 
 ## Generated files dan deployment
 
-- Edit app/sw.ts, bukan public/sw.js hasil build.
+- Edit app/sw.ts, bukan public/sw.js hasil build. Jangan meregenerasi service worker melalui build tanpa permintaan eksplisit pengguna.
 - next.config.ts dan entrypoint.sh membentuk konfigurasi image/runtime; jangan menghapus placeholder runtime tanpa memahami deployment GHCR/VPS.
 - package-lock.json adalah lockfile npm yang dipakai Docker. Jangan mengubah bun.lock sebagai efek samping instalasi npm.
 - Workflow pada .github/workflows/build-and-deploy.yml adalah sumber kebenaran untuk trigger, variable, secret, dan deploy.
+
+## Format gambar dan performance
+
+- Format raster default untuk aset yang dikirim ke browser adalah **WebP**. Gunakan `next/image` dengan `width`/`height` atau ukuran responsif yang eksplisit agar browser dan Next.js dapat mengoptimalkan pengiriman gambar.
+- Untuk ilustrasi/foto biasa, gunakan WebP dengan kualitas sekitar 85–90. Untuk ilustrasi dengan teks, bentuk datar, atau detail referensi yang sensitif terhadap artefak, gunakan WebP lossless atau pertahankan PNG bila WebP merusak kualitas.
+- Pertahankan PNG/ICO untuk favicon, apple touch icon, kebutuhan kompatibilitas eksternal, atau master referensi AI beresolusi tinggi yang menunjukkan artefak setelah konversi. Jangan mengonversi hanya demi ekstensi jika hasil visualnya memburuk.
+- Jangan menyimpan dua format untuk aset runtime yang sama tanpa alasan kompatibilitas yang jelas. Setelah konversi, perbarui semua referensi source dan smoke test, lalu hapus salinan runtime lama yang tidak lagi dipakai.
+- Aset runtime yang sudah menggunakan WebP: `/images/landing/about-illustration.webp`, `/images/landing/about-doctor.webp`, dan `/coin.webp`.
+- `public/sw.js` adalah hasil generate; jangan diedit manual. Perubahan daftar aset akan tercermin saat service worker dibuat ulang oleh build yang hanya dijalankan setelah diminta pengguna.
+
+## Referensi maskot Ruang Tenang
+
+- Aset kanonis maskot: `assets/mascot/mascot.png`.
+- Lembar turnaround kanonis: `assets/mascot/mascot-turnaround.webp` (lossless WebP).
+- `mascot.png` adalah master referensi AI beresolusi tinggi dan tetap PNG karena efek glow/transparansinya menimbulkan artefak saat dikompresi ke WebP. Turnaround sheet sudah aman dikonversi ke WebP lossless.
+- Setiap permintaan generate atau edit maskot dengan AI image generator **wajib menggunakan kedua file tersebut sebagai referensi**. Gunakan `mascot.png` untuk tampilan utama dan warna, serta `mascot-turnaround.webp` untuk menjaga bentuk, proporsi, atribut, dan konsistensi tampak depan/samping/belakang.
+- Pertahankan identitas berikut kecuali pengguna meminta perubahan: kepala bulat, badan rose-coral, cape crimson dengan lining navy, trim gold, emblem empat bidang membulat terinspirasi logo Ruang Tenang, serta orb dengan simbol hati dan gelombang napas.
+- Jangan menambahkan wordmark, teks, atau watermark ke maskot kecuali diminta secara eksplisit. Simpan hasil referensi baru sebagai file sibling di folder `assets/mascot/`; salin/konversi ke `public/` hanya jika pengguna meminta maskot dipakai sebagai aset runtime. Jangan menimpa dua aset kanonis tanpa instruksi eksplisit.
 
 ## Dokumentasi dan koordinasi
 

@@ -33,7 +33,7 @@ function formatDate(dateString: string): string {
   });
 }
 
-const DEFAULT_IMAGE = "/images/landing/about-illustration.png";
+const DEFAULT_IMAGE = "/images/landing/about-illustration.webp";
 
 function getArticleImage(thumbnail: string | undefined): string {
   if (thumbnail && thumbnail.trim() !== "") return thumbnail;

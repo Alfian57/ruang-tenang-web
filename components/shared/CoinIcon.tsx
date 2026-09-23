@@ -10,7 +10,7 @@ interface CoinIconProps {
 export function CoinIcon({ className, alt = "Coin" }: CoinIconProps) {
     return (
         <Image
-            src="/coin.png"
+            src="/coin.webp"
             alt={alt}
             width={20}
             height={20}

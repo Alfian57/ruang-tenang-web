@@ -38,7 +38,7 @@ export function AuthIllustration({ title, description, visual, floatingElements 
           >
             {visual ? visual : (
               <Image
-                src="/images/landing/about-doctor.png"
+                src="/images/landing/about-doctor.webp"
                 alt="RuangTenang App"
                 width={400}
                 height={500}
