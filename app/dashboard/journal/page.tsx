@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import {
     DropdownMenuTrigger,
     DropdownMenu,
@@ -28,12 +28,21 @@ import {
     Download,
     Filter,
     X,
-    Lightbulb,
-    NotebookPen,
+    FileText,
+    Brain,
+    ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/utils";
 import { useJournalPage } from "./_hooks/useJournalPage";
 import Link from "next/link";
+import { DashboardMascotHero } from "@/components/shared/dashboard/DashboardMascotHero";
+import { DashboardHubTabList, type DashboardHubTab } from "@/components/shared/dashboard/DashboardHubTabs";
+
+const JOURNAL_TABS: readonly DashboardHubTab[] = [
+    { value: "journals", label: "Jurnal Saya", icon: BookOpen },
+    { value: "analytics", label: "Analitik", icon: BarChart2 },
+    { value: "settings", label: "Privasi & Pengaturan", icon: Settings },
+];
 
 export default function JournalPage() {
     const {
@@ -92,34 +101,14 @@ export default function JournalPage() {
 
     // Main layout
     return (
-        <div className="py-4 lg:py-6">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                    <div>
-                        <h1 className="flex items-center gap-2 text-2xl font-bold text-gray-900">
-                            <NotebookPen className="w-6 h-6 text-primary" /> Jurnal Pribadi
-                        </h1>
-                        <p className="text-sm text-gray-500">
-                            Tulis, refleksi, dan pertumbuhan pribadimu
-                        </p>
-                    </div>
-                </div>
-
-                <Button asChild={!isJournalBlocked} disabled={isJournalBlocked}>
-                    {isJournalBlocked ? (
-                        <span>
-                            <PlusCircle className="w-4 h-4 mr-2" />
-                            Akses Jurnal Diblokir
-                        </span>
-                    ) : (
-                        <Link href="/dashboard/journal/create">
-                            <PlusCircle className="w-4 h-4 mr-2" />
-                            Tulis Jurnal
-                        </Link>
-                    )}
-                </Button>
-            </div>
+        <div className="min-w-0 pb-8">
+            <DashboardMascotHero
+                eyebrow="Ruang refleksi"
+                title="Jurnal Pribadi"
+                description="Ruang tenang untuk menulis, memahami perasaan, dan merayakan langkah kecilmu."
+                image="/images/landing/mascot/journal.webp"
+                imageAlt="Bulan Pulih membawa buku dan pensil untuk menemani journaling"
+            />
 
             {isJournalBlocked && (
                 <div className="mb-6 rounded-xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-primary">
@@ -127,58 +116,33 @@ export default function JournalPage() {
                 </div>
             )}
 
-            {!isJournalBlocked && (
-                <div className="mb-6 rounded-xl border border-primary/20 bg-primary/5 p-4">
-                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <p className="text-sm font-semibold text-gray-900 inline-flex items-center gap-2">
-                                <Lightbulb className="w-4 h-4 text-primary" />
-                                Mulai journaling sesuai kondisimu
-                            </p>
-                            <p className="text-xs text-gray-600 mt-1">
-                                Pilih mode untuk dapat template dan guided path 3 langkah.
-                            </p>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                            <Button asChild variant="outline" size="sm" className="bg-white">
-                                <Link href="/dashboard/journal/create?mode=brain-dump">Brain Dump</Link>
-                            </Button>
-                            <Button asChild variant="outline" size="sm" className="bg-white">
-                                <Link href="/dashboard/journal/create?mode=structured-reflection">Refleksi</Link>
-                            </Button>
-                            <Button asChild variant="outline" size="sm" className="bg-white">
-                                <Link href="/dashboard/journal/create?mode=gratitude">Syukur</Link>
-                            </Button>
-                            <Button asChild variant="outline" size="sm" className="bg-white">
-                                <Link href="/dashboard/journal/create?mode=action-plan">Rencana Aksi</Link>
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
             {/* Main Content */}
             <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-                <TabsList className="mb-6">
-                    <TabsTrigger value="journals" className="flex items-center gap-2">
-                        <BookOpen className="w-4 h-4" />
-                        Jurnal
-                    </TabsTrigger>
-                    <TabsTrigger value="analytics" className="flex items-center gap-2">
-                        <BarChart2 className="w-4 h-4" />
-                        Analitik
-                    </TabsTrigger>
-                    <TabsTrigger value="settings" className="flex items-center gap-2">
-                        <Settings className="w-4 h-4" />
-                        Pengaturan
-                    </TabsTrigger>
-                </TabsList>
+                <div data-user-tour="journal-actions" className="mb-5 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-start">
+                    <DashboardHubTabList
+                        tabs={JOURNAL_TABS}
+                        className="mb-0 w-full overflow-x-auto sm:w-fit"
+                    />
+                    <Button asChild={!isJournalBlocked} disabled={isJournalBlocked} className="shrink-0">
+                        {isJournalBlocked ? (
+                            <span>
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                Akses Jurnal Diblokir
+                            </span>
+                        ) : (
+                            <Link href="/dashboard/journal/create">
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                Tulis Jurnal
+                            </Link>
+                        )}
+                    </Button>
+                </div>
 
                 {/* Journals Tab */}
                 <TabsContent value="journals" className="space-y-6">
                     {/* Search & Filter */}
-                    <div className="flex items-center gap-4">
-                        <div className="relative flex-1">
+                    <div className="theme-accent-border-soft flex flex-col gap-3 rounded-2xl border bg-white/85 p-3 shadow-sm sm:flex-row sm:items-center">
+                        <div className="relative min-w-0 flex-1">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
                             <Input
                                 placeholder="Cari jurnal..."
@@ -189,7 +153,8 @@ export default function JournalPage() {
                             {localSearchQuery && (
                                 <button
                                     onClick={() => setLocalSearchQuery("")}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                                    aria-label="Hapus pencarian"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-0.5"
                                 >
                                     <X className="w-4 h-4 text-gray-400 hover:text-gray-600" />
                                 </button>
@@ -198,14 +163,14 @@ export default function JournalPage() {
                         <Button
                             variant="outline"
                             onClick={() => setShowFilters(!showFilters)}
-                            className={cn(showFilters && "bg-primary/10")}
+                            className={cn("shrink-0", showFilters && "bg-primary/10")}
                         >
                             <Filter className="w-4 h-4 mr-2" />
                             Filter
                         </Button>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" disabled={isExporting}>
+                                <Button variant="outline" disabled={isExporting} className="shrink-0">
                                     <Download className="w-4 h-4 mr-2" />
                                     {isExporting ? "Mengekspor..." : "Ekspor"}
                                 </Button>
@@ -256,29 +221,47 @@ export default function JournalPage() {
                             />
 
                             {/* Quick Stats */}
-                            <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
-                                <h3 className="font-medium mb-3 text-gray-900">Statistik Cepat</h3>
-                                <div className="space-y-2 text-sm">
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-600">Total Jurnal</span>
-                                        <span className="font-medium text-gray-900">{totalJournals}</span>
+                            <div className="theme-accent-border-soft relative overflow-hidden rounded-2xl border bg-[linear-gradient(145deg,white,var(--theme-accent-soft))] p-4 shadow-sm sm:p-5">
+                                <div className="pointer-events-none absolute -right-10 -top-12 h-32 w-32 rounded-full bg-theme-accent-light/60 blur-3xl" />
+                                <div className="relative">
+                                    <div className="flex items-center gap-3">
+                                        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-theme-accent-dark shadow-sm ring-1 ring-theme-accent-border/60">
+                                            <Brain className="h-5 w-5" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <h3 className="font-semibold text-slate-900">Statistik cepat</h3>
+                                            <p className="text-xs text-slate-500">Jejak refleksimu sejauh ini</p>
+                                        </div>
                                     </div>
-                                    {settings && (
-                                        <>
-                                            <div className="flex justify-between">
-                                                <span className="text-gray-600">AI Akses</span>
-                                                <span
-                                                    className={cn(
-                                                        "font-medium",
-                                                        settings.allow_ai_access
-                                                            ? "text-primary/80"
-                                                            : "text-gray-500"
-                                                    )}
-                                                >
-                                                    {settings.allow_ai_access ? "Aktif" : "Nonaktif"}
-                                                </span>
+
+                                    <div className="mt-4 rounded-xl border border-white/90 bg-white/85 p-4 shadow-sm">
+                                        <div className="flex items-center justify-between gap-3">
+                                            <div className="flex min-w-0 items-center gap-2 text-sm text-slate-600">
+                                                <FileText className="h-4 w-4 shrink-0 text-theme-accent-dark" />
+                                                <span>Total jurnal</span>
                                             </div>
-                                        </>
+                                            <span className="text-2xl font-bold tracking-tight text-slate-900">
+                                                {totalJournals.toLocaleString()}
+                                            </span>
+                                        </div>
+                                        <p className="mt-1 text-xs text-slate-500">Catatan yang tersimpan di ruang pribadimu</p>
+                                    </div>
+
+                                    {settings && (
+                                        <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-white/90 bg-white/70 px-3 py-3">
+                                            <span className="flex min-w-0 items-center gap-2 text-sm text-slate-600">
+                                                <ShieldCheck className="h-4 w-4 shrink-0 text-slate-500" />
+                                                Akses AI
+                                            </span>
+                                            <span className={cn(
+                                                "shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold",
+                                                settings.allow_ai_access
+                                                    ? "bg-emerald-50 text-emerald-700"
+                                                    : "bg-slate-100 text-slate-600"
+                                            )}>
+                                                {settings.allow_ai_access ? "Diizinkan" : "Nonaktif"}
+                                            </span>
+                                        </div>
                                     )}
                                 </div>
                             </div>
@@ -292,7 +275,17 @@ export default function JournalPage() {
                 </TabsContent>
 
                 {/* Settings Tab */}
-                <TabsContent value="settings" className="space-y-6">
+                <TabsContent value="settings" className="space-y-3">
+                    <div className="flex items-start gap-2.5 rounded-2xl border border-slate-200/80 bg-white/80 p-3.5 sm:p-4">
+                        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-theme-accent-soft text-theme-accent-dark">
+                            <Settings className="h-5 w-5" />
+                        </div>
+                        <div className="min-w-0">
+                            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-theme-accent-dark">Ruang yang aman</p>
+                            <h2 className="mt-0.5 text-base font-bold tracking-tight text-slate-900 sm:text-lg">Privasi dan kendali jurnal</h2>
+                            <p className="mt-0.5 text-sm leading-relaxed text-slate-600">Atur bagaimana AI menggunakan catatanmu, lalu tinjau konteks dan riwayat akses kapan saja.</p>
+                        </div>
+                    </div>
                     {settings && (
                         <JournalPrivacySettings
                             settings={settings}

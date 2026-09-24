@@ -106,16 +106,16 @@ export function ChatSidebar({
       {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 sm:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={onClose}
         />
       )}
 
       <div className={cn(
-        "w-full max-w-80 min-w-0 border-l bg-white flex-col h-full shadow-[-1px_0_10px_rgba(0,0,0,0.02)] z-50 sm:w-80",
-        "sm:flex sm:static sm:z-10", // Desktop styles
+        "w-full max-w-80 min-w-0 border-l border-rose-100 bg-[#fffdfc] flex-col h-full shadow-[-1px_0_10px_rgba(0,0,0,0.02)] z-50 lg:w-[19rem]",
+        "lg:flex lg:static lg:z-10", // Desktop styles
         "fixed inset-y-0 right-0 transform transition-transform duration-300 ease-in-out", // Mobile styles
-        isOpen ? "translate-x-0" : "translate-x-full sm:translate-x-0"
+        isOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
       )}>
         <ChatSidebarHeader
           sessionCount={sessions.length}

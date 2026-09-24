@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/utils";
+import { TrackCredit } from "@/components/music/TrackCredit";
 import { Song, SongCategory } from "@/types";
 
 interface CategoryDetailViewProps {
@@ -134,7 +135,7 @@ export function CategoryDetailView({
                                                     )}>
                                                         {song.title}
                                                     </p>
-                                                    <p className="text-xs text-gray-500">Ruang Tenang</p>
+                                                    <TrackCredit song={song} />
                                                 </div>
                                             </div>
 

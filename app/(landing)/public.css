@@ -43,9 +43,6 @@
 .public-hero-orbit { position: absolute; z-index: -1; border: 1px solid #abacd042; border-radius: 50%; pointer-events: none; }
 .public-hero-orbit-one { width: 21rem; height: 21rem; top: -11rem; right: -7rem; }
 .public-hero-orbit-two { width: 9rem; height: 9rem; bottom: -4.5rem; left: -4.5rem; }
-.public-hero-sparkle { position: absolute; z-index: 2; color: #dda563; }
-.public-hero-sparkle-one { top: 8%; right: 4%; font-size: 1.7rem; }
-.public-hero-sparkle-two { bottom: 10%; left: 0; color: #9b8dd2; font-size: 1.25rem; }
 .public-hero-compact { min-height: 14rem; grid-template-columns: minmax(0, 1fr) 12rem; padding: 2rem 2.75rem; border-radius: 2rem 3.5rem 2rem 3.5rem; }
 .public-hero-compact h1, .public-hero-compact h2 { font-size: clamp(1.9rem, 3vw, 3rem); }
 .public-hero-compact .public-hero-mascot { width: 14rem; max-height: 16rem; bottom: -2.1rem; }

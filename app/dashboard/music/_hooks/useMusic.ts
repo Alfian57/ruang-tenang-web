@@ -18,6 +18,9 @@ export function useMusic() {
 
   const activeTab = searchParams.get("tab") || "browse";
   const urlSearch = searchParams.get("search") || "";
+  const page = Math.max(1, Number.parseInt(searchParams.get("page") || "1", 10) || 1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [hasError, setHasError] = useState(false);
 
   // Local state
   const [searchTerm, setSearchTerm] = useState(urlSearch);
@@ -38,11 +41,20 @@ export function useMusic() {
   // Update URL from debounced state
   useEffect(() => {
     if (debouncedSearch !== urlSearch) {
-      updateUrlParam("search", debouncedSearch || null);
+      const params = new URLSearchParams(searchParams.toString());
+      if (debouncedSearch) params.set("search", debouncedSearch); else params.delete("search");
+      params.delete("page");
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     }
-  }, [debouncedSearch, updateUrlParam, urlSearch]);
+  }, [debouncedSearch, pathname, router, searchParams, urlSearch]);
 
-  const setActiveTab = (tab: string) => updateUrlParam("tab", tab === "browse" ? null : tab);
+  const setActiveTab = (tab: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (tab === "browse") params.delete("tab"); else params.set("tab", tab);
+    params.delete("page");
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+  const setPage = useCallback((next: number) => updateUrlParam("page", next > 1 ? String(next) : null), [updateUrlParam]);
   const setSearch = (value: string) => setSearchTerm(value);
 
   // Data state
@@ -58,6 +70,7 @@ export function useMusic() {
   const [isPlaylistDialogOpen, setIsPlaylistDialogOpen] = useState(false);
   const [playlistsLoading, setPlaylistsLoading] = useState(false);
   const [publicPlaylistsLoading, setPublicPlaylistsLoading] = useState(false);
+  const [officialPlaylistsLoading, setOfficialPlaylistsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   
   // Delete playlist state
@@ -77,71 +90,102 @@ export function useMusic() {
 
   // Data Loading Functions
   const loadCategories = useCallback(async () => {
+    setIsLoading(true);
+    setHasError(false);
     try {
-      const response = await songService.getCategories() as { data: SongCategory[] };
+      const response = await songService.getCategoriesPage({ page, limit: 12 });
       setCategories(response.data || []);
+      setTotalPages(response.meta?.total_pages || 1);
+      if (response.meta && page > response.meta.total_pages && page > 1) setPage(Math.max(1, response.meta.total_pages));
     } catch (error) {
       console.error("Failed to load categories:", error);
+      setHasError(true);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [page, setPage]);
 
   const loadPlaylists = useCallback(async () => {
     if (!token) return;
     setPlaylistsLoading(true);
+    setHasError(false);
     try {
-      const response = await songService.getMyPlaylists(token) as { data: PlaylistListItem[] };
+      const response = await songService.getMyPlaylistsPage(token, { page, limit: 10 });
       setPlaylists(response.data || []);
+      setTotalPages(response.meta?.total_pages || 1);
+      if (response.meta && page > response.meta.total_pages && page > 1) setPage(Math.max(1, response.meta.total_pages));
     } catch (error) {
       console.error("Failed to load playlists:", error);
       toast.error("Gagal memuat playlist Anda");
+      setHasError(true);
     } finally {
       setPlaylistsLoading(false);
     }
-  }, [token]);
+  }, [token, page, setPage]);
 
   const loadPublicPlaylists = useCallback(async () => {
     setPublicPlaylistsLoading(true);
+    setHasError(false);
     try {
-      const response = await songService.getPublicPlaylists({ limit: 20 }) as { data: PlaylistListItem[] };
-      const allPublic = response.data || [];
-      setAdminPlaylists(allPublic.filter(p => p.is_admin_playlist));
-      setPublicPlaylists(allPublic.filter(p => !p.is_admin_playlist));
+      const response = await songService.getPublicPlaylists({ page, limit: 12, kind: "community" });
+      setPublicPlaylists(response.data || []);
+      setTotalPages(response.meta?.total_pages || 1);
+      if (response.meta && page > response.meta.total_pages && page > 1) setPage(Math.max(1, response.meta.total_pages));
     } catch (error) {
       console.error("Failed to load public playlists:", error);
       toast.error("Gagal memuat playlist publik");
+      setHasError(true);
     } finally {
       setPublicPlaylistsLoading(false);
+    }
+  }, [page, setPage]);
+
+  const loadOfficialPlaylists = useCallback(async () => {
+    setOfficialPlaylistsLoading(true);
+    try {
+      const response = await songService.getPublicPlaylists({ page: 1, limit: 4, kind: "official" });
+      setAdminPlaylists(response.data || []);
+    } catch (error) {
+      console.error("Failed to load official playlists:", error);
+    } finally {
+      setOfficialPlaylistsLoading(false);
     }
   }, []);
 
   // Initial Load
   useEffect(() => {
-    loadCategories();
-    loadPlaylists();
-    loadPublicPlaylists();
-  }, [loadCategories, loadPlaylists, loadPublicPlaylists]);
+    if (activeTab === "browse" && !urlSearch) void loadCategories();
+    if (activeTab === "playlists") void loadPlaylists();
+    if (activeTab === "explore") void loadPublicPlaylists();
+  }, [activeTab, urlSearch, loadCategories, loadPlaylists, loadPublicPlaylists]);
+
+  useEffect(() => {
+    if (activeTab === "explore") void loadOfficialPlaylists();
+  }, [activeTab, loadOfficialPlaylists]);
 
   // Load songs by category (URL effect)
 
   // Search effect
-  useEffect(() => {
-    if (debouncedSearch && token) {
-      const doSearch = async () => {
-        setIsLoading(true);
-        try {
-          const response = await searchService.search(debouncedSearch, undefined, token || undefined);
-          setSongs(response.data?.songs || []);
-        } catch (error) {
-          console.error("Search failed:", error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-      doSearch();
+  const loadSearch = useCallback(async () => {
+    if (!urlSearch || !token) return;
+    setIsLoading(true);
+    setHasError(false);
+    try {
+      const response = await searchService.search(urlSearch, { type: "songs", page, limit: 12 }, token);
+      setSongs(response.data?.songs || []);
+      setTotalPages(response.data?.total_pages || 1);
+      if (page > (response.data?.total_pages || 1) && page > 1) setPage(Math.max(1, response.data?.total_pages || 1));
+    } catch (error) {
+      console.error("Search failed:", error);
+      setHasError(true);
+    } finally {
+      setIsLoading(false);
     }
-  }, [debouncedSearch, token]);
+  }, [urlSearch, token, page, setPage]);
+
+  useEffect(() => {
+    if (activeTab === "browse" && urlSearch) void loadSearch();
+  }, [activeTab, urlSearch, loadSearch]);
 
   // Handlers
 
@@ -202,6 +246,16 @@ export function useMusic() {
   return {
     // State
     activeTab,
+    page,
+    setPage,
+    totalPages,
+    hasError,
+    retry: () => {
+      if (activeTab === "browse") {
+        if (urlSearch) void loadSearch(); else void loadCategories();
+      } else if (activeTab === "explore") void loadPublicPlaylists();
+      else void loadPlaylists();
+    },
     search: searchTerm,
     categories,
     songs,
@@ -213,6 +267,7 @@ export function useMusic() {
     editingPlaylist,
     playlistsLoading,
     publicPlaylistsLoading,
+    officialPlaylistsLoading,
     isSaving,
     showDeletePlaylistDialog,
     isDeleting,

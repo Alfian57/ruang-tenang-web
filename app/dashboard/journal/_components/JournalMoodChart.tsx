@@ -29,25 +29,29 @@ const moodLabels: Record<string, string> = {
 
 export function JournalMoodChart({ analytics }: JournalMoodChartProps) {
     // Prepare mood distribution data for pie chart
-    const moodData = Object.entries(analytics.mood_distribution || {}).map(([mood, count]) => ({
+    const moodData = Object.entries(analytics.mood_distribution || {}).filter(([, count]) => count > 0).map(([mood, count]) => ({
         name: moodLabels[mood] || mood,
         value: count,
         color: moodColors[mood] || "#94a3b8",
     }));
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                    <span className="h-5 w-5 relative" aria-hidden="true">
-                        <Image src="/images/1-smile.png" alt="" fill sizes="20px" className="object-contain" />
+        <Card className="theme-accent-border-soft overflow-hidden rounded-2xl border bg-white shadow-sm">
+            <CardHeader className="pb-3">
+                <div className="flex items-center gap-3">
+                    <span className="relative grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-theme-accent-soft" aria-hidden="true">
+                        <Image src="/images/1-smile.png" alt="" fill sizes="40px" className="p-2 object-contain" />
                     </span>
-                    Distribusi Mood
-                </CardTitle>
+                    <div className="min-w-0">
+                        <CardTitle className="text-base text-slate-900">Distribusi mood</CardTitle>
+                        <p className="mt-1 text-xs text-slate-500">Suasana hati yang tercatat di jurnalmu</p>
+                    </div>
+                </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-3">
                 {moodData.length > 0 ? (
-                    <div className="h-48">
+                    <>
+                    <div className="h-48 w-full sm:h-52">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
@@ -66,22 +70,24 @@ export function JournalMoodChart({ analytics }: JournalMoodChartProps) {
                                 <Tooltip />
                             </PieChart>
                         </ResponsiveContainer>
-                        <div className="flex flex-wrap justify-center gap-3 mt-2">
-                            {moodData.map((entry) => (
-                                <div key={entry.name} className="flex items-center gap-1 text-xs">
-                                    <div
-                                        className="w-3 h-3 rounded-full"
-                                        style={{ backgroundColor: entry.color }}
-                                    />
-                                    <span>{entry.name}</span>
-                                </div>
-                            ))}
-                        </div>
                     </div>
+                    <div className="flex flex-wrap justify-center gap-2">
+                        {moodData.map((entry) => (
+                            <div key={entry.name} className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-slate-50 px-2.5 py-1.5 text-xs text-slate-600">
+                                <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
+                                <span>{entry.name}</span>
+                                <span className="font-semibold text-slate-800">{entry.value}</span>
+                            </div>
+                        ))}
+                    </div>
+                    </>
                 ) : (
-                    <div className="h-48 flex flex-col items-center justify-center text-center">
-                        <PieChartIcon className="w-12 h-12 text-gray-300 mb-3" />
-                        <p className="text-gray-500">Belum ada data mood</p>
+                    <div className="flex min-h-48 flex-col items-center justify-center rounded-xl bg-slate-50/80 px-4 text-center">
+                        <div className="mb-3 grid h-11 w-11 place-items-center rounded-xl bg-white text-slate-400 shadow-sm">
+                            <PieChartIcon className="h-5 w-5" />
+                        </div>
+                        <p className="text-sm font-medium text-slate-700">Belum ada data mood</p>
+                        <p className="mt-1 text-xs text-slate-500">Tambahkan mood saat menulis jurnal untuk melihat polanya.</p>
                     </div>
                 )}
             </CardContent>

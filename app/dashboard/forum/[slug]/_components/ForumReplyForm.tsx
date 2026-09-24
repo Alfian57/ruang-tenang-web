@@ -1,12 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Clock } from "lucide-react";
-
-const SAFE_RESPONSE_STARTERS = [
-    "Terima kasih sudah cerita. Perasaan kamu valid, dan kamu tidak sendirian.",
-    "Aku pernah merasakan hal mirip, yang membantuku waktu itu adalah langkah kecil ini.",
-    "Kalau kamu berkenan, kita bisa pecah masalah ini jadi langkah paling ringan dulu.",
-] as const;
+import { LoaderCircle, MessageCircle, Send } from "lucide-react";
 
 interface ForumReplyFormProps {
     replyContent: string;
@@ -24,53 +18,44 @@ export function ForumReplyForm({
     isFlagged,
 }: ForumReplyFormProps) {
     return (
-        <div className="bg-white border p-3 sm:p-4 rounded-xl shadow-sm mb-6">
-            {!isFlagged && (
-                <div className="mb-3">
-                    <p className="text-xs font-medium text-gray-500 mb-2">Safe response starter</p>
-                    <div className="flex flex-wrap gap-2">
-                        {SAFE_RESPONSE_STARTERS.map((starter) => (
-                            <button
-                                key={starter}
-                                type="button"
-                                className="text-left rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs text-gray-600 hover:border-primary/30 hover:bg-primary/5 hover:text-primary transition-colors"
-                                onClick={() => setReplyContent(starter)}
-                            >
-                                {starter}
-                            </button>
-                        ))}
-                    </div>
+        <section className="rounded-3xl border border-slate-200/80 bg-white p-4 shadow-[0_14px_36px_-30px_rgba(15,23,42,0.45)] sm:p-5" aria-label="Tulis balasan">
+            <div className="mb-3 flex items-center gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-primary/8 text-primary">
+                    <MessageCircle className="h-5 w-5" />
+                </span>
+                <div className="min-w-0">
+                    <h3 className="text-sm font-bold text-slate-900">{isFlagged ? "Balasan dinonaktifkan" : "Tulis balasan"}</h3>
+                    <p className="mt-0.5 text-xs leading-relaxed text-slate-500">
+                        {isFlagged ? "Topik ini sedang dibatasi oleh moderator." : "Bagikan tanggapan yang suportif dan tetap jaga privasi."}
+                    </p>
                 </div>
-            )}
-
-            <div className="flex items-end gap-2 sm:gap-3">
-                <div className="flex-1 relative">
-                    <Textarea
-                        placeholder={
-                            isFlagged
-                                ? "Topik ini telah diblokir..."
-                                : "Tulis balasan Anda..."
-                        }
-                        value={replyContent}
-                        onChange={(e) => setReplyContent(e.target.value)}
-                        className="min-h-13 max-h-35 resize-y pr-3 py-3 bg-gray-50 border-gray-200 focus:bg-white transition-colors"
-                        disabled={!!isFlagged}
-                    />
-                </div>
-                <Button
-                    className="h-11 w-11 p-0 shrink-0 rounded-xl"
-                    disabled={
-                        !replyContent.trim() || submitting || !!isFlagged
-                    }
-                    onClick={handleReply}
-                >
-                    {submitting ? (
-                        <Clock className="w-5 h-5 animate-spin" />
-                    ) : (
-                        <Send className="w-5 h-5" />
-                    )}
-                </Button>
             </div>
-        </div>
+
+            <div className="space-y-3">
+                <Textarea
+                    aria-label="Isi balasan"
+                    placeholder={isFlagged ? "Balasan tidak tersedia untuk topik ini." : "Tulis tanggapanmu di sini…"}
+                    value={replyContent}
+                    onChange={(e) => setReplyContent(e.target.value)}
+                    className="min-h-28 resize-y rounded-2xl border-slate-200 bg-slate-50/70 px-4 py-3.5 text-sm leading-relaxed placeholder:text-slate-400 focus-visible:border-primary/40 focus-visible:bg-white focus-visible:ring-primary/15"
+                    disabled={!!isFlagged || submitting}
+                />
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <p className="text-[11px] text-slate-400">Jaga percakapan tetap hangat dan saling menghargai.</p>
+                    <Button
+                        className="h-10 shrink-0 gap-2 rounded-xl px-4 shadow-sm transition hover:-translate-y-0.5"
+                        disabled={!replyContent.trim() || submitting || !!isFlagged}
+                        onClick={handleReply}
+                    >
+                        {submitting ? (
+                            <LoaderCircle className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <Send className="h-4 w-4" />
+                        )}
+                        <span>{submitting ? "Mengirim…" : "Kirim balasan"}</span>
+                    </Button>
+                </div>
+            </div>
+        </section>
     );
 }

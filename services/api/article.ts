@@ -17,7 +17,7 @@ export const articleService = {
   },
 
   // User articles
-  getMyArticles(token: string, params?: { page?: number; limit?: number; status?: string }) {
+  getMyArticles(token: string, params?: { page?: number; limit?: number; status?: string; search?: string }) {
     return httpClient.get<PaginatedResponse<Article>>("/my-articles", { token, params });
   },
 

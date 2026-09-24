@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import {
@@ -18,7 +19,7 @@ import {
   TypingIndicator,
 } from ".";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, CreditCard, HeartHandshake, History, Lock, MessageSquare, NotebookPen, Phone, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, ChevronUp, CreditCard, HeartHandshake, History, Lock, MessageSquare, NotebookPen, Phone, ShieldCheck } from "lucide-react";
 import { ChatHeader } from "./ChatHeader";
 import { ChatSummaryPanel } from "./ChatSummaryPanel";
 import { JournalContextIndicator } from "./JournalContextIndicator";
@@ -40,13 +41,6 @@ interface JourneyCompanionData {
   }[];
 }
 
-interface CreativeModePrompt {
-  id: string;
-  label: string;
-  description: string;
-  prompt: string;
-}
-
 interface ReflectionNudgeData {
   key: string;
   checkpoint: number;
@@ -62,23 +56,20 @@ export interface ChatMessagesAreaProps {
   isSending: boolean;
   isRecording: boolean;
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
-  onSendText: (content: string) => Promise<void>;
+  onSendText: (content: string) => Promise<boolean>;
   onSendAudio: (audioBlob: Blob) => Promise<void>;
   onToggleMessageLike: (messageId: number, isLike: boolean) => void;
   onToggleMessagePin?: (messageId: number) => void;
-  onCreateSession: () => void;
   onOpenMobileSidebar?: () => void;
   onExport?: (format: "pdf" | "txt") => void;
   summary?: ChatSessionSummary | null;
   isGeneratingSummary?: boolean;
   onGenerateSummary?: () => void;
   suggestedPrompts?: SuggestedPrompt[];
-  creativeModes?: CreativeModePrompt[];
   journeyCompanion?: JourneyCompanionData;
   reflectionNudge?: ReflectionNudgeData | null;
   billingStatus?: BillingStatus | null;
   onSuggestedPromptClick?: (prompt: string) => void;
-  onCreativeModeClick?: (prompt: string) => void;
   onJourneyPromptClick?: (prompt: string) => void;
   onResumeJourneySession?: (sessionId: string) => Promise<void>;
   onRunReflectionNudge?: () => Promise<void>;
@@ -111,19 +102,16 @@ export function ChatMessagesArea({
   onSendAudio,
   onToggleMessageLike,
   onToggleMessagePin,
-  onCreateSession,
   onOpenMobileSidebar,
   onExport,
   summary,
   isGeneratingSummary,
   onGenerateSummary,
   suggestedPrompts,
-  creativeModes,
   journeyCompanion,
   reflectionNudge,
   billingStatus,
   onSuggestedPromptClick,
-  onCreativeModeClick,
   onJourneyPromptClick,
   onResumeJourneySession,
   onRunReflectionNudge,
@@ -140,7 +128,7 @@ export function ChatMessagesArea({
   onOpenBillingFromQuota,
 }: ChatMessagesAreaProps) {
   const [showSummary, setShowSummary] = useState(false);
-  const [showMobileAssistPanels, setShowMobileAssistPanels] = useState(false);
+  const [showAssistPanels, setShowAssistPanels] = useState(false);
   const pinnedMessages = messages.filter(m => m.is_pinned);
   const isPremium = Boolean(billingStatus?.is_premium || billingStatus?.chat_quota.is_unlimited);
   const quota = billingStatus?.chat_quota;
@@ -156,26 +144,23 @@ export function ChatMessagesArea({
       minute: "2-digit",
     })
     : null;
-  const mobilePanelCount = 1
+  const assistPanelCount = 1
     + (journalAIAccessEnabled && journalSharedCount > 0 ? 1 : 0)
     + (reflectionNudge ? 1 : 0);
 
   if (!activeSession) {
     return (
       <>
-        <div className="sm:hidden flex items-center justify-between p-4 border-b bg-white shrink-0">
-          <h3 className="font-semibold text-gray-800">Chat Baru</h3>
-          <Button variant="ghost" size="icon" onClick={onOpenMobileSidebar}>
-            <History className="w-5 h-5 text-gray-600" />
+        <div className="flex shrink-0 items-center justify-between border-b border-rose-100 bg-white px-4 py-3 lg:hidden">
+          <span className="text-sm font-semibold text-slate-800">Obrolan dengan RuNa</span>
+          <Button variant="ghost" size="icon" onClick={onOpenMobileSidebar} aria-label="Buka riwayat chat">
+            <History className="h-5 w-5 text-slate-600" />
           </Button>
         </div>
         <div className="flex-1 min-h-0 overflow-y-auto">
           <EmptyState
-            onCreateSession={onCreateSession}
             suggestedPrompts={suggestedPrompts}
             onSuggestedPromptClick={onSuggestedPromptClick}
-            creativeModes={creativeModes}
-            onCreativeModeClick={onCreativeModeClick}
             journeyCompanion={journeyCompanion}
             onJourneyPromptClick={onJourneyPromptClick}
             onResumeJourneySession={onResumeJourneySession}
@@ -238,22 +223,24 @@ export function ChatMessagesArea({
       )}
 
       <div className="flex-1 flex flex-col overflow-hidden relative">
-        <div className="sm:hidden shrink-0 border-b border-gray-100 bg-white px-4 py-2">
+        <div className="shrink-0 border-b border-rose-100 bg-white px-4 py-2">
           <button
             type="button"
-            onClick={() => setShowMobileAssistPanels((prev) => !prev)}
-            className="w-full flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-left"
+            onClick={() => setShowAssistPanels((prev) => !prev)}
+            aria-expanded={showAssistPanels}
+            className="mx-auto flex w-full max-w-4xl items-center justify-between rounded-xl px-2 py-1.5 text-left transition hover:bg-rose-50"
           >
-            <span className="inline-flex items-center gap-2 text-xs font-medium text-gray-700">
-              <SlidersHorizontal className="w-3.5 h-3.5" />
-              Panel Info Chat ({mobilePanelCount})
+            <span className="inline-flex items-center gap-2 text-xs font-medium text-slate-600">
+              <ShieldCheck className="h-4 w-4 text-rose-600" />
+              Privasi & info percakapan
+              {assistPanelCount > 1 && <span className="rounded-full bg-rose-50 px-1.5 text-rose-700">{assistPanelCount}</span>}
             </span>
-            <span className="inline-flex items-center gap-1 text-xs text-gray-600">
-              {showMobileAssistPanels ? "Sembunyikan" : "Tampilkan"}
-              {showMobileAssistPanels ? (
-                <ChevronUp className="w-3.5 h-3.5" />
+            <span className="inline-flex items-center gap-1 text-xs text-slate-500">
+              {showAssistPanels ? "Tutup" : "Lihat"}
+              {showAssistPanels ? (
+                <ChevronUp className="h-3.5 w-3.5" />
               ) : (
-                <ChevronDown className="w-3.5 h-3.5" />
+                <ChevronDown className="h-3.5 w-3.5" />
               )}
             </span>
           </button>
@@ -270,18 +257,18 @@ export function ChatMessagesArea({
           </div>
         )}
 
-        <div className={`shrink-0 z-10 ${showMobileAssistPanels ? "block" : "hidden"} sm:block`}>
+        <div className={`shrink-0 z-10 ${showAssistPanels ? "block" : "hidden"}`}>
           <AIDisclaimerBanner />
         </div>
 
         {journalAIAccessEnabled && (
-          <div className={`shrink-0 z-10 ${showMobileAssistPanels ? "block" : "hidden"} sm:block`}>
+          <div className={`shrink-0 z-10 ${showAssistPanels ? "block" : "hidden"}`}>
             <JournalContextIndicator journalSharedCount={journalSharedCount} />
           </div>
         )}
 
         {reflectionNudge && (
-          <div className={`shrink-0 z-10 border-b border-primary/20 bg-primary/10 px-4 py-3 ${showMobileAssistPanels ? "block" : "hidden"} sm:block`}>
+          <div className={`shrink-0 z-10 border-b border-primary/20 bg-primary/10 px-4 py-3 ${showAssistPanels ? "block" : "hidden"}`}>
             <div className="flex items-start gap-2">
               <NotebookPen className="w-4 h-4 text-primary/80 mt-0.5 shrink-0" />
               <div className="space-y-2 w-full">
@@ -363,14 +350,20 @@ export function ChatMessagesArea({
         )}
 
         {/* Main Scroll Area */}
-        <div className="flex-1 overflow-y-auto p-4 lg:p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto bg-[linear-gradient(180deg,#fffaf8_0%,#fff_26%)] px-4 py-6 sm:px-6">
+          <div className="mx-auto w-full max-w-4xl space-y-5">
           {messages.length === 0 && !isSafeModeActive && suggestedPrompts && suggestedPrompts.length > 0 && (
-            <div className="mb-4">
-              <p className="text-sm text-gray-500 mb-3">Mulai percakapan dengan salah satu prompt berikut:</p>
-              <div className="flex flex-wrap gap-2">
-                {suggestedPrompts.slice(0, 4).map((prompt, i) => (
+            <div className="flex flex-col items-center py-8 text-center sm:py-12">
+              <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full border border-rose-100 bg-rose-50">
+                <Image src="/images/dashboard/mascot/chat-listen.webp" alt="RuNa" width={64} height={64} className="h-14 w-14 object-contain" />
+              </div>
+              <p className="text-base font-semibold text-slate-800">RuNa siap mendengarkan</p>
+              <p className="mt-1 text-sm text-slate-500">Ceritakan saja apa yang ada di pikiranmu, atau pilih satu ide.</p>
+              <div className="mt-5 flex max-w-xl flex-wrap justify-center gap-2">
+                {suggestedPrompts.slice(0, 3).map((prompt) => (
                   <button
-                    key={i}
+                    key={prompt.id}
+                    type="button"
                     onClick={() => {
                       if (isQuotaExhausted) {
                         onOpenBillingFromQuota?.();
@@ -379,11 +372,11 @@ export function ChatMessagesArea({
 
                       onSuggestedPromptClick?.(prompt.text);
                     }}
-                    className={`px-3 py-2 text-sm rounded-lg transition-colors text-left ${isQuotaExhausted ? "border border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100" : "bg-gray-100 hover:bg-primary/10 hover:text-primary"}`}
+                    className={`max-w-full rounded-full border px-4 py-2 text-left text-sm shadow-sm transition hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 ${isQuotaExhausted ? "border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100" : "border-rose-100 bg-white text-slate-700 hover:border-rose-300 hover:text-rose-700"}`}
                     title={isQuotaExhausted ? "Limit chat habis, buka Premium untuk lanjut" : undefined}
                   >
                     {isQuotaExhausted && <Lock className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />}
-                    {prompt.text}
+                    <span className="block max-w-[15rem] truncate">{prompt.text}</span>
                   </button>
                 ))}
               </div>
@@ -404,6 +397,7 @@ export function ChatMessagesArea({
           {isSending && <TypingIndicator isRecording={isRecording} />}
 
           <div ref={messagesEndRef} className="h-1" />
+          </div>
         </div>
       </div>
 

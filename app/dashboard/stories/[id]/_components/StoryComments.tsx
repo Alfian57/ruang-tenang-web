@@ -81,69 +81,91 @@ export function StoryComments({
   };
 
   return (
-    <section>
-      <h2 className="text-xl font-bold mb-6">
-        Komentar ({commentCount})
-      </h2>
+    <section id="story-comments" className="space-y-5 scroll-mt-24">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-50 text-primary">
+            <MessageCircle className="h-5 w-5" />
+          </span>
+          <div>
+            <h2 className="text-xl font-bold tracking-tight text-slate-900">Ruang komentar</h2>
+            <p className="text-sm text-slate-500">Berbagi tanggapan dengan hangat dan saling menghargai.</p>
+          </div>
+        </div>
+        <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-600">
+          {commentCount} komentar
+        </span>
+      </div>
 
-      {/* Comment Input */}
       {token && canComment ? (
-        <div className="mb-6">
+        <div className="rounded-3xl border border-rose-100 bg-gradient-to-br from-rose-50/70 via-white to-orange-50/50 p-4 shadow-sm sm:p-5">
+          <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-800">
+            <MessageCircle className="h-4 w-4 text-primary" />
+            Tulis komentar yang mendukung
+          </div>
           <Textarea
-            placeholder="Tulis komentar yang mendukung..."
+            aria-label="Tulis komentar"
+            placeholder="Apa yang ingin kamu sampaikan?"
             value={newComment}
             onChange={(e) => onNewCommentChange(e.target.value)}
-            className="mb-3"
-            rows={3}
+            className="min-h-28 resize-y rounded-2xl border-slate-200 bg-white/90 px-4 py-3 leading-relaxed shadow-inner shadow-slate-100/70 placeholder:text-slate-400 focus-visible:bg-white"
+            rows={4}
           />
-          <Button
-            onClick={onSubmitComment}
-            disabled={submittingComment || !newComment.trim()}
-            className="gap-2"
-          >
-            {submittingComment ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Send className="w-4 h-4" />
-            )}
-            Kirim Komentar
-          </Button>
+          <div className="mt-3 flex flex-col-reverse items-start justify-between gap-3 sm:flex-row sm:items-center">
+            <p className="text-xs leading-relaxed text-slate-500">Pilih kata-kata yang memberi ruang dan dukungan.</p>
+            <Button
+              type="button"
+              onClick={onSubmitComment}
+              disabled={submittingComment || !newComment.trim()}
+              className="h-10 gap-2 rounded-xl px-4"
+            >
+              {submittingComment ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              Kirim komentar
+            </Button>
+          </div>
         </div>
       ) : token && !canComment ? (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6 text-center">
-          <p className="text-amber-700 text-sm">
-            Komentar akan tersedia setelah kisah ini disetujui admin.
-          </p>
+        <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50/80 p-4 sm:p-5">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700"><MessageCircle className="h-4 w-4" /></span>
+          <p className="pt-1 text-sm leading-relaxed text-amber-800">Komentar akan tersedia setelah kisah ini disetujui admin.</p>
         </div>
       ) : (
-        <div className="bg-gray-50 rounded-lg p-4 mb-6 text-center">
-          <p className="text-gray-600 mb-2">
-            Silakan login untuk berkomentar
-          </p>
-          <Link href="/login">
-            <Button variant="outline">Login</Button>
-          </Link>
+        <div className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5">
+          <div className="flex items-start gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600"><User className="h-5 w-5" /></span>
+            <div>
+              <p className="font-semibold text-slate-800">Ingin ikut berbagi dukungan?</p>
+              <p className="mt-0.5 text-sm text-slate-500">Masuk terlebih dahulu untuk menulis komentar.</p>
+            </div>
+          </div>
+          <Button asChild variant="outline" className="rounded-xl border-rose-200 text-primary hover:bg-rose-50">
+            <Link href="/login">Masuk untuk berkomentar</Link>
+          </Button>
         </div>
       )}
 
-      {/* Comments List */}
       {loadingComments ? (
-        <div className="flex justify-center py-8">
-          <Loader2 className="w-6 h-6 animate-spin text-amber-500" />
+        <div className="space-y-3" aria-label="Memuat komentar">
+          {[1, 2, 3].map((item) => (
+            <div key={item} className="animate-pulse rounded-2xl border border-slate-200 bg-white p-5">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-slate-100" />
+                <div className="space-y-2"><div className="h-3 w-32 rounded-full bg-slate-100" /><div className="h-3 w-20 rounded-full bg-slate-50" /></div>
+              </div>
+              <div className="h-4 w-4/5 rounded-full bg-slate-100" />
+            </div>
+          ))}
         </div>
       ) : safeComments.length === 0 ? (
-        <div className="text-center py-16">
-          <MessageCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-500">Belum ada komentar</h3>
-          <p className="text-gray-400 text-sm mt-1">Jadilah yang pertama!</p>
+        <div className="rounded-3xl border border-dashed border-slate-300 bg-white/75 px-5 py-9 text-center">
+          <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-500"><MessageCircle className="h-5 w-5" /></span>
+          <h3 className="font-semibold text-slate-800">Belum ada komentar</h3>
+          <p className="mt-1 text-sm text-slate-500">Jadilah yang pertama menyampaikan dukungan.</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {safeComments.map((comment) => (
-            <div
-              key={comment.id}
-              className="bg-white rounded-lg border p-4"
-            >
+            <article key={comment.id} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm transition-colors hover:border-slate-300 sm:p-5">
               <div className="flex items-start gap-3">
                 {comment.author?.avatar ? (
                   <Image
@@ -151,37 +173,27 @@ export function StoryComments({
                     alt={comment.author.name}
                     width={40}
                     height={40}
-                    className="rounded-full"
+                    className="h-10 w-10 shrink-0 rounded-full border border-slate-100 object-cover"
                   />
                 ) : (
-                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                    <User className="w-5 h-5 text-gray-400" />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-50 to-orange-100 text-primary">
+                    <User className="h-4 w-4" />
                   </div>
                 )}
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">
-                        {comment.author?.name || "Pengguna"}
-                      </span>
-                      <span className="text-xs text-gray-400">
-                        {format(
-                          new Date(comment.created_at),
-                          "d MMM yyyy, HH:mm",
-                          { locale: idLocale }
-                        )}
-                      </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                      <span className="font-semibold text-slate-800">{comment.author?.name || "Pengguna"}</span>
+                      <span className="text-xs text-slate-400">{format(new Date(comment.created_at), "d MMM yyyy, HH:mm", { locale: idLocale })}</span>
                       {comment.is_hidden && (
-                        <Badge variant="muted" icon={<EyeOff className="w-3 h-3" />}>
-                          Disembunyikan
-                        </Badge>
+                        <Badge variant="muted" icon={<EyeOff className="h-3 w-3" />}>Disembunyikan</Badge>
                       )}
                     </div>
                     {token && (isAdmin || (!!comment.author?.id && comment.author.id !== userId)) && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-6 w-6">
-                            <MoreVertical className="w-3 h-3 text-gray-400" />
+                          <Button variant="ghost" size="icon" aria-label="Opsi komentar" className="-mr-2 -mt-2 h-8 w-8 shrink-0 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+                            <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -190,18 +202,18 @@ export function StoryComments({
                               <ReportModal
                                 type="story_comment"
                                 contentId={comment.id}
-                                userId={comment.author?.id}
+                                userId={comment.author.id}
                                 trigger={
-                                  <div className="relative flex select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 cursor-pointer">
-                                    <Flag className="w-4 h-4 mr-2" />
+                                  <div className="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50">
+                                    <Flag className="mr-2 h-4 w-4" />
                                     Laporkan
                                   </div>
                                 }
                               />
                               <BlockUserButton
-                                userId={comment.author?.id || 0}
-                                userName={comment.author?.name || "User"}
-                                className="w-full justify-start text-sm font-normal px-2 py-1.5 h-auto text-red-600 hover:text-red-600 hover:bg-red-50"
+                                userId={comment.author.id}
+                                userName={comment.author.name || "User"}
+                                className="h-auto w-full justify-start px-2 py-1.5 text-sm font-normal text-red-600 hover:bg-red-50 hover:text-red-600"
                               />
                             </>
                           )}
@@ -213,7 +225,7 @@ export function StoryComments({
                               }}
                               className="text-red-600"
                             >
-                              <EyeOff className="w-4 h-4 mr-2" />
+                              <EyeOff className="mr-2 h-4 w-4" />
                               Sembunyikan Komentar
                             </DropdownMenuItem>
                           )}
@@ -221,34 +233,27 @@ export function StoryComments({
                       </DropdownMenu>
                     )}
                   </div>
-                  <p className="text-gray-700">{comment.content}</p>
-                  <div className="mt-2 flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 gap-1 text-gray-500 hover:text-primary/80"
-                    >
-                      <Heart className="w-3 h-3" />
-                      {comment.heart_count}
+                  <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed text-slate-700 sm:text-[15px]">{comment.content}</p>
+                  <div className="mt-3">
+                    <Button variant="ghost" size="sm" className="h-8 gap-1.5 rounded-full px-3 text-slate-500 hover:bg-rose-50 hover:text-primary">
+                      <Heart className="h-3.5 w-3.5" />
+                      <span>{comment.heart_count}</span>
                     </Button>
                   </div>
                 </div>
               </div>
-            </div>
+            </article>
           ))}
         </div>
       )}
 
-      {/* Admin hide-comment dialog */}
       <Dialog open={hideTarget !== null} onOpenChange={(open) => { if (!open) setHideTarget(null); }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Sembunyikan Komentar</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">
-              Komentar akan disembunyikan dari publik. Sertakan alasan moderasi.
-            </p>
+            <p className="text-sm text-muted-foreground">Komentar akan disembunyikan dari publik. Sertakan alasan moderasi.</p>
             <Textarea
               placeholder="Alasan menyembunyikan komentar"
               value={hideReason}
@@ -257,9 +262,7 @@ export function StoryComments({
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setHideTarget(null)} disabled={hiding}>
-              Batal
-            </Button>
+            <Button variant="outline" onClick={() => setHideTarget(null)} disabled={hiding}>Batal</Button>
             <Button variant="destructive" onClick={submitHide} disabled={hiding || !hideReason.trim()}>
               {hiding ? "Menyembunyikan..." : "Sembunyikan"}
             </Button>

@@ -1,6 +1,6 @@
 import { ForumPost } from "@/types";
 import { ForumPostCard } from "./ForumPostCard";
-import { MessageSquare } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 
 interface ForumReplyListProps {
     posts: ForumPost[];
@@ -24,7 +24,7 @@ export function ForumReplyList({
     onShowDeleteDialog,
 }: ForumReplyListProps) {
     return (
-        <div className="space-y-4 pb-4">
+        <section className="space-y-4 pb-6" aria-label="Daftar balasan">
             {posts.map((post) => (
                 <ForumPostCard
                     key={post.id}
@@ -40,14 +40,16 @@ export function ForumReplyList({
             ))}
 
             {posts.length === 0 && (
-                <div className="text-center py-16">
-                    <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-500">Belum ada balasan</h3>
-                    <p className="text-gray-400 text-sm mt-1">
-                        Jadilah yang pertama!
+                <div className="rounded-3xl border border-dashed border-slate-300 bg-white/75 px-5 py-12 text-center">
+                    <span className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-primary/8 text-primary">
+                        <MessageCircle className="h-6 w-6" />
+                    </span>
+                    <h3 className="text-base font-bold text-slate-800">Belum ada balasan</h3>
+                    <p className="mx-auto mt-1.5 max-w-sm text-sm leading-relaxed text-slate-500">
+                        Percakapan bisa dimulai dari satu tanggapan yang tulus dan suportif.
                     </p>
                 </div>
             )}
-        </div>
+        </section>
     );
 }

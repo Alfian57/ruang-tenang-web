@@ -8,7 +8,7 @@ import {
     Flame,
     Gift,
     Map,
-    Star,
+    Award,
     Target,
     TrendingUp,
 } from "lucide-react";
@@ -92,7 +92,7 @@ export function PersonalJourneyCard({
                                         />
                                     </span>
                                 ) : (
-                                    <GamificationIcon name={journey.badge_name} fallback={Star} className="h-5 w-5 shrink-0 text-amber-500" />
+                                    <GamificationIcon name={journey.badge_name} fallback={Award} className="h-5 w-5 shrink-0 text-amber-500" />
                                 )}
                                 <h2 className="truncate text-xl font-black tracking-tight text-slate-950 sm:text-2xl">
                                     {journey.badge_name || "Penjelajah Baru"}
@@ -125,7 +125,7 @@ export function PersonalJourneyCard({
                         <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
                             <span>Peringkat #{journey.rank_in_level || "–"} di level ini</span>
                             <span className="inline-flex items-center gap-1 font-semibold text-amber-600">
-                                <Star className="h-3.5 w-3.5" /> {journey.new_badges_count ?? 0} badge baru
+                                <Award className="h-3.5 w-3.5" /> {journey.new_badges_count ?? 0} badge baru
                             </span>
                         </div>
                     </div>

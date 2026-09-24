@@ -43,6 +43,7 @@ export interface ForumSupportCircleOption {
 }
 
 export const FORUM_SUPPORT_CIRCLES: ForumSupportCircleOption[] = [
+  // Keep IDs/keywords aligned with API forum_repository.go supportCircleKeywords.
   {
     id: "tekanan_akademik",
     title: "Tekanan Akademik",
@@ -85,10 +86,12 @@ export const FORUM_SUPPORT_CIRCLES: ForumSupportCircleOption[] = [
   },
 ];
 
-export function useForumPage() {
+export function useForumPage({ enabled = true }: { enabled?: boolean } = {}) {
   const [forums, setForums] = useState<Forum[]>([]);
   const [categories, setCategories] = useState<ForumCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const [totalPages, setTotalPages] = useState(1);
   const { token, user } = useAuthStore();
   const isBlocked = useBlockStore((s) => s.isBlocked);
   const isForumBlocked = Boolean(user?.is_forum_blocked);
@@ -115,6 +118,7 @@ export function useForumPage() {
 
   // Read from URL
   const urlSearch = searchParams.get("search") || "";
+  const page = Math.max(1, Number.parseInt(searchParams.get("page") || "1", 10) || 1);
   const selectedCategory = searchParams.get("category") ? parseInt(searchParams.get("category")!, 10) : undefined;
   const selectedSupportCircle = (() => {
     const raw = searchParams.get("circle");
@@ -136,38 +140,54 @@ export function useForumPage() {
   // Update URL from debounced state
   useEffect(() => {
     if (debouncedSearch !== urlSearch) {
-      updateUrlParam("search", debouncedSearch || null);
+      const params = new URLSearchParams(searchParams.toString());
+      if (debouncedSearch) params.set("search", debouncedSearch); else params.delete("search");
+      params.delete("page");
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     }
-  }, [debouncedSearch, updateUrlParam, urlSearch]);
+  }, [debouncedSearch, pathname, router, searchParams, urlSearch]);
 
   const setSearch = (value: string) => setSearchTerm(value);
-  const setSelectedCategory = (id: number | undefined) => updateUrlParam("category", id ? String(id) : null);
+  const setSelectedCategory = (id: number | undefined) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (id) params.set("category", String(id)); else params.delete("category");
+    params.delete("page");
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+  const setPage = useCallback((next: number) => updateUrlParam("page", next > 1 ? String(next) : null), [updateUrlParam]);
   const setSelectedSupportCircle = (id: ForumSupportCircle | undefined) => {
-    updateUrlParam("circle", id || null);
+    const params = new URLSearchParams(searchParams.toString());
+    if (id) params.set("circle", id); else params.delete("circle");
+    params.delete("page");
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   const loadData = useCallback(async () => {
     if (!token) return;
     setIsLoading(true);
+    setHasError(false);
     try {
       const [forumsRes, categoriesRes] = await Promise.all([
-        forumService.getAll(token, 20, 0, debouncedSearch, selectedCategory),
+        forumService.getAll(token, 10, (page - 1) * 10, urlSearch, selectedCategory, selectedSupportCircle),
         forumService.getCategories()
       ]);
       setForums(forumsRes.data);
+      setTotalPages(forumsRes.meta?.total_pages || 1);
+      if (forumsRes.meta && page > forumsRes.meta.total_pages && page > 1) setPage(Math.max(1, forumsRes.meta.total_pages));
       const cats = Array.isArray(categoriesRes.data) ? categoriesRes.data : categoriesRes;
       setCategories(Array.isArray(cats) ? cats : []);
     } catch (error) {
       console.error("Failed to load data:", error);
       toast.error("Gagal memuat data forum");
+      setHasError(true);
     } finally {
       setIsLoading(false);
     }
-  }, [token, debouncedSearch, selectedCategory]);
+  }, [token, page, urlSearch, selectedCategory, selectedSupportCircle, setPage]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    if (enabled) void loadData();
+  }, [enabled, loadData]);
 
   const handleCreateForum = async () => {
     if (!newTitle.trim() || !token) return;
@@ -216,27 +236,18 @@ export function useForumPage() {
     }
   };
 
-  const selectedCircleConfig = selectedSupportCircle
-    ? FORUM_SUPPORT_CIRCLES.find((circle) => circle.id === selectedSupportCircle)
-    : undefined;
-
   const visibleForums = forums
-    .filter((forum) => !isBlocked(forum.user_id))
-    .filter((forum) => {
-      if (!selectedCircleConfig) return true;
-
-      const normalizedText = `${forum.title} ${forum.content} ${forum.category?.name ?? ""}`.toLowerCase();
-      const hasKeywordMatch = selectedCircleConfig.keywords.some((keyword) => normalizedText.includes(keyword));
-      const formatLabel = FORUM_POST_FORMAT_LABELS[selectedCircleConfig.defaultFormat].toLowerCase();
-      const hasFormatTag = normalizedText.includes(`[format: ${formatLabel}]`);
-
-      return hasKeywordMatch || hasFormatTag;
-    });
+    .filter((forum) => !isBlocked(forum.user_id));
 
   return {
     forums: visibleForums,
     categories,
     isLoading,
+    hasError,
+    totalPages,
+    page,
+    setPage,
+    retry: loadData,
     search: searchTerm,
     selectedCategory,
     selectedSupportCircle,
@@ -258,3 +269,5 @@ export function useForumPage() {
     handleCreateForum,
   };
 }
+
+export type ForumPageState = ReturnType<typeof useForumPage>;

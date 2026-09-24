@@ -96,13 +96,16 @@ export function SortableTrack({
                 )}
                 <button
                     onClick={onPlay}
-                    className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    aria-label={`${isCurrentSong && isPlaying ? "Jeda" : "Putar"} ${song.title}`}
+                    className="absolute inset-0 flex items-center justify-center bg-black/15 transition-colors hover:bg-black/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
                 >
-                    {isCurrentSong && isPlaying ? (
-                        <Pause className="w-5 h-5 text-white" />
-                    ) : (
-                        <Play className="w-5 h-5 text-white" />
-                    )}
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-black/45 text-white shadow-sm backdrop-blur-sm transition-transform hover:scale-105">
+                        {isCurrentSong && isPlaying ? (
+                            <Pause className="w-4 h-4" />
+                        ) : (
+                            <Play className="w-4 h-4 ml-0.5" />
+                        )}
+                    </span>
                 </button>
             </div>
 
@@ -134,7 +137,8 @@ export function SortableTrack({
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label={`Aksi untuk ${song.title}`}
+                        className="h-8 w-8 text-gray-500 hover:bg-gray-100 hover:text-gray-900"
                     >
                         <MoreHorizontal className="w-4 h-4" />
                     </Button>

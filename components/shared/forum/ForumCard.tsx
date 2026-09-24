@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { MessageSquare, Clock, Heart, CheckCircle2 } from "lucide-react";
+import { MessageSquare, Clock, Heart, CheckCircle2, ArrowUpRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { id } from "date-fns/locale";
 import type { Forum } from "@/types/forum";
@@ -59,14 +59,11 @@ export function ForumCard({ forum, className }: ForumCardProps) {
     <Link
       href={ROUTES.communityForum(forum.slug)}
       className={cn(
-        "group relative block overflow-hidden rounded-2xl border bg-card p-5 transition-all",
-        "hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5",
+        "group relative block overflow-hidden rounded-2xl border bg-card p-5 transition-[transform,background-color,box-shadow] duration-200 motion-reduce:transition-none",
+        "hover:-translate-y-0.5 hover:bg-primary/[0.025] hover:shadow-[0_18px_40px_-28px_rgba(220,38,38,0.24)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/15",
         className
       )}
     >
-      {/* Accent rail on hover */}
-      <span className="absolute inset-y-0 left-0 w-1 origin-top scale-y-0 bg-primary transition-transform duration-200 group-hover:scale-y-100" />
-
       <div className="flex flex-col gap-3">
         {/* Header: author + meta */}
         <div className="flex items-center gap-3">
@@ -76,13 +73,13 @@ export function ForumCard({ forum, className }: ForumCardProps) {
               alt={authorName}
               width={40}
               height={40}
-              className="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-white shadow-sm"
+              className="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-white shadow-sm transition-transform duration-200 group-hover:scale-105"
               unoptimized
             />
           ) : (
             <div
               className={cn(
-                "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-sm font-bold text-white shadow-sm",
+                "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-sm font-bold text-white shadow-sm transition-transform duration-200 group-hover:scale-105",
                 avatarGradient
               )}
             >
@@ -134,7 +131,7 @@ export function ForumCard({ forum, className }: ForumCardProps) {
         </div>
 
         {/* Footer stats */}
-        <div className="mt-1 flex items-center gap-4 border-t pt-3 text-sm text-muted-foreground">
+        <div className="mt-1 flex items-center gap-3 border-t border-slate-200/80 pt-3 text-sm text-muted-foreground sm:gap-4">
           <span className="inline-flex items-center gap-1.5" title="Balasan">
             <MessageSquare className="h-4 w-4" />
             <span className="font-medium">{forum.replies_count || 0}</span>
@@ -145,8 +142,8 @@ export function ForumCard({ forum, className }: ForumCardProps) {
             <span className="font-medium">{forum.likes_count || 0}</span>
             <span className="hidden sm:inline">suka</span>
           </span>
-          <span className="ml-auto text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
-            Lihat diskusi →
+          <span className="ml-auto inline-flex shrink-0 items-center gap-1 rounded-full bg-theme-accent-soft px-2.5 py-1.5 text-[11px] font-semibold text-theme-accent-dark transition-colors group-hover:bg-primary group-hover:text-white sm:px-3 sm:text-xs">
+            Lihat diskusi <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transition-none" />
           </span>
         </div>
       </div>

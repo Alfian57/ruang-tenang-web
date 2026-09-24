@@ -76,7 +76,7 @@ interface MoodInsightWidgetProps {
 export function MoodInsightWidget({ moods, isLoading }: MoodInsightWidgetProps) {
   if (isLoading) {
     return (
-      <Card className="h-full border-none shadow-sm flex flex-col">
+      <Card className="member-widget-card h-full shadow-sm flex flex-col">
         <CardHeader>
           <div className="h-6 w-1/3 bg-gray-100 rounded animate-pulse" />
         </CardHeader>
@@ -139,10 +139,10 @@ export function MoodInsightWidget({ moods, isLoading }: MoodInsightWidgetProps) 
   const actionPlan = lastMood ? MOOD_ACTION_PLANS[lastMood.mood] : null;
 
   return (
-    <Card className="h-full flex flex-col border border-gray-100 shadow-sm bg-linear-to-br from-theme-accent/5 to-white">
+    <Card className="member-widget-card h-full flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-lg font-bold flex items-center gap-2 text-gray-800">
-          <HeartPulse className="w-5 h-5 text-theme-accent-text" />
+        <CardTitle className="member-widget-heading text-lg font-bold flex items-center gap-2">
+          <HeartPulse className="member-widget-icon w-5 h-5" />
           Wawasan Mood
         </CardTitle>
         <Link href={ROUTES.JOURNAL}>
@@ -154,8 +154,8 @@ export function MoodInsightWidget({ moods, isLoading }: MoodInsightWidgetProps) 
       <CardContent className="flex-1 flex flex-col justify-center">
         {lastMood ? (
           <div className="text-center space-y-3">
-            <div className="inline-flex flex-col items-center justify-center p-4 bg-white rounded-2xl shadow-sm border border-theme-accent/20 w-full">
-              <div className="relative w-12 h-12 mb-2">
+            <div className="member-mood-current relative flex w-full items-center gap-3 overflow-hidden rounded-2xl border bg-white p-4 text-left shadow-sm">
+              <div className="relative h-12 w-12 shrink-0">
                 <Image
                   src={MOOD_ASSETS[lastMood.mood].active}
                   alt={MOOD_ASSETS[lastMood.mood].label}
@@ -164,10 +164,14 @@ export function MoodInsightWidget({ moods, isLoading }: MoodInsightWidgetProps) 
                   className="object-contain"
                 />
               </div>
-              <p className="font-semibold text-gray-900">{moodLabels[lastMood.mood] || lastMood.mood}</p>
-              <p className="text-xs text-gray-500">
-                {format(parseApiDate(lastMood.created_at), "EEEE, d MMM HH:mm", { locale: id })}
-              </p>
+              <div className="relative z-10 min-w-0 pr-14">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-theme-accent-text">Mood terakhir</p>
+                <p className="font-semibold text-gray-900">{moodLabels[lastMood.mood] || lastMood.mood}</p>
+                <p className="text-xs text-gray-500">{format(parseApiDate(lastMood.created_at), "EEEE, d MMM HH:mm", { locale: id })}</p>
+              </div>
+              <div className="member-mood-current-art absolute -bottom-3 right-0 h-24 w-20" aria-hidden="true">
+                <Image src="/images/dashboard/mascot/checkin.webp" alt="" fill sizes="80px" className="object-contain object-bottom" />
+              </div>
             </div>
 
             {dominantMood && sortedMoods.length > 5 && (
@@ -206,7 +210,9 @@ export function MoodInsightWidget({ moods, isLoading }: MoodInsightWidgetProps) 
           </div>
         ) : (
           <div className="text-center py-6">
-            <p className="text-sm text-gray-500 mb-3">Belum ada data mood.</p>
+            <div className="relative mx-auto h-32 w-32"><Image src="/images/landing/mascot/mood.webp" alt="" fill sizes="128px" className="member-widget-art object-contain" /></div>
+            <p className="mb-1 mt-2 font-semibold text-gray-900">Perasaanmu punya tempat di sini.</p>
+            <p className="text-sm text-gray-500 mb-4">Belum ada data mood. Yuk mulai check-in pertama.</p>
             <Link href={ROUTES.MOOD_TRACKER}>
               <Button size="sm" className="bg-theme-accent hover:bg-theme-accent-hover text-white rounded-full border-none">
                 Catat Mood Sekarang

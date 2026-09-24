@@ -36,7 +36,7 @@ export function AIDisclaimerModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onDecline?.()}>
-            <DialogContent className="sm:max-w-125">
+            <DialogContent data-tour-blocker="chat-disclaimer" className="sm:max-w-125">
                 <DialogHeader>
                     <div className="flex items-center gap-3 mb-2">
                         <div className="p-2 rounded-full bg-amber-100 dark:bg-amber-900">

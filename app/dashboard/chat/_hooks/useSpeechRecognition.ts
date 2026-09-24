@@ -55,6 +55,7 @@ export function useSpeechRecognition() {
     const [error, setError] = useState<string | null>(null);
 
     const recognitionRef = useRef<ISpeechRecognition | null>(null);
+    const shouldListenRef = useRef(false);
 
     // Check browser support
     useEffect(() => {
@@ -104,48 +105,64 @@ export function useSpeechRecognition() {
             switch (event.error) {
                 case "not-allowed":
                     setError("Izin mikrofon ditolak. Aktifkan izin mikrofon di browser.");
+                    shouldListenRef.current = false;
                     break;
                 case "no-speech":
                     break;
                 case "network":
                     setError("Koneksi terputus. Periksa koneksi internet.");
+                    shouldListenRef.current = false;
                     break;
                 default:
                     setError(`Error: ${event.error}`);
+                    shouldListenRef.current = false;
             }
             setIsListening(false);
         };
 
         recognition.onend = () => {
-            if (recognitionRef.current && isListening) {
+            if (recognitionRef.current === recognition && shouldListenRef.current) {
                 try {
-                    recognitionRef.current.start();
+                    recognition.start();
+                    setIsListening(true);
                 } catch {
-                    // Ignore - already started
+                    shouldListenRef.current = false;
+                    recognitionRef.current = null;
+                    setIsListening(false);
                 }
+            } else {
+                setIsListening(false);
             }
         };
 
         return recognition;
-    }, [isListening]);
+    }, []);
 
     const startListening = useCallback(() => {
+        if (recognitionRef.current && shouldListenRef.current) return;
         setError(null);
         const recognition = initRecognition();
-        if (!recognition) return;
+        if (!recognition) {
+            setIsSupported(false);
+            setError("Browser tidak mendukung pengenalan suara.");
+            return;
+        }
 
         recognitionRef.current = recognition;
 
         try {
             recognition.start();
+            shouldListenRef.current = true;
             setIsListening(true);
         } catch (err) {
+            recognitionRef.current = null;
             console.error("Failed to start recognition:", err);
             setError("Gagal memulai pengenalan suara");
         }
     }, [initRecognition]);
 
     const stopListening = useCallback(() => {
+        shouldListenRef.current = false;
         if (recognitionRef.current) {
             recognitionRef.current.stop();
             recognitionRef.current = null;

@@ -1,87 +1,38 @@
 "use client";
 
-import Link from "next/link";
-import { useMemo, useState } from "react";
-import {
-  ListMusic,
-  Library,
-  Compass,
-  ArrowRight,
-} from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import dynamic from "next/dynamic";
+import { ListMusic, Library, Compass } from "lucide-react";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { DashboardHubTabList } from "@/components/shared/dashboard/DashboardHubTabs";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Button } from "@/components/ui/button";
-import {
-  PlaylistDialog,
-  BrowseTab,
-  ExploreTab,
-  PlaylistsTab
-} from "./_components";
 import { useMusic } from "./_hooks/useMusic";
 import { useRouter } from "next/navigation";
-import type { MusicJourneyCard } from "./_components/ExploreTab";
-import { ROUTES } from "@/lib/routes";
+import { DashboardMascotHero } from "@/components/shared/dashboard/DashboardMascotHero";
+import { DashboardMascotEmpty } from "@/components/shared/dashboard/DashboardMascotEmpty";
+import { Pagination } from "@/components/ui/pagination";
 
-const MUSIC_JOURNEYS: MusicJourneyCard[] = [
-  {
-    id: "calm-overthinking",
-    title: "Redakan Overthinking",
-    situation: "Untuk kepala yang terlalu ramai menjelang malam.",
-    direction: "Turun dari tegang -> tenang -> fokus.",
-    duration: "8-12 menit",
-    categoryKeywords: ["calm", "tenang", "sleep", "malam", "ambient"],
-    fallbackSearch: "relax",
-    nextActionLabel: "Tulis brain dump 3 menit",
-    nextActionHref: "/dashboard/journal/create?mode=brain-dump",
-  },
-  {
-    id: "focus-reset",
-    title: "Reset Fokus Belajar",
-    situation: "Saat mulai buyar, tapi tetap mau lanjut progres.",
-    direction: "Dari terdistraksi -> stabil -> kembali ke prioritas.",
-    duration: "10-15 menit",
-    categoryKeywords: ["focus", "study", "lofi", "instrumental"],
-    fallbackSearch: "focus",
-    nextActionLabel: "Susun rencana pemulihan 24 jam",
-    nextActionHref: "/dashboard/journal/create?mode=action-plan",
-  },
-  {
-    id: "gentle-mood-lift",
-    title: "Naikkan Energi Pelan",
-    situation: "Saat mood turun dan butuh dorongan kecil yang aman.",
-    direction: "Dari lesu -> hangat -> siap bergerak pelan.",
-    duration: "6-10 menit",
-    categoryKeywords: ["happy", "uplift", "hope", "sunrise", "positive"],
-    fallbackSearch: "uplift",
-    nextActionLabel: "Lanjut refleksi dengan Teman Cerita AI",
-    nextActionHref: ROUTES.CHAT,
-  },
-];
+const BrowseTab = dynamic(() => import("./_components/BrowseTab").then((module) => module.BrowseTab));
+const ExploreTab = dynamic(() => import("./_components/ExploreTab").then((module) => module.ExploreTab));
+const PlaylistsTab = dynamic(() => import("./_components/PlaylistsTab").then((module) => module.PlaylistsTab));
+const PlaylistDialog = dynamic(() => import("./_components/PlaylistDialog").then((module) => module.PlaylistDialog));
 
-const JOURNEY_CONTEXT_BY_ID: Record<string, string> = {
-  "calm-overthinking": "calm-overthinking",
-  "focus-reset": "focus-reset",
-  "gentle-mood-lift": "gentle-mood-lift",
-};
-
-function withQuery(href: string, params: Record<string, string>): string {
-  const [path, rawQuery = ""] = href.split("?");
-  const searchParams = new URLSearchParams(rawQuery);
-
-  Object.entries(params).forEach(([key, value]) => {
-    searchParams.set(key, value);
-  });
-
-  const query = searchParams.toString();
-  return query ? `${path}?${query}` : path;
-}
+const MUSIC_TABS = [
+  { value: "browse", label: "Jelajahi", icon: Library },
+  { value: "explore", label: "Eksplorasi", icon: Compass },
+  { value: "playlists", label: "Playlist", icon: ListMusic },
+] as const;
 
 export default function MusicPage() {
   const router = useRouter(); // Helper to navigate
-  const [activeJourneyId, setActiveJourneyId] = useState<string | null>(null);
   const {
     // State
     activeTab,
+    page,
+    setPage,
+    totalPages,
+    hasError,
+    retry,
     search,
     categories,
     songs,
@@ -118,66 +69,6 @@ export default function MusicPage() {
     isPlaying,
   } = useMusic();
 
-  const handleJourneyStart = (journey: MusicJourneyCard) => {
-    setActiveJourneyId(journey.id);
-    setActiveTab("browse");
-
-    const matchedCategory = categories.find((category) => {
-      const normalizedName = category.name.toLowerCase();
-      const normalizedSlug = category.slug?.toLowerCase() || "";
-      return journey.categoryKeywords.some((keyword) =>
-        normalizedName.includes(keyword) || normalizedSlug.includes(keyword)
-      );
-    });
-
-    if (matchedCategory) {
-      router.push(`/dashboard/music/categories/${matchedCategory.slug || matchedCategory.id}?journey=${journey.id}`);
-      return;
-    }
-
-    setSearch(journey.fallbackSearch);
-  };
-
-  const suggestedJourney = currentSong
-    ? MUSIC_JOURNEYS.find((journey) =>
-      journey.categoryKeywords.some((keyword) =>
-        (currentSong.category?.name || "").toLowerCase().includes(keyword)
-      )
-    )
-    : null;
-
-  const activeJourney = useMemo(() => {
-    if (suggestedJourney) return suggestedJourney;
-    if (!activeJourneyId) return null;
-    return MUSIC_JOURNEYS.find((journey) => journey.id === activeJourneyId) || null;
-  }, [activeJourneyId, suggestedJourney]);
-
-  const resolveJourneyNextActionHref = (journey: MusicJourneyCard) => {
-    const context = JOURNEY_CONTEXT_BY_ID[journey.id] || journey.id;
-    const params: Record<string, string> = {
-      source: "music",
-      journey: journey.id,
-      context,
-      journeyTitle: journey.title,
-      journeyDirection: journey.direction,
-      nextAction: journey.nextActionLabel,
-    };
-
-    if (currentSong?.id) {
-      params.track = String(currentSong.id);
-    }
-
-    if (currentSong?.title) {
-      params.trackTitle = currentSong.title;
-    }
-
-    if (currentSong?.category?.name) {
-      params.trackCategory = currentSong.category.name;
-    }
-
-    return withQuery(journey.nextActionHref, params);
-  };
-
   // Navigation handlers
   const navigateToPlaylist = (playlist: { id?: number; slug?: string; uuid?: string }) => {
     const identifier = playlist.slug || playlist.uuid || playlist.id;
@@ -203,58 +94,17 @@ export default function MusicPage() {
         isLoading={isDeleting}
       />
 
-      <div className="overflow-x-hidden pb-32 pt-4 lg:pt-6">
+      <div className="min-w-0 pb-32">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold">Musik Relaksasi</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            Biarkan musik menenangkan harimu
-          </p>
-        </div>
-
-        {activeJourney && (
-          <section className="mb-6 rounded-2xl border border-primary/20 bg-primary/10 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-primary">Journey Recap</p>
-            <h3 className="text-lg font-semibold text-gray-900 mt-1">{activeJourney.title}</h3>
-            <p className="text-sm text-gray-600 mt-1">
-              {currentSong
-                ? `Kamu sedang berada di fase "${activeJourney.direction}" dengan lagu ${currentSong.title}.`
-                : `Arah sesi: ${activeJourney.direction}`}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <Button asChild size="sm" className="gap-1.5">
-                <Link href={resolveJourneyNextActionHref(activeJourney)}>
-                  {activeJourney.nextActionLabel}
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </Button>
-              <Button size="sm" variant="outline" className="bg-white" onClick={() => handleJourneyStart(activeJourney)}>
-                Ulang Journey
-              </Button>
-            </div>
-          </section>
-        )}
+        <DashboardMascotHero eyebrow="Dengarkan yang kamu butuhkan" title="Musik Relaksasi" description="Pilih ritme yang menemanimu bernapas, fokus, atau beristirahat sejenak." image="/images/dashboard/mascot/music-headphones.webp" imageAlt="Bulan Pulih mendengarkan musik" />
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full min-w-0">
-          <TabsList className="mb-6 grid w-full max-w-md grid-cols-3">
-            <TabsTrigger value="browse" className="text-xs sm:text-sm shrink-0">
-              <Library className="w-4 h-4 mr-1.5" />
-              Jelajahi
-            </TabsTrigger>
-            <TabsTrigger value="explore" className="text-xs sm:text-sm shrink-0">
-              <Compass className="w-4 h-4 mr-1.5" />
-              Eksplorasi
-            </TabsTrigger>
-            <TabsTrigger value="playlists" className="text-xs sm:text-sm shrink-0">
-              <ListMusic className="w-4 h-4 mr-1.5" />
-              Playlist
-            </TabsTrigger>
-          </TabsList>
+          <DashboardHubTabList tabs={MUSIC_TABS} tourTarget="music-tabs" />
 
           {/* Browse Tab - Categories */}
           <TabsContent value="browse" className="min-w-0 overflow-x-hidden">
-            <BrowseTab
+            {hasError && !isLoading ? <DashboardMascotEmpty image="/images/dashboard/mascot/music-headphones.webp" title="Musik belum bisa dimuat" description="Coba lagi saat koneksimu sudah stabil." action={<Button onClick={retry}>Coba lagi</Button>} /> : <BrowseTab
               search={search}
               setSearch={setSearch}
               isLoading={isLoading}
@@ -265,24 +115,24 @@ export default function MusicPage() {
               isPlaying={isPlaying}
               onPlay={handlePlaySong}
               onCategoryClick={(category) => router.push(`/dashboard/music/categories/${category.slug || category.id}`)}
-            />
+            />}
+            {!isLoading && !hasError && <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />}
           </TabsContent>
 
           {/* Explore Tab - Public Playlists */}
           <TabsContent value="explore" className="min-w-0 overflow-x-hidden">
-            <ExploreTab
+            {hasError && !publicPlaylistsLoading ? <DashboardMascotEmpty image="/images/dashboard/mascot/music-headphones.webp" title="Playlist komunitas belum bisa dimuat" description="Coba beberapa saat lagi." action={<Button onClick={retry}>Coba lagi</Button>} /> : <ExploreTab
               isLoading={publicPlaylistsLoading}
               adminPlaylists={adminPlaylists}
               publicPlaylists={publicPlaylists}
               onPlaylistClick={navigateToPlaylist}
-              journeys={MUSIC_JOURNEYS}
-              onJourneyStart={handleJourneyStart}
-            />
+            />}
+            {!publicPlaylistsLoading && !hasError && <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />}
           </TabsContent>
 
           {/* My Playlists Tab */}
           <TabsContent value="playlists" className="min-w-0 overflow-x-hidden">
-            <PlaylistsTab
+            {hasError && !playlistsLoading ? <DashboardMascotEmpty image="/images/dashboard/mascot/music-headphones.webp" title="Playlistmu belum bisa dimuat" description="Coba lagi saat koneksimu sudah stabil." action={<Button onClick={retry}>Coba lagi</Button>} /> : <PlaylistsTab
               isLoading={playlistsLoading}
               playlists={playlists}
               onCreateClick={() => {
@@ -292,12 +142,13 @@ export default function MusicPage() {
               onPlaylistClick={navigateToPlaylist}
               onEditClick={handlePlaylistEdit}
               onDeleteClick={handlePlaylistDeleteClick}
-            />
+            />}
+            {!playlistsLoading && !hasError && <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />}
           </TabsContent>
         </Tabs>
 
         {/* Playlist Dialog */}
-        <PlaylistDialog
+        {isPlaylistDialogOpen && <PlaylistDialog
           open={isPlaylistDialogOpen}
           onOpenChange={(open) => {
             setIsPlaylistDialogOpen(open);
@@ -306,7 +157,7 @@ export default function MusicPage() {
           playlist={editingPlaylist}
           onSave={handlePlaylistSave}
           isLoading={isSaving}
-        />
+        />}
       </div>
     </>
   );

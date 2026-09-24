@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, BookOpen } from "lucide-react";
 import { articleService } from "@/services/api/article";
 import { ROUTES } from "@/lib/routes";
+import { ArticleThumbnail } from "@/components/shared/articles/ArticleThumbnail";
 import { getHtmlExcerpt } from "@/utils/string";
 import type { Article } from "@/types";
 import { useNearViewport } from "./useNearViewport";
@@ -43,8 +43,13 @@ export function LandingArticles() {
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {articles.slice(0, 3).map((article) => (
               <Link key={article.id} href={ROUTES.publicArticleDetail(article.slug)} className="landing-article group flex h-full flex-col overflow-hidden rounded-[2rem] border border-[#f3e3e4] bg-white shadow-[0_18px_50px_-38px_rgba(109,49,74,0.35)]">
-                <div className={`relative aspect-[16/10] w-full overflow-hidden ${article.thumbnail?.trim() ? "bg-[#f8ecec]" : "bg-[#fff0eb]"}`}>
-                  <Image src={article.thumbnail?.trim() || "/images/landing/mascot/journal.webp"} alt={article.thumbnail?.trim() ? article.title : "Maskot Ruang Tenang membaca dan menulis"} fill sizes="(max-width: 768px) 100vw, 33vw" className={`transition-transform duration-500 group-hover:scale-105 ${article.thumbnail?.trim() ? "object-cover" : "object-contain object-bottom p-3"}`} />
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#fff0eb]">
+                  <ArticleThumbnail
+                    src={article.thumbnail}
+                    alt={article.title}
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    imageClassName="transition-transform duration-500 group-hover:scale-105"
+                  />
                 </div>
                 <div className="flex flex-1 flex-col p-6"><span className="text-xs font-bold uppercase tracking-[0.14em] text-[#c05b6b]">{article.category?.name || "Bacaan Ruang Tenang"}</span><h3 className="font-brand-display mt-3 line-clamp-2 text-xl font-extrabold leading-snug text-[#283048] group-hover:text-[#cf5260]">{article.title}</h3><p className="mt-3 line-clamp-2 flex-1 text-sm leading-7 text-slate-600">{getHtmlExcerpt(article.excerpt || article.content || "", 130)}</p><span className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-[#c55363]">Baca artikel <ArrowRight size={16} aria-hidden="true" /></span></div>
               </Link>

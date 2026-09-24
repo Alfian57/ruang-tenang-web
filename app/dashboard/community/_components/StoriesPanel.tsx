@@ -7,10 +7,10 @@ import {
   MessageCircle,
   Search,
   Filter,
-  Star,
-  BookOpen,
+  BadgeCheck,
   AlertTriangle,
   User,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,8 @@ import { Badge } from "@/components/ui/badge";
 import { useStoriesPage } from "@/app/dashboard/stories/_hooks/useStoriesPage";
 import { ROUTES } from "@/lib/routes";
 import { StoryCategoryIcon } from "@/components/shared/stories/StoryCategoryIcon";
+import { Pagination } from "@/components/ui/pagination";
+import { DashboardMascotEmpty } from "@/components/shared/dashboard/DashboardMascotEmpty";
 
 function getStatusLabel(status?: string): string {
   switch (status) {
@@ -60,12 +62,15 @@ export default function StoriesPanel() {
   const {
     router,
     stories,
-    featuredStories,
     categories,
     loading,
     page,
     setPage,
     totalPages,
+    hasError,
+    retry,
+    storyView,
+    setStoryView,
     searchQuery,
     selectedCategory,
     sortBy,
@@ -75,74 +80,34 @@ export default function StoriesPanel() {
   } = useStoriesPage();
 
   return (
-    <div className="min-h-screen">
-      <div className="py-4 lg:py-6">
-        {/* Featured Stories */}
-        {featuredStories.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Star className="w-5 h-5" style={{ color: `var(--theme-story-icon)` }} />
-              Kisah Pilihan
-            </h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              {featuredStories.map((story) => (
-                <Link
-                  key={story.id}
-                  href={ROUTES.communityStory(story.id)}
-                  className="group relative theme-story-bg rounded-2xl overflow-hidden border theme-story-border hover:shadow-lg transition-all"
-                >
-                  {story.cover_image && (
-                    <div className="relative h-40 overflow-hidden">
-                      <Image
-                        src={story.cover_image}
-                        alt={story.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
-                    </div>
-                  )}
-                  <div className="p-4">
-                    <Badge className="text-white mb-2" style={{ backgroundColor: `var(--theme-story-icon)` }}>Pilihan</Badge>
-                    <h3 className="font-bold text-lg mb-2 group-hover:text-amber-600 transition-colors line-clamp-2">
-                      {story.title}
-                    </h3>
-                    <div className="flex items-center justify-between text-sm text-gray-600">
-                      <div className="flex items-center gap-1">
-                        {story.is_anonymous ? (
-                          <User className="w-4 h-4" />
-                        ) : (
-                          story.author?.name
-                        )}
-                        {story.is_anonymous && "Anonim"}
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="flex items-center gap-1">
-                          <Heart className="w-4 h-4 text-primary/80" />
-                          {story.heart_count}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
+    <div className="min-w-0 pb-8">
+      <div className="pt-1">
+        <div className="theme-accent-border-soft mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-white/90 p-3 shadow-sm">
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" variant={storyView === "public" ? "default" : "outline"} onClick={() => setStoryView("public")}>Jelajahi kisah</Button>
+            <Button size="sm" variant={storyView === "mine" ? "default" : "outline"} onClick={() => setStoryView("mine")}>Kisah saya</Button>
+          </div>
+          <Button asChild size="sm" variant="outline"><Link href={ROUTES.COMMUNITY_STORY_CREATE}>Tulis Kisah</Link></Button>
+        </div>
         {/* Filters */}
-        <section className="mb-8">
+        {storyView === "public" && <section className="theme-accent-border-soft mb-6 rounded-2xl border bg-white/90 p-4 shadow-sm sm:p-5">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm font-semibold text-slate-700">Temukan kisah yang ingin kamu baca</p>
+            {searchQuery && <Button type="button" variant="ghost" size="sm" className="gap-1.5 text-theme-accent-dark" onClick={() => setSearchQuery("")}><X className="h-3.5 w-3.5" /> Bersihkan pencarian</Button>}
+          </div>
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
               <Input
+                aria-label="Cari kisah"
                 placeholder="Cari kisah..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-white"
+                className="h-10 rounded-xl bg-white pl-10"
               />
             </div>
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-full md:w-48">
+              <SelectTrigger className="w-full rounded-xl bg-white md:w-48">
                 <Filter className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="Kategori" />
               </SelectTrigger>
@@ -157,7 +122,7 @@ export default function StoriesPanel() {
               </SelectContent>
             </Select>
             <Select value={sortBy} onValueChange={(v) => setSortBy(v as "recent" | "hearts" | "featured")}>
-              <SelectTrigger className="w-full md:w-48">
+              <SelectTrigger className="w-full rounded-xl bg-white md:w-48">
                 <SelectValue placeholder="Urutkan" />
               </SelectTrigger>
               <SelectContent>
@@ -167,107 +132,114 @@ export default function StoriesPanel() {
               </SelectContent>
             </Select>
           </div>
-        </section>
+        </section>}
 
         {/* Stories Grid */}
         {loading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="bg-white rounded-xl border animate-pulse h-64"
-              />
+                className="overflow-hidden rounded-3xl border border-theme-accent-border bg-white shadow-sm"
+              >
+                <div className="aspect-[16/9] animate-pulse bg-slate-100" />
+                <div className="space-y-3 p-5">
+                  <div className="h-3 w-24 animate-pulse rounded-full bg-slate-100" />
+                  <div className="h-5 w-4/5 animate-pulse rounded-full bg-slate-100" />
+                  <div className="h-4 w-full animate-pulse rounded-full bg-slate-100" />
+                  <div className="h-4 w-2/3 animate-pulse rounded-full bg-slate-100" />
+                  <div className="mt-5 h-10 animate-pulse rounded-xl bg-slate-50" />
+                </div>
+              </div>
             ))}
           </div>
+        ) : hasError ? (
+          <DashboardMascotEmpty image="/images/landing/mascot/community.webp" title="Kisah belum bisa dimuat" description="Coba sambungkan kembali ke komunitas." action={<Button onClick={() => void retry()}>Coba lagi</Button>} />
         ) : stories.length === 0 ? (
-          <div className="text-center py-16">
-            <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-500">Belum ada kisah</h3>
-            <p className="text-gray-400 text-sm mt-1">
-              Jadilah yang pertama berbagi kisah inspiratif!
-            </p>
-            <Button
-              onClick={() => router.push(ROUTES.COMMUNITY_STORY_CREATE)}
-              variant="outline"
-              className="mt-4"
-            >
-              Tulis Kisah
-            </Button>
-          </div>
+          <DashboardMascotEmpty image="/images/landing/mascot/community.webp" title={storyView === "mine" ? "Kamu belum menulis kisah" : "Belum ada kisah yang cocok"} description={storyView === "mine" ? "Kisahmu, termasuk yang menunggu moderasi, akan terlihat di sini." : "Coba filter lain atau jadilah yang pertama berbagi."} action={<Button onClick={() => router.push(ROUTES.COMMUNITY_STORY_CREATE)}>Tulis Kisah</Button>} />
         ) : (
           <>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {stories.map((story) => (
                 <Link
                   key={story.id}
                   href={ROUTES.communityStory(story.id)}
-                  className="group bg-white rounded-xl border hover:shadow-lg transition-all overflow-hidden"
+                  className="theme-accent-border-soft group relative flex min-w-0 flex-col overflow-hidden rounded-3xl border bg-white shadow-[0_8px_28px_-20px_rgba(15,23,42,0.28)] transition duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-[0_22px_42px_-26px_rgba(190,24,93,0.35)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transform-none motion-reduce:transition-none"
                 >
-                  {story.cover_image && (
-                    <div className="relative h-40 overflow-hidden bg-gray-100">
-                      <Image
-                        src={story.cover_image}
-                        alt={story.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
-                    </div>
-                  )}
-                  <div className="p-4">
-                    {story.is_own && (
-                      <div className="flex flex-wrap items-center gap-2 mb-2">
-                        <Badge className="bg-primary/10 text-primary border border-primary/20">Milik Anda</Badge>
-                        <Badge className={getStatusBadgeClass(story.status)}>
-                          {getStatusLabel(story.status)}
+                  <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-rose-50 via-orange-50 to-violet-50">
+                    {!story.cover_image && (
+                      <>
+                        <div aria-hidden="true" className="absolute -left-10 -top-16 h-48 w-48 rounded-full bg-white/70 blur-2xl" />
+                        <div aria-hidden="true" className="absolute bottom-0 left-0 h-1/2 w-full bg-gradient-to-t from-white/70 to-transparent" />
+                      </>
+                    )}
+                    <Image
+                      src={story.cover_image || "/images/dashboard/mascot/article-placeholder.webp"}
+                      alt={story.cover_image ? story.title : ""}
+                      fill
+                      aria-hidden={!story.cover_image}
+                      className={story.cover_image
+                        ? "object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                        : "object-contain object-right-bottom p-1 transition-transform duration-500 group-hover:scale-[1.04]"}
+                      sizes="(max-width: 639px) 100vw, (max-width: 1279px) 50vw, 33vw"
+                    />
+                    {story.cover_image && <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-slate-950/35 via-transparent to-slate-950/5" />}
+                    <div className="absolute left-3 top-3 flex max-w-[calc(100%-1.5rem)] flex-wrap gap-1.5">
+                      {story.is_featured && (
+                        <Badge className="gap-1 border border-white/70 bg-white/90 text-amber-700 shadow-sm backdrop-blur-sm">
+                          <BadgeCheck className="h-3 w-3" /> Pilihan
                         </Badge>
-                        {story.status !== "approved" && (
-                          <span className="text-[11px] font-medium text-amber-700">Tidak Publik</span>
-                        )}
-                      </div>
-                    )}
-
-                    {story.has_trigger_warning && (
-                      <Badge variant="destructive" className="mb-2 gap-1">
-                        <AlertTriangle className="w-3 h-3" />
-                        Peringatan Konten
-                      </Badge>
-                    )}
-                    <h3 className="font-bold text-lg mb-2 group-hover:text-amber-600 transition-colors line-clamp-2">
-                      {story.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                      {story.excerpt}
-                    </p>
-                    <div className="flex flex-wrap gap-1 mb-3">
+                      )}
+                      {story.is_own && (
+                        <Badge className={`${getStatusBadgeClass(story.status)} shadow-sm`}>{getStatusLabel(story.status)}</Badge>
+                      )}
+                      {story.has_trigger_warning && (
+                        <Badge className="gap-1 border border-white/70 bg-amber-50/95 text-amber-800 shadow-sm backdrop-blur-sm">
+                          <AlertTriangle className="h-3 w-3" /> Peringatan konten
+                        </Badge>
+                      )}
+                    </div>
+                    {story.is_own && <span className="absolute bottom-3 right-3 rounded-full border border-white/70 bg-white/90 px-2.5 py-1 text-[11px] font-medium text-slate-600 shadow-sm">Kisah saya</span>}
+                  </div>
+                  <div className="flex flex-1 flex-col p-4 sm:p-5">
+                    <div className="mb-2 flex min-h-6 flex-wrap items-center gap-1.5">
                       {story.categories?.slice(0, 2).map((cat) => (
-                        <Badge
-                          key={cat.id}
-                          variant="secondary"
-                          className="text-xs"
-                        >
-                          <StoryCategoryIcon slug={cat.slug} name={cat.name} className="h-3.5 w-3.5" />
-                          {cat.name}
+                        <Badge key={cat.id} variant="secondary" className="max-w-full gap-1 rounded-full border border-slate-200/70 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-600">
+                          <StoryCategoryIcon slug={cat.slug} name={cat.name} className="h-3.5 w-3.5 shrink-0" />
+                          <span className="truncate">{cat.name}</span>
                         </Badge>
                       ))}
+                      {story.categories && story.categories.length > 2 && <span className="text-xs text-slate-400">+{story.categories.length - 2}</span>}
                     </div>
-                    <div className="flex items-center justify-between text-sm text-gray-500 pt-3 border-t">
-                      <div className="flex items-center gap-1">
-                        {story.is_anonymous ? (
-                          <>
-                            <User className="w-4 h-4" />
-                            <span>Anonim</span>
-                          </>
-                        ) : (
-                          <span>{story.author?.name}</span>
-                        )}
+                    <h3 className="mb-2 line-clamp-2 text-base font-bold leading-snug text-slate-900 transition-colors group-hover:text-primary sm:text-lg">
+                      {story.title}
+                    </h3>
+                    <p className="mb-4 line-clamp-3 text-sm leading-relaxed text-slate-600">
+                      {story.excerpt || "Buka kisah ini untuk membaca pengalaman yang dibagikan."}
+                    </p>
+                    {story.is_own && story.status !== "approved" && (
+                      <p className="mb-3 flex items-center gap-1.5 text-xs font-medium text-amber-700">
+                        <AlertTriangle className="h-3.5 w-3.5" /> Kisah ini hanya terlihat olehmu.
+                      </p>
+                    )}
+                    <div className="mt-auto flex items-center justify-between gap-3 border-t border-slate-100 pt-3.5">
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-rose-100 to-orange-100 text-rose-700 ring-1 ring-rose-100">
+                          {story.is_anonymous ? (
+                            <User className="h-4 w-4" />
+                          ) : (
+                            <span className="text-xs font-bold">{story.author?.name?.trim().charAt(0).toLocaleUpperCase() || <User className="h-4 w-4" />}</span>
+                          )}
+                        </span>
+                        <span className="truncate text-sm font-medium text-slate-700">{story.is_anonymous ? "Anonim" : story.author?.name || "Anggota Ruang Tenang"}</span>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span className="flex items-center gap-1">
-                          <Heart className="w-4 h-4" />
+                      <div className="flex shrink-0 items-center gap-1.5 text-xs text-slate-500">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-1.5 transition-colors group-hover:bg-rose-100/80">
+                          <Heart className="h-3.5 w-3.5 text-rose-500" />
                           {story.heart_count}
                         </span>
-                        <span className="flex items-center gap-1">
-                          <MessageCircle className="w-4 h-4" />
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-2.5 py-1.5 transition-colors group-hover:bg-slate-100">
+                          <MessageCircle className="h-3.5 w-3.5" />
                           {story.comment_count}
                         </span>
                       </div>
@@ -278,27 +250,7 @@ export default function StoriesPanel() {
             </div>
 
             {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex justify-center gap-2 mt-8">
-                <Button
-                  variant="outline"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                >
-                  Sebelumnya
-                </Button>
-                <span className="flex items-center px-4 text-sm text-gray-600">
-                  Halaman {page} dari {totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                >
-                  Selanjutnya
-                </Button>
-              </div>
-            )}
+            <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
           </>
         )}
       </div>

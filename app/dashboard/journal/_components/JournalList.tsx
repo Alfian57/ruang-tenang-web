@@ -3,7 +3,7 @@
 import { Journal } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { JournalListItem } from "./JournalListItem";
-import { BookText } from "lucide-react";
+import { DashboardMascotEmpty } from "@/components/shared/dashboard/DashboardMascotEmpty";
 
 interface JournalListProps {
     journals: Journal[];
@@ -15,11 +15,11 @@ interface JournalListProps {
 
 function JournalListSkeleton() {
     return (
-        <div className="space-y-3">
+        <div className="space-y-4">
             {[1, 2, 3, 4].map((i) => (
                 <div
                     key={i}
-                    className="p-4 bg-white rounded-lg border border-gray-200"
+                    className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:p-5"
                 >
                     <div className="flex items-start justify-between">
                         <div className="flex-1 space-y-2">
@@ -48,16 +48,16 @@ export function JournalList({
 
     if (journals.length === 0) {
         return (
-            <div className="text-center py-16">
-                <BookText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-500">Belum ada jurnal</h3>
-                <p className="text-gray-400 text-sm mt-1">Mulai menulis jurnal pertamamu hari ini!</p>
-            </div>
+            <DashboardMascotEmpty
+                image="/images/landing/mascot/journal.webp"
+                title="Belum ada jurnal di sini"
+                description="Setiap pikiran layak mendapat ruang. Mulailah dengan satu catatan kecil tentang harimu."
+            />
         );
     }
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-4">
             {journals.map((journal) => (
                 <JournalListItem
                     key={journal.id}

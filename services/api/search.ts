@@ -7,6 +7,8 @@ interface SearchResults {
   articles: Article[];
   songs: Song[];
   total: number;
+  page?: number;
+  total_pages?: number;
   [key: string]: unknown;
 }
 

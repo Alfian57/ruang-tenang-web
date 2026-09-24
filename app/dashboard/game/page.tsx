@@ -4,7 +4,7 @@ import {
     MousePointer2,
     ShieldCheck,
     Palette,
-    Star,
+    Compass,
     WifiOff,
 } from "lucide-react";
 import MindfulRunnerGame from "@/components/game/LazyMindfulRunnerGame";
@@ -93,7 +93,7 @@ export default function GamePage() {
 
                 <section aria-labelledby="game-guide-title">
                     <div className="mb-3 flex items-center gap-2">
-                        <Star className="h-4 w-4" style={{ color: "var(--theme-accent, #f97316)" }} />
+                        <Compass className="h-4 w-4" style={{ color: "var(--theme-accent, #f97316)" }} />
                         <h2 id="game-guide-title" className="text-sm font-bold text-slate-800">Bekal perjalanan</h2>
                     </div>
                     <div className="grid gap-3 md:grid-cols-3">

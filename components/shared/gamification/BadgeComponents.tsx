@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { cn } from "@/utils";
 import { Badge, BadgeProgress, UserBadges } from "@/types";
-import { Award, CheckCircle, ChevronDown, Flame, Heart, Lock, Sparkles, Star, Trophy, Zap } from "lucide-react";
+import { Award, CheckCircle, ChevronDown, Flame, Heart, Lock, Trophy, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GamificationIcon } from "./GamificationIcon";
 
@@ -28,6 +28,11 @@ export function BadgeCard({ badge, size = "md", showDescription = false, classNa
         md: "w-16 h-16 text-2xl",
         lg: "w-20 h-20 text-3xl",
     };
+    const iconSizeClasses = {
+        sm: "h-9 w-9",
+        md: "h-11 w-11",
+        lg: "h-14 w-14",
+    };
 
     return (
         <div className={cn("flex flex-col items-center text-center", className)}>
@@ -40,7 +45,7 @@ export function BadgeCard({ badge, size = "md", showDescription = false, classNa
                         : "bg-gray-100 border-gray-300 opacity-50 grayscale"
                 )}
             >
-                <GamificationIcon name={badge.badge_key || badge.category} fallback={Award} className="h-7 w-7" />
+                <GamificationIcon name={badge.badge_key || badge.category} fallback={Award} className={iconSizeClasses[size]} />
             </div>
             <p className="mt-2 text-sm font-medium line-clamp-1">{badge.badge_name}</p>
             <p className="text-xs capitalize text-muted-foreground">{badge.category}</p>
@@ -79,7 +84,7 @@ export function BadgeProgressCard({ progress, className }: BadgeProgressCardProp
                     progress.earned ? "" : "opacity-60"
                 )}
             >
-                <GamificationIcon name={progress.badge_key || progress.category} fallback={Award} className="h-6 w-6" />
+                <GamificationIcon name={progress.badge_key || progress.category} fallback={Award} className="h-10 w-10" />
             </div>
 
             <div className="flex-1 min-w-0">
@@ -145,7 +150,6 @@ export function BadgeShowcase({ badges, className }: BadgeShowcaseProps) {
                         <div className="grid h-12 w-12 place-items-center rounded-full bg-white text-amber-500">
                             <Trophy className="h-6 w-6" />
                         </div>
-                        <Star className="absolute -right-1 -top-1 h-4 w-4 text-amber-400" aria-hidden="true" />
                     </div>
                     <div>
                         <p className="text-xs font-bold uppercase tracking-[0.12em] text-amber-600">Koleksi badge</p>
@@ -230,7 +234,7 @@ function CategoryStatCard({ category, earned, total }: CategoryStatCardProps) {
         streak: Flame,
         activity: Zap,
         contribution: Heart,
-        special: Sparkles,
+        special: Award,
         level: Award,
     };
     const CategoryIcon = categoryIcons[category as keyof typeof categoryIcons] || Trophy;

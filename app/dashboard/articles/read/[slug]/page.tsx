@@ -35,16 +35,16 @@ export default function DashboardArticleDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="py-4 lg:py-6">
-        <div className="flex items-center gap-4 mb-6">
-          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+      <div className="mx-auto max-w-7xl py-4 sm:py-6">
+        <div className="mb-6 flex items-center gap-4">
+          <Button aria-label="Kembali" variant="ghost" size="icon" className="rounded-xl" onClick={() => router.back()}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div className="h-6 bg-gray-200 rounded w-48 animate-pulse" />
         </div>
-        <div className="grid lg:grid-cols-12 gap-8">
+        <div className="grid min-w-0 gap-6 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-8">
-            <Card className="p-6 lg:p-8">
+            <Card className="theme-accent-border-soft rounded-3xl border bg-white p-5 shadow-sm sm:p-7 lg:p-8">
               <div className="animate-pulse space-y-4">
                 <div className="h-8 bg-gray-200 rounded w-3/4" />
                 <div className="h-4 bg-gray-200 rounded w-1/4" />
@@ -87,13 +87,13 @@ export default function DashboardArticleDetailPage() {
           </Button>
           <span className="text-gray-500">Kembali</span>
         </div>
-        <div className="text-center py-16">
+        <div className="theme-accent-border-soft rounded-3xl border bg-white px-5 py-16 text-center shadow-sm">
           <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-500">Artikel tidak ditemukan</h3>
           <p className="text-gray-400 text-sm mt-1 mb-4">
             Artikel yang Anda cari mungkin sudah dihapus atau tidak tersedia
           </p>
-          <Button variant="outline" onClick={() => router.back()}>
+          <Button variant="outline" className="rounded-xl" onClick={() => router.back()}>
             Kembali
           </Button>
         </div>
@@ -102,21 +102,21 @@ export default function DashboardArticleDetailPage() {
   }
 
   return (
-    <div className="py-4 lg:py-6">
+    <div className="mx-auto max-w-7xl py-4 sm:py-6">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Link href={getBackLink()}>
-          <Button variant="ghost" size="icon">
+      <div className="mb-6 flex flex-wrap items-center gap-3">
+        <Button asChild variant="ghost" size="icon" className="rounded-xl">
+          <Link href={getBackLink()} aria-label="Kembali ke daftar artikel">
             <ArrowLeft className="w-5 h-5" />
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         <div>
-          <h1 className="text-xl font-bold">Detail Artikel</h1>
-          <p className="text-gray-500 text-sm">Membaca artikel</p>
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-theme-accent-dark">Ruang baca</p>
+          <h1 className="text-lg font-bold text-slate-900">Artikel pilihan untukmu</h1>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-12 lg:gap-8">
         <ArticleContent
           article={article}
           isArticleAuthor={isArticleAuthor}

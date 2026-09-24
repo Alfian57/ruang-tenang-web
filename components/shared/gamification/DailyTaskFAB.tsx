@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { Check, Gift, Lock, RefreshCw, Sparkles, Trophy, X, ClipboardList, Rocket, Crown } from "lucide-react";
+import Image from "next/image";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Check, Gift, Lock, RefreshCw, PartyPopper, Trophy, X, Rocket, Crown, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
 import type { DailyTask, XPBoostStatus } from "@/types";
@@ -23,13 +24,19 @@ interface DailyTaskFABProps {
 export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: DailyTaskFABProps) {
   const { token, user, refreshUser } = useAuthStore();
   const [isOpen, setIsOpen] = useState(false);
-  const { tasks, isLoading, claimingId, loadTasks, claimTask } = useDailyTaskStore();
+  const { tasks, isLoading, hasError, claimingId, loadTasks, claimTask } = useDailyTaskStore();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
   const isPlayerVisible = useMusicPlayerStore((s) => s.isPlayerVisible);
   const currentSong = useMusicPlayerStore((s) => s.currentSong);
   const isMinimized = useMusicPlayerStore((s) => s.isMinimized);
   const showMusicPlayer = isPlayerVisible && currentSong;
   const hasXPBoost = Boolean(xpBoost && xpBoost.remaining_seconds > 0);
   const boostMultiplier = hasXPBoost ? Math.max(1, xpBoost?.multiplier ?? 1) : 1;
+  const closePanel = useCallback(() => {
+    setIsOpen(false);
+    triggerRef.current?.focus();
+  }, []);
 
   const formatRemaining = (seconds: number) => {
     if (seconds <= 0) return "berakhir";
@@ -68,6 +75,18 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
     }
   }, [isSidebarOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    closeRef.current?.focus();
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closePanel();
+      }
+    };
+    window.addEventListener("keydown", onEscape);
+    return () => window.removeEventListener("keydown", onEscape);
+  }, [isOpen, closePanel]);
+
   const handleClaim = async (task: DailyTask) => {
     if (!token || claimingId !== null) return;
 
@@ -83,7 +102,7 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
             description: (
               <span className="inline-flex items-center gap-1.5">
                 Selamat! Kamu naik level
-                <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+                <PartyPopper className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
               </span>
             ),
           });
@@ -106,7 +125,7 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
   const progressPercent = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
   const showPremiumTeasers = user?.role === "user" && !user?.is_premium && !tasks.some((task) => task.premium_only);
 
-  if (!token || totalTasks === 0) return null;
+  if (!token || user?.role !== "user") return null;
 
   return (
     <>
@@ -114,7 +133,7 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
       {isOpen && (
         <div
           className="fixed inset-0 z-30"
-          onClick={() => setIsOpen(false)}
+          onClick={closePanel}
         />
       )}
 
@@ -128,68 +147,89 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
       >
         {/* Panel (above FAB) */}
         <div
+          id="daily-missions-panel"
+          role="dialog"
+          aria-label="Misi Harian"
+          aria-hidden={!isOpen}
+          inert={!isOpen}
           className={cn(
-            "absolute bottom-full right-0 mb-3 w-[calc(100vw-1.5rem)] max-w-sm bg-white rounded-2xl shadow-2xl border overflow-hidden transition-all duration-300 origin-bottom-right sm:w-96 sm:max-w-none",
+            "absolute bottom-full right-0 mb-3 w-[calc(100vw-1.5rem)] max-w-sm origin-bottom-right overflow-visible transition-all duration-300 motion-reduce:transition-none sm:w-96 sm:max-w-none",
             isOpen
               ? "opacity-100 scale-100 translate-y-0"
               : "opacity-0 scale-95 translate-y-4 pointer-events-none"
           )}
         >
-          {/* Header */}
-          <div className="theme-fab-bg p-4 text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
+          <div className="flex max-h-[min(55dvh,31rem)] w-full flex-col overflow-hidden rounded-[1.75rem] border border-theme-accent-border bg-white shadow-2xl sm:max-h-[min(70dvh,35rem)]">
+            {/* Header */}
+            <div className="theme-fab-bg relative shrink-0 overflow-hidden p-4 pr-24 text-white sm:p-5 sm:pr-28">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
 
-            <div className="relative flex justify-between items-start">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <Trophy className="w-5 h-5" />
-                  <h3 className="font-bold text-lg">Misi Harian</h3>
+              <div className="relative z-20 flex justify-between items-start">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Trophy className="w-5 h-5" />
+                    <h3 className="font-bold text-lg">Misi Harian</h3>
+                  </div>
+                  <p className="text-white/80 text-xs">Selesaikan misi, klaim hadiahmu!</p>
                 </div>
-                <p className="text-white/80 text-xs">Selesaikan misi, klaim hadiahmu!</p>
+                <button
+                  ref={closeRef}
+                  onClick={closePanel}
+                  aria-label="Tutup misi harian"
+                  className="absolute -right-20 top-0 rounded-full bg-white/20 p-1.5 transition-colors hover:bg-white/30 sm:-right-24"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-1 hover:bg-white/20 rounded-full transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
+
+              {/* Progress bar */}
+              <div className="relative z-20 mt-3 flex items-center gap-3">
+                <div className="flex-1 h-2.5 bg-black/20 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-white transition-all duration-500 rounded-full"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+                <span className="text-sm font-bold min-w-10 text-right">
+                  {claimedTasks}/{totalTasks}
+                </span>
+              </div>
+
+              {hasXPBoost && (
+                <div className="mt-3 rounded-xl border border-white/30 bg-white/15 px-3 py-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-white">
+                      <Rocket className="h-3.5 w-3.5" />
+                      XP Boost x{boostMultiplier}
+                    </span>
+                    <span className="text-[11px] font-medium text-white/90">
+                      {formatRemaining(xpBoost?.remaining_seconds ?? 0)}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Progress bar */}
-            <div className="mt-3 flex items-center gap-3 relative">
-              <div className="flex-1 h-2.5 bg-black/20 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-white transition-all duration-500 rounded-full"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-              <span className="text-sm font-bold min-w-10 text-right">
-                {claimedTasks}/{totalTasks}
-              </span>
-            </div>
+            {/* Tasks list */}
+            <div className="relative z-20 min-h-0 flex-1 divide-y overflow-y-auto overscroll-contain bg-white">
 
-            {hasXPBoost && (
-              <div className="mt-3 rounded-xl border border-white/30 bg-white/15 px-3 py-2">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-white">
-                    <Rocket className="h-3.5 w-3.5" />
-                    XP Boost x{boostMultiplier}
-                  </span>
-                  <span className="text-[11px] font-medium text-white/90">
-                    {formatRemaining(xpBoost?.remaining_seconds ?? 0)}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Tasks list */}
-          <div className="max-h-[min(52vh,18rem)] overflow-y-auto divide-y sm:max-h-72">
+            {hasError && totalTasks > 0 && <div className="flex items-center justify-between gap-2 bg-amber-50 px-3 py-2 text-xs text-amber-900"><span>Progres terbaru belum tersinkron.</span><Button size="sm" variant="ghost" className="h-7 shrink-0 text-amber-900" onClick={() => void loadTasks(token, true)}>Coba lagi</Button></div>}
             {isLoading ? (
               <div className="p-6 text-center">
                 <RefreshCw className="w-6 h-6 mx-auto animate-spin text-gray-400 mb-2" />
                 <p className="text-sm text-gray-500">Memuat misi...</p>
+              </div>
+            ) : hasError && totalTasks === 0 ? (
+              <div className="p-6 text-center">
+                <p className="font-semibold text-slate-800">Misi belum bisa dimuat</p>
+                <p className="mt-1 text-xs text-slate-500">Coba lagi saat koneksi sudah stabil.</p>
+                <Button size="sm" variant="outline" className="mt-3" onClick={() => void loadTasks(token, true)}>Coba lagi</Button>
+              </div>
+            ) : totalTasks === 0 ? (
+              <div className="p-6 text-center">
+                <p className="font-semibold text-slate-800">Belum ada misi hari ini</p>
+                <p className="mt-1 text-xs text-slate-500">Bulan Pulih akan menemanimu saat misi baru tersedia.</p>
               </div>
             ) : (
               tasks.map((task) => {
@@ -297,7 +337,7 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
                     description: "6 pesan reflektif dengan AI",
                     xp: 55,
                     coins: 8,
-                    icon: Sparkles,
+                    icon: MessageCircle,
                   },
                 ].map((task) => {
                   const TaskIcon = task.icon;
@@ -339,18 +379,34 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
                 })}
               </>
             )}
+            </div>
+
+            {/* Footer */}
+            <div className="p-3 bg-gray-50 border-t">
+              <p className="text-[10px] text-center text-gray-400">
+                Reset setiap hari pukul 00:00 WIB
+              </p>
+            </div>
           </div>
 
-          {/* Footer */}
-          <div className="p-3 bg-gray-50 border-t">
-            <p className="text-[10px] text-center text-gray-400">
-              Reset setiap hari pukul 00:00 WIB
-            </p>
-          </div>
+          <Image
+            src="/images/dashboard/mascot/daily-missions.webp"
+            alt=""
+            width={120}
+            height={170}
+            sizes="144px"
+            className="pointer-events-none absolute -top-8 right-0 z-10 h-36 w-auto object-contain drop-shadow-lg sm:-top-9 sm:h-40"
+          />
         </div>
 
         {/* FAB Button */}
         <button
+          ref={triggerRef}
+          type="button"
+          data-user-tour="daily-missions"
+          aria-label={isOpen ? "Tutup misi harian" : `Buka misi harian${claimableTasks ? `, ${claimableTasks} siap diklaim` : ""}`}
+          aria-controls="daily-missions-panel"
+          aria-expanded={isOpen}
           onClick={() => setIsOpen(!isOpen)}
           className={cn(
             "w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 relative group",
@@ -358,12 +414,12 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
             "hover:shadow-xl hover:scale-105 active:scale-95",
             isOpen && "rotate-180 bg-linear-to-br from-gray-600 to-gray-700",
             hasXPBoost && !isOpen && "ring-4 ring-theme-accent/50 shadow-[0_0_0_8px_rgba(var(--color-theme-accent),0.14)]",
-            claimableTasks > 0 && !isOpen && "animate-bounce"
+            claimableTasks > 0 && !isOpen && "motion-safe:animate-bounce"
           )}
         >
           {/* Glow effect */}
           {claimableTasks > 0 && !isOpen && (
-            <div className="absolute inset-0 rounded-full theme-fab-bg animate-ping opacity-40" />
+            <div className="absolute inset-0 rounded-full theme-fab-bg opacity-40 motion-safe:animate-ping" />
           )}
 
           {/* Icon */}
@@ -371,7 +427,7 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
             {isOpen ? (
               <X className="w-6 h-6 text-white" />
             ) : (
-              <ClipboardList className="w-8 h-8 text-white" />
+              <Image src="/images/dashboard/mascot/daily-missions.webp" alt="" width={48} height={60} className="h-12 w-auto object-contain" />
             )}
           </div>
 

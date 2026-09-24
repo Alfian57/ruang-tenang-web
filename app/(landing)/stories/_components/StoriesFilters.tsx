@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Filter, TrendingUp, Heart, Clock, Star } from "lucide-react";
+import { Search, Filter, TrendingUp, Heart, Clock, BadgeCheck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,7 @@ import { StoryCategoryIcon } from "@/components/shared/stories/StoryCategoryIcon
 const SORT_OPTIONS = [
     { value: "recent" as const, label: "Terbaru", icon: Clock },
     { value: "hearts" as const, label: "Paling Disukai", icon: Heart },
-    { value: "featured" as const, label: "Pilihan Editor", icon: Star },
+    { value: "featured" as const, label: "Pilihan Editor", icon: BadgeCheck },
 ];
 
 interface StoriesFiltersProps {

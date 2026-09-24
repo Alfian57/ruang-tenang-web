@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import Image from "next/image";
 import {
     Activity,
     Award,
@@ -16,7 +17,6 @@ import {
     Music2,
     NotebookPen,
     Settings,
-    Sparkles,
     Sprout,
     Target,
     Trophy,
@@ -47,13 +47,40 @@ const ICONS: Record<string, LucideIcon> = {
     progress: Activity,
     reward: Gift,
     settings: Settings,
-    special: Sparkles,
+    special: Award,
     sprout: Sprout,
     story: BookOpen,
     streak: Flame,
     target: Target,
     trophy: Trophy,
     xp: Zap,
+};
+
+const BADGE_IMAGES: Record<string, string> = {
+    streak_7: "/images/badges/streak-7.webp",
+    streak_14: "/images/badges/streak-14.webp",
+    streak_30: "/images/badges/streak-30.webp",
+    streak_60: "/images/badges/streak-60.webp",
+    streak_100: "/images/badges/streak-100.webp",
+    activities_10: "/images/badges/activities-10.webp",
+    activities_50: "/images/badges/activities-50.webp",
+    activities_100: "/images/badges/activities-100.webp",
+    activities_500: "/images/badges/activities-500.webp",
+    first_article: "/images/badges/first-article.webp",
+    articles_5: "/images/badges/articles-5.webp",
+    helpful_commenter: "/images/badges/helpful-commenter.webp",
+    top_contributor: "/images/badges/top-contributor.webp",
+    level_5: "/images/badges/level-5.webp",
+    level_10: "/images/badges/level-10.webp",
+    xp_1000: "/images/badges/xp-1000.webp",
+    xp_5000: "/images/badges/xp-5000.webp",
+    xp_10000: "/images/badges/xp-10000.webp",
+    beta_tester: "/images/badges/beta-tester.webp",
+    community_mentor: "/images/badges/community-mentor.webp",
+    guardian: "/images/badges/guardian.webp",
+    first_story: "/images/badges/first-story.webp",
+    stories_3: "/images/badges/stories-3.webp",
+    story_100_hearts: "/images/badges/story-100-hearts.webp",
 };
 
 function normalize(value: string): string {
@@ -96,10 +123,25 @@ interface GamificationIconProps {
 
 export function GamificationIcon({
     name,
-    fallback = Sparkles,
+    fallback = Award,
     className,
     strokeWidth = 2,
 }: GamificationIconProps) {
+    const badgeImage = name ? BADGE_IMAGES[name.trim().toLowerCase()] : undefined;
+    if (badgeImage) {
+        return (
+            <Image
+                src={badgeImage}
+                alt=""
+                aria-hidden="true"
+                width={64}
+                height={64}
+                sizes="64px"
+                className={className}
+            />
+        );
+    }
+
     const Icon = resolveIcon(name, fallback);
     return <Icon className={className} strokeWidth={strokeWidth} aria-hidden="true" />;
 }

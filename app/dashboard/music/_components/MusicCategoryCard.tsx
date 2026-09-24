@@ -32,14 +32,16 @@ export function MusicCategoryCard({
   const [imageError, setImageError] = useState(false);
 
   return (
-    <motion.div
+    <motion.button
+      type="button"
+      aria-label={`Jelajahi kategori ${category.name}`}
       layout
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className={cn(
-        "relative overflow-hidden rounded-2xl cursor-pointer group",
+        "relative block w-full overflow-hidden rounded-2xl border border-white/70 text-left shadow-sm cursor-pointer group focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
         "aspect-[4/3] md:aspect-[3/2]",
         isExpanded && "ring-2 ring-primary ring-offset-2"
       )}
@@ -93,6 +95,6 @@ export function MusicCategoryCard({
           <Play className="w-6 h-6 text-primary fill-primary ml-1" />
         </div>
       </div>
-    </motion.div>
+    </motion.button>
   );
 }

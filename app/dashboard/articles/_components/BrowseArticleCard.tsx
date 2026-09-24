@@ -1,10 +1,9 @@
 import Link from "next/link";
-import Image from "next/image";
-import { FileText } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
 import { Card } from "@/components/ui/card";
 import { formatDate } from "@/utils";
 import { Article } from "@/types";
+import { ArticleThumbnail } from "@/components/shared/articles/ArticleThumbnail";
 
 interface BrowseArticleCardProps {
   article: Article;
@@ -13,22 +12,15 @@ interface BrowseArticleCardProps {
 
 export function BrowseArticleCard({ article, isOwn }: BrowseArticleCardProps) {
   return (
-    <Link href={ROUTES.articleRead(article.slug)}>
-      <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 bg-white cursor-pointer group h-full flex flex-col">
+    <Link href={ROUTES.articleRead(article.slug)} className="group block h-full min-w-0 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+      <Card className="theme-accent-border-soft flex h-full flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition-all duration-300 group-hover:-translate-y-0.5 group-hover:shadow-lg motion-reduce:transition-none">
         <div className="relative aspect-16/10 w-full overflow-hidden bg-gray-100">
-          {article.thumbnail ? (
-            <Image
-              src={article.thumbnail}
-              alt={article.title}
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/15">
-              <FileText className="w-10 h-10 text-primary/40" />
-            </div>
-          )}
+          <ArticleThumbnail
+            src={article.thumbnail}
+            alt={article.title}
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            imageClassName="object-center transition-transform duration-300 group-hover:scale-105"
+          />
           <span className="absolute top-2 left-2 px-2.5 py-1 text-xs font-medium rounded-full bg-white/90 backdrop-blur-sm text-primary shadow-sm">
             {article.category?.name || "Umum"}
           </span>
@@ -38,11 +30,11 @@ export function BrowseArticleCard({ article, isOwn }: BrowseArticleCardProps) {
             </span>
           )}
         </div>
-        <div className="p-4 flex flex-col flex-1">
+        <div className="flex flex-1 flex-col p-4 sm:p-5">
           <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-primary transition-colors leading-snug">
             {article.title}
           </h3>
-          <div className="mt-auto flex items-center gap-2 text-xs text-gray-400">
+          <div className="mt-auto flex min-w-0 items-center gap-2 border-t border-slate-100 pt-3 text-xs text-slate-500">
             <span>{formatDate(article.created_at)}</span>
             {article.author && (
               <>

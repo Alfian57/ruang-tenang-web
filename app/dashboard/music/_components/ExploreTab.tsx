@@ -1,30 +1,16 @@
 "use client";
 
-import { Compass, AudioLines, ArrowRight, BadgeCheck } from "lucide-react";
+import { Compass, BadgeCheck } from "lucide-react";
 import { PublicPlaylistCard } from "./PublicPlaylistCard";
 import { PlaylistListItem } from "@/types";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-
-export interface MusicJourneyCard {
-    id: string;
-    title: string;
-    situation: string;
-    direction: string;
-    duration: string;
-    categoryKeywords: string[];
-    fallbackSearch: string;
-    nextActionLabel: string;
-    nextActionHref: string;
-}
+import { DashboardMascotEmpty } from "@/components/shared/dashboard/DashboardMascotEmpty";
 
 interface ExploreTabProps {
     isLoading: boolean;
     adminPlaylists: PlaylistListItem[];
     publicPlaylists: PlaylistListItem[];
     onPlaylistClick: (playlist: PlaylistListItem) => void;
-    journeys: MusicJourneyCard[];
-    onJourneyStart: (journey: MusicJourneyCard) => void;
 }
 
 export function ExploreTab({
@@ -32,8 +18,6 @@ export function ExploreTab({
     adminPlaylists,
     publicPlaylists,
     onPlaylistClick,
-    journeys,
-    onJourneyStart,
 }: ExploreTabProps) {
     if (isLoading) {
         return (
@@ -47,39 +31,6 @@ export function ExploreTab({
 
     return (
         <div className="space-y-6">
-            <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                    <AudioLines className="w-5 h-5 text-primary" />
-                    <h2 className="font-semibold text-gray-900">Perjalanan Sesuai Kondisi</h2>
-                    <span className="text-[10px] px-2 py-1 rounded-full border border-primary/20 bg-primary/5 text-primary font-semibold">
-                        MUSIC-1
-                    </span>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    {journeys.map((journey) => (
-                        <div
-                            key={journey.id}
-                            className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
-                        >
-                            <p className="text-xs font-semibold text-primary uppercase tracking-wide">{journey.duration}</p>
-                            <h3 className="text-base font-semibold text-gray-900 mt-1">{journey.title}</h3>
-                            <p className="text-sm text-gray-600 mt-2">{journey.situation}</p>
-                            <p className="text-xs text-gray-500 mt-2">Arah: {journey.direction}</p>
-                            <p className="text-xs text-gray-500 mt-1">Setelahnya: {journey.nextActionLabel}</p>
-                            <Button
-                                type="button"
-                                size="sm"
-                                className="mt-3 w-full justify-between"
-                                onClick={() => onJourneyStart(journey)}
-                            >
-                                Mulai Perjalanan
-                                <ArrowRight className="w-4 h-4" />
-                            </Button>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
             {/* Featured Admin Playlists */}
             {adminPlaylists.length > 0 && (
                 <div className="space-y-4">
@@ -117,13 +68,7 @@ export function ExploreTab({
                         ))}
                     </div>
                 ) : (
-                    <div className="text-center py-16">
-                        <Compass className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-500">Belum ada playlist publik</h3>
-                        <p className="text-gray-400 text-sm mt-1">
-                            Jadilah yang pertama membagikan playlist-mu!
-                        </p>
-                    </div>
+                    <DashboardMascotEmpty image="/images/dashboard/mascot/music-headphones.webp" title="Belum ada playlist publik" description="Jadilah yang pertama membagikan daftar putarmu." />
                 )}
             </div>
         </div>

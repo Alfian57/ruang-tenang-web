@@ -1,51 +1,15 @@
+import { ArticleEditorShell } from "../_components/ArticleEditorShell";
+
 export default function NewArticleLoading() {
   return (
-    <div className="py-4 lg:py-6">
-      <div className="flex items-center gap-4 mb-6">
-        <div className="h-10 w-10 rounded-lg bg-gray-200 animate-pulse" />
-        <div className="space-y-1">
-          <div className="h-7 w-40 rounded bg-gray-200 animate-pulse" />
-          <div className="h-4 w-56 rounded bg-gray-200 animate-pulse" />
-        </div>
+    <ArticleEditorShell backHref="/dashboard/articles?tab=mine" title="Tulis artikel baru" description="Bagikan pengetahuan dan pengalamanmu kepada komunitas.">
+      <div className="animate-pulse space-y-7" aria-label="Memuat editor artikel">
+        <div className="space-y-2"><div className="h-4 w-28 rounded bg-slate-200" /><div className="h-11 w-full rounded-xl bg-slate-100" /></div>
+        <div className="space-y-2"><div className="h-4 w-20 rounded bg-slate-200" /><div className="h-11 w-full rounded-xl bg-slate-100" /></div>
+        <div className="space-y-3 rounded-2xl border border-slate-100 p-5"><div className="h-4 w-32 rounded bg-slate-200" /><div className="h-36 w-full rounded-xl bg-slate-100" /></div>
+        <div className="space-y-2"><div className="h-4 w-24 rounded bg-slate-200" /><div className="h-64 w-full rounded-2xl bg-slate-100" /></div>
+        <div className="flex justify-end gap-3 border-t border-slate-100 pt-5"><div className="h-11 w-24 rounded-xl bg-slate-100" /><div className="h-11 w-36 rounded-xl bg-slate-200" /></div>
       </div>
-
-      <div className="max-w-4xl rounded-xl border bg-white overflow-hidden">
-        <div className="p-6 border-b">
-          <div className="h-6 w-28 rounded bg-gray-200 animate-pulse" />
-        </div>
-        <div className="p-6 space-y-6">
-          {/* Title field */}
-          <div className="space-y-2">
-            <div className="h-4 w-24 rounded bg-gray-200 animate-pulse" />
-            <div className="h-10 w-full rounded-lg bg-gray-200 animate-pulse" />
-          </div>
-
-          {/* Category field */}
-          <div className="space-y-2">
-            <div className="h-4 w-16 rounded bg-gray-200 animate-pulse" />
-            <div className="h-10 w-full rounded-lg bg-gray-200 animate-pulse" />
-          </div>
-
-          {/* Thumbnail field */}
-          <div className="space-y-2">
-            <div className="h-4 w-20 rounded bg-gray-200 animate-pulse" />
-            <div className="h-40 w-full rounded-lg bg-gray-200 animate-pulse" />
-            <div className="h-3 w-64 rounded bg-gray-200 animate-pulse" />
-          </div>
-
-          {/* Content field */}
-          <div className="space-y-2">
-            <div className="h-4 w-14 rounded bg-gray-200 animate-pulse" />
-            <div className="h-64 w-full rounded-lg bg-gray-200 animate-pulse" />
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex gap-3 justify-end">
-            <div className="h-10 w-20 rounded-lg bg-gray-200 animate-pulse" />
-            <div className="h-10 w-32 rounded-lg bg-gray-200 animate-pulse" />
-          </div>
-        </div>
-      </div>
-    </div>
+    </ArticleEditorShell>
   );
 }

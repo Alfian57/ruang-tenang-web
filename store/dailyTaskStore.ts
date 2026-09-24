@@ -5,6 +5,7 @@ import type { ClaimTaskResponse, DailyTask, DailyTaskSummary } from "@/types";
 interface DailyTaskStore {
   tasks: DailyTask[];
   isLoading: boolean;
+  hasError: boolean;
   claimingId: number | null;
   lastLoadedAt: number;
   loadTasks: (token: string | null | undefined, force?: boolean) => Promise<void>;
@@ -22,12 +23,13 @@ function extractTasks(payload: DailyTask[] | DailyTaskSummary | null | undefined
 export const useDailyTaskStore = create<DailyTaskStore>((set, get) => ({
   tasks: [],
   isLoading: false,
+  hasError: false,
   claimingId: null,
   lastLoadedAt: 0,
 
   loadTasks: async (token, force = false) => {
     if (!token) {
-      set({ tasks: [], isLoading: false, lastLoadedAt: 0 });
+      set({ tasks: [], isLoading: false, hasError: false, lastLoadedAt: 0 });
       return;
     }
 
@@ -35,12 +37,12 @@ export const useDailyTaskStore = create<DailyTaskStore>((set, get) => ({
     if (!force && isFresh) return;
     if (inflightLoad) return inflightLoad;
 
-    set({ isLoading: true });
+    set({ isLoading: true, hasError: false });
     inflightLoad = communityService.getDailyTasks(token)
       .then((response) => {
         set({ tasks: extractTasks(response.data), lastLoadedAt: Date.now() });
       })
-      .catch(() => undefined)
+      .catch(() => set({ hasError: true }))
       .finally(() => {
         set({ isLoading: false });
         inflightLoad = null;
@@ -66,5 +68,5 @@ export const useDailyTaskStore = create<DailyTaskStore>((set, get) => ({
     }
   },
 
-  clear: () => set({ tasks: [], isLoading: false, claimingId: null, lastLoadedAt: 0 }),
+  clear: () => set({ tasks: [], isLoading: false, hasError: false, claimingId: null, lastLoadedAt: 0 }),
 }));

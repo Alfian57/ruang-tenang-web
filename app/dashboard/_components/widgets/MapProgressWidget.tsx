@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 import type { MapProgressSummary } from "@/types/progress-map";
 import { Map, Flag, Compass, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { ROUTES } from "@/lib/routes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,7 @@ export function MapProgressWidget() {
 
     if (isLoading) {
         return (
-            <Card className="border-none shadow-sm">
+            <Card className="member-widget-card shadow-sm">
                 <CardHeader className="pb-2">
                     <div className="h-5 w-28 bg-gray-100 rounded animate-pulse" />
                 </CardHeader>
@@ -39,11 +40,9 @@ export function MapProgressWidget() {
 
     if (!summary) {
         return (
-            <Card className="border border-gray-100 shadow-sm overflow-hidden">
+            <Card className="member-widget-card overflow-hidden">
                 <CardContent className="p-4 text-center space-y-2">
-                    <div className="p-2.5 bg-primary/10 rounded-xl inline-flex">
-                        <Map className="w-5 h-5 text-primary/80" />
-                    </div>
+                    <div className="relative mx-auto h-28 w-28"><Image src="/images/landing/mascot/map.webp" alt="" fill sizes="112px" className="member-widget-art object-contain" /></div>
                     <h4 className="font-semibold text-sm text-gray-800">Peta Perjalanan</h4>
                     <p className="text-xs text-gray-500">Mulai petualangan dan buka area baru!</p>
                     <Link href={ROUTES.journeyTab("map")}>
@@ -59,10 +58,10 @@ export function MapProgressWidget() {
     const progress = Math.round(summary.overall_progress);
 
     return (
-        <Card className="border border-theme-story-border shadow-sm bg-linear-to-br from-theme-story-from to-white overflow-hidden">
+        <Card className="member-widget-card overflow-hidden">
             <CardHeader className="flex flex-row items-center justify-between px-4 pt-4 pb-1">
-                <CardTitle className="text-base font-bold flex items-center gap-2 text-theme-story-heading">
-                    <Map className="w-4 h-4 text-theme-story-icon" />
+                <CardTitle className="member-widget-heading text-base font-bold flex items-center gap-2">
+                    <Map className="member-widget-icon w-4 h-4" />
                     Peta Perjalanan
                 </CardTitle>
                 <Link href={ROUTES.journeyTab("map")}>

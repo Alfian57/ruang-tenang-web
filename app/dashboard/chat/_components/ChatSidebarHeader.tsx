@@ -30,16 +30,17 @@ export function ChatSidebarHeader({
   };
 
   return (
-    <div className="p-4 border-b sticky top-0 bg-white z-10">
+    <div className="sticky top-0 z-10 border-b border-rose-100 bg-[#fffdfc] p-4">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-base font-bold text-gray-800">Riwayat Chat</h2>
+        <h2 className="text-base font-bold text-slate-800">Percakapan</h2>
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-100 rounded-full text-gray-600">
             {sessionCount}
           </span>
           <button
             onClick={onClose}
-            className="sm:hidden p-1 hover:bg-gray-100 rounded-full text-gray-500"
+            className="lg:hidden p-1 hover:bg-gray-100 rounded-full text-gray-500"
+            aria-label="Tutup riwayat chat"
           >
             <X className="w-4 h-4" />
           </button>

@@ -8,8 +8,8 @@ export const forumService = {
     return httpClient.post<ApiResponse<Forum>>("/forums", data, { token });
   },
 
-  getAll(token: string, limit = 10, offset = 0, search = "", category_id?: number) {
-    return httpClient.get<PaginatedResponse<Forum>>("/forums", { token, params: { limit, offset, search, category_id } });
+  getAll(token: string, limit = 10, offset = 0, search = "", category_id?: number, circle?: string) {
+    return httpClient.get<PaginatedResponse<Forum>>("/forums", { token, params: { limit, offset, search, category_id, circle } });
   },
 
   getBySlug(token: string, slug: string) {

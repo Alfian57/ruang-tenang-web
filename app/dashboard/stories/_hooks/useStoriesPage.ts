@@ -10,17 +10,18 @@ import { useDebounce } from "@/hooks/use-debounce";
 
 export function useStoriesPage() {
   const router = useRouter();
-  const { token, user } = useAuthStore();
+  const { token } = useAuthStore();
   const isBlocked = useBlockStore((s) => s.isBlocked);
   const [stories, setStories] = useState<StoryCard[]>([]);
-  const [featuredStories, setFeaturedStories] = useState<StoryCard[]>([]);
   const [categories, setCategories] = useState<StoryCategory[]>([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [hasError, setHasError] = useState(false);
 
   const searchParams = useSearchParams();
   const pathname = usePathname();
+  const page = Math.max(1, Number.parseInt(searchParams.get("page") || "1", 10) || 1);
+  const storyView = searchParams.get("storyView") === "mine" ? "mine" : "public";
 
   const updateUrlParam = useCallback((key: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -45,93 +46,48 @@ export function useStoriesPage() {
   // Update URL when debounced value changes
   useEffect(() => {
     if (debouncedSearch !== urlSearchQuery) {
-      updateUrlParam("search", debouncedSearch || null);
+      const params = new URLSearchParams(searchParams.toString());
+      if (debouncedSearch) params.set("search", debouncedSearch); else params.delete("search");
+      params.delete("page");
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     }
-  }, [debouncedSearch, updateUrlParam, urlSearchQuery]);
+  }, [debouncedSearch, pathname, router, searchParams, urlSearchQuery]);
 
-  const setSelectedCategory = (value: string) => updateUrlParam("category", value === "all" ? null : value);
-  const setSortBy = (value: "recent" | "hearts" | "featured") => updateUrlParam("sort", value === "recent" ? null : value);
+  const updateListUrl = (key: string, value: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value) params.set(key, value); else params.delete(key);
+    params.delete("page");
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+  const setSelectedCategory = (value: string) => updateListUrl("category", value === "all" ? null : value);
+  const setSortBy = (value: "recent" | "hearts" | "featured") => updateListUrl("sort", value === "recent" ? null : value);
+  const setStoryView = (value: "public" | "mine") => updateListUrl("storyView", value === "public" ? null : value);
+  const setPage = useCallback((next: number) => updateUrlParam("page", next > 1 ? String(next) : null), [updateUrlParam]);
 
   const loadStories = useCallback(async () => {
     setLoading(true);
+    setHasError(false);
     try {
-      const response = await storyService.getStories({
+      const response = storyView === "mine" && token
+        ? await storyService.getMyStories(token, { page, limit: 12 })
+        : await storyService.getStories({
         page,
         limit: 12,
         sort_by: sortBy,
         category_id: selectedCategory !== "all" ? selectedCategory : undefined,
         search: urlSearchQuery.trim() || undefined, // Use URL value
       });
-
-      const publicStories = Array.isArray(response.data) ? response.data : [];
-      let combinedStories = publicStories;
-
-      if (token && user?.id) {
-        const myResponse = await storyService.getMyStories(token, { page: 1, limit: 100 });
-        const myStories = Array.isArray(myResponse.data) ? myResponse.data : [];
-
-        const myStoriesMap = new Map(
-          myStories.map((story) => [story.id, { ...story, is_own: true } as StoryCard])
-        );
-
-        const mergedPublic = publicStories.map((story) => {
-          const mine = myStoriesMap.get(story.id);
-          if (!mine) {
-            return story;
-          }
-          return {
-            ...story,
-            status: mine.status,
-            is_own: true,
-          };
-        });
-
-        // Show non-public own stories at top of first page so user can always see them.
-        const nonPublicOwnStories =
-          page === 1
-            ? myStories
-                .filter((story) => story.status && story.status !== "approved")
-                .filter((story) => {
-                  const text = `${story.title} ${story.excerpt}`.toLowerCase();
-                  const matchesSearch = !urlSearchQuery.trim() || text.includes(urlSearchQuery.trim().toLowerCase());
-                  const matchesCategory =
-                    selectedCategory === "all" ||
-                    !!story.categories?.some((cat) => cat.slug === selectedCategory);
-                  return matchesSearch && matchesCategory;
-                })
-                .map((story) => ({ ...story, is_own: true as const }))
-            : [];
-
-        const seen = new Set<string>();
-        combinedStories = [...nonPublicOwnStories, ...mergedPublic].filter((story) => {
-          if (seen.has(story.id)) return false;
-          seen.add(story.id);
-          return true;
-        });
-      }
-
-      setStories(combinedStories);
+      setStories((response.data || []).map((story) => storyView === "mine" ? { ...story, is_own: true } : story));
       setTotalPages(response.meta?.total_pages || 1);
+      if (response.meta && page > response.meta.total_pages && page > 1) setPage(Math.max(1, response.meta.total_pages));
     } catch (error) {
       console.error("Failed to load stories:", error);
       setStories([]);
+      setHasError(true);
     } finally {
       setLoading(false);
     }
-  }, [page, sortBy, selectedCategory, urlSearchQuery, token, user?.id]);
-
-  const loadFeaturedStories = useCallback(async () => {
-    try {
-      const response = await storyService.getFeatured();
-      if (response.data && Array.isArray(response.data)) {
-        setFeaturedStories(response.data.slice(0, 3));
-      } else {
-        setFeaturedStories([]);
-      }
-    } catch (error) {
-      console.error("Failed to load featured stories:", error);
-    }
-  }, []);
+  }, [page, sortBy, selectedCategory, urlSearchQuery, token, storyView, setPage]);
 
   const loadCategories = useCallback(async () => {
     try {
@@ -146,25 +102,26 @@ export function useStoriesPage() {
 
   useEffect(() => {
     loadCategories();
-    loadFeaturedStories();
-  }, [loadCategories, loadFeaturedStories]);
+  }, [loadCategories]);
 
   useEffect(() => {
     loadStories();
   }, [loadStories]);
 
-  const filteredStories = stories.filter((story) => story.is_own || story.is_anonymous || !isBlocked(story.author?.id));
-  const filteredFeaturedStories = featuredStories.filter((story) => story.is_anonymous || !isBlocked(story.author?.id));
+  const filteredStories = stories.filter((story) => storyView === "mine" || story.is_anonymous || !isBlocked(story.author?.id));
 
   return {
     router,
     stories: filteredStories,
-    featuredStories: filteredFeaturedStories,
     categories,
     loading,
     page,
     setPage,
     totalPages,
+    hasError,
+    retry: loadStories,
+    storyView,
+    setStoryView,
     searchQuery: searchTerm,
     selectedCategory,
     sortBy,

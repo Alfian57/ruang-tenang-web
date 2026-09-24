@@ -13,7 +13,7 @@ export function getSafeRedirect(value: string | null | undefined, fallback = "/d
     }
 
     const normalized = `${parsed.pathname}${parsed.search}${parsed.hash}`;
-    if (normalized === "/login" || normalized.startsWith("/login?") || normalized === "/register" || normalized.startsWith("/register?")) {
+    if (normalized === "/login" || normalized.startsWith("/login?") || normalized === "/register" || normalized.startsWith("/register?") || normalized === "/verify-phone" || normalized.startsWith("/verify-phone?")) {
       return fallback;
     }
 

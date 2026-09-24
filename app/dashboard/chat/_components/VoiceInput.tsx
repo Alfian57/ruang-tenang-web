@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { Mic, MicOff, X, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
 import { useSpeechRecognition } from "../_hooks/useSpeechRecognition";
 
 interface VoiceInputProps {
-    onTranscriptComplete: (transcript: string) => void;
+    onTranscriptComplete: (transcript: string) => Promise<boolean>;
     onClose: () => void;
     disabled?: boolean;
 }
@@ -26,6 +27,7 @@ export function VoiceInput({ onTranscriptComplete, onClose, disabled = false }: 
     } = useSpeechRecognition();
 
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Auto-start listening on mount
     useEffect(() => {
@@ -46,12 +48,17 @@ export function VoiceInput({ onTranscriptComplete, onClose, disabled = false }: 
         }
     }, [transcript, interimTranscript]);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const finalText = transcript.trim();
-        if (finalText) {
-            onTranscriptComplete(finalText);
+        if (!finalText || isSubmitting) return;
+        stopListening();
+        setIsSubmitting(true);
+        try {
+            const sent = await onTranscriptComplete(finalText);
+            if (sent) onClose();
+        } finally {
+            setIsSubmitting(false);
         }
-        onClose();
     };
 
     const handleCancel = () => {
@@ -61,7 +68,7 @@ export function VoiceInput({ onTranscriptComplete, onClose, disabled = false }: 
 
     if (!isSupported) {
         return (
-            <div className="fixed inset-x-0 bottom-0 p-4 bg-white border-t shadow-lg z-50">
+            <div className="fixed inset-x-0 bottom-0 z-50 border-t border-rose-100 bg-white p-4 shadow-2xl" role="dialog" aria-modal="true" aria-label="Dikte suara">
                 <div className="max-w-4xl mx-auto text-center">
                     <p className="text-red-500 text-sm mb-2">{error}</p>
                     <Button variant="outline" onClick={onClose}>
@@ -73,14 +80,20 @@ export function VoiceInput({ onTranscriptComplete, onClose, disabled = false }: 
     }
 
     return (
-        <div className="fixed inset-x-0 bottom-0 p-4 bg-white border-t shadow-lg z-50">
+        <div className="fixed inset-x-0 bottom-0 z-50 border-t border-rose-100 bg-[#fffaf8] p-4 shadow-[0_-20px_60px_-25px_rgba(105,44,49,0.3)]" role="dialog" aria-modal="true" aria-label="Dikte suara">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-rose-100">
+                            <Image src="/images/dashboard/mascot/chat-listen.webp" alt="RuNa" width={44} height={44} className="h-10 w-10 object-contain" />
+                        </div>
+                        <div>
+                        <p className="text-xs font-semibold text-slate-800">Bicara dengan RuNa</p>
+                        <div className="flex items-center gap-1.5">
                         {isListening ? (
                             <>
-                                <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
+                                <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
                                 <span className="text-sm text-red-600 font-medium">Mendengarkan...</span>
                             </>
                         ) : (
@@ -89,12 +102,15 @@ export function VoiceInput({ onTranscriptComplete, onClose, disabled = false }: 
                                 <span className="text-sm text-gray-500">Mikrofon dimatikan</span>
                             </>
                         )}
+                        </div>
+                        </div>
                     </div>
                     <Button
                         variant="ghost"
                         size="icon"
                         onClick={handleCancel}
                         className="h-8 w-8"
+                        aria-label="Tutup dikte suara"
                     >
                         <X className="w-4 h-4" />
                     </Button>
@@ -125,6 +141,7 @@ export function VoiceInput({ onTranscriptComplete, onClose, disabled = false }: 
                             isListening && "border-red-200 bg-red-50/30"
                         )}
                         rows={2}
+                        readOnly={Boolean(interimTranscript)}
                     />
 
                     {/* Interim text indicator */}
@@ -167,17 +184,17 @@ export function VoiceInput({ onTranscriptComplete, onClose, disabled = false }: 
                         <Button
                             size="sm"
                             onClick={handleSubmit}
-                            disabled={!transcript.trim()}
+                            disabled={!transcript.trim() || isSubmitting}
                             className="gap-2"
                         >
                             <Check className="w-4 h-4" />
-                            Kirim
+                            {isSubmitting ? "Mengirim..." : "Kirim"}
                         </Button>
                     </div>
                 </div>
 
-                <p className="text-xs text-gray-400 text-center mt-3">
-                    Tip: Anda dapat mengedit teks sebelum mengirim
+                <p className="mt-3 text-center text-xs text-slate-500">
+                    Suaramu diubah menjadi teks agar RuNa bisa merespons. Kamu dapat mengeditnya sebelum mengirim.
                 </p>
             </div>
         </div>

@@ -63,7 +63,7 @@ function XPPerDayChart({ data }: { data: DailyXP[] }) {
     const maxXP = Math.max(...data.map(d => d.total), 1);
 
     return (
-        <div className="bg-card rounded-xl border p-5">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:p-5">
             <div className="flex items-center gap-2 mb-4">
                 <div className="p-2 bg-violet-100 rounded-lg">
                     <BarChart3 className="h-4 w-4 text-violet-600" />
@@ -110,7 +110,7 @@ function XPByActivityChart({ data }: { data: ActivityXP[] }) {
     const sorted = [...data].sort((a, b) => b.total - a.total);
 
     return (
-        <div className="bg-card rounded-xl border p-5">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:p-5">
             <div className="flex items-center gap-2 mb-4">
                 <div className="p-2 bg-blue-100 rounded-lg">
                     <PieChart className="h-4 w-4 text-blue-600" />
@@ -268,76 +268,114 @@ function CalendarHeatmap({ data }: { data: HeatmapDay[] }) {
         return labels;
     }, [weeks]);
 
+    const visibleDays = weeks.flat().filter((day) => day <= todayStr);
+    const periodSummary = visibleDays.reduce(
+        (summary, day) => {
+            const xp = lookup.get(day) || 0;
+            summary.totalXP += xp;
+            if (xp > 0) summary.activeDays += 1;
+            if (xp > summary.bestDayXP) {
+                summary.bestDay = day;
+                summary.bestDayXP = xp;
+            }
+            return summary;
+        },
+        { totalXP: 0, activeDays: 0, bestDay: "", bestDayXP: 0 }
+    );
+    const activeDayPercent = visibleDays.length > 0
+        ? Math.round((periodSummary.activeDays / visibleDays.length) * 100)
+        : 0;
+
     return (
-        <div className="bg-card rounded-xl border p-5">
-            <div className="flex items-center gap-2 mb-4">
-                <div className="p-2 bg-green-100 rounded-lg">
-                    <CalendarDays className="h-4 w-4 text-green-600" />
+        <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:p-5">
+            <div className="mb-5 flex flex-wrap items-center gap-3">
+                <div className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-emerald-600">
+                    <CalendarDays className="h-5 w-5" />
                 </div>
-                <h3 className="font-semibold text-foreground">Kalender Aktivitas</h3>
-                <span className="text-xs text-muted-foreground ml-auto">12 minggu terakhir</span>
+                <div>
+                    <h3 className="font-semibold text-slate-900">Kalender Aktivitas</h3>
+                    <p className="mt-0.5 text-xs text-slate-500">Ritme aktivitasmu dalam 12 minggu terakhir</p>
+                </div>
+                <span className="ml-auto rounded-full border border-emerald-100 bg-emerald-50/70 px-3 py-1 text-xs font-medium text-emerald-700">12 minggu</span>
             </div>
 
-            <div className="overflow-x-auto">
-                {/* Month labels */}
-                <div className="flex mb-1 ml-8">
-                    {monthLabels.map((m, i) => (
-                        <span
-                            key={i}
-                            className="text-[10px] text-muted-foreground"
-                            style={{
-                                position: "relative",
-                                left: `${m.col * 18}px`,
-                                marginRight: i < monthLabels.length - 1
-                                    ? `${Math.max(0, (monthLabels[i + 1]?.col - m.col) * 18 - 24)}px`
-                                    : 0,
-                            }}
-                        >
-                            {m.label}
-                        </span>
-                    ))}
-                </div>
-
-                <div className="flex gap-0.5">
-                    {/* Day labels */}
-                    <div className="flex flex-col gap-0.5 mr-1">
-                        {dayLabels.map((label, i) => (
-                            <div key={i} className="h-3.5 w-6 flex items-center justify-end pr-1">
-                                <span className="text-[9px] text-muted-foreground">{label}</span>
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(16rem,0.8fr)]">
+                <div className="min-w-0 rounded-2xl border border-slate-100 bg-slate-50/80 p-3 sm:p-4">
+                    <div className="overflow-x-auto pb-1">
+                        <div className="w-full min-w-[30rem]">
+                            <div className="relative mb-2 ml-7 h-4">
+                                {monthLabels.map((month) => (
+                                    <span
+                                        key={`${month.label}-${month.col}`}
+                                        className="absolute top-0 text-[10px] font-medium text-slate-400"
+                                        style={{ left: `${(month.col / weeks.length) * 100}%` }}
+                                    >
+                                        {month.label}
+                                    </span>
+                                ))}
                             </div>
-                        ))}
+
+                            <div className="flex gap-1">
+                                <div className="mr-1 flex w-6 shrink-0 flex-col gap-1">
+                                    {dayLabels.map((label, index) => (
+                                        <div key={index} className="flex h-4 items-center justify-end pr-1">
+                                            <span className="text-[9px] text-slate-400">{label}</span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {weeks.map((week, weekIndex) => (
+                                    <div key={weekIndex} className="flex min-w-5 flex-1 flex-col items-center gap-1">
+                                        {week.map((day) => {
+                                            const xp = lookup.get(day) || 0;
+                                            const isToday = day === todayStr;
+                                            const isFuture = day > todayStr;
+                                            return (
+                                                <div
+                                                    key={day}
+                                                    className={`h-4 w-4 rounded-[5px] transition-colors ${isFuture ? "bg-transparent" : getIntensity(xp)} ${isToday ? "ring-1 ring-slate-500/50 ring-offset-1" : ""}`}
+                                                    title={`${day}: ${xp} XP`}
+                                                    aria-label={`${day}: ${xp} XP`}
+                                                />
+                                            );
+                                        })}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Grid */}
-                    {weeks.map((week, wi) => (
-                        <div key={wi} className="flex flex-col gap-0.5">
-                            {week.map((day) => {
-                                const xp = lookup.get(day) || 0;
-                                const isToday = day === todayStr;
-                                const isFuture = day > todayStr;
-                                return (
-                                    <div
-                                        key={day}
-                                        className={`w-3.5 h-3.5 rounded-sm transition-colors ${isFuture ? "bg-transparent" : getIntensity(xp)
-                                            } ${isToday ? "ring-1 ring-foreground/30" : ""}`}
-                                        title={`${day}: ${xp} XP`}
-                                    />
-                                );
-                            })}
-                        </div>
-                    ))}
+                    <div className="mt-4 flex items-center justify-end gap-1.5">
+                        <span className="mr-1 text-[10px] text-slate-400">Sedikit</span>
+                        <div className="h-3 w-3 rounded-[4px] bg-slate-200" />
+                        <div className="h-3 w-3 rounded-[4px] bg-violet-200" />
+                        <div className="h-3 w-3 rounded-[4px] bg-violet-300" />
+                        <div className="h-3 w-3 rounded-[4px] bg-violet-400" />
+                        <div className="h-3 w-3 rounded-[4px] bg-violet-500" />
+                        <span className="ml-1 text-[10px] text-slate-400">Banyak</span>
+                    </div>
                 </div>
-            </div>
 
-            {/* Legend */}
-            <div className="flex items-center justify-end gap-1 mt-3">
-                <span className="text-[10px] text-muted-foreground mr-1">Sedikit</span>
-                <div className="w-3 h-3 rounded-sm bg-muted/40" />
-                <div className="w-3 h-3 rounded-sm bg-violet-200" />
-                <div className="w-3 h-3 rounded-sm bg-violet-300" />
-                <div className="w-3 h-3 rounded-sm bg-violet-400" />
-                <div className="w-3 h-3 rounded-sm bg-violet-500" />
-                <span className="text-[10px] text-muted-foreground ml-1">Banyak</span>
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                    <div className="rounded-2xl border border-violet-100 bg-[linear-gradient(135deg,#f5f3ff,white_72%)] p-4 sm:col-span-2 lg:col-span-1">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">XP terkumpul · 12 minggu</p>
+                        <p className="mt-2 text-3xl font-black tracking-tight text-slate-900">{periodSummary.totalXP.toLocaleString("id-ID")} <span className="text-sm font-bold text-violet-500">XP</span></p>
+                        <div className="mt-3 h-2 overflow-hidden rounded-full bg-white">
+                            <div className="h-full rounded-full bg-gradient-to-r from-violet-400 to-violet-600" style={{ width: `${activeDayPercent}%` }} />
+                        </div>
+                        <p className="mt-2 text-xs text-slate-500">Ada aktivitas pada {periodSummary.activeDays} dari {visibleDays.length} hari.</p>
+                    </div>
+
+                    <div className="rounded-2xl border border-slate-200/80 bg-white p-4">
+                        <p className="text-xs font-medium text-slate-500">Hari paling aktif</p>
+                        <p className="mt-2 text-xl font-black text-slate-900">+{periodSummary.bestDayXP.toLocaleString("id-ID")} XP</p>
+                        <p className="mt-1 text-xs text-slate-400">{periodSummary.bestDay ? `${periodSummary.bestDay.slice(8, 10)}/${periodSummary.bestDay.slice(5, 7)}` : "Belum ada aktivitas"}</p>
+                    </div>
+
+                    <div className="flex items-center rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4 sm:col-span-2 lg:col-span-1">
+                        <p className="text-sm leading-relaxed text-emerald-800">Konsistensi tumbuh dari langkah kecil yang kamu ulangi.</p>
+                    </div>
+                </div>
             </div>
         </div>
     );
@@ -453,26 +491,39 @@ export function XPVisualizationsSection() {
     }
 
     return (
-        <div className="space-y-6 max-w-3xl mx-auto">
+        <div className="w-full min-w-0 space-y-6">
             {/* Summary stats */}
-            <div className="grid grid-cols-3 gap-3">
-                <div className="bg-card rounded-xl border p-4 text-center">
-                    <p className="text-2xl font-bold text-violet-600">
-                        {dailyXP.reduce((s, d) => s + d.total, 0).toLocaleString()}
-                    </p>
-                    <p className="text-xs text-muted-foreground">XP 30 Hari</p>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-violet-100 bg-[linear-gradient(135deg,#f5f3ff,white_75%)] p-4 sm:p-5">
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">XP 30 hari</p>
+                        <p className="mt-1 text-2xl font-black tracking-tight text-violet-600">
+                            {dailyXP.reduce((sum, day) => sum + day.total, 0).toLocaleString("id-ID")}
+                        </p>
+                    </div>
+                    <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-violet-600 shadow-sm">
+                        <BarChart3 className="h-5 w-5" />
+                    </div>
                 </div>
-                <div className="bg-card rounded-xl border p-4 text-center">
-                    <p className="text-2xl font-bold text-blue-600">
-                        {activityXP.length}
-                    </p>
-                    <p className="text-xs text-muted-foreground">Jenis Aktivitas</p>
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-blue-100 bg-[linear-gradient(135deg,#eff6ff,white_75%)] p-4 sm:p-5">
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Jenis aktivitas</p>
+                        <p className="mt-1 text-2xl font-black tracking-tight text-blue-600">{activityXP.length}</p>
+                    </div>
+                    <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-blue-600 shadow-sm">
+                        <PieChart className="h-5 w-5" />
+                    </div>
                 </div>
-                <div className="bg-card rounded-xl border p-4 text-center">
-                    <p className="text-2xl font-bold text-green-600">
-                        {dailyXP.filter(d => d.total > 0).length}
-                    </p>
-                    <p className="text-xs text-muted-foreground">Hari Aktif</p>
+                <div className="flex items-center justify-between gap-3 rounded-2xl border border-emerald-100 bg-[linear-gradient(135deg,#ecfdf5,white_75%)] p-4 sm:p-5">
+                    <div>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Hari aktif</p>
+                        <p className="mt-1 text-2xl font-black tracking-tight text-emerald-600">
+                            {dailyXP.filter(d => d.total > 0).length}
+                        </p>
+                    </div>
+                    <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-emerald-600 shadow-sm">
+                        <CalendarDays className="h-5 w-5" />
+                    </div>
                 </div>
             </div>
 

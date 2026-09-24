@@ -28,7 +28,7 @@ export interface ChatMessageState {
 }
 
 export interface ChatMessageActions {
-  sendTextMessage: (token: string, content: string, options?: SendMessageOptions) => Promise<void>;
+  sendTextMessage: (token: string, content: string, options?: SendMessageOptions) => Promise<boolean>;
   sendAudioMessage: (token: string, audioBlob: Blob, options?: SendMessageOptions) => Promise<void>;
   toggleMessageLike: (token: string, messageId: number, isLike: boolean) => Promise<void>;
   toggleMessagePin: (token: string, messageId: number) => Promise<void>;

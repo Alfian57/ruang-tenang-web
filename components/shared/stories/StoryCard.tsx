@@ -2,7 +2,7 @@
 
 import { cn } from "@/utils";
 import { StoryCard as StoryCardType } from "@/types";
-import { Heart, MessageCircle, Star, AlertTriangle, User, BookOpen } from "lucide-react";
+import { Heart, MessageCircle, BadgeCheck, AlertTriangle, User, BookOpen } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
@@ -52,7 +52,7 @@ export function StoryCard({ story, className }: StoryCardProps) {
                     {/* Featured Badge */}
                     {story.is_featured && (
                         <div className="absolute top-3 left-3 flex items-center gap-1 rounded-full bg-primary px-2 py-1 text-xs font-medium text-white">
-                            <Star className="h-3 w-3" />
+                            <BadgeCheck className="h-3 w-3" />
                             Pilihan
                         </div>
                     )}

@@ -6,7 +6,7 @@ import { ForumDeleteDialogs } from "./ForumDeleteDialogs";
 import { ForumPostDetail } from "./ForumPostDetail";
 import { ForumReplyForm } from "./ForumReplyForm";
 import { ForumReplyList } from "./ForumReplyList";
-import { AlertTriangle, ArrowUpDown } from "lucide-react";
+import { AlertTriangle, ArrowUpDown, MessageSquareText } from "lucide-react";
 
 export default function ForumDetailPage() {
     const {
@@ -38,21 +38,25 @@ export default function ForumDetailPage() {
 
     if (loading) {
         return (
-            <div className="flex h-[calc(100vh-4rem)] flex-col lg:h-[calc(100vh-0rem)]">
-                <div className="bg-white border-b px-4 lg:px-6 py-4 flex items-center gap-4 sticky top-0 z-10 shrink-0 shadow-sm">
-                    <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse" />
-                    <div className="space-y-1.5">
-                        <div className="h-4 w-32 rounded bg-gray-200 animate-pulse" />
-                        <div className="h-6 w-48 rounded bg-gray-200 animate-pulse" />
-                    </div>
-                </div>
-                {/* Skeleton content could be extracted or just kept simple */}
+            <div className="mx-auto min-h-[70vh] w-full max-w-4xl space-y-5 px-4 py-6 sm:px-6 lg:py-10">
+                <div className="h-12 w-56 animate-pulse rounded-2xl border border-slate-200 bg-white" />
+                <div className="h-40 animate-pulse rounded-[1.75rem] border border-slate-200 bg-white" />
+                <div className="h-60 animate-pulse rounded-3xl border border-slate-200 bg-white" />
+                <div className="h-32 animate-pulse rounded-3xl border border-slate-200 bg-white" />
+                <div className="h-44 animate-pulse rounded-3xl border border-slate-200 bg-white" />
             </div>
         );
     }
 
     if (!forum) {
-        return <div className="py-10 text-center text-gray-500">Topik tidak ditemukan</div>;
+        return (
+            <div className="mx-auto flex min-h-[60vh] w-full max-w-4xl items-center justify-center px-4 py-12 sm:px-6">
+                <div className="rounded-3xl border border-slate-200 bg-white px-6 py-10 text-center shadow-sm">
+                    <h1 className="text-xl font-bold text-slate-900">Topik tidak ditemukan</h1>
+                    <p className="mt-2 text-sm text-slate-500">Topik mungkin sudah dihapus atau tidak tersedia.</p>
+                </div>
+            </div>
+        );
     }
 
     const isOwner = user?.id === forum.user_id;
@@ -70,7 +74,7 @@ export default function ForumDetailPage() {
                 setDeletePostId={setDeletePostId}
             />
 
-            <div className="flex h-[calc(100vh-4rem)] flex-col lg:h-[calc(100vh-0rem)]">
+            <main className="mx-auto min-h-[70vh] w-full max-w-4xl space-y-5 px-4 py-6 sm:px-6 lg:space-y-6 lg:py-10">
                 <ForumHeader
                     forum={forum}
                     user={user}
@@ -79,77 +83,74 @@ export default function ForumDetailPage() {
                     onDeleteClick={() => setShowDeleteForumDialog(true)}
                 />
 
-                <div className="flex-1 overflow-y-auto">
-                    <div className="mx-auto max-w-4xl space-y-6 py-4 lg:py-6">
-                        {forum.is_flagged && (
-                            <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center gap-3 text-red-800">
-                                <div className="bg-red-100 p-2 rounded-full shrink-0">
-                                    <AlertTriangle className="w-5 h-5 text-red-600" />
-                                </div>
-                                <div>
-                                    <h3 className="font-semibold">Topik Ini Diblokir</h3>
-                                    <p className="text-sm text-red-700">
-                                        Topik ini telah ditandai/diblokir oleh admin dan tidak dapat
-                                        menerima balasan baru.
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-
-                        <ForumPostDetail
-                            forum={forum}
-                            user={user}
-                            isLiked={isLiked}
-                            likesCount={likesCount}
-                            replyCount={posts.length}
-                            onToggleLike={handleToggleLike}
-                        />
-
-                        <div className="relative py-2">
-                            <div className="absolute inset-0 flex items-center">
-                                <div className="w-full border-t border-gray-200"></div>
-                            </div>
-                            <div className="relative flex justify-between items-center">
-                                <span className="bg-gray-50 pl-0 pr-3 text-xs uppercase tracking-wider font-medium text-gray-400">Balasan</span>
-                                <div className="bg-gray-50 pl-3 pr-0 flex items-center gap-1.5">
-                                    <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
-                                    <select
-                                        value={sortOrder}
-                                        onChange={(e) => setSortOrder(e.target.value as "top" | "newest" | "oldest")}
-                                        className="text-xs bg-transparent border-none outline-none text-gray-500 font-medium cursor-pointer"
-                                    >
-                                        <option value="top">Top</option>
-                                        <option value="newest">Terbaru</option>
-                                        <option value="oldest">Terlama</option>
-                                    </select>
-                                </div>
-                            </div>
+                {forum.is_flagged && (
+                    <div className="flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50/90 p-4 text-rose-900 shadow-sm">
+                        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-rose-600 shadow-sm">
+                            <AlertTriangle className="h-5 w-5" />
                         </div>
-
-                        <ForumReplyForm
-                            replyContent={replyContent}
-                            setReplyContent={setReplyContent}
-                            handleReply={handleReply}
-                            submitting={submitting}
-                            isFlagged={!!forum.is_flagged}
-                        />
-
-                        <ForumReplyList
-                            posts={posts}
-                            currentUserId={user?.id}
-                            isForumOwner={isOwner}
-                            isAdmin={isAdmin}
-                            onToggleLike={handleTogglePostLike}
-                            onToggleBestAnswer={handleToggleBestAnswer}
-
-                            onShowDeleteDialog={(postId) => {
-                                setDeletePostId(postId);
-                                setShowDeletePostDialog(true);
-                            }}
-                        />
+                        <div className="min-w-0 pt-0.5">
+                            <h3 className="font-bold">Topik ini dibatasi</h3>
+                            <p className="mt-1 text-sm leading-relaxed text-rose-800">
+                                Topik ditandai oleh admin dan sementara tidak dapat menerima balasan baru.
+                            </p>
+                        </div>
                     </div>
+                )}
+
+                <ForumPostDetail
+                    forum={forum}
+                    user={user}
+                    isLiked={isLiked}
+                    likesCount={likesCount}
+                    replyCount={posts.length}
+                    onToggleLike={handleToggleLike}
+                />
+
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 pb-3">
+                    <div className="flex items-center gap-2.5">
+                        <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary/8 text-primary">
+                            <MessageSquareText className="h-4 w-4" />
+                        </span>
+                        <div>
+                            <h2 className="text-sm font-bold text-slate-900">Percakapan</h2>
+                        </div>
+                    </div>
+                    <label className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-slate-500 shadow-sm transition focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10">
+                        <ArrowUpDown className="h-3.5 w-3.5 shrink-0" />
+                        <select
+                            value={sortOrder}
+                            onChange={(e) => setSortOrder(e.target.value as "top" | "newest" | "oldest")}
+                            aria-label="Urutkan balasan"
+                            className="max-w-32 cursor-pointer bg-transparent text-xs font-semibold text-slate-600 outline-none"
+                        >
+                            <option value="top">Paling disukai</option>
+                            <option value="newest">Terbaru</option>
+                            <option value="oldest">Terlama</option>
+                        </select>
+                    </label>
                 </div>
-            </div>
+
+                <ForumReplyForm
+                    replyContent={replyContent}
+                    setReplyContent={setReplyContent}
+                    handleReply={handleReply}
+                    submitting={submitting}
+                    isFlagged={!!forum.is_flagged}
+                />
+
+                <ForumReplyList
+                    posts={posts}
+                    currentUserId={user?.id}
+                    isForumOwner={isOwner}
+                    isAdmin={isAdmin}
+                    onToggleLike={handleTogglePostLike}
+                    onToggleBestAnswer={handleToggleBestAnswer}
+                    onShowDeleteDialog={(postId) => {
+                        setDeletePostId(postId);
+                        setShowDeletePostDialog(true);
+                    }}
+                />
+            </main>
         </>
     );
 }

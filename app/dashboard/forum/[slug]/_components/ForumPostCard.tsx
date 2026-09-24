@@ -45,19 +45,19 @@ export function ForumPostCard({
   const authorAvatar = post.user?.avatar?.trim() || "";
 
   return (
-    <div className={cn("flex gap-2 sm:gap-3 group transition-all", isBestAnswer && "sm:translate-x-2")}>
-      <div className="shrink-0">
+    <article className="group flex items-start gap-2.5 sm:gap-3.5">
+      <div className="shrink-0 pt-1">
         <Avatar
           className={cn(
-            "w-8 h-8 ring-2",
-            isBestAnswer ? "ring-primary/50" : "ring-transparent"
+            "h-9 w-9 ring-2 ring-offset-2 ring-offset-slate-50 sm:h-10 sm:w-10",
+            isBestAnswer ? "ring-emerald-300" : "ring-white"
           )}
         >
           <AvatarImage src={authorAvatar} alt={post.user?.name || "User"} className="object-cover" />
           <AvatarFallback
             className={cn(
               "text-xs font-bold",
-              isBestAnswer ? "bg-primary/10 text-primary" : "bg-gray-200 text-gray-500"
+              isBestAnswer ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"
             )}
           >
             {isBestAnswer ? <Trophy className="w-4 h-4" /> : authorInitial}
@@ -65,46 +65,45 @@ export function ForumPostCard({
         </Avatar>
       </div>
       <div className={cn(
-        "flex-1 min-w-0 p-3 sm:p-4 rounded-2xl rounded-tl-none shadow-sm border transaction-colors relative",
-        isBestAnswer ? "bg-primary/10 border-primary/20" : "bg-white"
+        "relative min-w-0 flex-1 rounded-2xl border p-3.5 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.45)] transition duration-200 group-hover:-translate-y-px group-hover:shadow-[0_18px_36px_-28px_rgba(15,23,42,0.4)] sm:p-4",
+        isBestAnswer ? "border-emerald-200 bg-emerald-50/55" : "border-slate-200/80 bg-white group-hover:border-slate-300"
       )}>
-        {isBestAnswer && (
-          <div className="absolute top-2 right-2 bg-primary text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm flex items-center gap-1 max-w-[55%] truncate">
-            <CheckCircle2 className="w-3 h-3" /> BEST ANSWER
-          </div>
-        )}
-
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="flex items-center gap-2 min-w-0 flex-wrap">
-            <span className={cn("text-sm font-semibold truncate max-w-45", post.is_best_answer ? "text-primary" : "text-gray-900")}>
+        <div className="mb-3 flex items-start justify-between gap-2">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5">
+            <span className={cn("max-w-48 truncate text-sm font-bold", isBestAnswer ? "text-emerald-900" : "text-slate-900")}>
               {post.user?.name}
             </span>
             {isOwner && (
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+              <span className="rounded-full bg-primary/8 px-2 py-0.5 text-[10px] font-semibold text-primary">
                 Komentar Anda
               </span>
             )}
-            <span className="text-xs text-gray-400">•</span>
-            <span className="text-xs text-gray-400 whitespace-nowrap">{formatDistanceToNow(parseApiDate(post.created_at), { addSuffix: true, locale: idLocale })}</span>
+            <span className="text-[11px] text-slate-400">{formatDistanceToNow(parseApiDate(post.created_at), { addSuffix: true, locale: idLocale })}</span>
+            {isBestAnswer && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-800">
+                <Trophy className="h-3 w-3" /> Jawaban terbaik
+              </span>
+            )}
           </div>
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <div className="flex shrink-0 items-center gap-1">
             {isForumOwner && !isBestAnswer && (
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-6 px-2 text-[10px] text-gray-400 hover:text-primary/80 hover:bg-primary/10 hidden sm:inline-flex"
+                aria-label="Tandai sebagai jawaban terbaik"
+                className="h-8 w-8 rounded-lg p-0 text-slate-400 hover:bg-emerald-50 hover:text-emerald-700 sm:w-auto sm:px-2.5"
                 onClick={() => onToggleBestAnswer(post)}
                 title="Tandai sebagai Jawaban Terbaik"
               >
-                <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-                Best Answer
+                <CheckCircle2 className="h-4 w-4 sm:mr-1.5" />
+                <span className="hidden text-xs font-semibold sm:inline">Pilih terbaik</span>
               </Button>
             )}
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-6 w-6 p-0 rounded-full">
-                  <MoreVertical className="w-3 h-3 text-gray-400" />
+                <Button variant="ghost" size="icon" aria-label="Aksi balasan" className="h-8 w-8 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+                  <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -142,38 +141,27 @@ export function ForumPostCard({
           </div>
         </div>
 
-        {isForumOwner && !isBestAnswer && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 px-2 text-[10px] text-gray-500 hover:text-primary hover:bg-primary/10 mb-2 sm:hidden"
-            onClick={() => onToggleBestAnswer(post)}
-            title="Tandai sebagai Jawaban Terbaik"
-          >
-            <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-            Best Answer
-          </Button>
-        )}
-
-        <p className={cn("text-sm whitespace-pre-wrap leading-relaxed mb-3 wrap-break-word", isBestAnswer ? "text-primary" : "text-gray-700")}>
+        <p className={cn("mb-3 whitespace-pre-wrap break-words text-sm leading-7", isBestAnswer ? "text-emerald-950" : "text-slate-700")}>
           {post.content}
         </p>
 
-        <div className="flex items-center gap-3 border-t border-gray-100/50 pt-2">
+        <div className="flex items-center gap-2 border-t border-slate-200/70 pt-2.5">
           {!isOwner && (
             <button
               onClick={() => onToggleLike(post)}
+              aria-label={`${isLiked ? "Batal suka" : "Suka"} balasan dari ${post.user?.name || "pengguna"}`}
+              aria-pressed={isLiked}
               className={cn(
-                "flex items-center gap-1.5 text-xs font-medium transition-colors p-1 rounded",
-                isLiked ? "text-red-500 bg-red-50" : "text-gray-500 hover:text-red-500 hover:bg-red-50"
+                "flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-colors",
+                isLiked ? "bg-rose-50 text-rose-600" : "text-slate-500 hover:bg-rose-50 hover:text-rose-600"
               )}
             >
-              <Heart className={cn("w-3.5 h-3.5", isLiked && "fill-current")} />
+              <Heart className={cn("h-4 w-4", isLiked && "fill-current")} />
               {likeCount}
             </button>
           )}
         </div>
       </div>
-    </div>
+    </article>
   );
 }

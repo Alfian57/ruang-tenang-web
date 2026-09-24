@@ -2,9 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { FileText, Search, BookOpen } from "lucide-react";
+import { Search, BookOpen } from "lucide-react";
 import { Navbar, Footer } from "@/components/layout";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -13,6 +12,7 @@ import { articleService } from "@/services/api";
 import { Article, ArticleCategory } from "@/types";
 import { formatDate, getHtmlExcerpt } from "@/utils";
 import { ROUTES } from "@/lib/routes";
+import { ArticleThumbnail } from "@/components/shared/articles/ArticleThumbnail";
 import { PublicPageHero } from "../_components/PublicPageHero";
 
 import { Suspense } from "react";
@@ -146,20 +146,8 @@ function ArticlesContent() {
                   >
                     <Card className="overflow-hidden bg-white transition-shadow group-hover:shadow-md">
                       <div className="flex flex-col gap-3 p-3 sm:flex-row sm:gap-4 sm:p-4">
-                        <div className="h-40 w-full shrink-0 overflow-hidden rounded-lg bg-gray-100 sm:h-24 sm:w-32">
-                          {article.thumbnail ? (
-                            <Image
-                              src={article.thumbnail}
-                              alt={article.title}
-                              width={128}
-                              height={96}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center text-3xl">
-                              <FileText className="h-9 w-9 text-gray-400" aria-hidden="true" />
-                            </div>
-                          )}
+                        <div className="relative h-40 w-full shrink-0 overflow-hidden rounded-lg bg-gray-100 sm:h-24 sm:w-32">
+                          <ArticleThumbnail src={article.thumbnail} alt={article.title} sizes="(max-width: 640px) 100vw, 128px" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2">
@@ -219,20 +207,8 @@ function ArticlesContent() {
                     >
                       <Card className="overflow-hidden border-gray-100 group-hover:shadow-md transition-all bg-white">
                         <div className="flex gap-3 p-4 items-start">
-                          <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-gray-100 sm:h-20 sm:w-20">
-                            {article.thumbnail ? (
-                              <Image
-                                src={article.thumbnail}
-                                alt={article.title}
-                                width={80}
-                                height={80}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-2xl">
-                                <FileText className="h-8 w-8 text-gray-400" aria-hidden="true" />
-                              </div>
-                            )}
+                          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-gray-100 sm:h-20 sm:w-20">
+                            <ArticleThumbnail src={article.thumbnail} alt={article.title} sizes="80px" />
                           </div>
                           <div className="flex-1 min-w-0 pt-0.5">
                             <h4 className="font-semibold text-sm line-clamp-2 text-gray-900 group-hover:text-primary transition-colors">

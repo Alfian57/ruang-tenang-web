@@ -61,13 +61,14 @@ export function Pagination({
   };
 
   return (
-    <div className="flex items-center justify-center space-x-2 mt-6">
+    <nav aria-label="Navigasi halaman" className="mt-6 flex flex-wrap items-center justify-center gap-2">
       <Button
         variant="outline"
         size="icon"
         onClick={handlePrevious}
         disabled={currentPage === 1 || disabled}
         className="h-8 w-8"
+        aria-label="Halaman sebelumnya"
       >
         <ChevronLeft className="h-4 w-4" />
         <span className="sr-only">Previous page</span>
@@ -76,7 +77,7 @@ export function Pagination({
       {getPageNumbers().map((page, index) => {
         if (page === "ellipsis-start" || page === "ellipsis-end") {
           return (
-            <span key={`ellipsis-${index}`} className="flex h-8 w-8 items-center justify-center">
+            <span key={`ellipsis-${index}`} className="hidden h-8 w-8 items-center justify-center sm:flex">
               <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
             </span>
           );
@@ -89,12 +90,16 @@ export function Pagination({
             size="icon"
             onClick={() => onPageChange(page as number)}
             disabled={disabled}
-            className="h-8 w-8"
+            className="hidden h-8 w-8 sm:inline-flex"
+            aria-label={`Halaman ${page}`}
+            aria-current={currentPage === page ? "page" : undefined}
           >
             {page}
           </Button>
         );
       })}
+
+      <span className="px-2 text-sm font-medium text-slate-600 sm:hidden" aria-live="polite">{currentPage} / {totalPages}</span>
 
       <Button
         variant="outline"
@@ -102,10 +107,11 @@ export function Pagination({
         onClick={handleNext}
         disabled={currentPage === totalPages || disabled}
         className="h-8 w-8"
+        aria-label="Halaman berikutnya"
       >
         <ChevronRight className="h-4 w-4" />
         <span className="sr-only">Next page</span>
       </Button>
-    </div>
+    </nav>
   );
 }

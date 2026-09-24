@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { ROUTES } from "@/lib/routes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -61,7 +62,7 @@ export function QuickJournalWidget({ latestJournal, isLoading }: QuickJournalWid
 
   if (isLoading) {
     return (
-      <Card className="flex-1 border-none shadow-sm flex flex-col min-h-70">
+      <Card className="member-widget-card flex-1 shadow-sm flex flex-col min-h-70">
         <CardHeader>
           <div className="h-6 w-1/3 bg-gray-100 rounded animate-pulse" />
         </CardHeader>
@@ -75,10 +76,10 @@ export function QuickJournalWidget({ latestJournal, isLoading }: QuickJournalWid
   }
 
   return (
-    <Card className="flex-1 flex flex-col border shadow-sm theme-accent-border-soft min-h-70" style={{ background: `linear-gradient(to bottom right, white, var(--theme-accent-soft))` }}>
+    <Card className="member-widget-card flex-1 flex flex-col min-h-70">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-lg font-bold flex items-center gap-2 text-gray-800">
-          <Book className="w-5 h-5 theme-accent-text" />
+        <CardTitle className="member-widget-heading text-lg font-bold flex items-center gap-2">
+          <Book className="member-widget-icon w-5 h-5" />
           Jurnal Terakhir
         </CardTitle>
         <Button asChild variant="ghost" size="sm" className="text-xs text-muted-foreground hover:text-(--theme-accent-hover)">
@@ -157,9 +158,9 @@ export function QuickJournalWidget({ latestJournal, isLoading }: QuickJournalWid
           </div>
         ) : (
           <div className="flex-1 flex flex-col gap-3">
-            <div className="rounded-xl border border-dashed theme-accent-border bg-white/55 p-4 text-center">
-              <div className="w-12 h-12 theme-accent-light-bg rounded-full flex items-center justify-center mx-auto mb-3">
-                <PenTool className="w-6 h-6 theme-accent-text" />
+            <div className="member-widget-soft-panel rounded-xl border border-dashed p-4 text-center">
+              <div className="relative mx-auto mb-2 h-24 w-24">
+                <Image src="/images/landing/mascot/journal.webp" alt="" fill sizes="96px" className="member-widget-art object-contain" />
               </div>
               <h4 className="font-medium text-gray-900 mb-1">{exclusivity.journalEmptyTitle}</h4>
               <p className="text-xs text-muted-foreground">{exclusivity.journalEmptyDesc}</p>

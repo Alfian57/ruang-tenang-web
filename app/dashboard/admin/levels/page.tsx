@@ -1,6 +1,6 @@
 "use client";
 
-import { Award, Plus, Pencil, Trash2, Loader2, Save, X, ImageIcon, Star, Shield, Zap, Coins, Info } from "lucide-react";
+import { Award, Plus, Pencil, Trash2, Loader2, Save, X, ImageIcon, Shield, Zap, Coins, Info } from "lucide-react";
 import Image from "next/image";
 import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -504,7 +504,7 @@ export default function LevelsManagementPage() {
         </div>
       ) : (
         <div className="text-center py-16 bg-white rounded-2xl border border-gray-100">
-          <Star className="w-14 h-14 text-gray-200 mx-auto mb-4" />
+          <Award className="w-14 h-14 text-gray-200 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-600">Belum ada konfigurasi level</h3>
           <p className="text-gray-400 text-sm mt-1">Klik &quot;Tambah Level&quot; untuk memulai</p>
         </div>

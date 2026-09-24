@@ -30,7 +30,7 @@ function ResetPasswordForm() {
     return (
       <div className="text-center">
         <div className="bg-red-50 p-4 rounded-xl text-red-600 mb-6">
-          Link tidak valid. Pastikan Anda menggunakan link yang benar dari email Anda.
+          Link tidak valid. Pastikan Anda menggunakan link dari pesan WhatsApp.
         </div>
         <Link href={ROUTES.FORGOT_PASSWORD}>
           <Button variant="outline">Kirim Ulang Link</Button>

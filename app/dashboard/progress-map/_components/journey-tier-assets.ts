@@ -1,14 +1,14 @@
 const JOURNEY_TIER_IMAGES = [
-    "/images/journey/tier-01-foundation.webp",
-    "/images/journey/tier-02-stability.webp",
-    "/images/journey/tier-03-exploration.webp",
-    "/images/journey/tier-04-reflection.webp",
-    "/images/journey/tier-05-resilience.webp",
-    "/images/journey/tier-06-maturity.webp",
-    "/images/journey/tier-07-guidance.webp",
-    "/images/journey/tier-08-mastery.webp",
-    "/images/journey/tier-09-deep-calm.webp",
-    "/images/journey/tier-10-completion.webp",
+    "/images/journey/tier-01-foundation.webp?v=2",
+    "/images/journey/tier-02-stability.webp?v=2",
+    "/images/journey/tier-03-exploration.webp?v=2",
+    "/images/journey/tier-04-reflection.webp?v=2",
+    "/images/journey/tier-05-resilience.webp?v=2",
+    "/images/journey/tier-06-maturity.webp?v=2",
+    "/images/journey/tier-07-guidance.webp?v=2",
+    "/images/journey/tier-08-mastery.webp?v=2",
+    "/images/journey/tier-09-deep-calm.webp?v=2",
+    "/images/journey/tier-10-completion.webp?v=2",
 ] as const;
 
 const JOURNEY_TIER_IMAGES_BY_KEY: Record<string, string> = {

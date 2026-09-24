@@ -12,6 +12,9 @@ export interface Song {
   id: number;
   title: string;
   file_path: string;
+  attribution?: string;
+  source_url?: string;
+  license_url?: string;
   thumbnail: string;
   category_id: number;
   category?: SongCategory;

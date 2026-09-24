@@ -1,36 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, CreditCard, History, Lock, NotebookPen, Plus } from "lucide-react";
+import { ArrowRight, History, Lock, MessageCircle, NotebookPen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/routes";
-import { SuggestedPrompt, type BillingStatus } from "@/types";
+import type { BillingStatus, SuggestedPrompt } from "@/types";
 
 interface EmptyStateProps {
-  onCreateSession: () => void;
   suggestedPrompts?: SuggestedPrompt[];
   onSuggestedPromptClick?: (prompt: string) => void;
-  creativeModes?: {
-    id: string;
-    label: string;
-    description: string;
-    prompt: string;
-  }[];
-  onCreativeModeClick?: (prompt: string) => void;
   journeyCompanion?: {
-    sessionsThisWeek: number;
-    previousSession: {
-      uuid: string;
-      title: string;
-      lastMessage?: string;
-      updatedAt: string;
-    } | null;
-    quickPrompts: {
-      id: string;
-      label: string;
-      text: string;
-    }[];
+    previousSession: { uuid: string; title: string } | null;
+    quickPrompts: { id: string; label: string; text: string }[];
   };
   onJourneyPromptClick?: (prompt: string) => void;
   onResumeJourneySession?: (sessionId: string) => Promise<void>;
@@ -39,16 +21,9 @@ interface EmptyStateProps {
   onOpenBillingFromQuota?: () => void;
 }
 
-/**
- * Empty state view shown when no chat session is selected.
- * Encourages users to start a new conversation.
- */
 export function EmptyState({
-  onCreateSession,
   suggestedPrompts,
   onSuggestedPromptClick,
-  creativeModes,
-  onCreativeModeClick,
   journeyCompanion,
   onJourneyPromptClick,
   onResumeJourneySession,
@@ -56,261 +31,97 @@ export function EmptyState({
   chatQuotaNotice,
   onOpenBillingFromQuota,
 }: EmptyStateProps) {
-  const [showCreativeModes, setShowCreativeModes] = useState(false);
-
-  const formatUpdatedDate = (dateString: string) => {
-    const date = new Date(dateString);
-    if (Number.isNaN(date.getTime())) return "baru saja";
-    return date.toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "short",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
-  const guidedPrompt = journeyCompanion?.quickPrompts[0]?.text ?? suggestedPrompts?.find((prompt) => prompt.category === "mood")?.text ?? suggestedPrompts?.[0]?.text;
-  const firstPrompt = suggestedPrompts?.[0]?.text;
   const quota = billingStatus?.chat_quota;
-  const isPremium = Boolean(billingStatus?.is_premium || quota?.is_unlimited);
-  const isQuotaExhausted = Boolean(chatQuotaNotice || (quota && !isPremium && quota.remaining <= 0));
-  const resetLabel = quota?.reset_at
-    ? new Date(quota.reset_at).toLocaleString("id-ID", {
-      day: "2-digit",
-      month: "short",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
-    : null;
+  const isQuotaExhausted = Boolean(
+    chatQuotaNotice || (quota && !billingStatus?.is_premium && !quota.is_unlimited && quota.remaining <= 0),
+  );
+  const guidedPrompt = journeyCompanion?.quickPrompts[0];
+  const previousSession = journeyCompanion?.previousSession;
 
-  const handleStartConversation = () => {
+  const handlePromptClick = (prompt: string, callback?: (value: string) => void) => {
     if (isQuotaExhausted) {
       onOpenBillingFromQuota?.();
       return;
     }
-
-    onCreateSession();
-  };
-
-  const handlePromptAction = (prompt?: string, action?: (value: string) => void) => {
-    if (isQuotaExhausted) {
-      onOpenBillingFromQuota?.();
-      return;
-    }
-
-    if (prompt) {
-      action?.(prompt);
-      return;
-    }
-
-    onCreateSession();
+    callback?.(prompt);
   };
 
   return (
-    <div className="min-h-full bg-gray-50/50 p-4 sm:p-6 lg:p-8">
-      <div className="mx-auto w-full max-w-5xl">
-        <section className="rounded-2xl border border-primary/20 bg-white p-5 shadow-sm sm:p-6">
-          <p className="text-xs font-semibold uppercase tracking-wide text-primary">Teman Cerita AI</p>
-          <div className="mt-2 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <h3 className="text-2xl font-bold text-gray-900">Mulai dari langkah yang paling ringan</h3>
-              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-gray-600">
-                Pilih satu jalur. Kamu bisa lanjut sesi lama, mulai check-in terpandu, atau pakai prompt singkat.
-              </p>
-            </div>
-            <Button
-              onClick={handleStartConversation}
-              className={`h-11 rounded-lg px-5 text-sm font-semibold text-white ${isQuotaExhausted ? "bg-amber-600 hover:bg-amber-700" : "bg-primary hover:bg-primary/90"}`}
-            >
-              {isQuotaExhausted ? <Lock className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
-              {isQuotaExhausted ? "Buka Premium" : "Buat Obrolan Baru"}
-            </Button>
+    <div className="relative flex min-h-full flex-col items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_50%_28%,#fff1ec_0%,#fffaf7_43%,#ffffff_78%)] px-5 py-8 text-center sm:px-8 sm:py-12">
+      <div className="pointer-events-none absolute left-[7%] top-[18%] h-32 w-32 rounded-full bg-rose-100/35 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-[12%] right-[6%] h-40 w-40 rounded-full bg-amber-100/45 blur-3xl" />
+
+      <div className="relative z-10 flex w-full max-w-2xl flex-col items-center">
+        <div className="relative mb-5 flex h-36 w-36 items-center justify-center rounded-full border border-rose-100 bg-white/75 shadow-[0_18px_50px_-25px_rgba(178,56,64,0.3)] sm:h-44 sm:w-44">
+          <span className="absolute inset-3 rounded-full bg-gradient-to-b from-rose-50 to-orange-50" />
+          <Image
+            src="/images/dashboard/mascot/chat-welcome.webp"
+            alt="RuNa menyambutmu untuk bercerita"
+            width={176}
+            height={176}
+            priority
+            className="relative h-[115%] w-[115%] max-w-none object-contain"
+          />
+        </div>
+
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-100 bg-white/90 px-3 py-1 text-[11px] font-semibold tracking-[0.12em] text-rose-600 uppercase shadow-sm">
+          <MessageCircle className="h-3 w-3" /> RuNa siap mendengarkan
+        </span>
+        <h1 className="mt-4 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+          Cerita saja, mulai dari mana pun.
+        </h1>
+        <p className="mt-2 max-w-lg text-sm leading-relaxed text-slate-600 sm:text-base">
+          Tak perlu merangkai kata yang sempurna. Tulis, bicara lewat mikrofon, atau pilih satu titik awal di bawah.
+        </p>
+
+        {isQuotaExhausted ? (
+          <div className="mt-6 flex w-full max-w-lg flex-col items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50/90 p-4 text-sm text-amber-900 sm:flex-row sm:text-left">
+            <Lock className="h-5 w-5 shrink-0" />
+            <p className="flex-1">{chatQuotaNotice || "Kuota chat gratis habis untuk saat ini."}</p>
+            <Button size="sm" onClick={onOpenBillingFromQuota} className="shrink-0 bg-amber-600 hover:bg-amber-700">Buka Premium</Button>
           </div>
-        </section>
-
-        {isQuotaExhausted && (
-          <section className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4 shadow-sm">
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div className="flex items-start gap-3">
-                <div className="rounded-xl bg-amber-100 p-2 text-amber-700">
-                  <Lock className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-amber-950">Kuota chat gratis sedang terkunci</p>
-                  <p className="mt-1 text-xs leading-relaxed text-amber-800">
-                    {chatQuotaNotice || "Kuota chat gratis periode ini sudah habis."}
-                    {resetLabel ? ` Reset berikutnya: ${resetLabel}.` : ""}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Button size="sm" className="bg-amber-600 hover:bg-amber-700" onClick={onOpenBillingFromQuota}>
-                  <CreditCard className="mr-1.5 h-3.5 w-3.5" />
-                  Upgrade
-                </Button>
-                <Button asChild size="sm" variant="outline" className="border-amber-300 bg-white text-amber-800 hover:bg-amber-100">
-                  <Link href={ROUTES.JOURNAL}>
-                    <NotebookPen className="mr-1.5 h-3.5 w-3.5" />
-                    Jurnal
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </section>
-        )}
-
-        <section className="mt-5 grid grid-cols-1 gap-3 lg:grid-cols-3">
-          <article className="rounded-2xl border border-primary/20 bg-primary/10 p-4">
-            <History className="h-5 w-5 text-primary" />
-            <h4 className="mt-3 text-base font-semibold text-gray-900">Lanjut sesi terakhir</h4>
-            {journeyCompanion?.previousSession ? (
-              <>
-                <p className="mt-1 line-clamp-2 text-sm text-gray-600">{journeyCompanion.previousSession.title}</p>
-                <p className="mt-1 text-xs text-primary">Diperbarui: {formatUpdatedDate(journeyCompanion.previousSession.updatedAt)}</p>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="mt-4 border-primary/20 bg-white text-primary hover:bg-primary/10"
-                  onClick={() => {
-                    const session = journeyCompanion.previousSession;
-                    if (!session) return;
-                    void onResumeJourneySession?.(session.uuid);
-                  }}
+        ) : (
+          <div className="mt-7 w-full max-w-2xl">
+            <p className="text-center text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Mulai dengan satu langkah kecil</p>
+            <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+              {guidedPrompt && (
+                <button
+                  type="button"
+                  onClick={() => handlePromptClick(guidedPrompt.text, onJourneyPromptClick)}
+                  className="group flex min-h-24 w-full flex-col items-start justify-center rounded-2xl border border-rose-200/90 bg-white/95 p-4 text-left shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-rose-300 hover:bg-rose-50/80 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
                 >
-                  Lanjutkan
-                </Button>
-              </>
-            ) : (
-              <>
-                <p className="mt-1 text-sm text-gray-600">Belum ada sesi lama. Mulai obrolan pertama dari check-in singkat.</p>
-                <Button size="sm" variant="outline" className="mt-4 border-primary/20 bg-white text-primary hover:bg-primary/10" onClick={handleStartConversation}>
-                  {isQuotaExhausted ? "Upgrade dulu" : "Mulai baru"}
-                </Button>
-              </>
-            )}
-          </article>
-
-          <article className="rounded-2xl border border-primary/20 bg-primary/10 p-4">
-            <NotebookPen className="h-5 w-5 text-primary" />
-            <h4 className="mt-3 text-base font-semibold text-gray-900">Mulai check-in terpandu</h4>
-            <p className="mt-1 text-sm text-gray-600">Cocok saat kamu belum tahu harus cerita dari mana.</p>
-            <Button
-              size="sm"
-              className={`mt-4 ${isQuotaExhausted ? "bg-amber-600 hover:bg-amber-700" : "bg-primary hover:bg-primary"}`}
-              onClick={() => handlePromptAction(guidedPrompt, onJourneyPromptClick ?? onSuggestedPromptClick)}
-            >
-              {isQuotaExhausted && <Lock className="mr-1.5 h-3.5 w-3.5" />}
-              {isQuotaExhausted ? "Terkunci" : "Isi Jurnal Sekarang"}
-            </Button>
-          </article>
-
-          <article className="rounded-2xl border border-primary/20 bg-primary/10 p-4">
-            <NotebookPen className="h-5 w-5 text-primary" />
-            <h4 className="mt-3 text-base font-semibold text-gray-900">Pilih prompt cepat</h4>
-            <p className="mt-1 text-sm text-gray-600">Gunakan prompt siap pakai untuk memulai percakapan terarah.</p>
-            <Button
-              size="sm"
-              variant="outline"
-              className="mt-4 border-primary/20 bg-white text-primary hover:bg-primary/10"
-              onClick={() => handlePromptAction(firstPrompt, onSuggestedPromptClick)}
-            >
-              {isQuotaExhausted && <Lock className="mr-1.5 h-3.5 w-3.5" />}
-              {isQuotaExhausted ? "Terkunci" : "Pakai prompt"}
-            </Button>
-          </article>
-        </section>
-
-        {journeyCompanion && journeyCompanion.quickPrompts.length > 0 && (
-          <section className="mt-5 rounded-2xl border border-primary/20 bg-white p-4">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-primary">Pendamping Perjalanan</p>
-                <p className="mt-1 text-sm text-primary">
-                  {journeyCompanion.sessionsThisWeek} sesi aktif dalam 7 hari terakhir.
-                </p>
-              </div>
-            </div>
-            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
-              {journeyCompanion.quickPrompts.map((prompt) => (
+                  <span className="w-full whitespace-normal break-words text-sm leading-relaxed text-slate-700">{guidedPrompt.text}</span>
+                </button>
+              )}
+              {suggestedPrompts?.slice(0, 3).map((prompt) => (
                 <button
                   key={prompt.id}
                   type="button"
-                  onClick={() => handlePromptAction(prompt.text, onJourneyPromptClick)}
-                  className={`rounded-xl border px-3 py-2 text-left text-xs font-medium transition-colors ${isQuotaExhausted ? "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100" : "border-primary/20 bg-primary/10 text-primary hover:bg-primary/10"}`}
+                  onClick={() => handlePromptClick(prompt.text, onSuggestedPromptClick)}
+                  className="group flex min-h-24 w-full flex-col items-start justify-center rounded-2xl border border-slate-200/90 bg-white/95 p-4 text-left shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-rose-200 hover:bg-rose-50/70 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
                 >
-                  {isQuotaExhausted && <Lock className="mr-1 inline h-3 w-3 align-[-2px]" />}
-                  {prompt.label}
+                  <span className="w-full whitespace-normal break-words text-sm leading-relaxed text-slate-700">{prompt.text}</span>
                 </button>
               ))}
             </div>
-          </section>
+          </div>
         )}
 
-        {suggestedPrompts && suggestedPrompts.length > 0 && (
-          <section className="mt-5 rounded-2xl border border-gray-200 bg-white/85 p-4 sm:p-5">
-            <div className="flex items-center gap-2 text-sm text-gray-500 mb-3">
-              <NotebookPen className="w-4 h-4 text-primary" />
-              <span>Atau mulai dengan prompt ini:</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
-              {suggestedPrompts.slice(0, 4).map((prompt, i) => (
-                <button
-                  key={i}
-                  onClick={() => handlePromptAction(prompt.text, onSuggestedPromptClick)}
-                  className={`p-3 text-left text-sm transition-all group rounded-xl border ${isQuotaExhausted ? "border-amber-200 bg-amber-50 hover:bg-amber-100" : "border-gray-200 bg-white hover:bg-primary/5 hover:border-primary/20"}`}
-                >
-                  <span className={`line-clamp-2 ${isQuotaExhausted ? "text-amber-900" : "text-gray-700 group-hover:text-primary"}`}>
-                    {isQuotaExhausted && <Lock className="mr-1 inline h-3 w-3 align-[-2px]" />}
-                    {prompt.text}
-                  </span>
-                  <span className="text-xs text-gray-400 mt-1 block capitalize">
-                    {prompt.category === "mood" ? "Berdasarkan Mood" :
-                      prompt.category === "time_based" ? "Berdasarkan Waktu" :
-                        prompt.category === "follow_up" ? "Lanjutan" : "Umum"}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </section>
+        {previousSession && (
+          <button
+            type="button"
+            onClick={() => void onResumeJourneySession?.(previousSession.uuid)}
+            className="mt-7 inline-flex max-w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-500 transition hover:bg-white hover:text-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400"
+          >
+            <History className="h-4 w-4 shrink-0" />
+            <span className="max-w-[15rem] truncate">Lanjutkan: {previousSession.title}</span>
+            <ArrowRight className="h-3.5 w-3.5 shrink-0" />
+          </button>
         )}
-
-        {creativeModes && creativeModes.length > 0 && (
-          <section className="mt-5 rounded-2xl border border-gray-200 bg-white p-4">
-            <button
-              type="button"
-              className="flex w-full items-center justify-between text-left"
-              onClick={() => setShowCreativeModes((value) => !value)}
-            >
-              <span>
-                <span className="block text-xs font-semibold uppercase tracking-wide text-primary">Mode Percakapan Kreatif</span>
-                <span className="mt-1 block text-sm text-gray-600">Opsi gaya pendampingan tambahan.</span>
-              </span>
-              {showCreativeModes ? (
-                <ChevronUp className="h-4 w-4 text-gray-500" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-gray-500" />
-              )}
-            </button>
-
-            {showCreativeModes && (
-              <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
-                {creativeModes.map((mode) => (
-                  <button
-                    key={mode.id}
-                    type="button"
-                    onClick={() => handlePromptAction(mode.prompt, onCreativeModeClick)}
-                    className={`rounded-xl border px-3 py-2 text-left transition-colors ${isQuotaExhausted ? "border-amber-200 bg-amber-50 hover:bg-amber-100" : "border-primary/20 bg-primary/10 hover:bg-primary/10"}`}
-                  >
-                    <p className={`text-xs font-semibold ${isQuotaExhausted ? "text-amber-900" : "text-primary"}`}>
-                      {isQuotaExhausted && <Lock className="mr-1 inline h-3 w-3 align-[-2px]" />}
-                      {mode.label}
-                    </p>
-                    <p className="mt-1 text-[11px] leading-relaxed text-gray-600">{mode.description}</p>
-                  </button>
-                ))}
-              </div>
-            )}
-          </section>
+        {isQuotaExhausted && (
+          <Link href={ROUTES.JOURNAL} className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-amber-900 underline underline-offset-4">
+            <NotebookPen className="h-4 w-4" /> Tulis jurnal sementara
+          </Link>
         )}
       </div>
     </div>

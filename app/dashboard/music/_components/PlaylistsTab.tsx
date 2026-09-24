@@ -1,10 +1,11 @@
 "use client";
 
-import { Plus, ListMusic } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PlaylistCard } from "./PlaylistCard";
 import { PlaylistListItem } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DashboardMascotEmpty } from "@/components/shared/dashboard/DashboardMascotEmpty";
 
 interface PlaylistsTabProps {
     isLoading: boolean;
@@ -25,11 +26,12 @@ export function PlaylistsTab({
 }: PlaylistsTabProps) {
     return (
         <div className="space-y-6">
+            <div><h2 className="text-base font-bold text-slate-900">Playlist milikmu</h2><p className="text-sm text-slate-500">Simpan lagu favorit untuk kembali didengar kapan saja.</p></div>
             {/* Create Playlist Button */}
             <Button
                 onClick={onCreateClick}
                 variant="outline"
-                className="w-full border-dashed border-2 border-gray-200 hover:border-primary hover:text-primary hover:bg-primary/10 text-gray-500 h-12"
+                className="h-12 w-full rounded-2xl border-2 border-dashed border-theme-accent-border bg-white/80 text-slate-600 hover:border-primary hover:bg-theme-accent-soft hover:text-primary"
             >
                 <Plus className="w-4 h-4 mr-2" />
                 Buat Playlist Baru
@@ -55,13 +57,7 @@ export function PlaylistsTab({
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-16">
-                    <ListMusic className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-500">Belum ada playlist</h3>
-                    <p className="text-gray-400 text-sm mt-1">
-                        Buat playlist pertamamu untuk menyimpan lagu favorit
-                    </p>
-                </div>
+                <DashboardMascotEmpty image="/images/dashboard/mascot/music-headphones.webp" title="Belum ada playlist" description="Buat daftar putar pertamamu untuk menyimpan lagu favorit." />
             )}
         </div>
     );

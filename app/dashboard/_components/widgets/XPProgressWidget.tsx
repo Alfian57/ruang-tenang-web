@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { communityService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import { WeeklyProgress, PersonalJourney, LevelConfig } from "@/types";
-import { TrendingUp, TrendingDown, Zap, Activity, Award, ArrowRight, Trophy, Star } from "lucide-react";
+import { TrendingUp, TrendingDown, Zap, Activity, Award, ArrowRight, Trophy } from "lucide-react";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -41,7 +41,7 @@ export function XPProgressWidget() {
 
     if (isLoading) {
         return (
-            <Card className="border-none shadow-sm flex flex-col">
+            <Card className="member-widget-card shadow-sm flex flex-col">
                 <CardHeader>
                     <div className="h-6 w-1/3 bg-gray-100 rounded animate-pulse" />
                 </CardHeader>
@@ -54,7 +54,7 @@ export function XPProgressWidget() {
 
     if (!journey) {
         return (
-            <Card className="flex flex-col border border-border/50 shadow-sm relative overflow-hidden bg-white/60">
+            <Card className="member-widget-card flex flex-col relative overflow-hidden">
                 <CardHeader className="pb-2 flex flex-row items-center justify-between">
                     <div>
                         <CardTitle className="text-lg font-bold flex items-center gap-2">
@@ -68,7 +68,7 @@ export function XPProgressWidget() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="bg-yellow-50/50 p-4 rounded-xl border border-yellow-100 text-center space-y-2">
-                        <Star className="w-8 h-8 text-yellow-500 mx-auto" />
+                        <TrendingUp className="w-8 h-8 text-yellow-500 mx-auto" />
                         <h4 className="font-semibold text-gray-800 text-sm">Mulai Petualangan!</h4>
                         <p className="text-xs text-gray-500">Mulai tulis jurnal, dengar musik, atau pakai fitur ruang tenang untuk menaikkan level.</p>
                     </div>
@@ -94,10 +94,10 @@ export function XPProgressWidget() {
     const trendColor = weeklyTrend === "up" ? "text-primary/80" : weeklyTrend === "down" ? "text-red-500" : "text-primary/60";
 
     return (
-        <Card className="flex flex-col border border-gray-100 shadow-sm bg-linear-to-br from-white to-primary/10">
+        <Card className="member-widget-card flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between px-4 pt-4 pb-1">
-                <CardTitle className="text-lg font-bold flex items-center gap-2 text-gray-800">
-                    <Zap className="w-5 h-5 text-primary/80" />
+                <CardTitle className="member-widget-heading text-lg font-bold flex items-center gap-2">
+                    <Zap className="member-widget-icon w-5 h-5" />
                     Perjalananmu
                 </CardTitle>
                 <Link href={ROUTES.JOURNEY}>

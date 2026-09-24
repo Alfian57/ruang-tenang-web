@@ -20,7 +20,7 @@ export function PublicPageHero({ eyebrow, title, description, pose, compact = fa
       <div className="public-hero-orbit public-hero-orbit-one" aria-hidden="true" />
       <div className="public-hero-orbit public-hero-orbit-two" aria-hidden="true" />
       <div className="public-hero-copy">
-        <p className="public-hero-eyebrow"><span aria-hidden="true">✦</span> {eyebrow}</p>
+        <p className="public-hero-eyebrow">{eyebrow}</p>
         {headingLevel === 1 ? <h1>{title}</h1> : <h2>{title}</h2>}
         <p className="public-hero-description">{description}</p>
         {children && <div className="public-hero-actions">{children}</div>}
@@ -35,8 +35,6 @@ export function PublicPageHero({ eyebrow, title, description, pose, compact = fa
           sizes={compact ? "(max-width: 640px) 140px, 190px" : "(max-width: 640px) 180px, 330px"}
           className="public-hero-mascot"
         />
-        <span className="public-hero-sparkle public-hero-sparkle-one">✦</span>
-        <span className="public-hero-sparkle public-hero-sparkle-two">✳</span>
       </div>
     </section>
   );

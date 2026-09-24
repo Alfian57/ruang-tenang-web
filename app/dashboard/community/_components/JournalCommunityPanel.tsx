@@ -19,6 +19,10 @@ import type { PublicJournalListItem, PublicJournal } from "@/types";
 import { cn } from "@/utils";
 import { sanitizeHtml } from "@/utils/sanitize";
 import { MoodAssetIcon } from "@/components/shared/mood";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Pagination } from "@/components/ui/pagination";
+import { DashboardMascotEmpty } from "@/components/shared/dashboard/DashboardMascotEmpty";
+import { Button } from "@/components/ui/button";
 
 const AVATAR_GRADIENTS = [
     "from-blue-400 to-blue-600",
@@ -71,6 +75,17 @@ export default function JournalCommunityPanel() {
     const { token } = useAuthStore();
     const [journals, setJournals] = useState<PublicJournalListItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [hasError, setHasError] = useState(false);
+    const [totalPages, setTotalPages] = useState(1);
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+    const router = useRouter();
+    const page = Math.max(1, Number.parseInt(searchParams.get("page") || "1", 10) || 1);
+    const setPage = useCallback((next: number) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (next > 1) params.set("page", String(next)); else params.delete("page");
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }, [pathname, router, searchParams]);
     const [search, setSearch] = useState("");
     const debouncedSearch = useDebounce(search, 400);
 
@@ -81,19 +96,23 @@ export default function JournalCommunityPanel() {
     const fetchJournals = useCallback(async () => {
         if (!token) return;
         setIsLoading(true);
+        setHasError(false);
         try {
             const res = await journalService.listPublic(token, {
-                page: 1,
-                limit: 20,
+                page,
+                limit: 10,
                 q: debouncedSearch || undefined,
             });
             setJournals(res.data ?? []);
+            setTotalPages(res.meta?.total_pages || 1);
+            if (res.meta && page > res.meta.total_pages && page > 1) setPage(Math.max(1, res.meta.total_pages));
         } catch {
             setJournals([]);
+            setHasError(true);
         } finally {
             setIsLoading(false);
         }
-    }, [token, debouncedSearch]);
+    }, [token, debouncedSearch, page, setPage]);
 
     useEffect(() => {
         fetchJournals();
@@ -122,7 +141,7 @@ export default function JournalCommunityPanel() {
     return (
         <div className="space-y-4">
             {/* Intro + search */}
-            <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+            <div className="theme-accent-border-soft rounded-2xl border bg-theme-accent-soft p-4 sm:p-5">
                 <p className="inline-flex items-center gap-2 text-sm font-semibold text-gray-900">
                     <Users className="h-4 w-4 text-primary" />
                     Jurnal Komunitas
@@ -132,23 +151,28 @@ export default function JournalCommunityPanel() {
                 </p>
             </div>
 
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                <Input
-                    placeholder="Cari jurnal komunitas..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className="bg-white pl-10"
-                />
-                {search && (
-                    <button
-                        onClick={() => setSearch("")}
-                        className="absolute right-3 top-1/2 -translate-y-1/2"
-                        aria-label="Bersihkan pencarian"
-                    >
-                        <X className="h-4 w-4 text-gray-400 hover:text-gray-600" />
-                    </button>
-                )}
+            <div className="theme-accent-border-soft rounded-2xl border bg-white/90 p-4 shadow-sm sm:p-5">
+                <p className="mb-3 text-sm font-semibold text-slate-700">Cari refleksi komunitas</p>
+                <div className="relative max-w-2xl">
+                    <Search className="absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <Input
+                        aria-label="Cari jurnal komunitas"
+                        placeholder="Cari jurnal komunitas..."
+                        value={search}
+                        onChange={(e) => { setSearch(e.target.value); if (page > 1) setPage(1); }}
+                        className="h-11 rounded-xl bg-white pl-10 pr-10"
+                    />
+                    {search && (
+                        <button
+                            type="button"
+                            onClick={() => { setSearch(""); setPage(1); }}
+                            className="absolute right-3 top-1/2 -translate-y-1/2"
+                            aria-label="Bersihkan pencarian"
+                        >
+                            <X className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* List */}
@@ -158,16 +182,10 @@ export default function JournalCommunityPanel() {
                         <div key={i} className="h-28 animate-pulse rounded-xl border border-gray-200 bg-white" />
                     ))}
                 </div>
+            ) : hasError ? (
+                <DashboardMascotEmpty image="/images/landing/mascot/journal.webp" title="Jurnal belum bisa dimuat" description="Coba lagi saat koneksi sudah stabil." action={<Button onClick={() => void fetchJournals()}>Coba lagi</Button>} />
             ) : journals.length === 0 ? (
-                <div className="py-16 text-center">
-                    <Users className="mx-auto mb-4 h-16 w-16 text-gray-300" />
-                    <h3 className="text-lg font-medium text-gray-500">Belum ada jurnal komunitas</h3>
-                    <p className="mt-1 text-sm text-gray-400">
-                        {search
-                            ? "Tidak ada hasil yang cocok dengan pencarianmu."
-                            : "Jadilah yang pertama berbagi refleksi dengan menandai jurnalmu sebagai publik."}
-                    </p>
-                </div>
+                <DashboardMascotEmpty image="/images/landing/mascot/journal.webp" title="Belum ada jurnal komunitas" description={search ? "Coba kata kunci lain." : "Refleksi publik yang dibagikan anggota akan muncul di sini. Jurnal pribadimu tetap aman."} />
             ) : (
                 <div className="space-y-3">
                     {journals.map((j) => (
@@ -175,7 +193,7 @@ export default function JournalCommunityPanel() {
                             key={j.uuid}
                             type="button"
                             onClick={() => openDetail(j.uuid)}
-                            className="group block w-full overflow-hidden rounded-xl border border-gray-200 bg-white p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md hover:shadow-primary/5"
+                            className="theme-accent-border-soft group block w-full overflow-hidden rounded-2xl border bg-white p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none sm:p-5"
                         >
                             <div className="flex items-center gap-3">
                                 <AuthorAvatar name={j.author.name} avatar={j.author.avatar} />
@@ -213,6 +231,7 @@ export default function JournalCommunityPanel() {
                     ))}
                 </div>
             )}
+            {!isLoading && !hasError && <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />}
 
             {/* Read-only detail */}
             <Dialog open={!!selectedUuid} onOpenChange={(open) => !open && closeDetail()}>

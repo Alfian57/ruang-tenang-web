@@ -1,13 +1,13 @@
 import Link from "next/link";
-import Image from "next/image";
 import { ROUTES } from "@/lib/routes";
-import { Edit, Trash2, Eye, AlertCircle, FileText } from "lucide-react";
+import { Edit, Trash2, Eye, AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/utils";
 import { getStatusBadge } from "./ArticleStatusBadge";
 import { getUploadUrl } from "@/services/http/upload-url";
 import type { MyArticle } from "../_hooks/useArticlesPage";
+import { ArticleThumbnail } from "@/components/shared/articles/ArticleThumbnail";
 
 interface MyArticleCardProps {
   article: MyArticle;
@@ -20,32 +20,24 @@ export function MyArticleCard({ article, onDelete }: MyArticleCardProps) {
     : article.status;
 
   return (
-    <Card>
+    <Card className="theme-accent-border-soft rounded-2xl border bg-white shadow-sm transition-shadow hover:shadow-md">
       <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex gap-3 min-w-0 flex-1 items-center">
-          <div className="w-20 h-20 sm:w-28 sm:h-20 rounded-lg overflow-hidden shrink-0 relative">
-            {article.thumbnail ? (
-              <Image
-                src={getUploadUrl(article.thumbnail)}
-                alt={article.title}
-                fill
-                sizes="(max-width: 640px) 80px, 112px"
-                className="object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/15">
-                <FileText className="w-8 h-8 text-primary/40" />
-              </div>
-            )}
+          <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl sm:w-28">
+            <ArticleThumbnail
+              src={article.thumbnail?.trim() ? getUploadUrl(article.thumbnail.trim()) : undefined}
+              alt={article.title}
+              sizes="(max-width: 640px) 80px, 112px"
+            />
           </div>
 
           <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
-              <h3 className="font-semibold truncate">{article.title}</h3>
+              <h3 className="truncate font-semibold text-slate-900">{article.title}</h3>
               <div className="w-fit">{getStatusBadge(displayStatus)}</div>
             </div>
             <p className="text-sm text-gray-500">
-              {article.category?.name} • {formatDate(article.created_at)}
+              {article.category?.name || "Umum"} • {formatDate(article.created_at)}
             </p>
             {article.status === "blocked" && (
               <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
@@ -75,24 +67,25 @@ export function MyArticleCard({ article, onDelete }: MyArticleCardProps) {
         </div>
 
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0">
-          <Link href={ROUTES.articleRead(article.slug)}>
-            <Button variant="outline" size="icon" title="Lihat" className="h-9 w-9">
+          <Button asChild variant="outline" size="icon" title="Lihat" aria-label={`Lihat ${article.title}`} className="h-9 w-9 rounded-xl">
+            <Link href={ROUTES.articleRead(article.slug)}>
               <Eye className="w-4 h-4" />
-            </Button>
-          </Link>
-          {article.status !== "blocked" && (
-            <Link href={ROUTES.articleDetail(article.slug)}>
-              <Button variant="outline" size="icon" title="Edit" className="h-9 w-9">
-                <Edit className="w-4 h-4" />
-              </Button>
             </Link>
+          </Button>
+          {article.status !== "blocked" && (
+            <Button asChild variant="outline" size="icon" title="Edit" aria-label={`Edit ${article.title}`} className="h-9 w-9 rounded-xl">
+              <Link href={ROUTES.articleDetail(article.slug)}>
+                <Edit className="w-4 h-4" />
+              </Link>
+            </Button>
           )}
           <Button
             variant="outline"
             size="icon"
-            className="h-9 w-9 text-red-500"
+            className="h-9 w-9 rounded-xl text-red-500"
             onClick={() => onDelete(article.slug || String(article.id))}
             title="Hapus"
+            aria-label={`Hapus ${article.title}`}
           >
             <Trash2 className="w-4 h-4" />
           </Button>

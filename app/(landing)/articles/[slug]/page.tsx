@@ -2,9 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useParams } from "next/navigation";
-import { Calendar, FileText, Tag } from "lucide-react";
+import { Calendar, Tag } from "lucide-react";
 import { Navbar, Footer } from "@/components/layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,6 +14,7 @@ import { sanitizeHtml } from "@/utils/sanitize";
 import { getHtmlExcerpt } from "@/utils";
 import { ROUTES } from "@/lib/routes";
 import { PublicPageHero } from "../../_components/PublicPageHero";
+import { ArticleThumbnail } from "@/components/shared/articles/ArticleThumbnail";
 
 export default function ArticleDetailPage() {
   const params = useParams();
@@ -114,17 +114,9 @@ export default function ArticleDetailPage() {
               </div>
 
               {/* Thumbnail */}
-              {article.thumbnail && (
-                <div className="mb-6 overflow-hidden rounded-xl">
-                  <Image
-                    src={article.thumbnail}
-                    alt={article.title}
-                    width={800}
-                    height={400}
-                    className="w-full h-auto object-cover"
-                  />
-                </div>
-              )}
+              <div className="relative mb-6 aspect-video overflow-hidden rounded-xl bg-gray-50">
+                <ArticleThumbnail src={article.thumbnail} alt={article.title} sizes="(max-width: 1024px) 100vw, 66vw" />
+              </div>
 
               {/* Content */}
               <div
@@ -147,20 +139,8 @@ export default function ArticleDetailPage() {
                   >
                     <Card className="overflow-hidden border-gray-100 group-hover:shadow-md transition-all bg-white">
                       <div className="flex gap-3 p-4 items-start">
-                        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-gray-100 sm:h-20 sm:w-20">
-                          {related.thumbnail ? (
-                            <Image
-                              src={related.thumbnail}
-                              alt={related.title}
-                              width={80}
-                              height={80}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-2xl">
-                              <FileText className="h-8 w-8 text-gray-400" aria-hidden="true" />
-                            </div>
-                          )}
+                        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-gray-100 sm:h-20 sm:w-20">
+                          <ArticleThumbnail src={related.thumbnail} alt={related.title} sizes="80px" />
                         </div>
                         <div className="flex-1 min-w-0 pt-0.5">
                           <h4 className="font-semibold text-sm line-clamp-2 text-gray-900 group-hover:text-primary transition-colors">

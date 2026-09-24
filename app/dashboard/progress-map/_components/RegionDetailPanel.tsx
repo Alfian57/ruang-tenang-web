@@ -79,22 +79,22 @@ function LandmarkItem({
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             className={cn(
-                "relative overflow-hidden rounded-2xl border p-3.5 transition-colors",
+                "relative overflow-hidden rounded-[1.35rem] border p-3.5 transition-colors",
                 isCompleted
-                    ? "border-emerald-100 bg-emerald-50/60"
+                    ? "border-emerald-100 bg-emerald-50/55"
                     : landmark.is_unlocked
-                        ? "border-slate-200 bg-white"
-                        : "border-slate-100 bg-slate-50/80"
+                        ? "border-slate-200/80 bg-white hover:border-theme-accent-border"
+                        : "border-slate-100 bg-slate-50/75"
             )}
         >
             <div className="flex items-start gap-3">
                 <div
                     className={cn(
-                        "grid h-11 w-11 shrink-0 place-items-center rounded-xl border text-lg shadow-sm",
+                        "grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl border text-lg shadow-sm",
                         isCompleted
                             ? "border-emerald-100 bg-emerald-100 text-emerald-700"
                             : landmark.is_unlocked
-                                ? "border-primary/10 bg-primary/8 text-primary"
+                                ? "border-theme-accent-border-soft bg-theme-accent-soft text-theme-accent-dark"
                                 : "border-slate-200 bg-white text-slate-400"
                     )}
                 >
@@ -126,8 +126,8 @@ function LandmarkItem({
                                 <span className="truncate">{getUnlockLabel(landmark.unlock_type, landmark.unlock_value, landmark.unlock_activity)}</span>
                                 <span>{Math.round(landmark.progress_percent)}%</span>
                             </div>
-                            <div className="h-1.5 overflow-hidden rounded-full bg-slate-200">
-                                <div className="h-full rounded-full bg-linear-to-r from-sky-400 to-primary transition-[width] duration-700" style={{ width: `${Math.min(100, landmark.progress_percent)}%` }} />
+                            <div className="h-2 overflow-hidden rounded-full bg-slate-200/80">
+                                <div className="h-full rounded-full bg-theme-accent transition-[width] duration-700" style={{ width: `${Math.min(100, landmark.progress_percent)}%` }} />
                             </div>
                         </div>
                     ) : null}
@@ -153,7 +153,7 @@ function LandmarkItem({
                         size="sm"
                         onClick={() => onClaimReward(landmark.id)}
                         disabled={isClaiming}
-                        className="h-9 shrink-0 gap-1.5 rounded-xl bg-amber-500 px-3 text-xs text-white shadow-sm hover:bg-amber-600"
+                        className="theme-accent-bg theme-accent-bg-hover h-9 shrink-0 gap-1.5 rounded-xl px-3 text-xs text-white shadow-sm"
                     >
                         {isClaiming ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Gift className="h-3.5 w-3.5" />}
                         <span className="hidden sm:inline">Klaim</span>
@@ -175,66 +175,73 @@ export function RegionDetailPanel({
     const progress = region.total_landmarks > 0
         ? Math.min(100, (region.unlocked_landmarks / region.total_landmarks) * 100)
         : region.is_unlocked ? 100 : 0;
+    const isComplete = region.is_unlocked && region.total_landmarks > 0 && region.unlocked_landmarks >= region.total_landmarks;
+    const regionStatus = !region.is_unlocked ? "Terkunci" : isComplete ? "Tuntas" : "Berjalan";
 
     return (
         <Dialog open onOpenChange={(open) => {
             if (!open) onClose();
         }}>
-            <DialogContent className="!bottom-0 !left-0 !top-auto flex max-h-[88vh] w-full !max-w-none !translate-x-0 !translate-y-0 flex-col gap-0 overflow-hidden rounded-b-none rounded-t-[2rem] border border-white/70 bg-white p-0 shadow-2xl [&>button:last-child]:hidden md:!bottom-auto md:!left-auto md:!right-5 md:!top-1/2 md:!w-[min(34rem,calc(100vw-2.5rem))] md:!-translate-y-1/2 md:rounded-[2rem]">
-                    <DialogTitle className="sr-only">Detail area {region.name}</DialogTitle>
-                    <DialogDescription className="sr-only">Progres dan landmark untuk area {region.name}</DialogDescription>
-                    <header className="relative overflow-hidden border-b border-white/10 bg-[linear-gradient(135deg,#0f172a,#1e293b_58%,#312e81)] p-5 text-white">
-                        <div className="pointer-events-none absolute -right-8 -top-10 h-40 w-40 rounded-full bg-primary/35 blur-3xl" />
-                        <div className="relative flex items-start gap-3">
-                            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-white/10 shadow-lg">
-                                <Image src={regionImage} alt="" fill sizes="48px" className="object-cover" />
+            <DialogContent className="!bottom-auto !left-1/2 !right-auto !top-1/2 flex max-h-[88dvh] w-[min(42rem,calc(100vw-2rem))] !max-w-none !-translate-x-1/2 !-translate-y-1/2 flex-col gap-0 overflow-hidden rounded-[2rem] border border-white/80 bg-white p-0 shadow-2xl [&>button:last-child]:hidden">
+                <DialogTitle className="sr-only">Detail area {region.name}</DialogTitle>
+                <DialogDescription className="sr-only">Progres dan landmark untuk area {region.name}</DialogDescription>
+                <header className="journey-tier-detail-header relative overflow-hidden border-b border-theme-accent-border-soft p-5 text-slate-900 sm:p-6">
+                    <div className="pointer-events-none absolute -right-12 -top-16 h-48 w-48 rounded-full bg-theme-accent-soft/80 blur-3xl" aria-hidden="true" />
+                    <div className="relative flex items-start gap-3.5">
+                        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-[1.5rem] border-[3px] border-white bg-white shadow-md ring-1 ring-black/5 sm:h-24 sm:w-24">
+                            <Image src={regionImage} alt="" fill sizes="(max-width: 640px) 80px, 96px" className="object-cover" />
+                            <div className="absolute inset-0 bg-linear-to-t from-slate-950/20 to-transparent" aria-hidden="true" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-theme-accent-dark">Checkpoint {String(region.display_order).padStart(2, "0")}</p>
+                                <span className={cn(
+                                    "rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide",
+                                    isComplete ? "bg-emerald-100 text-emerald-700" : region.is_unlocked ? "bg-theme-accent-soft text-theme-accent-dark" : "bg-slate-200 text-slate-600"
+                                )}>{regionStatus}</span>
                             </div>
-                            <div className="min-w-0 flex-1">
-                                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-300">
-                                    {region.is_unlocked ? "Area perjalanan" : "Area terkunci"}
+                            <h2 className="mt-1 text-lg font-black tracking-tight sm:text-xl">{region.name}</h2>
+                            <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-slate-600">{region.description}</p>
+                        </div>
+                        <button type="button" onClick={onClose} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-white/80 bg-white/75 text-slate-500 shadow-sm transition hover:bg-white hover:text-slate-900" aria-label="Tutup detail area">
+                            <X className="h-4 w-4" />
+                        </button>
+                    </div>
+
+                    <div className="relative mt-4 rounded-2xl border border-white/90 bg-white/80 p-3.5 shadow-sm">
+                        <div className="mb-2 flex items-center justify-between gap-3 text-xs font-semibold">
+                            <span className="text-slate-600">{region.is_unlocked ? "Progres landmark" : "Syarat membuka area"}</span>
+                            <span className="shrink-0 font-black text-slate-900">{region.is_unlocked ? `${region.unlocked_landmarks}/${region.total_landmarks} landmark` : `Level ${region.unlock_value}`}</span>
+                        </div>
+                        <div className="h-2.5 overflow-hidden rounded-full bg-slate-200/80">
+                            <div className={cn("h-full rounded-full transition-[width] duration-700", isComplete ? "bg-emerald-500" : region.is_unlocked ? "bg-theme-accent" : "bg-slate-300")} style={{ width: `${progress}%` }} />
+                        </div>
+                    </div>
+                </header>
+
+                {!region.is_unlocked ? (
+                    <div className="theme-accent-border-soft border-b bg-theme-accent-soft/75 px-5 py-4">
+                        <div className="flex gap-3">
+                            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white text-theme-accent-dark shadow-sm">
+                                <Lock className="h-4 w-4" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-bold text-slate-900">Checkpoint berikutnya menunggumu</p>
+                                <p className="mt-0.5 text-xs leading-relaxed text-slate-600">
+                                    Capai Level {region.unlock_value} untuk membuka area dan seluruh landmark di dalamnya.
                                 </p>
-                                <h2 className="mt-1 text-xl font-black tracking-tight">{region.name}</h2>
-                                <p className="mt-1 text-xs leading-relaxed text-slate-300">{region.description}</p>
-                            </div>
-                            <button type="button" onClick={onClose} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/10 text-white transition hover:bg-white/20" aria-label="Tutup detail area">
-                                <X className="h-4 w-4" />
-                            </button>
-                        </div>
-
-                        <div className="relative mt-4 rounded-xl border border-white/10 bg-white/8 p-3">
-                            <div className="mb-2 flex items-center justify-between text-xs font-semibold">
-                                <span>{region.is_unlocked ? "Progres landmark" : "Syarat membuka area"}</span>
-                                <span>{region.is_unlocked ? `${region.unlocked_landmarks}/${region.total_landmarks}` : `Level ${region.unlock_value}`}</span>
-                            </div>
-                            <div className="h-2 overflow-hidden rounded-full bg-black/20">
-                                <div className="h-full rounded-full bg-linear-to-r from-emerald-400 via-sky-400 to-amber-300 transition-[width] duration-700" style={{ width: `${progress}%` }} />
                             </div>
                         </div>
-                    </header>
-
-                    {!region.is_unlocked ? (
-                        <div className="border-b border-amber-100 bg-amber-50 px-5 py-4">
-                            <div className="flex gap-3">
-                                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-amber-100 text-amber-700">
-                                    <Lock className="h-4 w-4" />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-bold text-amber-950">Checkpoint berikutnya menunggumu</p>
-                                    <p className="mt-0.5 text-xs leading-relaxed text-amber-800/75">
-                                        Capai Level {region.unlock_value} untuk membuka area dan seluruh landmark di dalamnya.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                    </div>
                     ) : null}
 
-                    <div className="flex-1 space-y-3 overflow-y-auto p-4 sm:p-5">
+                    <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4 sm:p-5">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-black text-slate-900">Landmark area</p>
-                                <p className="text-xs text-slate-500">Selesaikan target, lalu klaim hasil perjalananmu.</p>
+                                <p className="text-xs text-slate-500">{sortedLandmarks.length} target untuk area ini · selesaikan lalu klaim hasilnya.</p>
                             </div>
-                            <Gift className="h-5 w-5 text-amber-400" />
+                            <Gift className="h-5 w-5 text-theme-accent" />
                         </div>
 
                         {sortedLandmarks.length === 0 ? (
@@ -243,14 +250,14 @@ export function RegionDetailPanel({
                             </div>
                         ) : (
                             sortedLandmarks.map((landmark) => (
-                        <LandmarkItem
-                            key={landmark.id}
-                            landmark={landmark}
-                            onClaimReward={onClaimReward}
-                            claimingLandmark={claimingLandmark}
-                            regionUnlocked={region.is_unlocked}
-                            regionImage={regionImage}
-                        />
+                                <LandmarkItem
+                                    key={landmark.id}
+                                    landmark={landmark}
+                                    onClaimReward={onClaimReward}
+                                    claimingLandmark={claimingLandmark}
+                                    regionUnlocked={region.is_unlocked}
+                                    regionImage={regionImage}
+                                />
                             ))
                         )}
                     </div>

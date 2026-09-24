@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Bell, Check, CheckCheck, Heart, Star, Award, TrendingUp } from "lucide-react";
+import { Bell, Check, CheckCheck, Heart, BadgeCheck, CircleX, Award, TrendingUp } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,9 +19,9 @@ function getNotificationIcon(type: string) {
     case "heart":
       return <Heart className="w-4 h-4 text-red-500 fill-red-500" />;
     case "story_approved":
-      return <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />;
+      return <BadgeCheck className="w-4 h-4 text-emerald-600" />;
     case "story_rejected":
-      return <Star className="w-4 h-4 text-gray-400" />;
+      return <CircleX className="w-4 h-4 text-gray-400" />;
     case "badge_earned":
       return <Award className="w-4 h-4 text-primary/80" />;
     case "level_up":

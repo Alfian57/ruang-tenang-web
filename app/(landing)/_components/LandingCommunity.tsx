@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Heart, Sparkles, Trophy, Users } from "lucide-react";
+import { ArrowRight, Heart, Trophy, Users } from "lucide-react";
 import { communityService } from "@/services/api/community";
 import { storyService } from "@/services/api/story";
 import { ROUTES } from "@/lib/routes";
@@ -64,7 +64,7 @@ export function LandingCommunity() {
         <div className="mt-11 grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
           <div className="landing-community-story relative min-h-[390px] rounded-[2.2rem] border border-[#f7dadd] bg-white px-7 pb-56 pt-7 shadow-[0_24px_65px_-42px_rgba(123,65,94,0.35)] sm:p-9">
             <div className="relative z-10 max-w-full sm:max-w-[62%]">
-              <span className="inline-flex items-center gap-2 text-sm font-bold text-[#c55363]"><Sparkles size={17} aria-hidden="true" /> Cerita dari komunitas</span>
+              <span className="inline-flex items-center gap-2 text-sm font-bold text-[#c55363]"><Users size={17} aria-hidden="true" /> Cerita dari komunitas</span>
               {loading ? (
                 <div className="mt-8 space-y-3" aria-label="Memuat cerita"><div className="h-5 w-3/4 animate-pulse rounded bg-rose-100" /><div className="h-4 w-full animate-pulse rounded bg-rose-100" /><div className="h-4 w-4/5 animate-pulse rounded bg-rose-100" /></div>
               ) : featuredStory ? (

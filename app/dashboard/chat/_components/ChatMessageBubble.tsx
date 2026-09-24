@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { ThumbsUp, ThumbsDown, Copy, Check, Pin } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -8,6 +7,7 @@ import { AudioPlayer } from "./AudioPlayer";
 import { ChatMessage } from "@/types";
 import { cn, formatDate } from "@/utils";
 import { getUploadUrl } from "@/services/http/upload-url";
+import { RuNaAvatar } from "./RuNaAvatar";
 
 interface ChatMessageBubbleProps {
   message: ChatMessage;
@@ -90,15 +90,9 @@ export function ChatMessageBubble({
       data-pinned={message.is_pinned}
     >
       {/* AI Avatar */}
-      {!isUser && (
-        <Avatar className="w-10 h-10 shrink-0 mt-1">
-          <AvatarFallback className="bg-transparent">
-            <Image src="/images/ai-profile.png" alt="AI" width={40} height={40} />
-          </AvatarFallback>
-        </Avatar>
-      )}
+      {!isUser && <RuNaAvatar />}
 
-      <div className="max-w-[85%] lg:max-w-[75%] space-y-2">
+      <div className="max-w-[calc(100%-3rem)] space-y-2 sm:max-w-[78%]">
         {/* Pin indicator */}
         {message.is_pinned && (
           <div className={cn(
@@ -113,10 +107,10 @@ export function ChatMessageBubble({
         {/* Message bubble */}
         <div
           className={cn(
-            "px-5 py-3.5 rounded-2xl text-sm leading-relaxed shadow-sm",
+            "rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm sm:px-5",
             isUser
-              ? "bg-primary text-white rounded-tr-sm"
-              : "bg-gray-100 text-gray-800 rounded-tl-sm",
+              ? "rounded-tr-md bg-primary text-white"
+              : "rounded-tl-md border border-rose-100 bg-[#fff9f7] text-slate-800",
             message.is_pinned && !isUser && "ring-2 ring-amber-400/50"
           )}
         >
@@ -134,7 +128,7 @@ export function ChatMessageBubble({
         {/* Message metadata and actions */}
         <div
           className={cn(
-            "flex items-center gap-2 text-xs text-gray-400",
+            "flex items-center gap-2 text-xs text-slate-400",
             isUser ? "justify-end" : "justify-start"
           )}
         >
@@ -142,7 +136,7 @@ export function ChatMessageBubble({
 
           {/* Action buttons for AI messages */}
           {!isUser && (
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
               {/* Pin button */}
               <button
                 className={cn(
@@ -151,6 +145,7 @@ export function ChatMessageBubble({
                 )}
                 onClick={() => onTogglePin?.(message.id)}
                 title={message.is_pinned ? "Hapus Sematkan" : "Sematkan"}
+                aria-label={message.is_pinned ? "Hapus sematan" : "Sematkan pesan"}
               >
                 <Pin className={cn("w-3 h-3", message.is_pinned && "fill-current")} />
               </button>
@@ -159,7 +154,8 @@ export function ChatMessageBubble({
               {!isAudio && (
                 <button
                   className="p-1 hover:bg-gray-100 rounded transition text-gray-400 hover:text-gray-600"
-                  title="Copy"
+                  title="Salin"
+                  aria-label="Salin pesan"
                   onClick={() => handleCopy(message.content, message.id)}
                 >
                   {copiedId === message.id ? (
@@ -177,7 +173,8 @@ export function ChatMessageBubble({
                   message.is_liked && "text-primary"
                 )}
                 onClick={() => onToggleLike(message.id, true)}
-                title="Like"
+                title="Suka"
+                aria-label="Suka pesan"
               >
                 <ThumbsUp className={cn("w-3 h-3", message.is_liked && "fill-current")} />
               </button>
@@ -189,7 +186,8 @@ export function ChatMessageBubble({
                   message.is_disliked && "text-primary"
                 )}
                 onClick={() => onToggleLike(message.id, false)}
-                title="Dislike"
+                title="Tidak suka"
+                aria-label="Tidak suka pesan"
               >
                 <ThumbsDown className={cn("w-3 h-3", message.is_disliked && "fill-current")} />
               </button>

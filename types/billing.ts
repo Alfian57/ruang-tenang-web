@@ -107,6 +107,12 @@ export interface BillingTransaction {
   failure_reason?: string;
   snap_token?: string;
   paid_at?: string;
+  refunded_amount?: number;
+  refund_requested_amount?: number;
+  provider_refund_amount_reported?: number;
+  refund_status?: "none" | "pending_confirmation" | "partially_refunded" | "refunded" | string;
+  refund_reconciliation_status?: "not_required" | "pending" | "resolved" | string;
+  refund_reconciliation_reason?: string;
   created_at: string;
   updated_at: string;
 }

@@ -625,7 +625,7 @@ export function useChatPage() {
   };
 
   const handleSendText = async (content: string) => {
-    if (!token) return;
+    if (!token) return false;
 
     const lowerContent = content.toLowerCase();
     const hasCrisisKeyword = CRISIS_KEYWORDS.some(keyword => lowerContent.includes(keyword));
@@ -634,7 +634,7 @@ export function useChatPage() {
       setPendingCrisisMessage(content);
       setIsSafeModeActive(true);
       setSafeModeSessionId(activeSession?.uuid ?? null);
-      return;
+      return true;
     }
 
     // GPT/Gemini/Claude-style flow: if there is no active session yet, create
@@ -642,10 +642,10 @@ export function useChatPage() {
     // first message) before sending.
     if (!activeSession) {
       const createdUUID = await createSession(token);
-      if (!createdUUID) return;
+      if (!createdUUID) return false;
     }
 
-    await sendTextMessage(token, content, buildMessageOptions("chat_input"));
+    return sendTextMessage(token, content, buildMessageOptions("chat_input"));
   };
 
   const handleContinueInSafeMode = async () => {
@@ -660,10 +660,12 @@ export function useChatPage() {
       if (!createdUUID) return;
     }
 
-    await sendTextMessage(token, safePrompt, buildMessageOptions("safe_mode"));
-    setIsSafeModeActive(false);
-    setPendingCrisisMessage(null);
-    setSafeModeSessionId(null);
+    const sent = await sendTextMessage(token, safePrompt, buildMessageOptions("safe_mode"));
+    if (sent) {
+      setIsSafeModeActive(false);
+      setPendingCrisisMessage(null);
+      setSafeModeSessionId(null);
+    }
   };
 
   const handleOpenCrisisSupport = () => {
@@ -771,8 +773,8 @@ export function useChatPage() {
     if (!token || !reflectionNudge) return;
     if (isSafeModeVisible) return;
 
-    await sendTextMessage(token, reflectionNudge.prompt, buildMessageOptions("reflection_nudge"));
-    markReflectionCheckpointHandled(reflectionNudge.key);
+    const sent = await sendTextMessage(token, reflectionNudge.prompt, buildMessageOptions("reflection_nudge"));
+    if (sent) markReflectionCheckpointHandled(reflectionNudge.key);
   };
 
   const handleGenerateReflectionSummary = async () => {
@@ -780,12 +782,12 @@ export function useChatPage() {
     if (isSafeModeVisible) return;
 
     await generateSummary(token, activeSession.uuid);
-    await sendTextMessage(
+    const sent = await sendTextMessage(
       token,
       "Berdasarkan sesi ini, bantu aku membuat refleksi mingguan singkat berisi pola utama, pemicu, hal yang membantu, dan next action 1 langkah.",
       buildMessageOptions("reflection_summary"),
     );
-    markReflectionCheckpointHandled(reflectionNudge.key);
+    if (sent) markReflectionCheckpointHandled(reflectionNudge.key);
   };
 
   const handleDismissReflectionNudge = () => {

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
-import { motion } from "framer-motion";
+import { DashboardMascotEmpty } from "@/components/shared/dashboard/DashboardMascotEmpty";
 import { cn } from "@/utils";
 import { MusicCategoryCard } from "./MusicCategoryCard";
 import { Song, SongCategory } from "@/types";
@@ -38,22 +38,28 @@ export function BrowseTab({
     return (
         <div className="space-y-6">
             {/* Search Input */}
-            <div className="relative flex-1 mb-6">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
-                <Input
-                    className="pl-10 bg-white"
-                    placeholder="Cari lagu, artis, atau kategori mood..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-                {search && (
-                    <button
-                        onClick={() => setSearch("")}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                        <X className="h-4 w-4" />
-                    </button>
-                )}
+            <div className="theme-accent-border-soft rounded-2xl border bg-white/90 p-4 shadow-sm sm:p-5">
+                <p className="mb-3 text-sm font-semibold text-slate-700">Cari suara yang menemanimu</p>
+                <div className="relative max-w-2xl">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
+                    <Input
+                        aria-label="Cari musik"
+                        className="h-11 rounded-xl bg-white pl-10 pr-10"
+                        placeholder="Cari lagu, artis, atau kategori mood..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                    {search && (
+                        <button
+                            type="button"
+                            aria-label="Bersihkan pencarian musik"
+                            onClick={() => setSearch("")}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        >
+                            <X className="h-4 w-4" />
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Categories Grid */}
@@ -67,10 +73,10 @@ export function BrowseTab({
                 // Search Results
                 <div className="space-y-3">
                     <div className="flex items-center justify-between gap-3">
-                        <h2 className="text-sm font-medium text-gray-500">Hasil Pencarian</h2>
+                        <h2 className="text-base font-bold text-slate-900">Hasil pencarian</h2>
                         {songs.length > 0 && (
                             <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-500 ring-1 ring-gray-200">
-                                {songs.length} lagu
+                                {songs.length} lagu di halaman ini
                             </span>
                         )}
                     </div>
@@ -79,11 +85,15 @@ export function BrowseTab({
                             {songs.map((song) => (
                                 <Card
                                     key={song.id}
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-label={`${currentSong?.id === song.id && isPlaying ? "Jeda" : "Putar"} ${song.title}`}
                                     className={cn(
-                                        "group overflow-hidden border-gray-200 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:border-red-100 hover:shadow-md",
-                                        currentSong?.id === song.id && "border-red-200 bg-red-50/50 shadow-sm"
+                                        "theme-accent-border-soft group cursor-pointer overflow-hidden rounded-2xl border bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary motion-reduce:transition-none",
+                                        currentSong?.id === song.id && "bg-theme-accent-soft shadow-sm"
                                     )}
                                     onClick={() => onPlay(song)}
+                                    onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onPlay(song); } }}
                                 >
                                     <div className="flex items-center h-full gap-4 p-4">
                                         <div className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gray-100 ring-1 ring-gray-100">
@@ -110,7 +120,7 @@ export function BrowseTab({
                                                 </div>
                                                 <div className={cn(
                                                     "flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors",
-                                                    currentSong?.id === song.id ? "bg-primary text-white" : "bg-red-50 text-primary group-hover:bg-primary group-hover:text-white"
+                                                    currentSong?.id === song.id ? "bg-primary text-white" : "bg-theme-accent-soft text-primary group-hover:bg-primary group-hover:text-white"
                                                 )}>
                                                     {currentSong?.id === song.id && isPlaying ? (
                                                         <Pause className="h-4 w-4" />
@@ -125,7 +135,7 @@ export function BrowseTab({
                                                     {categories.find(c => c.id === song.category_id)?.name || song.category?.name || "Musik"}
                                                 </span>
                                                 {currentSong?.id === song.id && (
-                                                    <span className="rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700">
+                                                    <span className="rounded-full bg-theme-accent-light px-2.5 py-1 text-xs font-semibold text-theme-accent-dark">
                                                         {isPlaying ? "Sedang diputar" : "Dipilih"}
                                                     </span>
                                                 )}
@@ -136,27 +146,26 @@ export function BrowseTab({
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-12 bg-white rounded-xl border border-dashed text-gray-500">
-                            Tidak ada lagu yang ditemukan
-                        </div>
+                        <DashboardMascotEmpty image="/images/dashboard/mascot/music-headphones.webp" title="Belum ada lagu yang cocok" description="Coba kata kunci lain untuk menemukan teman dengarmu." />
                     )}
                 </div>
             ) : (
                 // Category Grid
-                <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-4">
-                    {categories.map((category, index) => (
-                        <motion.div
+                <div className="space-y-3">
+                    <div><h2 className="text-base font-bold text-slate-900">Jelajahi suasana</h2><p className="text-sm text-slate-500">Pilih kategori yang cocok dengan kebutuhanmu saat ini.</p></div>
+                    {categories.length === 0 ? <DashboardMascotEmpty image="/images/dashboard/mascot/music-headphones.webp" title="Belum ada kategori musik" description="Pilihan musik baru akan hadir di sini." /> : <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+                    {categories.map((category) => (
+                        <div
                             key={category.id}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: index * 0.05 }}
+                            className="transition-transform hover:-translate-y-1 motion-reduce:transition-none"
                         >
                             <MusicCategoryCard
                                 category={category}
                                 onClick={() => onCategoryClick(category)}
                             />
-                        </motion.div>
+                        </div>
                     ))}
+                    </div>}
                 </div>
             )}
         </div>

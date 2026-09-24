@@ -12,22 +12,27 @@ export function JournalTagsCard({ analytics }: JournalTagsCardProps) {
     }
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                    <Tag className="w-4 h-4" />
-                    Tag Populer
-                </CardTitle>
+        <Card className="theme-accent-border-soft overflow-hidden rounded-2xl border bg-white shadow-sm">
+            <CardHeader className="pb-3">
+                <div className="flex items-center gap-3">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-theme-accent-soft text-theme-accent-dark">
+                        <Tag className="h-5 w-5" />
+                    </span>
+                    <div>
+                        <CardTitle className="text-base text-slate-900">Tema yang sering kamu tulis</CardTitle>
+                        <p className="mt-1 text-xs text-slate-500">Tag yang paling banyak muncul di catatanmu</p>
+                    </div>
+                </div>
             </CardHeader>
             <CardContent>
                 <div className="flex flex-wrap gap-2">
                     {analytics.top_tags.map((item) => (
                         <span
                             key={item.tag}
-                            className="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-700"
+                            className="inline-flex items-center gap-2 rounded-xl border border-slate-200/80 bg-slate-50 px-3 py-2 text-sm text-slate-700 transition-colors hover:border-theme-accent-border hover:bg-theme-accent-soft"
                         >
-                            #{item.tag}
-                            <span className="ml-1 text-gray-500">({item.count})</span>
+                            <span className="font-medium">#{item.tag}</span>
+                            <span className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-slate-500">{item.count}</span>
                         </span>
                     ))}
                 </div>

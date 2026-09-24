@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowRight, Building2, Coins, Crown, Loader2, Wallet } from "lucide-react";
+import { ArrowRight, Coins, Loader2, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/routes";
@@ -14,6 +15,7 @@ import type {
     BillingStatus,
     BillingTopupPackage,
 } from "@/types";
+import { BillingMetricCard } from "./BillingMetricCard";
 
 const IDR_FORMATTER = new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -121,47 +123,41 @@ export default function CoinsPanel() {
     }
 
     return (
-        <div className="space-y-6 py-4 lg:py-6">
-            <section className="rounded-3xl border border-primary/20 bg-linear-to-br from-primary/10 via-white to-primary/10 p-5 lg:p-6">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                    <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary/80">Koin</p>
-                        <h1 className="mt-1 text-2xl font-semibold text-slate-900">Tambah Koin untuk Reward</h1>
-                        <p className="mt-2 text-sm text-slate-600 max-w-2xl">
-                            Tambah saldo koin untuk menukar hadiah dan benefit perjalananmu.
+        <div className="space-y-5 py-1">
+            <section className="relative overflow-hidden rounded-2xl border border-rose-100 bg-[linear-gradient(120deg,#fff_0%,#fff8f5_100%)] p-4 shadow-sm sm:p-5">
+                <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0">
+                        <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-theme-accent-dark">Saldo perjalanan</p>
+                        <h2 className="mt-1 text-xl font-bold tracking-tight text-slate-900">Tambah koin untuk reward</h2>
+                        <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-slate-600">
+                            Tukarkan saldo koin dengan hadiah dan benefit perjalananmu.
                         </p>
                     </div>
-                    <Link href={ROUTES.BILLING}>
-                        <Button variant="outline" className="gap-2 border-primary/20 text-primary hover:bg-primary/10">
+                    <Image src="/images/dashboard/mascot/daily-missions.webp" alt="" width={96} height={96} sizes="96px" className="hidden h-20 w-20 shrink-0 object-contain sm:block" />
+                    <Link href={ROUTES.BILLING} className="shrink-0">
+                        <Button variant="outline" className="gap-2 rounded-xl border-rose-200 bg-white text-theme-accent-dark hover:bg-rose-50">
                             Lihat Paket
-                            <ArrowRight className="w-4 h-4" />
+                            <ArrowRight className="h-4 w-4" />
                         </Button>
                     </Link>
                 </div>
 
-                <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-3">
-                    <div className="rounded-2xl border border-primary/20 bg-white p-4">
-                        <p className="text-xs uppercase tracking-wide text-slate-500">Saldo Koin</p>
-                        <p className="mt-1 text-2xl font-semibold text-slate-900">{(status?.gold_coins ?? user?.gold_coins ?? 0).toLocaleString("id-ID")}</p>
-                        <p className="mt-1 text-xs text-slate-500">Bisa dipakai untuk klaim reward</p>
-                    </div>
-                    <div className="rounded-2xl border border-amber-100 bg-white p-4">
-                        <p className="text-xs uppercase tracking-wide text-slate-500">Tier Aktif</p>
-                        <p className="mt-1 text-2xl font-semibold text-slate-900">{currentTier}</p>
-                        <p className="mt-1 text-xs text-slate-500">Akses: {formatPremiumAccess(status)}</p>
-                    </div>
-                    <div className="rounded-2xl border border-primary/20 bg-white p-4">
-                        <p className="text-xs uppercase tracking-wide text-slate-500">Kuota Chat AI</p>
-                        <p className="mt-1 text-lg font-semibold text-slate-900">{quotaLabel}</p>
-                        <p className="mt-1 text-xs text-slate-500">Reset: {formatDate(quota?.reset_at)}</p>
-                    </div>
+                <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+                    <BillingMetricCard label="Saldo koin" value={(status?.gold_coins ?? user?.gold_coins ?? 0).toLocaleString("id-ID")} detail="Bisa dipakai untuk klaim reward" mascot="/images/dashboard/mascot/daily-missions.webp" />
+                    <BillingMetricCard label="Tier aktif" value={currentTier} detail={`Akses: ${formatPremiumAccess(status)}`} mascot="/images/landing/mascot/secure.webp" />
+                    <BillingMetricCard label="Kuota chat" value={quotaLabel} detail={`Reset: ${formatDate(quota?.reset_at)}`} mascot="/images/dashboard/mascot/chat-listen.webp" />
                 </div>
             </section>
 
             <section className="space-y-3">
                 <div className="flex items-center gap-2">
-                    <Wallet className="w-5 h-5 text-amber-600" />
-                    <h2 className="text-lg font-semibold text-slate-900">Paket Top Up Koin</h2>
+                    <span className="grid h-9 w-9 place-items-center rounded-xl bg-rose-50 text-theme-accent-dark">
+                        <Wallet className="h-4 w-4" />
+                    </span>
+                    <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Isi saldo</p>
+                        <h2 className="text-base font-bold text-slate-900">Paket top up koin</h2>
+                    </div>
                 </div>
 
                 {topupPackages.length === 0 ? (
@@ -184,23 +180,24 @@ export default function CoinsPanel() {
                         {topupPackages.map((pkg: BillingTopupPackage) => {
                             const isProcessing = processingKey === `topup-${pkg.id}`;
                             return (
-                                <article key={pkg.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                <article key={pkg.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-rose-200 hover:shadow-md">
                                     <div className="flex items-start justify-between gap-3">
                                         <div>
-                                            <p className="text-xs uppercase tracking-wide text-slate-500">{pkg.code}</p>
-                                            <h3 className="mt-1 font-semibold text-slate-900">{pkg.name}</h3>
+                                            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">{pkg.code}</p>
+                                            <h3 className="mt-1 font-bold text-slate-900">{pkg.name}</h3>
                                         </div>
                                         <Coins className="w-5 h-5 text-amber-500" />
                                     </div>
 
-                                    <p className="mt-3 text-2xl font-semibold text-slate-900">+{pkg.total_coins.toLocaleString("id-ID")} koin</p>
+                                    <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900">+{pkg.total_coins.toLocaleString("id-ID")} koin</p>
                                     <p className="text-xs text-slate-500">
                                         {pkg.coins.toLocaleString("id-ID")} dasar + {pkg.bonus_coins.toLocaleString("id-ID")} bonus
                                     </p>
 
                                     <div className="mt-4 flex items-center justify-between">
                                         <p className="text-sm font-semibold text-slate-900">{formatIDR(pkg.price)}</p>
-                                        <Button
+                                            <Button
+                                                className="rounded-xl"
                                             size="sm"
                                             disabled={isProcessing}
                                             onClick={() => runCheckout({ item_type: "topup", item_id: pkg.id }, pkg.name)}
@@ -216,21 +213,19 @@ export default function CoinsPanel() {
             </section>
             
             <section className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-                <article className="rounded-2xl border border-primary/20 bg-white p-4 shadow-sm">
+                <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-rose-200 hover:shadow-md">
                     <div className="flex items-start gap-3">
-                        <div className="rounded-xl bg-primary/10 p-2 text-primary">
-                            <Crown className="h-5 w-5" />
-                        </div>
+                        <Image src="/images/landing/mascot/celebrate.webp" alt="" width={76} height={76} sizes="76px" className="h-14 w-14 shrink-0 object-contain" />
                         <div>
-                            <p className="text-xs font-semibold uppercase tracking-wide text-primary">Butuh chat tanpa batas?</p>
-                            <h2 className="mt-1 text-lg font-semibold text-slate-900">Premium dikelola di tab Paket</h2>
+                            <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-theme-accent-dark">Butuh chat tanpa batas?</p>
+                            <h2 className="mt-1 text-base font-bold text-slate-900">Premium dikelola di tab Paket</h2>
                             <p className="mt-1 text-sm text-slate-600">
                                 {recommendedPlan
                                     ? `${recommendedPlan.name} mulai ${formatIDR(recommendedPlan.price)} untuk ${recommendedPlan.duration_days} hari.`
                                     : "Bandingkan Free, Premium, dan B2B sebelum membeli paket."}
                             </p>
                             <Link href={ROUTES.BILLING}>
-                                <Button variant="outline" className="mt-4 gap-2 border-primary/40 text-primary hover:bg-primary/10">
+                                <Button variant="outline" className="mt-4 gap-2 rounded-xl border-rose-200 text-theme-accent-dark hover:bg-rose-50">
                                     Lihat Paket
                                     <ArrowRight className="h-4 w-4" />
                                 </Button>
@@ -239,21 +234,19 @@ export default function CoinsPanel() {
                     </div>
                 </article>
 
-                <article className="rounded-2xl border border-primary/20 bg-white p-4 shadow-sm">
+                <article className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-rose-200 hover:shadow-md">
                     <div className="flex items-start gap-3">
-                        <div className="rounded-xl bg-primary/10 p-2 text-primary">
-                            <Building2 className="h-5 w-5" />
-                        </div>
+                        <Image src="/images/landing/mascot/community.webp" alt="" width={76} height={76} sizes="76px" className="h-14 w-14 shrink-0 object-contain" />
                         <div>
-                            <p className="text-xs font-semibold uppercase tracking-wide text-primary">Untuk organisasi</p>
-                            <h2 className="mt-1 text-lg font-semibold text-slate-900">Premium B2B Mitra</h2>
+                            <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-theme-accent-dark">Untuk organisasi</p>
+                            <h2 className="mt-1 text-base font-bold text-slate-900">Premium B2B Mitra</h2>
                             <p className="mt-1 text-sm text-slate-600">
                                 {recommendedBusinessPlan
                                     ? `${recommendedBusinessPlan.name} mulai ${formatIDR(Number(recommendedBusinessPlan.base_price_per_seat ?? 0))} per seat.`
                                     : "Kelola seat, approval, analytics agregat, dan onboarding anggota."}
                             </p>
                             <Link href={user?.role === "mitra" ? ROUTES.MITRA.SUBSCRIPTION : ROUTES.CONTACT}>
-                                <Button variant="outline" className="mt-4 gap-2 border-primary/40 text-primary hover:bg-primary/10">
+                                <Button variant="outline" className="mt-4 gap-2 rounded-xl border-rose-200 text-theme-accent-dark hover:bg-rose-50">
                                     {user?.role === "mitra" ? "Kelola Mitra" : "Hubungi Tim B2B"}
                                     <ArrowRight className="h-4 w-4" />
                                 </Button>

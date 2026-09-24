@@ -2,17 +2,17 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { articleService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import { ArticleCategory } from "@/types";
+import { ROUTES } from "@/lib/routes";
+import { ArticleEditorShell } from "../_components/ArticleEditorShell";
 
 export default function EditArticlePage() {
   const params = useParams();
@@ -80,7 +80,7 @@ export default function EditArticlePage() {
         category_id: formData.category_id,
         thumbnail: formData.thumbnail || undefined,
       });
-      router.push("/dashboard/articles");
+      router.push(`${ROUTES.ARTICLES}?tab=mine`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Gagal menyimpan artikel");
     } finally {
@@ -90,57 +90,43 @@ export default function EditArticlePage() {
 
   if (isLoading) {
     return (
-      <div className="py-4 lg:py-6">
-        <div className="animate-pulse space-y-4 max-w-3xl">
-          <div className="h-8 bg-gray-200 rounded w-1/4" />
-          <div className="h-64 bg-gray-200 rounded" />
+      <ArticleEditorShell backHref={`${ROUTES.ARTICLES}?tab=mine`} title="Edit artikel" description="Memuat tulisanmu untuk diperbarui.">
+        <div className="animate-pulse space-y-7" aria-label="Memuat editor artikel">
+          <div className="space-y-2"><div className="h-4 w-28 rounded bg-slate-200" /><div className="h-11 w-full rounded-xl bg-slate-100" /></div>
+          <div className="space-y-2"><div className="h-4 w-20 rounded bg-slate-200" /><div className="h-11 w-full rounded-xl bg-slate-100" /></div>
+          <div className="space-y-3 rounded-2xl border border-slate-100 p-5"><div className="h-4 w-32 rounded bg-slate-200" /><div className="h-36 w-full rounded-xl bg-slate-100" /></div>
+          <div className="space-y-2"><div className="h-4 w-24 rounded bg-slate-200" /><div className="h-64 w-full rounded-2xl bg-slate-100" /></div>
         </div>
-      </div>
+      </ArticleEditorShell>
     );
   }
 
   return (
-    <div className="py-4 lg:py-6">
-      <div className="flex items-center gap-4 mb-6">
-        <Link href="/dashboard/articles">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold">Edit Artikel</h1>
-          <p className="text-gray-500 text-sm">Perbarui konten artikelmu</p>
-        </div>
-      </div>
-
-      <Card className="max-w-4xl">
-        <CardHeader>
-          <CardTitle>Detail Artikel</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+    <ArticleEditorShell backHref="/dashboard/articles?tab=mine" title="Edit artikel" description="Perbarui tulisanmu dengan tenang. Perubahan akan disimpan ke artikel yang sudah kamu buat.">
+      <form onSubmit={handleSubmit} className="space-y-7">
             {error && (
-              <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+              <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                 {error}
               </div>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="title">Judul Artikel</Label>
+              <Label htmlFor="title" className="font-semibold text-slate-800">Judul artikel</Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                className="h-11 rounded-xl border-slate-200 px-4"
                 placeholder="Masukkan judul artikel"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category">Kategori</Label>
+              <Label htmlFor="category" className="font-semibold text-slate-800">Kategori</Label>
               <select
                 id="category"
-                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                 value={formData.category_id}
                 onChange={(e) => setFormData({ ...formData, category_id: Number(e.target.value) })}
               >
@@ -150,8 +136,9 @@ export default function EditArticlePage() {
               </select>
             </div>
 
-            <div className="space-y-2">
-              <Label>Thumbnail</Label>
+            <div className="theme-accent-border-soft space-y-3 rounded-2xl border bg-slate-50/70 p-4 sm:p-5">
+              <div><Label className="font-semibold text-slate-800">Sampul artikel</Label>
+              <p className="mt-1 text-xs text-slate-500">Gambar sampul membantu pembaca mengenali tulisanmu. Bagian ini opsional.</p></div>
               {token && (
                 <ImageUpload
                   value={formData.thumbnail}
@@ -159,13 +146,10 @@ export default function EditArticlePage() {
                   token={token}
                 />
               )}
-              <p className="text-xs text-gray-500">
-                Unggah gambar untuk thumbnail artikel (opsional)
-              </p>
             </div>
 
             <div className="space-y-2">
-              <Label>Konten</Label>
+              <Label className="font-semibold text-slate-800">Isi artikel</Label>
               <RichTextEditor
                 content={formData.content}
                 onChange={(html) => setFormData({ ...formData, content: html })}
@@ -173,19 +157,15 @@ export default function EditArticlePage() {
               />
             </div>
 
-            <div className="flex gap-3 justify-end">
-              <Link href="/dashboard/articles">
-                <Button type="button" variant="outline">
-                  Batal
-                </Button>
-              </Link>
-              <Button type="submit" className="gradient-primary" disabled={isSaving}>
+            <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+              <Button asChild variant="outline" className="h-11 rounded-xl">
+                <Link href={`${ROUTES.ARTICLES}?tab=mine`}>Batal</Link>
+              </Button>
+              <Button type="submit" className="gradient-primary h-11 rounded-xl px-6" disabled={isSaving}>
                 {isSaving ? "Menyimpan..." : "Simpan Perubahan"}
               </Button>
             </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+      </form>
+    </ArticleEditorShell>
   );
 }

@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { ROUTES } from "@/lib/routes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BookOpen, FileText } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
 import { Article } from "@/types";
 import { formatDate } from "@/utils";
+import { ArticleThumbnail } from "@/components/shared/articles/ArticleThumbnail";
 
 interface RecommendedArticlesWidgetProps {
   articles: Article[];
@@ -24,7 +24,7 @@ function getEstimatedReadTime(article: Article): string {
 export function RecommendedArticlesWidget({ articles, isLoading }: RecommendedArticlesWidgetProps) {
   if (isLoading) {
     return (
-      <Card className="h-full border-none bg-transparent shadow-none">
+      <Card className="h-full border bg-white shadow-sm">
         <CardHeader className="px-0 pt-0">
           <div className="h-6 w-1/3 bg-gray-200 rounded animate-pulse" />
         </CardHeader>
@@ -62,16 +62,12 @@ export function RecommendedArticlesWidget({ articles, isLoading }: RecommendedAr
             <Link key={article.id} href={ROUTES.articleRead(article.slug)} className="block group relative">
               <div className="flex gap-4 items-start p-3 rounded-2xl hover:bg-gray-50 transition-all duration-300 border border-transparent hover:border-gray-100">
                 <div className="w-24 h-24 rounded-xl overflow-hidden bg-gray-100 shrink-0 relative shadow-sm group-hover:shadow-md transition-shadow">
-                  {article.thumbnail ? (
-                    <Image
-                      src={article.thumbnail}
-                      alt={article.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-primary/5"><FileText className="w-7 h-7 text-primary/40" /></div>
-                  )}
+                  <ArticleThumbnail
+                    src={article.thumbnail}
+                    alt={article.title}
+                    sizes="96px"
+                    imageClassName="transition-transform duration-500 group-hover:scale-110"
+                  />
                 </div>
                 <div className="flex-1 min-w-0 py-1 flex flex-col justify-between h-24">
                   <div className="space-y-1.5">

@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Loader2, Search } from "lucide-react";
+import { ArticleThumbnail } from "@/components/shared/articles/ArticleThumbnail";
 import { getUploadUrl } from "@/services/http/upload-url";
 import { useGlobalSearch } from "./useGlobalSearch";
 
@@ -78,7 +79,15 @@ export function GlobalSearch() {
                   onClick={() => handleSelect(result.href)}
                   className="group flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-gray-50"
                 >
-                  {result.thumbnail ? (
+                  {result.type === "article" ? (
+                    <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-gray-100">
+                      <ArticleThumbnail
+                        src={result.thumbnail?.trim() ? getUploadUrl(result.thumbnail.trim()) : undefined}
+                        alt={result.title}
+                        sizes="40px"
+                      />
+                    </div>
+                  ) : result.thumbnail ? (
                     <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-gray-100">
                       <Image
                         src={getUploadUrl(result.thumbnail)}

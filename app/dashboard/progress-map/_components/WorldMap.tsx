@@ -2,17 +2,17 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
-import { Check, ChevronRight, Lock, MapPin } from "lucide-react";
+import { Check, ChevronRight, Compass, Lock, MapPin } from "lucide-react";
 import type { FullMapResponse, MapRegion } from "@/types/progress-map";
 import { cn } from "@/utils";
 import { getJourneyTierImage } from "./journey-tier-assets";
 
 const REGION_THEMES = [
-    { gradient: "from-emerald-400 to-teal-600", surface: "bg-emerald-50", text: "text-emerald-700", ring: "ring-emerald-300/60" },
-    { gradient: "from-sky-400 to-blue-600", surface: "bg-sky-50", text: "text-sky-700", ring: "ring-sky-300/60" },
-    { gradient: "from-violet-400 to-indigo-600", surface: "bg-violet-50", text: "text-violet-700", ring: "ring-violet-300/60" },
-    { gradient: "from-amber-400 to-orange-500", surface: "bg-amber-50", text: "text-amber-700", ring: "ring-amber-300/60" },
-    { gradient: "from-rose-400 to-pink-600", surface: "bg-rose-50", text: "text-rose-700", ring: "ring-rose-300/60" },
+    { gradient: "from-emerald-300 to-teal-500", ring: "ring-emerald-300/55" },
+    { gradient: "from-sky-300 to-blue-500", ring: "ring-sky-300/55" },
+    { gradient: "from-violet-300 to-indigo-500", ring: "ring-violet-300/55" },
+    { gradient: "from-amber-300 to-orange-400", ring: "ring-amber-300/55" },
+    { gradient: "from-rose-300 to-pink-500", ring: "ring-rose-300/55" },
 ];
 
 interface WorldMapProps {
@@ -27,6 +27,37 @@ function getRegionState(region: MapRegion, isCurrent: boolean) {
     if (isCurrent) return "current";
     if (region.is_unlocked) return "unlocked";
     return "locked";
+}
+
+type RegionState = ReturnType<typeof getRegionState>;
+
+function CheckpointNumberArt({ number, state }: { number: string; state: RegionState }) {
+    return (
+        <span
+            className={cn(
+                "absolute inset-[3px] overflow-hidden rounded-[1.1rem] bg-linear-to-br",
+                state === "completed"
+                    ? "from-emerald-300 via-emerald-400 to-teal-600 text-white"
+                    : state === "current"
+                        ? "from-theme-accent-light via-theme-accent to-theme-accent-dark text-white"
+                        : state === "locked"
+                            ? "from-slate-100 via-slate-200 to-slate-300 text-slate-500"
+                            : "from-theme-accent-soft via-white to-theme-accent-light text-theme-accent-dark"
+            )}
+            aria-hidden="true"
+        >
+            <span className="absolute -right-3 -top-4 h-12 w-12 rounded-full border border-current opacity-20" />
+            <span className="absolute -bottom-5 -left-3 h-12 w-12 rounded-full border border-current opacity-15" />
+            <svg viewBox="0 0 76 76" className="absolute inset-0 h-full w-full drop-shadow-sm">
+                <path d="M9 27c8-13 20-20 34-20M43 69c10-2 18-8 24-17" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity=".3" />
+                <path d="m16 11 1.4 3.7 3.7 1.3-3.7 1.4-1.4 3.6-1.3-3.6L11 16l3.7-1.3L16 11Z" fill="currentColor" opacity=".68" />
+                <circle cx="61" cy="16" r="1.8" fill="currentColor" opacity=".55" />
+                <circle cx="58" cy="60" r="1.2" fill="currentColor" opacity=".45" />
+                <text x="39" y="48" textAnchor="middle" fill="currentColor" opacity=".22" fontSize="29" fontWeight="900" letterSpacing="-2">{number}</text>
+                <text x="37" y="46" textAnchor="middle" fill="currentColor" fontSize="29" fontWeight="900" letterSpacing="-2">{number}</text>
+            </svg>
+        </span>
+    );
 }
 
 export function WorldMap({ mapData, selectedRegionKey, onSelectRegion }: WorldMapProps) {
@@ -44,28 +75,46 @@ export function WorldMap({ mapData, selectedRegionKey, onSelectRegion }: WorldMa
     })();
 
     return (
-        <section className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/78 px-3 py-6 shadow-[0_26px_80px_-52px_rgba(15,23,42,0.65)] backdrop-blur sm:px-6 sm:py-8">
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_12%,rgba(16,185,129,0.10),transparent_25%),radial-gradient(circle_at_86%_42%,rgba(99,102,241,0.10),transparent_28%),radial-gradient(circle_at_20%_84%,rgba(245,158,11,0.12),transparent_24%)]" />
-            <div className="pointer-events-none absolute inset-0 opacity-35 [background-image:radial-gradient(#cbd5e1_0.75px,transparent_0.75px)] [background-size:18px_18px]" />
+        <section className="journey-map-surface relative overflow-hidden rounded-[2rem] border border-slate-200/80 px-3 py-5 shadow-[0_22px_64px_-52px_rgba(15,23,42,0.35)] sm:px-6 sm:py-7">
+            <div className="pointer-events-none absolute inset-0 opacity-20 [background-image:radial-gradient(#cbd5e1_0.75px,transparent_0.75px)] [background-size:20px_20px]" />
 
             <div className="relative mx-auto max-w-5xl">
-                <div className="mb-7 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                        <h2 className="text-xl font-black tracking-tight text-slate-950 sm:text-2xl">Pilih checkpoint untuk menjelajah</h2>
-                        <p className="mt-1 max-w-2xl text-sm leading-relaxed text-slate-500">
-                            Setiap area menyimpan landmark dan hadiah. Area terkunci tetap dapat dibuka untuk melihat target berikutnya.
-                        </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2 text-[11px] font-semibold">
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-700">
-                            <Check className="h-3 w-3" /> Selesai
-                        </span>
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/8 px-2.5 py-1 text-primary">
-                            <MapPin className="h-3 w-3" /> Aktif
-                        </span>
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-slate-500">
-                            <Lock className="h-3 w-3" /> Terkunci
-                        </span>
+                <div className="relative mb-6 border-b border-slate-200/70 pb-5 sm:mb-8 sm:pb-7">
+                    <div className="grid items-center gap-2 md:grid-cols-[minmax(0,1fr)_210px] md:gap-5">
+                        <div className="min-w-0">
+                            <p className="inline-flex items-center gap-1.5 rounded-full bg-theme-accent-soft px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-theme-accent-dark sm:text-[11px]">
+                                <Compass className="h-3.5 w-3.5" /> Jalur perjalananmu
+                            </p>
+                            <h2 className="mt-2 text-xl font-black tracking-tight text-slate-950 sm:text-2xl">Pilih checkpoint untuk menjelajah</h2>
+                            <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-slate-600">
+                                Setiap area menyimpan landmark dan hadiah. Intip target berikutnya, lalu lanjutkan perjalanan dengan ritmemu.
+                            </p>
+                            <div className="mt-4 flex flex-wrap gap-1.5 text-[10px] font-semibold sm:gap-2 sm:text-[11px]">
+                                <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200/80 bg-emerald-50/80 px-2.5 py-1.5 text-emerald-700">
+                                    <Check className="h-3 w-3" /> Selesai
+                                </span>
+                                <span className="theme-accent-border-soft inline-flex items-center gap-1.5 rounded-full border bg-theme-accent-soft px-2.5 py-1.5 text-theme-accent-dark">
+                                    <MapPin className="h-3 w-3" /> Aktif
+                                </span>
+                                <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white/75 px-2.5 py-1.5 text-slate-500">
+                                    <Lock className="h-3 w-3" /> Terkunci
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="relative mx-auto h-36 w-32 md:h-48 md:w-44" aria-hidden="true">
+                            <div className="absolute inset-x-0 bottom-0 mx-auto aspect-square w-[92%] rounded-full bg-theme-accent-soft/80" />
+                            <div className="absolute right-1 top-3 grid h-7 w-7 place-items-center rounded-full bg-white/85 text-theme-accent shadow-sm">
+                                <Compass className="h-3.5 w-3.5" />
+                            </div>
+                            <Image
+                                src="/images/landing/mascot/checkpoint-explore.webp"
+                                alt=""
+                                fill
+                                sizes="(max-width: 768px) 128px, 176px"
+                                className="object-contain [transform:scaleX(-1)] drop-shadow-[0_10px_14px_rgba(15,23,42,0.12)]"
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -142,42 +191,30 @@ export function WorldMap({ mapData, selectedRegionKey, onSelectRegion }: WorldMa
                                     <button
                                         type="button"
                                         onClick={() => onSelectRegion(region)}
-                                        aria-label={`Buka area ${region.name}`}
+                                        aria-label={`Buka checkpoint ${index + 1}: ${region.name}, ${state === "completed" ? "selesai" : state === "current" ? "sedang aktif" : state === "locked" ? "terkunci" : "tersedia"}`}
                                         className={cn(
-                                            "group/node relative z-10 grid h-[4.6rem] w-[4.6rem] shrink-0 place-items-center overflow-hidden rounded-[1.45rem] border-4 border-white text-white shadow-lg outline-none transition duration-200 focus-visible:ring-4 focus-visible:ring-primary/25 sm:h-20 sm:w-20",
+                                            "group/node relative z-10 grid h-[4.2rem] w-[4.2rem] shrink-0 place-items-center rounded-[1.45rem] border-[3px] bg-white p-[3px] shadow-[0_14px_28px_-14px_rgba(15,23,42,0.4)] outline-none transition duration-200 focus-visible:ring-4 focus-visible:ring-primary/25 sm:h-[4.75rem] sm:w-[4.75rem]",
                                             state === "locked"
-                                                ? "bg-slate-300 text-slate-500 grayscale hover:bg-slate-400"
-                                                : `bg-linear-to-br ${theme.gradient} hover:-translate-y-1 hover:scale-105`,
+                                                ? "border-slate-200 hover:-translate-y-0.5 hover:scale-105"
+                                                : state === "completed"
+                                                    ? "border-emerald-200 hover:-translate-y-1 hover:scale-105"
+                                                    : state === "current"
+                                                        ? "theme-accent-border hover:-translate-y-1 hover:scale-105"
+                                                        : "theme-accent-border-soft hover:-translate-y-1 hover:scale-105",
                                             state === "current" && `ring-4 ${theme.ring}`,
                                             isSelected && "scale-105 ring-4 ring-slate-900/10"
                                         )}
                                     >
-                                        <Image
-                                            src={regionImage}
-                                            alt=""
-                                            fill
-                                            sizes="80px"
-                                            className={cn(
-                                                "rounded-[1.2rem] object-cover",
-                                                state === "locked" ? "opacity-20 grayscale" : "opacity-90"
-                                            )}
-                                            aria-hidden="true"
-                                        />
-                                        <span className="absolute inset-0 rounded-[1.2rem] bg-linear-to-t from-slate-950/25 to-transparent" aria-hidden="true" />
-                                        {state === "locked" ? (
-                                            <span className="relative flex flex-col items-center">
-                                                <Lock className="h-6 w-6" />
-                                                <span className="mt-0.5 text-[9px] font-black uppercase">Lv.{region.unlock_value}</span>
-                                            </span>
-                                        ) : null}
-                                        {state === "completed" ? (
-                                            <span className="absolute -right-1.5 -top-1.5 grid h-6 w-6 place-items-center rounded-full border-2 border-white bg-emerald-500 shadow">
-                                                <Check className="h-3.5 w-3.5" />
-                                            </span>
-                                        ) : null}
+                                        <CheckpointNumberArt number={String(index + 1).padStart(2, "0")} state={state} />
+                                        <span className={cn(
+                                            "absolute -bottom-1 -right-1 grid h-6 w-6 place-items-center rounded-full border-2 border-white shadow-sm",
+                                            state === "completed" ? "bg-emerald-500 text-white" : state === "current" ? "bg-white text-theme-accent-dark" : state === "locked" ? "bg-slate-300 text-white" : "bg-theme-accent-soft text-theme-accent-dark"
+                                        )}>
+                                            {state === "completed" ? <Check className="h-3 w-3" /> : state === "locked" ? <Lock className="h-3 w-3" /> : state === "current" ? <MapPin className="h-3 w-3" /> : <Compass className="h-3 w-3" />}
+                                        </span>
                                         {state === "current" && !prefersReducedMotion ? (
                                             <motion.span
-                                                className="absolute inset-0 -z-10 rounded-[1.45rem] bg-primary/25"
+                                                className="pointer-events-none absolute inset-0 -z-10 rounded-[1.3rem] bg-primary/25"
                                                 animate={{ scale: [1, 1.22], opacity: [0.55, 0] }}
                                                 transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
                                             />
@@ -188,43 +225,65 @@ export function WorldMap({ mapData, selectedRegionKey, onSelectRegion }: WorldMa
                                         type="button"
                                         onClick={() => onSelectRegion(region)}
                                         className={cn(
-                                            "group/card min-w-0 flex-1 rounded-2xl border p-3 text-left shadow-sm outline-none transition duration-200 focus-visible:ring-4 focus-visible:ring-primary/20 sm:p-4",
+                                            "group/card min-w-0 flex-1 rounded-[1.5rem] border p-3 text-left shadow-[0_16px_36px_-28px_rgba(15,23,42,0.5)] outline-none transition duration-200 focus-visible:ring-4 focus-visible:ring-primary/20 sm:p-4",
                                             state === "locked"
-                                                ? "border-slate-200 bg-slate-50/90 hover:bg-white"
-                                                : "border-white/90 bg-white/92 hover:-translate-y-0.5 hover:shadow-lg",
+                                                ? "border-slate-200/90 bg-slate-50/95 hover:bg-white"
+                                                : state === "current"
+                                                    ? "border-theme-accent-border bg-white hover:-translate-y-0.5 hover:shadow-lg"
+                                                    : state === "completed"
+                                                        ? "border-emerald-200/80 bg-emerald-50/35 hover:-translate-y-0.5 hover:shadow-lg"
+                                                        : "border-white/90 bg-white/95 hover:-translate-y-0.5 hover:shadow-lg",
                                             isSelected && "border-primary/30 ring-2 ring-primary/10"
                                         )}
                                     >
-                                        <div className="flex items-start justify-between gap-2">
+                                        <div className="grid grid-cols-[minmax(0,1fr)_5.25rem] items-center gap-2.5 sm:grid-cols-[minmax(0,1fr)_7rem] sm:gap-3.5">
                                             <div className="min-w-0">
-                                                <div className="flex flex-wrap items-center gap-2">
-                                                    <h3 className={cn("truncate text-sm font-black sm:text-base", state === "locked" ? "text-slate-500" : "text-slate-950")}>
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-slate-400">Checkpoint {String(index + 1).padStart(2, "0")}</p>
+                                                    <ChevronRight className="h-4 w-4 shrink-0 text-slate-300 transition-transform group-hover/card:translate-x-0.5 group-hover/card:text-primary" />
+                                                </div>
+                                                <div className="mt-1 flex flex-wrap items-center gap-1.5 sm:gap-2">
+                                                    <h3 className={cn("line-clamp-1 text-sm font-black sm:text-base", state === "locked" ? "text-slate-500" : "text-slate-950")}>
                                                         {region.name}
                                                     </h3>
-                                                    {state === "current" ? (
-                                                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-black uppercase tracking-wide text-primary">Saat ini</span>
-                                                    ) : null}
-                                                    {state === "completed" ? (
-                                                        <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-black uppercase tracking-wide text-emerald-700">Selesai</span>
+                                                    {state === "current" || state === "completed" || state === "locked" ? (
+                                                        <span className={cn(
+                                                            "inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wide",
+                                                            state === "current" ? "bg-theme-accent-soft text-theme-accent-dark" : state === "completed" ? "bg-emerald-50 text-emerald-700" : "bg-slate-200/80 text-slate-500"
+                                                        )}>
+                                                            {state === "current" ? <MapPin className="h-2.5 w-2.5" /> : state === "completed" ? <Check className="h-2.5 w-2.5" /> : <Lock className="h-2.5 w-2.5" />}
+                                                            {state === "current" ? "Aktif" : state === "completed" ? "Selesai" : "Terkunci"}
+                                                        </span>
                                                     ) : null}
                                                 </div>
-                                                <p className={cn("mt-1 line-clamp-2 text-xs leading-relaxed sm:text-sm", state === "locked" ? "text-slate-400" : "text-slate-500")}>
+                                                <p className={cn("mt-1 line-clamp-2 text-[11px] leading-relaxed sm:text-xs", state === "locked" ? "text-slate-400" : "text-slate-500")}>
                                                     {state === "locked" ? `Capai Level ${region.unlock_value} untuk membuka area ini.` : region.description}
                                                 </p>
-                                            </div>
-                                            <ChevronRight className="mt-0.5 h-4 w-4 shrink-0 text-slate-300 transition-transform group-hover/card:translate-x-0.5 group-hover/card:text-primary" />
-                                        </div>
 
-                                        <div className="mt-3">
-                                            <div className="mb-1.5 flex items-center justify-between text-[10px] font-semibold text-slate-400">
-                                                <span>{state === "locked" ? "Syarat area" : "Landmark terbuka"}</span>
-                                                <span>{state === "locked" ? `Level ${region.unlock_value}` : `${region.unlocked_landmarks}/${region.total_landmarks}`}</span>
+                                                <div className="mt-2.5 rounded-xl bg-slate-50/90 p-2 sm:mt-3 sm:p-2.5">
+                                                    <div className="mb-1 flex items-center justify-between gap-2 text-[9px] font-semibold text-slate-500 sm:text-[10px]">
+                                                        <span>{state === "locked" ? "Syarat membuka" : "Landmark terbuka"}</span>
+                                                        <span className="shrink-0 font-bold text-slate-700">{state === "locked" ? `Level ${region.unlock_value}` : `${region.unlocked_landmarks}/${region.total_landmarks}`}</span>
+                                                    </div>
+                                                    <div className="h-1.5 overflow-hidden rounded-full bg-slate-200/75 sm:h-2">
+                                                        <div
+                                                            className={cn("h-full rounded-full transition-[width] duration-700", state === "locked" ? "bg-slate-300" : state === "completed" ? "bg-emerald-500" : `bg-linear-to-r ${theme.gradient}`)}
+                                                            style={{ width: `${progress}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
-                                                <div
-                                                    className={cn("h-full rounded-full transition-[width] duration-700", state === "locked" ? "bg-slate-300" : `bg-linear-to-r ${theme.gradient}`)}
-                                                    style={{ width: `${progress}%` }}
+
+                                            <div className="relative aspect-square overflow-hidden rounded-2xl bg-theme-accent-soft shadow-inner ring-1 ring-black/5">
+                                                <Image
+                                                    src={regionImage}
+                                                    alt=""
+                                                    fill
+                                                    sizes="(max-width: 640px) 84px, 112px"
+                                                    className={cn("object-cover transition-transform duration-500 group-hover/card:scale-105", state === "locked" && "grayscale opacity-60")}
+                                                    aria-hidden="true"
                                                 />
+                                                <div className="absolute inset-0 bg-linear-to-t from-slate-950/25 via-transparent to-white/5" aria-hidden="true" />
                                             </div>
                                         </div>
                                     </button>

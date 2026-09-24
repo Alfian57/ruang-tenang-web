@@ -8,7 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Mail, Lock, User } from "lucide-react";
+import { Loader2, Mail, Lock, User, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +19,7 @@ import { buildPathWithRedirect, getSafeRedirect } from "@/lib/safe-redirect";
 const registerSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter").max(100, "Nama terlalu panjang"),
   email: z.string().email("Email tidak valid"),
+  whatsAppNumber: z.string().regex(/^(?:\+62|62|0)8\d{8,13}$/, "Nomor WhatsApp Indonesia tidak valid"),
   password: z.string()
     .min(8, "Password minimal 8 karakter")
     .max(128, "Password terlalu panjang")
@@ -50,7 +51,7 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterFormData) => {
     setError(null);
     try {
-      await registerUser(data.name, data.email, data.password, data.confirmPassword);
+      await registerUser(data.name, data.email, data.password, data.confirmPassword, data.whatsAppNumber);
       const loginParams = new URLSearchParams({ registered: "1" });
       if (redirectTarget) {
         loginParams.set("redirect", redirectTarget);
@@ -125,6 +126,16 @@ export default function RegisterPage() {
               {errors.email && (
                 <p className="text-sm text-red-500">{errors.email.message}</p>
               )}
+            </div>
+
+            {/* Password Field */}
+            <div className="space-y-2">
+              <Label htmlFor="whatsAppNumber" className="text-gray-700 font-medium">Nomor WhatsApp</Label>
+              <div className="relative">
+                <Input id="whatsAppNumber" type="tel" autoComplete="tel" placeholder="081234567890" className="pl-12 h-12 rounded-xl border-gray-200" {...register("whatsAppNumber")} />
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+              </div>
+              {errors.whatsAppNumber && <p className="text-sm text-red-500">{errors.whatsAppNumber.message}</p>}
             </div>
 
             {/* Password Field */}

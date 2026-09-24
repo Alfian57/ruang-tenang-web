@@ -66,8 +66,8 @@ export default function ForgotPasswordPage() {
             <h1 className="text-2xl font-bold mb-2">Lupa Password?</h1>
             <p className="text-gray-500">
               {isSubmitted
-                ? "Silakan cek email Anda untuk instruksi selanjutnya."
-                : "Masukkan email Anda untuk mereset password."}
+                ? "Silakan cek WhatsApp yang terdaftar untuk kode reset."
+                : "Masukkan email akun. Kode reset dikirim ke nomor WhatsApp yang terdaftar."}
             </p>
           </div>
 
@@ -77,7 +77,7 @@ export default function ForgotPasswordPage() {
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
               <div className="bg-green-50 p-4 rounded-xl text-green-700 text-sm">
-                Jika email terdaftar, kami telah mengirimkan link reset password.
+                Jika akun memiliki nomor WhatsApp, kode reset telah dikirim ke nomor tersebut.
               </div>
               <Link href="/login">
                 <Button className="w-full h-12 bg-primary hover:bg-primary/90 text-white rounded-xl">
@@ -121,7 +121,7 @@ export default function ForgotPasswordPage() {
                     Memproses...
                   </>
                 ) : (
-                  "Kirim Link Reset"
+                "Kirim Kode Reset"
                 )}
               </Button>
 
@@ -139,7 +139,7 @@ export default function ForgotPasswordPage() {
       {/* Right Side - Illustration */}
       <AuthIllustration
         title="Tenang, kita bantu"
-        description="Kirim permintaan reset melalui email. Bulan Pulih menjaga langkahmu sampai kamu bisa kembali masuk."
+        description="Gunakan email akun untuk meminta kode reset lewat WhatsApp dan kembali masuk."
         pose="secure"
       />
     </div>

@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { Coins, CreditCard, ReceiptText } from "lucide-react";
 import { TabsContent } from "@/components/ui/tabs";
 import { DashboardHubTabs, DashboardPanelLoading, type DashboardHubTab } from "@/components/shared/dashboard/DashboardHubTabs";
+import { DashboardMascotHero } from "@/components/shared/dashboard/DashboardMascotHero";
 import { useQueryTab } from "@/hooks/useQueryTab";
 import { ROUTES } from "@/lib/routes";
 
@@ -27,10 +28,15 @@ export default function BillingPage() {
 
   return (
     <div className="min-h-screen py-4 lg:py-6">
-      <h1 className="text-2xl font-bold text-gray-900">Paket &amp; Koin</h1>
-      <p className="mt-1 text-sm text-gray-500">Kelola akses Premium, saldo koin, dan seluruh transaksi akunmu.</p>
+      <DashboardMascotHero
+        eyebrow="Ruang untuk berkembang"
+        title="Paket & Koin"
+        description="Atur akses Premium, saldo koin, dan riwayat transaksi dengan lebih mudah."
+        image="/images/landing/mascot/trophy.webp"
+        imageAlt="RuNa merayakan setiap langkah dan pencapaianmu"
+      />
 
-      <DashboardHubTabs tabs={BILLING_TABS} value={activeTab} onValueChange={setActiveTab} className="mt-6">
+      <DashboardHubTabs tabs={BILLING_TABS} value={activeTab} onValueChange={setActiveTab} compact>
         <TabsContent value="packages"><BillingPanel mode="packages" /></TabsContent>
         <TabsContent value="coins"><CoinsPanel /></TabsContent>
         <TabsContent value="transactions"><BillingPanel mode="transactions" /></TabsContent>

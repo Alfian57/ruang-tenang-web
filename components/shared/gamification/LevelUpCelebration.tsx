@@ -3,7 +3,7 @@
 import { cn } from "@/utils";
 import { LevelUpCelebration as LevelUpCelebrationData } from "@/types";
 import { FeatureUnlockCelebration } from "./FeatureComponents";
-import { PartyPopper, Star, ChevronUp } from "lucide-react";
+import { PartyPopper, ChevronUp, MessageCircleHeart, Unlock } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface LevelUpCelebrationProps {
@@ -129,9 +129,8 @@ export function LevelUpCelebration({ celebration, onClose, className }: LevelUpC
                 {/* Celebration Message */}
                 <div className="bg-muted/50 rounded-lg p-4 mb-6">
                     <div className="flex items-center justify-center gap-2 mb-2">
-                        <Star className="h-5 w-5 text-yellow-500" />
+                        <MessageCircleHeart className="h-5 w-5 text-rose-500" />
                         <span className="font-medium">Pesan Untukmu</span>
-                        <Star className="h-5 w-5 text-yellow-500" />
                     </div>
                     <p className="text-sm">{celebration.congrats_message}</p>
                 </div>
@@ -144,7 +143,7 @@ export function LevelUpCelebration({ celebration, onClose, className }: LevelUpC
                                 onClick={() => setShowFeatures(true)}
                                 className="w-full bg-primary text-primary-foreground rounded-lg py-3 font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
                             >
-                                <Star className="h-5 w-5" />
+                                <Unlock className="h-5 w-5" />
                                 Lihat Fitur Baru ({celebration.unlocked_features.length})
                             </button>
                             <button

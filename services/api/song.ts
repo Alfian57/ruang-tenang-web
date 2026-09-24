@@ -1,10 +1,14 @@
 import { httpClient } from "@/services/http/client";
 import type { ApiResponse, PaginatedResponse } from "@/services/http/types";
-import type { Song, SongCategory, Playlist, PlaylistItem } from "@/types";
+import type { Song, SongCategory, Playlist, PlaylistItem, PlaylistListItem } from "@/types";
 
 export const songService = {
   getCategories() {
     return httpClient.get<ApiResponse<SongCategory[]>>("/song-categories");
+  },
+
+  getCategoriesPage(params: { page: number; limit: number }) {
+    return httpClient.get<PaginatedResponse<SongCategory>>("/song-categories", { params });
   },
 
   getSongsByCategory(categoryKey: string | number) {
@@ -16,11 +20,15 @@ export const songService = {
     return httpClient.get<ApiResponse<Playlist[]>>("/playlists", { token });
   },
 
+  getMyPlaylistsPage(token: string, params: { page: number; limit: number }) {
+    return httpClient.get<PaginatedResponse<PlaylistListItem>>("/playlists", { token, params });
+  },
+
   getPlaylist(token: string, identifier: string | number) {
     return httpClient.get<ApiResponse<Playlist>>(`/playlists/${encodeURIComponent(String(identifier))}`, { token });
   },
 
-  getPublicPlaylists(params?: { page?: number; limit?: number }) {
+  getPublicPlaylists(params?: { page?: number; limit?: number; kind?: "official" | "community" }) {
     return httpClient.get<PaginatedResponse<Playlist>>("/playlists/public", { params });
   },
 

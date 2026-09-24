@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { communityService } from "@/services/api";
 import { Navbar, Footer } from "@/components/layout";
 import { PublicPageHero } from "../_components/PublicPageHero";
-import { Users, Layers, Award, Star, ArrowRight } from "lucide-react";
+import { Users, Layers, Award, ArrowRight } from "lucide-react";
 import { LeaderboardEntry } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -85,7 +85,7 @@ function FeaturedCard({
       <span className="hall-featured-orbit" aria-hidden="true" />
       <div className="hall-featured-top">
         <span>Sorotan komunitas</span>
-        <Star className="h-5 w-5" fill="currentColor" aria-hidden="true" />
+        <Award className="h-5 w-5" aria-hidden="true" />
       </div>
       <div className="hall-featured-person">
         <MemberAvatar name={member.name} avatar={member.avatar} size="lg" />
@@ -239,7 +239,7 @@ export default function HallOfFamePage() {
       <main className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-40 pb-16 sm:px-6 sm:pt-44 sm:pb-20 lg:px-8">
         <div className="hall-hero-shell mx-auto max-w-5xl">
           <PublicPageHero compact eyebrow="Ruang apresiasi" title={<>Hall of <span>Fame</span></>} description="Rayakan anggota yang menghadirkan energi positif, dukungan, dan inspirasi di komunitas Ruang Tenang." pose="trophy">
-            <span className="hall-hero-meta"><Star className="h-4 w-4" fill="currentColor" aria-hidden="true" />{loading ? "Menyiapkan sorotan komunitas" : users.length > 0 ? `${users.length} anggota ditampilkan` : "Setiap langkah baik berarti"}</span>
+            <span className="hall-hero-meta"><Users className="h-4 w-4" aria-hidden="true" />{loading ? "Menyiapkan sorotan komunitas" : users.length > 0 ? `${users.length} anggota ditampilkan` : "Setiap langkah baik berarti"}</span>
           </PublicPageHero>
         </div>
 
@@ -295,7 +295,6 @@ export default function HallOfFamePage() {
                     <h2>Wajah-wajah yang <span>menginspirasi.</span></h2>
                     <p>Setiap kontribusi punya cerita. Inilah beberapa anggota yang ingin kami sorot hari ini.</p>
                   </div>
-                  <span className="hall-heading-sparkle" aria-hidden="true">✦</span>
                 </div>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
                   {featuredMembers.map((member, index) => (
@@ -376,7 +375,6 @@ export default function HallOfFamePage() {
                     <div className="hall-member-grid">
                       {group.members.map((member, memberIdx) => (
                         <article key={`${group.level}-${member.user_id ?? "anon"}-${member.name}-${memberIdx}`} className="hall-member-card">
-                          <span className="hall-member-accent" aria-hidden="true">✦</span>
                           <div className="hall-member-profile">
                             <MemberAvatar name={member.name} avatar={member.avatar} size="sm" />
                             <div className="min-w-0">

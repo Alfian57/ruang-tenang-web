@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, BookHeart, Heart, MessageCircleHeart, MoonStar, PenLine, Sparkles, Star, Wind } from "lucide-react";
+import { ArrowRight, BookHeart, CalendarDays, Heart, ListChecks, MessageCircleHeart, Moon, PenLine, Wind } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
 import { LandingDataNotice } from "./LandingDataNotice";
 import { LandingPrimaryCTA } from "./LandingPrimaryCTA";
@@ -59,17 +59,16 @@ export function LandingStatic({ part }: { part: "intro" | "outro" }) {
               <Link href="#features" className="landing-button-secondary">Lihat caranya <ArrowRight size={18} aria-hidden="true" /></Link>
             </div>
             <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-semibold text-slate-500">
-              <span className="inline-flex items-center gap-2"><span className="landing-tiny-star">✦</span> Mulai sesuai ritmemu</span>
-              <span className="inline-flex items-center gap-2"><span className="landing-tiny-star">✦</span> Ruang refleksi yang aman</span>
+              <span>Mulai sesuai ritmemu</span>
+              <span>Ruang refleksi yang aman</span>
             </div>
           </div>
           <div className="landing-hero-stage relative mx-auto mt-6 h-[390px] w-full max-w-[510px] sm:h-[480px] lg:mt-0 lg:h-[550px]">
             <div className="landing-hero-blob absolute inset-x-3 bottom-2 top-12 rounded-[42%_58%_42%_58%/44%_42%_58%_56%]" aria-hidden="true" />
             <div className="landing-ring absolute right-3 top-1 h-28 w-28 rounded-full sm:h-36 sm:w-36" aria-hidden="true" />
-            <Star className="absolute right-[8%] top-[12%] z-10 h-7 w-7 rotate-12 text-[#e5ad57] sm:h-9 sm:w-9" fill="currentColor" aria-hidden="true" />
             <Image src={`${MASCOT}/welcome.webp`} alt="Maskot Ruang Tenang melambaikan tangan sambil membawa bola cahaya" width={768} height={1152} priority sizes="(max-width: 640px) 300px, (max-width: 1024px) 390px, 480px" className="landing-hero-mascot absolute bottom-[-10%] left-1/2 z-10 h-[112%] w-auto max-w-none -translate-x-1/2 object-contain" />
             <div className="landing-floating-card absolute -left-2 top-[24%] z-20 rotate-[-7deg] sm:-left-8"><Heart size={17} fill="#fb7185" className="text-[#fb7185]" aria-hidden="true" /><span>Perasaanmu berarti</span></div>
-            <div className="landing-floating-card absolute -right-2 bottom-[15%] z-20 rotate-[6deg] sm:-right-8"><MoonStar size={18} className="text-[#7884cc]" aria-hidden="true" /><span>Pelan-pelan saja</span></div>
+            <div className="landing-floating-card absolute -right-2 bottom-[15%] z-20 rotate-[6deg] sm:-right-8"><Moon size={18} className="text-[#7884cc]" aria-hidden="true" /><span>Pelan-pelan saja</span></div>
           </div>
         </div>
         <div className="landing-hero-wave" aria-hidden="true" />
@@ -121,13 +120,12 @@ export function LandingStatic({ part }: { part: "intro" | "outro" }) {
             </div>
             <div className="relative mx-auto w-full max-w-[650px] pb-8 pt-14 sm:pt-20">
               <div className="landing-demo-card relative z-10 rounded-[2.4rem] border border-white bg-white/90 p-5 shadow-[0_30px_80px_-40px_rgba(75,49,98,0.42)] sm:p-7">
-                <div className="mb-5 flex items-center justify-between gap-3"><div><span className="text-xs font-bold uppercase tracking-[0.18em] text-[#d45e69]">Contoh perjalanan</span><h3 className="font-brand-display mt-1 text-xl font-extrabold text-[#283048]">Hari ini, untuk dirimu</h3></div><div className="rounded-2xl bg-[#fff1e7] p-3 text-[#d88956]"><Sparkles size={22} aria-hidden="true" /></div></div>
+                <div className="mb-5 flex items-center justify-between gap-3"><div><span className="text-xs font-bold uppercase tracking-[0.18em] text-[#d45e69]">Contoh perjalanan</span><h3 className="font-brand-display mt-1 text-xl font-extrabold text-[#283048]">Hari ini, untuk dirimu</h3></div><div className="rounded-2xl bg-[#fff1e7] p-3 text-[#d88956]"><CalendarDays size={22} aria-hidden="true" /></div></div>
                 <div className="rounded-[1.6rem] bg-[#fff4f2] p-4 sm:p-5"><div className="flex items-center justify-between text-sm font-bold text-[#343b53]"><span>Check-in suasana hati</span><span className="text-[#c94d5a]">● ● ● ○ ○</span></div><p className="mt-2 text-sm text-slate-600">“Apa yang paling kamu butuhkan hari ini?”</p><div className="mt-4 flex flex-wrap gap-2"><span className="landing-demo-chip">Jeda sejenak</span><span className="landing-demo-chip">Didengarkan</span><span className="landing-demo-chip">Semangat baru</span></div></div>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2"><div className="rounded-[1.5rem] bg-[#f1f3ff] p-4"><span className="flex items-center gap-2 text-sm font-bold text-[#4b5482]"><PenLine size={17} aria-hidden="true" /> Jurnal singkat</span><div className="mt-4 h-2 w-full rounded-full bg-white" /><div className="mt-2 h-2 w-4/5 rounded-full bg-white" /><div className="mt-2 h-2 w-3/5 rounded-full bg-white" /></div><div className="rounded-[1.5rem] bg-[#fff8e9] p-4"><span className="flex items-center gap-2 text-sm font-bold text-[#855d36]"><Star size={17} aria-hidden="true" /> Misi harian</span><p className="mt-3 text-sm text-[#6f604e]">Satu refleksi kecil hari ini</p><div className="mt-3 h-2 overflow-hidden rounded-full bg-white"><div className="h-full w-2/3 rounded-full bg-[#e9a862]" /></div></div></div>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2"><div className="rounded-[1.5rem] bg-[#f1f3ff] p-4"><span className="flex items-center gap-2 text-sm font-bold text-[#4b5482]"><PenLine size={17} aria-hidden="true" /> Jurnal singkat</span><div className="mt-4 h-2 w-full rounded-full bg-white" /><div className="mt-2 h-2 w-4/5 rounded-full bg-white" /><div className="mt-2 h-2 w-3/5 rounded-full bg-white" /></div><div className="rounded-[1.5rem] bg-[#fff8e9] p-4"><span className="flex items-center gap-2 text-sm font-bold text-[#855d36]"><ListChecks size={17} aria-hidden="true" /> Misi harian</span><p className="mt-3 text-sm text-[#6f604e]">Satu refleksi kecil hari ini</p><div className="mt-3 h-2 overflow-hidden rounded-full bg-white"><div className="h-full w-2/3 rounded-full bg-[#e9a862]" /></div></div></div>
                 <LandingDataNotice variant="demo" className="mt-5" />
               </div>
               <Image src={`${MASCOT}/celebrate.webp`} alt="Maskot Ruang Tenang merayakan langkah kecil" width={640} height={960} sizes="(max-width: 640px) 140px, 220px" className="absolute -right-3 -top-15 z-20 h-44 w-auto -rotate-8 object-contain drop-shadow-[0_15px_20px_rgba(155,72,92,0.14)] sm:-right-10 sm:-top-22 sm:h-61" />
-              <span className="landing-deco-star absolute -bottom-2 left-0" aria-hidden="true">✳</span>
             </div>
           </div>
         </div>

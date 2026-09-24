@@ -100,7 +100,7 @@ export function ChatHeader({
                 </DropdownMenu>
 
                 {/* Mobile sidebar toggle */}
-                <Button variant="ghost" size="icon" onClick={onOpenMobileSidebar} className="sm:hidden">
+                <Button variant="ghost" size="icon" onClick={onOpenMobileSidebar} className="lg:hidden" aria-label="Buka riwayat chat">
                     <History className="w-5 h-5 text-gray-600" />
                 </Button>
             </div>

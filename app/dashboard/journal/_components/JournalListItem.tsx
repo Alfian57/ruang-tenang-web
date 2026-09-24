@@ -13,10 +13,8 @@ import {
     MoreVertical,
     Trash2,
     Edit,
-    FileText,
     Brain,
 } from "lucide-react";
-import { MoodAssetIcon } from "@/components/shared/mood";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -57,164 +55,140 @@ export function JournalListItem({
     })();
 
     return (
-        <div
+        <article
             className={cn(
-                "group relative overflow-hidden rounded-xl border bg-white transition-all cursor-pointer",
-                "hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/5",
+                "group relative cursor-pointer overflow-hidden rounded-2xl border bg-white transition-all duration-200",
+                "hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/5",
                 isActive
-                    ? "border-primary ring-2 ring-primary/15"
-                    : "border-gray-200 hover:border-primary/30"
+                    ? "border-primary/40 ring-2 ring-primary/10"
+                    : "border-slate-200/80 hover:border-primary/25"
             )}
             onClick={() => router.push(`/dashboard/journal/${journalIdentifier}`)}
         >
-            {/* Active/hover accent rail */}
-            <span
-                className={cn(
-                    "absolute inset-y-0 left-0 w-1 bg-primary transition-transform duration-200 origin-top",
-                    isActive ? "scale-y-100" : "scale-y-0 group-hover:scale-y-100"
-                )}
-            />
+            <div className="pointer-events-none absolute -right-10 -top-14 h-36 w-36 rounded-full bg-theme-accent-soft opacity-60 blur-3xl transition-opacity group-hover:opacity-90" />
 
-            <div className="flex items-start gap-3 p-4">
-                {/* Mood / icon badge */}
-                <div
-                    className={cn(
-                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl",
-                        journal.mood_label ? "bg-primary/10" : "bg-gray-100 text-gray-400"
-                    )}
-                    title={journal.mood_label}
-                >
-                    {journal.mood_label ? (
-                        <MoodAssetIcon moodLabel={journal.mood_label} moodId={journal.mood_id} size={28} className="h-7 w-7 object-contain" />
-                    ) : (
-                        <FileText className="h-5 w-5" />
-                    )}
-                </div>
+            <div className="relative p-4 sm:p-5">
+                <div className="flex min-w-0 items-start gap-3">
+                    <div className="min-w-0 flex-1">
+                        <div className="mb-2 flex flex-wrap items-center gap-2">
+                            {journal.mood_label ? (
+                                <span className="max-w-full truncate rounded-full border border-theme-accent-border-soft bg-theme-accent-soft px-2.5 py-1 text-[11px] font-semibold text-theme-accent-dark">
+                                    {journal.mood_label}
+                                </span>
+                            ) : (
+                                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600">
+                                    Catatan refleksi
+                                </span>
+                            )}
+                            <span className="text-xs text-slate-500">{createdLabel}</span>
+                            <span aria-hidden="true" className="text-slate-300">•</span>
+                            <span className="text-xs text-slate-500">{journal.word_count.toLocaleString()} kata</span>
+                        </div>
 
-                <div className="min-w-0 flex-1">
-                    {/* Title row */}
-                    <div className="flex items-center gap-2">
-                        <h3 className="min-w-0 flex-1 truncate font-semibold text-gray-900 group-hover:text-primary transition-colors">
+                        <h3 className="truncate text-base font-semibold text-slate-900 transition-colors group-hover:text-theme-accent-dark sm:text-lg">
                             {journal.title || "Tanpa Judul"}
                         </h3>
-                        {journal.mood_label && (
-                            <span className="hidden shrink-0 rounded-full bg-primary/5 px-2 py-0.5 text-[11px] font-medium text-primary/80 sm:inline">
-                                {journal.mood_label}
-                            </span>
-                        )}
                     </div>
 
-                    {/* Content Preview */}
-                    <p className="mt-1 line-clamp-4 text-sm leading-relaxed text-gray-600">
-                        {contentPreview || "Tidak ada konten..."}
-                    </p>
-
-                    {/* Tags */}
-                    {journal.tags && journal.tags.length > 0 && (
-                        <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
-                            {journal.tags.slice(0, 4).map((tag) => (
-                                <span
-                                    key={tag}
-                                    className="rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600"
-                                >
-                                    #{tag}
-                                </span>
-                            ))}
-                            {journal.tags.length > 4 && (
-                                <span className="text-xs text-gray-400">
-                                    +{journal.tags.length - 4}
-                                </span>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Meta + privacy badges */}
-                    <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5 border-t border-dashed pt-3 text-xs text-gray-500">
-                        <span>{createdLabel}</span>
-                        <span className="text-gray-300">•</span>
-                        <span>{journal.word_count} kata</span>
-
-                        <span className="ml-auto flex items-center gap-1.5">
-                            {/* Visibility to community (public/private) */}
-                            {journal.is_private ? (
-                                <span
-                                    className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-600"
-                                    title="Hanya kamu yang bisa membaca jurnal ini"
-                                >
-                                    <Lock className="h-3 w-3" />
-                                    Privat
-                                </span>
-                            ) : (
-                                <span
-                                    className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 font-medium text-blue-600"
-                                    title="Jurnal ini bisa dilihat komunitas"
-                                >
-                                    <Globe className="h-3 w-3" />
-                                    Publik
-                                </span>
-                            )}
-
-                            {/* Visibility to AI */}
-                            {journal.share_with_ai ? (
-                                <span
-                                    className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 font-medium text-primary"
-                                    title="AI dapat membaca jurnal ini"
-                                >
-                                    <Brain className="h-3 w-3" />
-                                    AI
-                                </span>
-                            ) : (
-                                <span
-                                    className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 font-medium text-gray-500"
-                                    title="AI tidak dapat membaca jurnal ini"
-                                >
-                                    <EyeOff className="h-3 w-3" />
-                                    AI
-                                </span>
-                            )}
-                        </span>
-                    </div>
+                    {/* Actions stay visible without relying on hover. */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button
+                                type="button"
+                                className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200/80 bg-white/80 text-slate-500 shadow-sm transition-colors hover:border-theme-accent-border hover:bg-theme-accent-soft hover:text-theme-accent-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-theme-accent"
+                                onClick={(e) => e.stopPropagation()}
+                                aria-label="Opsi jurnal"
+                            >
+                                <MoreVertical className="h-4 w-4" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                            <DropdownMenuItem onClick={() => router.push(`/dashboard/journal/${journalIdentifier}/edit`)}>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={onToggleAIShare}>
+                                {journal.share_with_ai ? (
+                                    <>
+                                        <EyeOff className="mr-2 h-4 w-4" />
+                                        Sembunyikan dari AI
+                                    </>
+                                ) : (
+                                    <>
+                                        <Eye className="mr-2 h-4 w-4" />
+                                        Bagikan ke AI
+                                    </>
+                                )}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={onDelete}
+                                className="text-red-600 focus:text-red-600"
+                            >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Hapus
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
 
-                {/* Actions — always visible */}
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <button
-                            className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700"
-                            onClick={(e) => e.stopPropagation()}
-                            aria-label="Opsi jurnal"
+                <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-slate-600">
+                    {contentPreview || "Tidak ada konten..."}
+                </p>
+
+                {journal.tags && journal.tags.length > 0 && (
+                    <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                        {journal.tags.slice(0, 4).map((tag) => (
+                            <span
+                                key={tag}
+                                className="rounded-full border border-slate-200/80 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600"
+                            >
+                                #{tag}
+                            </span>
+                        ))}
+                        {journal.tags.length > 4 && (
+                            <span className="text-xs text-slate-400">+{journal.tags.length - 4}</span>
+                        )}
+                    </div>
+                )}
+
+                <div className="mt-4 flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-3 text-xs">
+                    {journal.is_private ? (
+                        <span
+                            className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 font-medium text-slate-600"
+                            title="Hanya kamu yang bisa membaca jurnal ini"
                         >
-                            <MoreVertical className="h-4 w-4" />
-                        </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-                        <DropdownMenuItem onClick={() => router.push(`/dashboard/journal/${journalIdentifier}/edit`)}>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={onToggleAIShare}>
-                            {journal.share_with_ai ? (
-                                <>
-                                    <EyeOff className="mr-2 h-4 w-4" />
-                                    Sembunyikan dari AI
-                                </>
-                            ) : (
-                                <>
-                                    <Eye className="mr-2 h-4 w-4" />
-                                    Bagikan ke AI
-                                </>
-                            )}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick={onDelete}
-                            className="text-red-600 focus:text-red-600"
+                            <Lock className="h-3 w-3" />
+                            Privat
+                        </span>
+                    ) : (
+                        <span
+                            className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 px-2.5 py-1 font-medium text-sky-700"
+                            title="Jurnal ini bisa dilihat komunitas"
                         >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Hapus
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                            <Globe className="h-3 w-3" />
+                            Publik
+                        </span>
+                    )}
+
+                    {journal.share_with_ai ? (
+                        <span
+                            className="inline-flex items-center gap-1.5 rounded-full bg-theme-accent-soft px-2.5 py-1 font-medium text-theme-accent-dark"
+                            title="AI dapat membaca jurnal ini"
+                        >
+                            <Brain className="h-3 w-3" />
+                            AI
+                        </span>
+                    ) : (
+                        <span
+                            className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 font-medium text-slate-500"
+                            title="AI tidak dapat membaca jurnal ini"
+                        >
+                            <EyeOff className="h-3 w-3" />
+                            AI
+                        </span>
+                    )}
+                </div>
             </div>
-        </div>
+        </article>
     );
 }

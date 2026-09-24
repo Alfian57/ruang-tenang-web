@@ -73,6 +73,9 @@ export function useRewardsPanel() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [rewards, setRewards] = useState<Reward[]>([]);
+  const [rewardTypes, setRewardTypes] = useState<string[]>([]);
+  const [rewardTotalPages, setRewardTotalPages] = useState(1);
+  const [claimTotalPages, setClaimTotalPages] = useState(1);
   const [claims, setClaims] = useState<RewardClaim[]>([]);
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -84,11 +87,25 @@ export function useRewardsPanel() {
   const [activatingTheme, setActivatingTheme] = useState<string | null>(null);
   const canCustomizeThemes = user?.role === "user";
   const activeView: "available" | "history" = searchParams.get("view") === "history" ? "history" : "available";
+  const category = searchParams.get("rewardType") || "all";
+  const page = Math.max(1, Number.parseInt(searchParams.get("page") || "1", 10) || 1);
+  const setPage = useCallback((next: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (next > 1) params.set("page", String(next)); else params.delete("page");
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [pathname, router, searchParams]);
+  const setCategory = (type: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (type === "all") params.delete("rewardType"); else params.set("rewardType", type);
+    params.delete("page");
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const setActiveView = useCallback((view: "available" | "history") => {
     const params = new URLSearchParams(searchParams.toString());
     if (view === "available") params.delete("view");
     else params.set("view", view);
+    params.delete("page");
     const query = params.toString();
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
   }, [pathname, router, searchParams]);
@@ -105,14 +122,19 @@ export function useRewardsPanel() {
     }
     try {
       const [rewardsRes, balanceRes, claimsRes, themesRes] = await Promise.all([
-        rewardService.getAvailableRewards(token),
+        rewardService.getAvailableRewardsPage(token, { page: activeView === "available" ? page : 1, limit: 12, reward_type: category === "all" ? undefined : category }),
         rewardService.getCoinBalance(token),
-        rewardService.getMyClaims(token, { page: 1, page_size: 50 }),
+        rewardService.getMyClaims(token, { page: activeView === "history" ? page : 1, page_size: 10 }),
         rewardService.getOwnedThemes(token),
       ]);
       setRewards(Array.isArray(rewardsRes.data) ? rewardsRes.data : []);
+      setRewardTypes(rewardsRes.reward_types || []);
+      setRewardTotalPages(rewardsRes.meta?.total_pages || 1);
       setBalance(Number(balanceRes.data?.gold_coins ?? 0));
       setClaims(claimsRes.data?.claims || []);
+      setClaimTotalPages(claimsRes.data?.total_pages || 1);
+      const currentTotal = activeView === "history" ? (claimsRes.data?.total_pages || 1) : (rewardsRes.meta?.total_pages || 1);
+      if (page > currentTotal && page > 1) setPage(Math.max(1, currentTotal));
       if (themesRes.data && canCustomizeThemes) {
         setOwnedThemes(themesRes.data.owned_themes || ["default"]);
         setActiveTheme(themesRes.data.active_theme || "default");
@@ -122,7 +144,7 @@ export function useRewardsPanel() {
     } finally {
       if (!silent) setLoading(false);
     }
-  }, [canCustomizeThemes, token]);
+  }, [canCustomizeThemes, token, page, category, activeView, setPage]);
 
   useEffect(() => {
     void loadData();
@@ -206,6 +228,13 @@ export function useRewardsPanel() {
 
   return {
     rewards,
+    rewardTypes,
+    rewardTotalPages,
+    claimTotalPages,
+    category,
+    setCategory,
+    page,
+    setPage,
     claims,
     balance,
     loading,

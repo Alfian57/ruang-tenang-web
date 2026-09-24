@@ -2,7 +2,7 @@
 
 import { cn } from "@/utils";
 import { HallOfFameEntry, LevelHallOfFameResponse } from "@/types";
-import { Users, Star } from "lucide-react";
+import { Users, Award, Zap } from "lucide-react";
 import Image from "next/image";
 
 interface HallOfFameProps {
@@ -26,7 +26,7 @@ export function HallOfFame({ data, className, hideTierName = false }: HallOfFame
                 <div className="relative z-10 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                            <Star className="h-5 w-5 text-white fill-white" />
+                            <Award className="h-5 w-5 text-white" />
                         </div>
                         <div>
                             <h3 className="font-bold text-lg">Apresiasi Komunitas - Level {data.level}</h3>
@@ -70,13 +70,10 @@ function HallOfFameEntryCard({ entry }: HallOfFameEntryCardProps) {
     const badgeColor = entry.tier_color || "#ef4444"; // Fallback to primary red
 
     return (
-        <div className="group flex items-center gap-4 p-3.5 bg-white border border-gray-100 rounded-xl hover:border-red-200 hover:shadow-md hover:bg-red-50/30 transition-all duration-300 relative overflow-hidden">
-            {/* Left accent bar on hover */}
-            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red-400 to-orange-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-
+        <div className="group relative flex items-center gap-4 overflow-hidden rounded-xl border border-gray-100 bg-white p-3.5 transition-[transform,background-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-rose-50/35 hover:shadow-[0_14px_32px_-24px_rgba(220,38,38,0.3)] motion-reduce:transition-none">
             {/* Avatar */}
             <div
-                className="relative shrink-0 w-12 h-12 rounded-full flex items-center justify-center overflow-hidden shadow-sm"
+                className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full shadow-sm ring-2 ring-white transition-transform duration-200 group-hover:scale-105 motion-reduce:transition-none"
                 style={{ backgroundColor: `${badgeColor}15` }}
             >
                 {entry.avatar ? (
@@ -96,12 +93,12 @@ function HallOfFameEntryCard({ entry }: HallOfFameEntryCardProps) {
 
             {/* Info */}
             <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-900 truncate group-hover:text-red-600 transition-colors">
+                <p className="truncate font-semibold text-gray-900 transition-colors group-hover:text-primary">
                     {entry.user_name}
                 </p>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
-                    <span className="flex items-center gap-1 text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
-                        <Star className="h-3 w-3 fill-amber-500 text-amber-500" />
+                        <span className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600 transition-transform group-hover:scale-[1.03]">
+                        <Zap className="h-3 w-3 fill-amber-500 text-amber-500" />
                         {monthlyXp.toLocaleString()} EXP
                     </span>
                     {entry.tier_name && (

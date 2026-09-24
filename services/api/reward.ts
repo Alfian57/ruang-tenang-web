@@ -1,11 +1,15 @@
 import { httpClient } from "@/services/http/client";
-import type { ApiResponse } from "@/services/http/types";
+import type { ApiResponse, PaginatedResponse } from "@/services/http/types";
 import type { Reward, RewardClaimResult, RewardClaimListResult } from "@/types";
 
 export const rewardService = {
   // Member endpoints
   getAvailableRewards(token: string) {
     return httpClient.get<ApiResponse<Reward[]>>("/rewards", { token });
+  },
+
+  getAvailableRewardsPage(token: string, params: { page: number; limit: number; reward_type?: string }) {
+    return httpClient.get<PaginatedResponse<Reward> & { reward_types: string[] }>("/rewards", { token, params });
   },
 
   claimReward(token: string, id: number) {

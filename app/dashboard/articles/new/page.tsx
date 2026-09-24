@@ -2,18 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { articleService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import { ArticleCategory } from "@/types";
+import { ArticleEditorShell } from "../_components/ArticleEditorShell";
 
 export default function NewArticlePage() {
   const router = useRouter();
@@ -73,47 +72,32 @@ export default function NewArticlePage() {
   };
 
   return (
-    <div className="py-4 lg:py-6">
-      <div className="flex items-center gap-4 mb-6">
-        <Link href={ROUTES.ARTICLES}>
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold">Tulis Artikel Baru</h1>
-          <p className="text-gray-500 text-sm">Bagikan pengetahuan dan pengalamanmu</p>
-        </div>
-      </div>
-
-      <Card className="max-w-4xl">
-        <CardHeader>
-          <CardTitle>Detail Artikel</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+    <ArticleEditorShell backHref={`${ROUTES.ARTICLES}?tab=mine`} title="Tulis artikel baru" description="Bagikan pengetahuan dan pengalamanmu. Cerita yang kamu tulis bisa menjadi teman bagi orang lain.">
+      <form onSubmit={handleSubmit} className="space-y-7">
             {error && (
-              <div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+              <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                 {error}
               </div>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="title">Judul Artikel</Label>
+              <Label htmlFor="title" className="font-semibold text-slate-800">Judul artikel</Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="Masukkan judul artikel"
+                className="h-11 rounded-xl border-slate-200 px-4"
+                placeholder="Contoh: Hal kecil yang membantuku melewati hari berat"
                 required
               />
+              <p className="text-xs text-slate-500">Pilih judul yang jelas dan terasa dekat dengan pengalamanmu.</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category">Kategori</Label>
+              <Label htmlFor="category" className="font-semibold text-slate-800">Kategori</Label>
               <select
                 id="category"
-                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                 value={formData.category_id}
                 onChange={(e) => setFormData({ ...formData, category_id: Number(e.target.value) })}
               >
@@ -123,8 +107,9 @@ export default function NewArticlePage() {
               </select>
             </div>
 
-            <div className="space-y-2">
-              <Label>Thumbnail</Label>
+            <div className="theme-accent-border-soft space-y-3 rounded-2xl border bg-slate-50/70 p-4 sm:p-5">
+              <div><Label className="font-semibold text-slate-800">Sampul artikel</Label>
+              <p className="mt-1 text-xs text-slate-500">Gambar sampul membantu pembaca mengenali tulisanmu. Bagian ini opsional.</p></div>
               {token && (
                 <ImageUpload
                   value={formData.thumbnail}
@@ -132,13 +117,10 @@ export default function NewArticlePage() {
                   token={token}
                 />
               )}
-              <p className="text-xs text-gray-500">
-                Unggah gambar untuk thumbnail artikel (opsional)
-              </p>
             </div>
 
             <div className="space-y-2">
-              <Label>Konten</Label>
+              <Label className="font-semibold text-slate-800">Isi artikel</Label>
               <RichTextEditor
                 content={formData.content}
                 onChange={(html) => setFormData({ ...formData, content: html })}
@@ -146,19 +128,15 @@ export default function NewArticlePage() {
               />
             </div>
 
-            <div className="flex gap-3 justify-end">
-              <Link href={ROUTES.ARTICLES}>
-                <Button type="button" variant="outline">
-                  Batal
-                </Button>
-              </Link>
-              <Button type="submit" className="gradient-primary" disabled={isLoading}>
+            <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+              <Button asChild variant="outline" className="h-11 rounded-xl">
+                <Link href={`${ROUTES.ARTICLES}?tab=mine`}>Batal</Link>
+              </Button>
+              <Button type="submit" className="gradient-primary h-11 rounded-xl px-6" disabled={isLoading}>
                 {isLoading ? "Menyimpan..." : "Publikasikan"}
               </Button>
             </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+      </form>
+    </ArticleEditorShell>
   );
 }

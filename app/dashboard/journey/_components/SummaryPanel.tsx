@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { BarChart3, RefreshCw, Trophy } from "lucide-react";
+import { BarChart3, Trophy } from "lucide-react";
 import { BadgeShowcase, PersonalJourneyCard, XPVisualizationsSection } from "@/components/shared/gamification";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,6 +10,7 @@ import { communityService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import type { PersonalJourney, UserBadges } from "@/types";
 import { ROUTES } from "@/lib/routes";
+import { DashboardMascotEmpty } from "@/components/shared/dashboard/DashboardMascotEmpty";
 
 export default function SummaryPanel() {
   const router = useRouter();
@@ -70,16 +71,7 @@ export default function SummaryPanel() {
 
   if (hasError && !journey) {
     return (
-      <div className="rounded-3xl border border-dashed border-primary/25 bg-white/80 px-6 py-16 text-center shadow-sm">
-        <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-primary/10 text-primary">
-          <RefreshCw className="h-6 w-6" />
-        </div>
-        <h2 className="mt-4 text-lg font-bold text-slate-900">Perjalanan belum berhasil dimuat</h2>
-        <p className="mx-auto mt-1 max-w-md text-sm text-slate-500">Coba hubungkan kembali untuk melihat level, XP, dan pencapaianmu.</p>
-        <Button type="button" variant="outline" className="mt-5 rounded-xl" onClick={loadSummary}>
-          Coba lagi
-        </Button>
-      </div>
+      <DashboardMascotEmpty image="/images/landing/mascot/map.webp" title="Perjalanan belum berhasil dimuat" description="Progresmu tetap tersimpan. Coba hubungkan kembali untuk melihatnya." action={<Button type="button" variant="outline" onClick={loadSummary}>Coba lagi</Button>} />
     );
   }
 
@@ -92,13 +84,11 @@ export default function SummaryPanel() {
           onShowRewards={() => router.push(ROUTES.journeyTab("rewards"))}
         />
       ) : (
-        <div className="rounded-xl border bg-white p-8 text-center text-sm text-gray-500">
-          Ringkasan perjalanan belum tersedia.
-        </div>
+        <DashboardMascotEmpty image="/images/landing/mascot/map.webp" title="Ringkasan belum tersedia" description="Mulai satu langkah kecil hari ini, lalu lihat ceritanya tumbuh di sini." />
       )}
-      <section className="rounded-3xl border border-white/80 bg-white/85 p-4 shadow-sm backdrop-blur sm:p-6">
+      <section className="theme-accent-border-soft rounded-3xl border bg-white/90 p-4 shadow-sm sm:p-6">
         <div className="mb-5 flex items-start gap-3">
-          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-violet-50 text-violet-600">
+          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-theme-accent-soft text-theme-accent-dark">
             <BarChart3 className="h-5 w-5" />
           </div>
           <div>
@@ -110,9 +100,9 @@ export default function SummaryPanel() {
       </section>
 
       {badges ? (
-        <section>
+        <section className="theme-accent-border-soft rounded-3xl border bg-white/90 p-4 shadow-sm sm:p-6">
           <div className="mb-4 flex items-start gap-3 px-1">
-            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-amber-50 text-amber-600">
+            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-theme-accent-soft text-theme-accent-dark">
               <Trophy className="h-5 w-5" />
             </div>
             <div>

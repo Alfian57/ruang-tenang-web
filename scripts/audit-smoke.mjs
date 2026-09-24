@@ -104,6 +104,12 @@ assertContains("components/shared/gamification/DailyTaskFAB.tsx", "showPremiumTe
 
 assertContains("app/(landing)/_components/LandingDataNotice.tsx", "Simulasi pengalaman publik", "Landing demo data must be clearly labeled");
 assertContains("app/(landing)/_components/LandingStatic.tsx", "/welcome.webp", "Landing hero must use the canonical mascot family");
+for (const pose of ["checkin", "student-welcome"]) {
+  assertFile(`assets/mascot/mascot-${pose}.png`);
+  assertFile(`public/images/dashboard/mascot/${pose}.webp`);
+}
+assertContains("app/dashboard/_components/MoodCheckinModal.tsx", "/images/dashboard/mascot/checkin.webp", "Daily check-in must use the mascot pose");
+assertContains("app/dashboard/_components/member-dashboard/MemberDashboardHeader.tsx", "/images/dashboard/mascot/student-welcome.webp", "Member dashboard hero must use the mascot pose");
 for (const pose of ["welcome", "mood", "journal", "companion", "breathe", "celebrate", "community", "heart"]) {
   assertFile(`public/images/landing/mascot/${pose}.webp`);
 }

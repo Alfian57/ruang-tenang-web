@@ -65,7 +65,6 @@
 .landing-button-primary:hover { background: #bd3d4e; transform: translateY(-2px); box-shadow: 0 18px 30px -14px #ad344e; }
 .landing-button-secondary { border: 1px solid #ecced2; background: rgba(255, 255, 255, 0.82); color: #a34552; }
 .landing-button-secondary:hover { background: white; transform: translateY(-2px); }
-.landing-tiny-star { color: #e7a868; font-size: 1.25rem; line-height: 0; }
 
 .landing-hero-blob {
   background: linear-gradient(150deg, #dfefff, #e8e6ff 58%, #f9dadd);
@@ -123,7 +122,6 @@
 .landing-text-link { display: inline-flex; align-items: center; gap: 0.55rem; color: #bd4857; font-size: 0.9rem; font-weight: 800; transition: gap 180ms ease, color 180ms ease; }
 .landing-text-link:hover { color: #9f3143; gap: 0.8rem; }
 .landing-demo-chip { border: 1px solid #f7d7d5; border-radius: 999px; background: white; padding: 0.35rem 0.6rem; color: #a14b56; font-size: 0.72rem; font-weight: 700; }
-.landing-deco-star { color: #eba368; font-size: 4rem; line-height: 1; }
 
 .landing-community {
   background: radial-gradient(ellipse at 8% 70%, #fff1f4 0, transparent 38%), linear-gradient(#fffcfa, #fffafa);

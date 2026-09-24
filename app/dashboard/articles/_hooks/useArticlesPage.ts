@@ -35,6 +35,7 @@ export function useArticlesPage() {
   const urlSearch = searchParams.get("search") || "";
   const urlMySearch = searchParams.get("mySearch") || "";
   const selectedCategory = searchParams.get("category") ? parseInt(searchParams.get("category")!, 10) : null;
+  const page = Math.max(1, Number.parseInt(searchParams.get("page") || "1", 10) || 1);
 
   // Local state for inputs
   const [searchTerm, setSearchTerm] = useState(urlSearch);
@@ -65,27 +66,32 @@ export function useArticlesPage() {
   // Update URL when debounced values change
   useEffect(() => {
     if (debouncedSearch !== urlSearch) {
-      updateUrl({ search: debouncedSearch || null });
+      updateUrl({ search: debouncedSearch || null, page: null });
     }
   }, [debouncedSearch, updateUrl, urlSearch]);
 
   useEffect(() => {
     if (debouncedMySearch !== urlMySearch) {
-      updateUrl({ mySearch: debouncedMySearch || null });
+      updateUrl({ mySearch: debouncedMySearch || null, page: null });
     }
   }, [debouncedMySearch, updateUrl, urlMySearch]);
 
-  const setActiveTab = (value: string) => updateUrl({ tab: value === "browse" ? null : value });
-  const setSelectedCategory = (id: number | null) => updateUrl({ category: id ? String(id) : null });
+  const setActiveTab = (value: string) => updateUrl({ tab: value === "browse" ? null : value, page: null });
+  const setSelectedCategory = (id: number | null) => updateUrl({ category: id ? String(id) : null, page: null });
+  const setPage = useCallback((next: number) => updateUrl({ page: next > 1 ? String(next) : null }), [updateUrl]);
 
   // Browse tab state
   const [publishedArticles, setPublishedArticles] = useState<Article[]>([]);
   const [categories, setCategories] = useState<ArticleCategory[]>([]);
   const [isBrowseLoading, setIsBrowseLoading] = useState(true);
+  const [browseTotalPages, setBrowseTotalPages] = useState(1);
+  const [browseError, setBrowseError] = useState(false);
 
   // My articles tab state
   const [myArticles, setMyArticles] = useState<MyArticle[]>([]);
   const [isMyLoading, setIsMyLoading] = useState(true);
+  const [myTotalPages, setMyTotalPages] = useState(1);
+  const [myError, setMyError] = useState(false);
   const [deleteArticleId, setDeleteArticleId] = useState<string | null>(null);
 
   const loadCategories = useCallback(async () => {
@@ -99,43 +105,53 @@ export function useArticlesPage() {
 
   const loadPublishedArticles = useCallback(async () => {
     setIsBrowseLoading(true);
+    setBrowseError(false);
     try {
       const response = await articleService.getArticles({
+        page,
+        limit: 12,
         category_id: selectedCategory || undefined,
         search: urlSearch || undefined, // Use URL value (which matches debounced)
-      }) as { data: Article[] };
+      });
       setPublishedArticles(response.data || []);
+      setBrowseTotalPages(response.meta?.total_pages || 1);
+      if (response.meta && page > response.meta.total_pages && page > 1) setPage(Math.max(1, response.meta.total_pages));
     } catch (error) {
       console.error("Failed to load articles:", error);
+      setBrowseError(true);
     } finally {
       setIsBrowseLoading(false);
     }
-  }, [selectedCategory, urlSearch]);
+  }, [selectedCategory, urlSearch, page, setPage]);
 
   const loadMyArticles = useCallback(async () => {
     if (!token) return;
     setIsMyLoading(true);
+    setMyError(false);
     try {
-      const response = await articleService.getMyArticles(token) as { data: MyArticle[] };
+      const response = await articleService.getMyArticles(token, { page, limit: 10, search: urlMySearch || undefined });
       setMyArticles(response.data || []);
+      setMyTotalPages(response.meta?.total_pages || 1);
+      if (response.meta && page > response.meta.total_pages && page > 1) setPage(Math.max(1, response.meta.total_pages));
     } catch (error) {
       console.error("Failed to load my articles:", error);
+      setMyError(true);
     } finally {
       setIsMyLoading(false);
     }
-  }, [token]);
+  }, [token, page, urlMySearch, setPage]);
 
   useEffect(() => {
     loadCategories();
   }, [loadCategories]);
 
   useEffect(() => {
-    loadPublishedArticles();
-  }, [loadPublishedArticles]);
+    if (activeTab === "browse") void loadPublishedArticles();
+  }, [activeTab, loadPublishedArticles]);
 
   useEffect(() => {
-    loadMyArticles();
-  }, [loadMyArticles]);
+    if (activeTab === "mine") void loadMyArticles();
+  }, [activeTab, loadMyArticles]);
 
   const handleDelete = async (identifier: string) => {
     if (!token) return;
@@ -148,10 +164,6 @@ export function useArticlesPage() {
     }
   };
 
-  const filteredMyArticles = myArticles.filter(a =>
-    a.title.toLowerCase().includes(urlMySearch.toLowerCase())
-  );
-
   const filteredPublishedArticles = publishedArticles.filter((article) => !isBlocked(article.author?.id || article.user_id));
 
   return {
@@ -160,10 +172,18 @@ export function useArticlesPage() {
     search: searchTerm,
     mySearch: mySearchTerm,
     selectedCategory,
+    page,
+    setPage,
+    browseTotalPages,
+    myTotalPages,
+    browseError,
+    myError,
+    retryBrowse: loadPublishedArticles,
+    retryMine: loadMyArticles,
     categories,
     publishedArticles: filteredPublishedArticles,
     isBrowseLoading,
-    myArticles: filteredMyArticles,
+    myArticles,
     isMyLoading,
     deleteArticleId,
     setActiveTab,

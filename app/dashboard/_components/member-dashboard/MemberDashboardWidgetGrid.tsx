@@ -14,35 +14,47 @@ interface MemberDashboardWidgetGridProps {
 
 export function MemberDashboardWidgetGrid({ viewModel }: MemberDashboardWidgetGridProps) {
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 items-stretch gap-6 lg:grid-cols-2 xl:grid-cols-3">
-        <div className="flex flex-col gap-6">
-          <div data-user-tour="user-journal" className="flex-1 flex flex-col">
-            <QuickJournalWidget latestJournal={viewModel.latestJournal} isLoading={viewModel.isLoadingWidgets} />
-          </div>
-          <ConsultationPromoWidget />
+    <div className="space-y-5 lg:space-y-6">
+      <div className="member-dashboard-section-intro">
+        <div>
+          <p className="member-dashboard-section-kicker">Ritme hari ini</p>
+          <h2>Kenali perasaanmu, lanjutkan ceritamu.</h2>
         </div>
-
-        <div data-user-tour="user-mood" className="flex flex-col">
+        <p>Dua langkah sederhana untuk memberi ruang pada dirimu.</p>
+      </div>
+      <div className="member-dashboard-today-grid">
+        <div data-user-tour="user-mood" className="member-dashboard-mood-slot flex flex-col">
           <MoodInsightWidget moods={viewModel.moodHistory} isLoading={viewModel.isLoadingWidgets} />
         </div>
-
-        <div className="grid content-start gap-6 sm:grid-cols-2 lg:col-span-2 xl:col-span-1 xl:grid-cols-1">
-          <XPProgressWidget />
-          <div data-user-tour="user-progress-map">
-            <MapProgressWidget />
-          </div>
+        <div data-user-tour="user-journal" className="member-dashboard-journal-slot flex flex-col">
+          <QuickJournalWidget latestJournal={viewModel.latestJournal} isLoading={viewModel.isLoadingWidgets} />
         </div>
       </div>
-
-      <MoodCalendar moods={viewModel.moodHistory} />
-
-      <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-12">
-        <div className="md:col-span-8">
+      <div className="member-dashboard-section-intro">
+        <div>
+          <p className="member-dashboard-section-kicker">Terus bertumbuh</p>
+          <h2>Setiap langkah kecil punya arti.</h2>
+        </div>
+      </div>
+      <div className="member-dashboard-growth-grid">
+        <div className="member-dashboard-xp-slot">
+          <XPProgressWidget />
+        </div>
+        <div data-user-tour="user-progress-map" className="member-dashboard-map-slot"><MapProgressWidget /></div>
+        <div className="member-dashboard-chat-slot"><ConsultationPromoWidget /></div>
+      </div>
+      <div className="member-dashboard-calendar-slot"><MoodCalendar moods={viewModel.moodHistory} /></div>
+      <div className="member-dashboard-section-intro">
+        <div>
+          <p className="member-dashboard-section-kicker">Teman jeda</p>
+          <h2>Isi ulang energi dengan caramu.</h2>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 items-stretch gap-5 lg:grid-cols-12 lg:gap-6">
+        <div className="member-dashboard-music-slot lg:col-span-7">
           <MusicPlayerWidget categories={viewModel.categories} />
         </div>
-
-        <div className="md:col-span-4">
+        <div className="member-dashboard-articles-slot lg:col-span-5">
           <RecommendedArticlesWidget articles={viewModel.recommendedArticles} isLoading={viewModel.isLoadingWidgets} />
         </div>
       </div>

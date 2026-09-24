@@ -3,15 +3,24 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ROUTES } from "@/lib/routes";
-import { Search, Plus, FileText } from "lucide-react";
+import { BookOpen, FilePenLine, Search, Plus, SlidersHorizontal, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { EmptyState } from "@/components/ui/empty-state";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { DashboardHubTabList } from "@/components/shared/dashboard/DashboardHubTabs";
 import { useArticlesPage } from "./_hooks/useArticlesPage";
 import { BrowseArticleCard } from "./_components/BrowseArticleCard";
 import { MyArticleCard } from "./_components/MyArticleCard";
+import { DashboardMascotHero } from "@/components/shared/dashboard/DashboardMascotHero";
+import { DashboardMascotEmpty } from "@/components/shared/dashboard/DashboardMascotEmpty";
+import { Pagination } from "@/components/ui/pagination";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+
+const ARTICLE_TABS = [
+  { value: "browse", label: "Jelajahi Artikel", icon: BookOpen },
+  { value: "mine", label: "Artikel Saya", icon: FilePenLine },
+] as const;
 
 export default function ArticlesPage() {
   const {
@@ -20,6 +29,14 @@ export default function ArticlesPage() {
     search,
     mySearch,
     selectedCategory,
+    page,
+    setPage,
+    browseTotalPages,
+    myTotalPages,
+    browseError,
+    myError,
+    retryBrowse,
+    retryMine,
     categories,
     publishedArticles,
     isBrowseLoading,
@@ -36,23 +53,15 @@ export default function ArticlesPage() {
   const router = useRouter();
 
   return (
-    <div className="py-4 lg:py-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Artikel</h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Jelajahi artikel menarik atau kelola tulisanmu sendiri
-        </p>
-      </div>
+    <div className="pb-8">
+      <DashboardMascotHero eyebrow="Bacaan untuk setiap suasana" title="Artikel" description="Temukan perspektif baru untuk memahami diri, atau tulis pengalamanmu sendiri untuk menemani orang lain." image="/images/landing/mascot/read.webp" imageAlt="Bulan Pulih sedang membaca" />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <TabsList className="grid w-full max-w-sm grid-cols-2">
-            <TabsTrigger value="browse">Jelajahi Artikel</TabsTrigger>
-            <TabsTrigger value="mine">Artikel Saya</TabsTrigger>
-          </TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="min-w-0">
+        <div className="flex flex-wrap items-center justify-start gap-3">
+          <DashboardHubTabList tabs={ARTICLE_TABS} className="mb-0" />
           {activeTab === "mine" && (
-            <Link href={ROUTES.ARTICLE_CREATE} className="w-full sm:w-auto">
-              <Button className="gradient-primary w-full sm:w-auto">
+            <Link href={ROUTES.ARTICLE_CREATE} className="shrink-0">
+              <Button className="gradient-primary rounded-xl">
                 <Plus className="w-4 h-4 mr-2" /> Tulis Artikel
               </Button>
             </Link>
@@ -60,23 +69,29 @@ export default function ArticlesPage() {
         </div>
 
         {/* Browse Published Articles Tab */}
-        <TabsContent value="browse" className="space-y-6">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
+        <TabsContent value="browse" className="min-w-0 space-y-5">
+          <div data-user-tour="articles-discover" className="theme-accent-border-soft rounded-2xl border bg-white/90 p-4 shadow-sm sm:p-5">
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <SlidersHorizontal className="h-4 w-4 text-theme-accent-dark" aria-hidden="true" />
+              Temukan bacaan yang pas
+            </div>
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
               <Input
+                aria-label="Cari artikel"
                 placeholder="Cari artikel..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10 bg-white"
+                className="h-11 rounded-xl bg-white pl-10 pr-10"
               />
+              {search && <button type="button" aria-label="Bersihkan pencarian artikel" onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"><X className="h-4 w-4" /></button>}
             </div>
-            <div className="flex gap-2 overflow-x-auto pb-1 -mb-1">
+            <div className="mt-3 flex max-w-full gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]" aria-label="Filter kategori artikel">
               <Button
                 variant={selectedCategory === null ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedCategory(null)}
-                className={`shrink-0 ${selectedCategory === null ? "gradient-primary" : "bg-white"}`}
+                className={`shrink-0 rounded-full ${selectedCategory === null ? "gradient-primary" : "bg-white"}`}
               >
                 Semua
               </Button>
@@ -86,7 +101,7 @@ export default function ArticlesPage() {
                   variant={selectedCategory === cat.id ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedCategory(cat.id)}
-                  className={`shrink-0 ${selectedCategory === cat.id ? "gradient-primary" : "bg-white"}`}
+                  className={`shrink-0 rounded-full ${selectedCategory === cat.id ? "gradient-primary" : "bg-white"}`}
                 >
                   {cat.name}
                 </Button>
@@ -95,7 +110,7 @@ export default function ArticlesPage() {
           </div>
 
           {isBrowseLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <Card key={i} className="overflow-hidden bg-white">
                   <div className="aspect-16/10 w-full bg-gray-200 animate-pulse" />
@@ -107,8 +122,10 @@ export default function ArticlesPage() {
                 </Card>
               ))}
             </div>
+          ) : browseError ? (
+            <DashboardMascotEmpty image="/images/landing/mascot/read.webp" title="Artikel belum bisa dimuat" description="Coba lagi saat koneksimu sudah stabil." action={<Button onClick={() => void retryBrowse()}>Coba lagi</Button>} />
           ) : publishedArticles.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
               {publishedArticles.map((article) => (
                 <BrowseArticleCard
                   key={article.id}
@@ -118,25 +135,26 @@ export default function ArticlesPage() {
               ))}
             </div>
           ) : (
-            <EmptyState
-              icon={<Search className="w-16 h-16 text-gray-300" />}
-              title="Tidak ada artikel"
-              description={search ? "Coba kata kunci lain atau filter berbeda" : "Artikel akan segera tersedia"}
-              action={search ? { label: "Hapus Pencarian", onClick: () => setSearch("") } : undefined}
-            />
+            <DashboardMascotEmpty image="/images/landing/mascot/read.webp" title="Belum ada artikel yang cocok" description={search || selectedCategory ? "Coba kata kunci atau kategori lain." : "Artikel baru akan hadir di sini."} action={search || selectedCategory ? <Button variant="outline" onClick={() => { setSearch(""); setSelectedCategory(null); }}>Bersihkan filter</Button> : undefined} />
           )}
+          {!isBrowseLoading && !browseError && <Pagination currentPage={page} totalPages={browseTotalPages} onPageChange={setPage} />}
         </TabsContent>
 
         {/* My Articles Tab */}
-        <TabsContent value="mine" className="space-y-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
-            <Input
-              placeholder="Cari artikel saya..."
-              value={mySearch}
-              onChange={(e) => setMySearch(e.target.value)}
-              className="pl-10 bg-white"
-            />
+        <TabsContent value="mine" className="min-w-0 space-y-5">
+          <div className="theme-accent-border-soft rounded-2xl border bg-white/90 p-4 shadow-sm sm:p-5">
+            <p className="mb-3 text-sm font-semibold text-slate-700">Kelola tulisanmu</p>
+            <div className="relative max-w-xl">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 z-10" />
+              <Input
+                aria-label="Cari artikel saya"
+                placeholder="Cari artikel saya..."
+                value={mySearch}
+                onChange={(e) => setMySearch(e.target.value)}
+                className="h-11 rounded-xl bg-white pl-10 pr-10"
+              />
+              {mySearch && <button type="button" aria-label="Bersihkan pencarian artikel saya" onClick={() => setMySearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"><X className="h-4 w-4" /></button>}
+            </div>
           </div>
 
           {isMyLoading ? (
@@ -153,6 +171,8 @@ export default function ArticlesPage() {
                 </Card>
               ))}
             </div>
+          ) : myError ? (
+            <DashboardMascotEmpty image="/images/landing/mascot/read.webp" title="Tulisanmu belum bisa dimuat" description="Coba lagi sebentar lagi." action={<Button onClick={() => void retryMine()}>Coba lagi</Button>} />
           ) : myArticles.length > 0 ? (
             <div className="grid gap-4">
               {myArticles.map((article) => (
@@ -164,46 +184,13 @@ export default function ArticlesPage() {
               ))}
             </div>
           ) : (
-            <EmptyState
-              icon={<FileText className="w-16 h-16 text-gray-300" />}
-              title="Belum ada artikel"
-              description={
-                mySearch
-                  ? `Tidak ada artikel yang cocok dengan "${mySearch}"`
-                  : "Mulai tulis artikel pertamamu hari ini"
-              }
-              action={
-                !mySearch
-                  ? { label: "Tulis Artikel", onClick: () => router.push(ROUTES.ARTICLE_CREATE) }
-                  : { label: "Hapus Pencarian", onClick: () => setMySearch("") }
-              }
-            />
+            <DashboardMascotEmpty image="/images/landing/mascot/read.webp" title="Belum ada tulisan di sini" description={mySearch ? `Tidak ada artikel yang cocok dengan “${mySearch}”.` : "Tulis satu hal kecil yang ingin kamu bagikan."} action={<Button onClick={() => mySearch ? setMySearch("") : router.push(ROUTES.ARTICLE_CREATE)}>{mySearch ? "Bersihkan pencarian" : "Tulis Artikel"}</Button>} />
           )}
+          {!isMyLoading && !myError && <Pagination currentPage={page} totalPages={myTotalPages} onPageChange={setPage} />}
         </TabsContent>
       </Tabs>
 
-      {/* Delete Confirmation Modal */}
-      {deleteArticleId && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 max-w-md w-full">
-            <h3 className="text-lg font-bold mb-2">Hapus Artikel?</h3>
-            <p className="text-gray-600 mb-4">
-              Artikel yang dihapus tidak dapat dikembalikan. Yakin ingin melanjutkan?
-            </p>
-            <div className="flex gap-3 justify-end">
-              <Button variant="outline" onClick={() => setDeleteArticleId(null)}>
-                Batal
-              </Button>
-              <Button
-                className="bg-red-500 hover:bg-red-600 text-white"
-                onClick={() => handleDelete(deleteArticleId)}
-              >
-                Hapus
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog isOpen={Boolean(deleteArticleId)} onClose={() => setDeleteArticleId(null)} onConfirm={() => deleteArticleId ? handleDelete(deleteArticleId) : undefined} title="Hapus Artikel?" description="Artikel yang dihapus tidak dapat dikembalikan. Yakin ingin melanjutkan?" confirmText="Hapus" variant="danger" />
     </div>
   );
 }

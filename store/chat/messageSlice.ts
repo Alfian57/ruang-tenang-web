@@ -33,7 +33,7 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
 
   sendTextMessage: async (token: string, content: string, options?: SendMessageOptions) => {
     const { activeSession } = get();
-    if (!token || !activeSession) return;
+    if (!token || !activeSession) return false;
 
     // Track whether this is the first message so we can refresh the
     // auto-generated session title afterwards (GPT/Gemini/Claude style).
@@ -92,8 +92,13 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
         }
       }
 
-      // Refresh user to update EXP
-      await useAuthStore.getState().refreshUser();
+      // EXP refresh is secondary: a failure here must not roll back a sent message.
+      try {
+        await useAuthStore.getState().refreshUser();
+      } catch (refreshError) {
+        console.error("ChatStore.sendTextMessage: user refresh failed", refreshError);
+      }
+      return true;
     } catch (error) {
       console.error("ChatStore.sendTextMessage: failed", error);
       set((state) => ({
@@ -107,12 +112,13 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
           description: "Upgrade Premium dari menu Billing untuk lanjut ngobrol tanpa batas.",
         });
 
-        return;
+        return false;
       }
 
       toast.error("Pesan belum terkirim", {
         description: "Silakan coba beberapa saat lagi.",
       });
+      return false;
     }
   },
 
@@ -126,7 +132,9 @@ export const createMessageSlice: StateCreator<ChatStore, [], [], ChatMessageStat
 
     try {
       // Upload audio file
-      const audioFile = new File([audioBlob], "voice-note.mp3", { type: "audio/mp3" });
+      const mimeType = audioBlob.type.split(";")[0];
+      const extension = mimeType === "audio/ogg" ? "ogg" : mimeType === "audio/mp4" ? "m4a" : "webm";
+      const audioFile = new File([audioBlob], `voice-note.${extension}`, { type: audioBlob.type });
       const uploadRes = await uploadService.uploadAudio(token, audioFile);
       const audioUrl = uploadRes.data.url;
 

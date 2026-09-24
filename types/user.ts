@@ -5,6 +5,8 @@ export interface User {
   id: number;
   name: string;
   email: string;
+  whatsapp_number?: string;
+  whatsapp_verified?: boolean;
   avatar?: string;
   role: UserRole;
   exp: number;

@@ -6,6 +6,7 @@ import { TabsContent } from "@/components/ui/tabs";
 import { DashboardHubTabs, DashboardPanelLoading, type DashboardHubTab } from "@/components/shared/dashboard/DashboardHubTabs";
 import { useQueryTab } from "@/hooks/useQueryTab";
 import { ROUTES } from "@/lib/routes";
+import { DashboardMascotHero } from "@/components/shared/dashboard/DashboardMascotHero";
 
 const SummaryPanel = dynamic(() => import("./_components/SummaryPanel"), { loading: () => <DashboardPanelLoading label="Memuat perjalanan" /> });
 const MapPanel = dynamic(() => import("./_components/MapPanel"), { loading: () => <DashboardPanelLoading label="Memuat perjalanan" /> });
@@ -27,16 +28,11 @@ export default function JourneyPage() {
   });
 
   return (
-    <div className="relative min-h-screen py-5 lg:py-7">
+    <div className="relative min-h-screen pb-7">
       <div className="relative mx-auto max-w-7xl">
-        <div className="max-w-2xl">
-          <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">Perjalanan</h1>
-          <p className="mt-1.5 text-sm leading-relaxed text-slate-600 sm:text-base">
-            Lihat pertumbuhanmu, jelajahi setiap checkpoint, dan gunakan koin untuk hadiah yang membuat perjalanan makin personal.
-          </p>
-        </div>
+        <DashboardMascotHero eyebrow="Setiap langkah berarti" title="Perjalananmu" description="Lihat sejauh mana kamu bertumbuh, jelajahi checkpoint baru, dan rayakan pencapaian kecil bersama Bulan Pulih." image="/images/landing/mascot/map.webp" imageAlt="Bulan Pulih menjelajahi peta perjalanan" />
 
-        <DashboardHubTabs tabs={JOURNEY_TABS} value={activeTab} onValueChange={setActiveTab} className="mt-6">
+        <DashboardHubTabs tabs={JOURNEY_TABS} value={activeTab} onValueChange={setActiveTab} tabListTourTarget="journey-tabs" compact className="mt-6">
           <TabsContent value="summary"><SummaryPanel /></TabsContent>
           <TabsContent value="map"><MapPanel /></TabsContent>
           <TabsContent value="rewards"><RewardsPanel /></TabsContent>

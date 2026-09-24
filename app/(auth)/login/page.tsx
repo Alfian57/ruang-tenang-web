@@ -63,7 +63,15 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     setError(null);
     try {
-      await login(data.email, data.password, rememberMe);
+      const challenge = await login(data.email, data.password, rememberMe);
+      if (challenge) {
+        sessionStorage.setItem("phone-verification", JSON.stringify(challenge));
+        sessionStorage.setItem("phone-verification-redirect", redirectTarget);
+        router.push(ROUTES.VERIFY_PHONE);
+        return;
+      }
+      sessionStorage.removeItem("phone-verification");
+      sessionStorage.removeItem("phone-verification-redirect");
       router.push(redirectTarget);
     } catch (error) {
       const err = error as Error;

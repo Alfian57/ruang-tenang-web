@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/utils";
+import { TrackCredit } from "@/components/music/TrackCredit";
 import { Song } from "@/types/song";
 
 // Format time in mm:ss
@@ -105,6 +106,7 @@ export function ExpandedPlayer({
                         <p className="text-xs text-gray-500 truncate">
                             {playbackSourceName || currentSong.category?.name}
                         </p>
+                        <TrackCredit song={currentSong} />
                     </div>
                 </div>
 

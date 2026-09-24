@@ -15,6 +15,7 @@ import { authService } from "@/services/api";
 const profileSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter"),
   email: z.string().email("Email tidak valid"),
+  whatsapp_number: z.string().regex(/^(?:\+62|62|0)8\d{8,13}$/, "Nomor WhatsApp Indonesia tidak valid"),
 });
 
 const passwordSchema = z.object({
@@ -43,6 +44,7 @@ export default function ProfilePage() {
     defaultValues: {
       name: user?.name || "",
       email: user?.email || "",
+      whatsapp_number: user?.whatsapp_number || "",
     },
   });
 
@@ -56,7 +58,7 @@ export default function ProfilePage() {
     setProfileError("");
     setProfileSuccess(false);
     try {
-      await authService.updateProfile(token, { name: data.name, email: data.email });
+      await authService.updateProfile(token, { name: data.name, email: data.email, whatsapp_number: data.whatsapp_number });
       await refreshUser();
       setProfileSuccess(true);
       setTimeout(() => setProfileSuccess(false), 3000);
@@ -107,7 +109,7 @@ export default function ProfilePage() {
             Informasi Profil
           </CardTitle>
           <CardDescription>
-            Perbarui nama dan email akunmu
+            Perbarui nama, email, dan nomor WhatsApp akunmu
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -119,7 +121,7 @@ export default function ProfilePage() {
             )}
             {profileSuccess && (
               <div className="p-3 rounded-lg bg-primary/10 text-primary text-sm flex items-center gap-2">
-                <Check className="w-4 h-4" /> Profil berhasil diperbarui
+                <Check className="w-4 h-4" /> Profil berhasil diperbarui. Jika nomor berubah, verifikasi diperlukan saat login berikutnya.
               </div>
             )}
             <div className="space-y-2">
@@ -134,6 +136,13 @@ export default function ProfilePage() {
               <Input id="email" type="email" {...profileForm.register("email")} />
               {profileForm.formState.errors.email && (
                 <p className="text-sm text-destructive">{profileForm.formState.errors.email.message}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="whatsapp_number">Nomor WhatsApp untuk reset kata sandi</Label>
+              <Input id="whatsapp_number" type="tel" autoComplete="tel" placeholder="081234567890" {...profileForm.register("whatsapp_number")} />
+              {profileForm.formState.errors.whatsapp_number && (
+                <p className="text-sm text-destructive">{profileForm.formState.errors.whatsapp_number.message}</p>
               )}
             </div>
             <Button type="submit" disabled={profileLoading} className="gradient-primary border-0">

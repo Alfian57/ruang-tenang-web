@@ -6,14 +6,14 @@ import {
     HeartHandshake,
     Hospital,
     Sprout,
-    Sparkles,
+    Sunrise,
     Sun,
     Wind,
 } from "lucide-react";
 
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
     "anxiety-management": Wind,
-    "finding-hope": Sparkles,
+    "finding-hope": Sunrise,
     "healing-from-trauma": HeartHandshake,
     "other": FileText,
     "overcoming-depression": Sun,

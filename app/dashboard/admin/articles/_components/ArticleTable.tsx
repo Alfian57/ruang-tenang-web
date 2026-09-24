@@ -1,11 +1,11 @@
 "use client";
 
 import { Ban, CheckCircle, Eye, Edit, XCircle, Trash2, FileText } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/utils";
+import { ArticleThumbnail } from "@/components/shared/articles/ArticleThumbnail";
 import { AdminArticle } from "../_hooks/useAdminArticles";
 
 interface ArticleTableProps {
@@ -96,18 +96,8 @@ export function ArticleTable({
                                 <tr key={article.id} className="hover:bg-gray-50">
                                     <td className="p-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-16 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
-                                                {article.thumbnail ? (
-                                                    <Image
-                                                        src={article.thumbnail}
-                                                        alt={article.title}
-                                                        width={64}
-                                                        height={48}
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <div className="w-full h-full flex items-center justify-center"><FileText className="w-5 h-5 text-gray-300" /></div>
-                                                )}
+                                            <div className="relative w-16 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                                                <ArticleThumbnail src={article.thumbnail} alt={article.title} sizes="64px" />
                                             </div>
                                             <div className="min-w-0">
                                                 <p className="font-medium truncate max-w-52">{article.title}</p>

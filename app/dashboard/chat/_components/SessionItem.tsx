@@ -49,24 +49,23 @@ export function SessionItem({
 
   return (
     <div
-      onClick={onSelect}
       className={cn(
-        "rounded-lg cursor-pointer transition-colors group relative border",
+        "group relative rounded-xl border transition-all focus-within:ring-2 focus-within:ring-rose-400",
         compact ? "p-2" : "p-3",
         isActive
-          ? "bg-red-50 border-primary/20"
-          : "hover:bg-gray-50 bg-white border-transparent"
+          ? "border-rose-200 bg-rose-50/80 shadow-sm"
+          : "border-transparent bg-white/80 hover:border-rose-100 hover:bg-white hover:shadow-sm"
       )}
     >
       <div className="flex items-center justify-between gap-2">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="min-w-0 flex-1 flex items-center gap-3">
+              <button type="button" onClick={onSelect} aria-current={isActive ? "page" : undefined} className="flex min-w-0 flex-1 items-center gap-3 text-left focus-visible:outline-none">
                 {!compact && (
                   <div className={cn(
                     "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-                    isActive ? "bg-primary/10 text-primary" : "bg-gray-100 text-gray-400"
+                    isActive ? "bg-rose-100 text-rose-600" : "bg-slate-100 text-slate-400"
                   )}>
                     <MessageSquare className="w-4 h-4" />
                   </div>
@@ -97,7 +96,7 @@ export function SessionItem({
                     </p>
                   )}
                 </div>
-              </div>
+              </button>
             </TooltipTrigger>
             <TooltipContent>
               <p>{session.title}</p>
@@ -108,9 +107,9 @@ export function SessionItem({
         <DropdownMenu>
           <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
             <button className={cn(
-              "p-1 text-gray-400 hover:text-gray-600 shrink-0 transition-opacity",
-              compact ? "opacity-0 group-hover:opacity-100" : "opacity-0 group-hover:opacity-100"
-            )}>
+              "shrink-0 rounded-md p-1 text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-600"
+            )}
+            aria-label={`Opsi untuk ${session.title}`}>
               <MoreVertical className="w-4 h-4" />
             </button>
           </DropdownMenuTrigger>

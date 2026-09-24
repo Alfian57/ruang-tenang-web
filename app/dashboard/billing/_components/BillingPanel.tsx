@@ -1,14 +1,16 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeftRight, BadgeCheck, Building2, Check, Coins, CreditCard, Crown, Download, Loader2, Lock, ReceiptText } from "lucide-react";
+import { ArrowLeftRight, BadgeCheck, Building2, Check, Coins, Crown, Download, Loader2, Lock, ReceiptText } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/routes";
 import { useBillingCheckout } from "@/hooks/useBillingCheckout";
 import { useAuthStore } from "@/store/authStore";
 import { billingService } from "@/services/api";
+import { BillingMetricCard } from "./BillingMetricCard";
 import type {
     BillingCatalog,
     BillingStatus,
@@ -205,59 +207,43 @@ export default function BillingPanel({ mode }: BillingPanelProps) {
     }
 
     return (
-        <div className="space-y-6 py-4 lg:py-6">
+        <div className="space-y-5 py-1">
             {mode === "packages" && (
             <>
-            <section className="rounded-3xl border border-theme-story-border bg-linear-to-br from-theme-story-from via-white to-theme-story-to p-5 lg:p-6">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                    <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Ringkasan Paket</p>
-                        <h1 className="mt-1 text-2xl font-semibold text-slate-900">Status Paket dan Kuota</h1>
-                        <p className="mt-2 text-sm text-slate-600 max-w-2xl">
-                            Pantau tier akun, kuota chat AI, dan saldo koin dalam satu tempat.
+            <section className="rounded-[1.75rem] border border-rose-100 bg-[linear-gradient(135deg,#fff_0%,#fff_66%,#fff5f1_100%)] p-4 shadow-sm sm:p-5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="min-w-0">
+                        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-theme-accent-dark">Ringkasan akun</p>
+                        <h2 className="mt-1 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">Status paket dan kuota</h2>
+                        <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-slate-600">
+                            Pantau akses Premium, koin, dan kuota chat dalam satu tempat.
                         </p>
-                        <span className="mt-3 inline-flex rounded-full border border-theme-story-border bg-white px-3 py-1 text-xs font-semibold text-theme-story-heading">
-                            Paket aktif: {currentTier}
+                        <span className="mt-3 inline-flex items-center rounded-full border border-rose-100 bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700">
+                            <span className="mr-2 h-1.5 w-1.5 rounded-full bg-theme-accent" />Paket aktif: {currentTier}
                         </span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex shrink-0 flex-wrap items-center gap-2">
                         <Link href={ROUTES.billingTab("coins")}>
-                            <Button className="gap-2">
+                            <Button className="gap-2 rounded-xl">
                                 <Coins className="w-4 h-4" />
                                 Beli Koin
                             </Button>
                         </Link>
-                        <Button variant="outline" className="gap-2" onClick={() => void refreshData()}>
+                        <Button variant="outline" className="gap-2 rounded-xl border-slate-200 bg-white" onClick={() => void refreshData()}>
                             <ArrowLeftRight className="w-4 h-4" />
                             Refresh
                         </Button>
                     </div>
                 </div>
 
-                <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-3">
-                    <div className="rounded-2xl border border-theme-story-border bg-white p-4">
-                        <p className="text-xs uppercase tracking-wide text-slate-500">Tier Aktif</p>
-                        <p className="mt-1 text-2xl font-semibold text-slate-900">{currentTier}</p>
-                        <p className="mt-1 text-xs text-slate-500">Akses premium: {formatPremiumAccess(status)}</p>
-                    </div>
-                    <div className="rounded-2xl border border-theme-story-border bg-white p-4">
-                        <p className="text-xs uppercase tracking-wide text-slate-500">Saldo Koin</p>
-                        <p className="mt-1 text-2xl font-semibold text-slate-900">{(status?.gold_coins ?? 0).toLocaleString("id-ID")}</p>
-                        <p className="mt-1 text-xs text-slate-500">Digunakan untuk reward</p>
-                    </div>
-                    <div className="rounded-2xl border border-theme-story-border bg-white p-4">
-                        <p className="text-xs uppercase tracking-wide text-slate-500">Kuota Chat AI</p>
-                        <p className="mt-1 text-lg font-semibold text-slate-900">
-                            {status?.chat_quota.is_unlimited
-                                ? "Tanpa batas"
-                                : `${Math.max(0, status?.chat_quota.remaining ?? 0)} sisa / ${status?.chat_quota.limit ?? 0}`}
-                        </p>
-                        <p className="mt-1 text-xs text-slate-500">Reset: {formatDateTime(status?.chat_quota.reset_at)}</p>
-                    </div>
+                <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+                    <BillingMetricCard label="Tier aktif" value={currentTier} detail={`Akses premium: ${formatPremiumAccess(status)}`} mascot="/images/landing/mascot/secure.webp" />
+                    <BillingMetricCard label="Saldo koin" value={(status?.gold_coins ?? 0).toLocaleString("id-ID")} detail="Digunakan untuk reward" mascot="/images/dashboard/mascot/daily-missions.webp" />
+                    <BillingMetricCard label="Kuota chat" value={status?.chat_quota.is_unlimited ? "Tanpa batas" : `${Math.max(0, status?.chat_quota.remaining ?? 0)} / ${status?.chat_quota.limit ?? 0} tersisa`} detail={`Reset: ${formatDateTime(status?.chat_quota.reset_at)}`} mascot="/images/dashboard/mascot/chat-listen.webp" />
                 </div>
             </section>
 
-            <section className="rounded-2xl border border-slate-200 bg-white p-4">
+            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
                 <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                     <div>
                         <p className="text-xs font-semibold uppercase tracking-wide text-theme-accent-text">Gratis, Premium, B2B</p>
@@ -283,15 +269,16 @@ export default function BillingPanel({ mode }: BillingPanelProps) {
                 </div>
 
                 <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-3">
-                    <article className={`rounded-2xl border p-4 ${!status?.is_premium ? "border-amber-300 bg-amber-50/70" : "border-slate-200 bg-slate-50"}`}>
-                        <div className="flex items-center justify-between gap-3">
+                    <article className={`rounded-2xl border p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${!status?.is_premium ? "border-theme-accent-border bg-rose-50/50" : "border-slate-200 bg-white"}`}>
+                        <div className="flex items-start justify-between gap-3">
                             <div>
-                                <p className="text-xs uppercase tracking-wide text-amber-700">Freemium</p>
-                                <h3 className="mt-1 text-base font-semibold text-slate-900">Akun Gratis</h3>
+                                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">Freemium</p>
+                                <h3 className="mt-1 text-base font-bold text-slate-900">Akun Gratis</h3>
                             </div>
-                            {!status?.is_premium && (
-                                <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-semibold text-amber-700">Aktif</span>
-                            )}
+                            <div className="flex shrink-0 flex-col items-end gap-1">
+                                {!status?.is_premium && <span className="rounded-full bg-rose-100 px-2.5 py-1 text-[10px] font-bold text-theme-accent-dark">Aktif</span>}
+                                <Image src="/images/landing/mascot/secure.webp" alt="" width={64} height={64} sizes="64px" className="h-12 w-12 object-contain" />
+                            </div>
                         </div>
                         <div className="mt-4 space-y-2 text-sm text-slate-700">
                             <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-primary/80" /> Akses fitur inti dashboard.</p>
@@ -300,15 +287,16 @@ export default function BillingPanel({ mode }: BillingPanelProps) {
                         </div>
                     </article>
 
-                    <article className={`rounded-2xl border p-4 ${status?.is_premium ? "border-theme-accent/40 bg-theme-accent/10" : "border-slate-200 bg-white"}`}>
-                        <div className="flex items-center justify-between gap-3">
+                    <article className={`rounded-2xl border p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${status?.is_premium ? "border-theme-accent-border bg-rose-50/50" : "border-slate-200 bg-white"}`}>
+                        <div className="flex items-start justify-between gap-3">
                             <div>
-                                <p className="text-xs uppercase tracking-wide text-theme-accent-text">Premium</p>
-                                <h3 className="mt-1 text-base font-semibold text-slate-900">Akun Premium</h3>
+                                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-theme-accent-dark">Premium</p>
+                                <h3 className="mt-1 text-base font-bold text-slate-900">Akun Premium</h3>
                             </div>
-                            {status?.is_premium && (
-                                <span className="rounded-full bg-theme-accent/20 px-2.5 py-1 text-[11px] font-semibold text-theme-accent-dark">Aktif</span>
-                            )}
+                            <div className="flex shrink-0 flex-col items-end gap-1">
+                                {status?.is_premium && <span className="rounded-full bg-rose-100 px-2.5 py-1 text-[10px] font-bold text-theme-accent-dark">Aktif</span>}
+                                <Image src="/images/landing/mascot/celebrate.webp" alt="" width={64} height={64} sizes="64px" className="h-12 w-12 object-contain" />
+                            </div>
                         </div>
                         <div className="mt-4 space-y-2 text-sm text-slate-700">
                             <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-theme-accent-text" /> Chat AI tanpa batas selama masa aktif paket.</p>
@@ -317,17 +305,16 @@ export default function BillingPanel({ mode }: BillingPanelProps) {
                         </div>
                     </article>
 
-                    <article className={`rounded-2xl border p-4 ${status?.entitlement_source === "b2b" || user?.role === "mitra" ? "border-theme-accent/40 bg-theme-accent/10" : "border-slate-200 bg-white"}`}>
-                        <div className="flex items-center justify-between gap-3">
+                    <article className={`rounded-2xl border p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${status?.entitlement_source === "b2b" || user?.role === "mitra" ? "border-theme-accent-border bg-rose-50/50" : "border-slate-200 bg-white"}`}>
+                        <div className="flex items-start justify-between gap-3">
                             <div>
-                                <p className="text-xs uppercase tracking-wide text-theme-accent-text">Premium B2B</p>
-                                <h3 className="mt-1 text-base font-semibold text-slate-900">Organisasi Mitra</h3>
+                                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-theme-accent-dark">Premium B2B</p>
+                                <h3 className="mt-1 text-base font-bold text-slate-900">Organisasi Mitra</h3>
                             </div>
-                            {status?.entitlement_source === "b2b" || user?.role === "mitra" ? (
-                                <span className="rounded-full bg-theme-accent/20 px-2.5 py-1 text-[11px] font-semibold text-theme-accent-dark">Aktif</span>
-                            ) : (
-                                <Building2 className="h-5 w-5 text-theme-accent-text" />
-                            )}
+                            <div className="flex shrink-0 flex-col items-end gap-1">
+                                {(status?.entitlement_source === "b2b" || user?.role === "mitra") && <span className="rounded-full bg-rose-100 px-2.5 py-1 text-[10px] font-bold text-theme-accent-dark">Aktif</span>}
+                                <Image src="/images/landing/mascot/community.webp" alt="" width={64} height={64} sizes="64px" className="h-12 w-12 object-contain" />
+                            </div>
                         </div>
                         <div className="mt-4 space-y-2 text-sm text-slate-700">
                             <p className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-theme-accent-text" /> Seat premium untuk anggota organisasi.</p>
@@ -354,17 +341,20 @@ export default function BillingPanel({ mode }: BillingPanelProps) {
             </section>
 
             {recommendedBusinessPlan && user?.role !== "mitra" && status?.entitlement_source !== "b2b" && (
-                <section className="rounded-2xl border border-theme-accent-border bg-theme-accent-soft p-4">
+                <section className="rounded-2xl border border-rose-100 bg-rose-50/50 p-4 shadow-sm">
                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <p className="text-xs uppercase tracking-wide text-theme-accent-text">Butuh banyak seat?</p>
-                            <h2 className="mt-1 text-lg font-semibold text-slate-900">{recommendedBusinessPlan.name}</h2>
-                            <p className="mt-1 text-sm text-slate-700">
-                                Mulai dari {formatIDR(Number(recommendedBusinessPlan.base_price_per_seat ?? 0))} / seat untuk akses premium organisasi.
-                            </p>
+                        <div className="flex items-center gap-3">
+                            <Image src="/images/landing/mascot/community.webp" alt="" width={80} height={80} sizes="80px" className="h-14 w-14 shrink-0 object-contain" />
+                            <div>
+                                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-theme-accent-dark">Butuh banyak seat?</p>
+                                <h2 className="mt-1 text-lg font-semibold text-slate-900">{recommendedBusinessPlan.name}</h2>
+                                <p className="mt-1 text-sm text-slate-700">
+                                    Mulai dari {formatIDR(Number(recommendedBusinessPlan.base_price_per_seat ?? 0))} / seat untuk akses premium organisasi.
+                                </p>
+                            </div>
                         </div>
                         <Link href={ROUTES.CONTACT}>
-                            <Button variant="outline" className="gap-2 border-theme-accent/40 bg-white text-theme-accent-dark hover:bg-theme-accent/10">
+                            <Button variant="outline" className="gap-2 rounded-xl border-rose-200 bg-white text-theme-accent-dark hover:bg-rose-50">
                                 <Building2 className="w-4 h-4" />
                                 Hubungi Tim B2B
                             </Button>
@@ -374,10 +364,10 @@ export default function BillingPanel({ mode }: BillingPanelProps) {
             )}
 
             {!status?.is_premium && user?.role !== "mitra" && recommendedPlan && (
-                <section className="rounded-2xl border border-amber-200 bg-linear-to-r from-amber-50 to-yellow-50 p-4">
+                <section className="rounded-2xl border border-rose-100 bg-[linear-gradient(115deg,#fff8f5_0%,#fff_72%)] p-4 shadow-sm">
                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                         <div>
-                            <p className="text-xs uppercase tracking-wide text-amber-700">Rekomendasi Upgrade</p>
+                            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-theme-accent-dark">Rekomendasi upgrade</p>
                             <h2 className="mt-1 text-lg font-semibold text-slate-900">{recommendedPlan.name}</h2>
                             <p className="mt-1 text-sm text-slate-700">
                                 {recommendedPlan.description || "Tingkatkan kuota chat dan buka misi premium eksklusif."}
@@ -387,7 +377,7 @@ export default function BillingPanel({ mode }: BillingPanelProps) {
                             </p>
                         </div>
                         <Button
-                            className="gap-2"
+                            className="gap-2 rounded-xl"
                             disabled={processingKey === `subscription-${recommendedPlan.id}`}
                             onClick={() => runCheckout({ item_type: "subscription", item_id: recommendedPlan.id }, recommendedPlan.name)}
                         >
@@ -399,15 +389,16 @@ export default function BillingPanel({ mode }: BillingPanelProps) {
             )}
 
             {status?.subscription && (
-                <section className="rounded-2xl border border-theme-story-border bg-theme-story-from p-4">
-                    <div className="flex items-start gap-3">
-                        <BadgeCheck className="w-5 h-5 text-theme-story-icon mt-0.5" />
+                <section className="rounded-2xl border border-rose-100 bg-white p-4 shadow-sm">
+                    <div className="flex items-center gap-3">
+                        <Image src="/images/landing/mascot/secure.webp" alt="" width={72} height={72} sizes="72px" className="h-12 w-12 shrink-0 object-contain" />
                         <div>
-                            <h2 className="text-base font-semibold text-theme-story-heading">Langganan Aktif: {status.subscription.plan_name}</h2>
-                            <p className="text-sm text-theme-story-heading mt-1">
+                            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-theme-accent-dark">Paket aktif</p>
+                            <h2 className="mt-0.5 text-base font-bold text-slate-900">{status.subscription.plan_name}</h2>
+                            <p className="mt-1 text-sm text-slate-600">
                                 Aktif {formatDateTime(status.subscription.starts_at)} sampai {formatDateTime(status.subscription.ends_at)}.
                             </p>
-                            <p className="text-xs text-theme-story-heading mt-1 opacity-80">Order: {status.subscription.source_order_id}</p>
+                            <p className="mt-1 text-xs text-slate-500">Order: {status.subscription.source_order_id}</p>
                         </div>
                     </div>
                 </section>
@@ -417,18 +408,23 @@ export default function BillingPanel({ mode }: BillingPanelProps) {
 
             {mode === "transactions" && (
             <>
-            <section className="rounded-2xl border border-slate-200 bg-white p-4">
-                <div className="flex flex-col gap-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
+            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+                <div className="mb-4 flex flex-col gap-3 border-b border-slate-100 pb-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-2">
-                        <ReceiptText className="w-5 h-5 text-slate-700" />
-                        <h2 className="text-lg font-semibold text-slate-900">Riwayat Transaksi</h2>
+                        <span className="grid h-9 w-9 place-items-center rounded-xl bg-rose-50 text-theme-accent-dark">
+                            <ReceiptText className="h-4 w-4" />
+                        </span>
+                        <div>
+                            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Aktivitas akun</p>
+                            <h2 className="text-base font-bold text-slate-900">Riwayat transaksi</h2>
+                        </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
                             aria-label="Filter status"
-                            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700"
+                            className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-rose-300 focus:ring-2 focus:ring-rose-100"
                         >
                             <option value="">Semua status</option>
                             <option value="paid">Berhasil</option>
@@ -440,7 +436,7 @@ export default function BillingPanel({ mode }: BillingPanelProps) {
                             value={typeFilter}
                             onChange={(e) => setTypeFilter(e.target.value)}
                             aria-label="Filter tipe"
-                            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700"
+                            className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-rose-300 focus:ring-2 focus:ring-rose-100"
                         >
                             <option value="">Semua tipe</option>
                             <option value="subscription">Premium</option>
@@ -459,45 +455,61 @@ export default function BillingPanel({ mode }: BillingPanelProps) {
                 </div>
 
                 {transactionError ? (
-                    <div className="rounded-xl border border-dashed border-red-200 bg-red-50 p-6 text-sm text-red-700">
+                    <div className="rounded-2xl border border-dashed border-rose-200 bg-rose-50/60 p-6 text-sm text-rose-700">
                         <p>Riwayat transaksi gagal dimuat.</p>
                         <Button variant="outline" size="sm" className="mt-3 bg-white" onClick={() => void fetchTransactions(1)}>
                             Coba Lagi
                         </Button>
                     </div>
                 ) : transactions.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">
-                        Belum ada transaksi pada akun ini.
+                    <div className="flex items-center gap-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-5 text-sm text-slate-600">
+                        <Image src="/images/landing/mascot/secure.webp" alt="" width={84} height={84} sizes="84px" className="h-16 w-16 shrink-0 object-contain" />
+                        <div>
+                            <p className="font-semibold text-slate-800">Belum ada transaksi</p>
+                            <p className="mt-0.5">Riwayat paket dan pembelian koinmu akan muncul di sini.</p>
+                        </div>
                     </div>
                 ) : (
                     <>
                         <div className="overflow-x-auto">
                             <table className="w-full min-w-170 text-sm">
                                 <thead>
-                                    <tr className="border-b border-slate-200 text-slate-500">
-                                        <th className="text-left font-medium py-2">Tanggal</th>
-                                        <th className="text-left font-medium py-2">Item</th>
-                                        <th className="text-left font-medium py-2">Tipe</th>
-                                        <th className="text-left font-medium py-2">Nominal</th>
-                                        <th className="text-left font-medium py-2">Status</th>
-                                        <th className="text-left font-medium py-2">Order</th>
-                                        <th className="text-right font-medium py-2">Invoice</th>
+                                    <tr className="border-b border-slate-200 bg-slate-50/80 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                                        <th className="px-3 py-3 text-left font-semibold">Tanggal</th>
+                                        <th className="px-3 py-3 text-left font-semibold">Item</th>
+                                        <th className="px-3 py-3 text-left font-semibold">Tipe</th>
+                                        <th className="px-3 py-3 text-left font-semibold">Nominal</th>
+                                        <th className="px-3 py-3 text-left font-semibold">Status</th>
+                                        <th className="px-3 py-3 text-left font-semibold">Order</th>
+                                        <th className="px-3 py-3 text-right font-semibold">Invoice</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {transactions.map((tx: BillingTransaction) => (
-                                        <tr key={tx.id} className="border-b border-slate-100 align-top">
-                                            <td className="py-2.5 text-slate-700">{formatDateTime(tx.created_at)}</td>
-                                            <td className="py-2.5 text-slate-900 font-medium">{tx.item_name}</td>
-                                            <td className="py-2.5 text-slate-700">{tx.item_type === "subscription" ? "Premium" : "Top Up"}</td>
-                                            <td className="py-2.5 text-slate-900">{formatIDR(tx.amount)}</td>
-                                            <td className="py-2.5">
-                                                <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass(tx.status)}`}>
-                                                    {tx.status}
-                                                </span>
+                                        <tr key={tx.id} className="align-top transition-colors hover:bg-rose-50/30 [&:not(:last-child)]:border-b [&:not(:last-child)]:border-slate-100">
+                                            <td className="px-3 py-3 text-slate-600">{formatDateTime(tx.created_at)}</td>
+                                            <td className="px-3 py-3 font-semibold text-slate-900">{tx.item_name}</td>
+                                            <td className="px-3 py-3 text-slate-600">{tx.item_type === "subscription" ? "Premium" : "Top Up"}</td>
+                                            <td className="px-3 py-3 font-semibold text-slate-900">{formatIDR(tx.amount)}</td>
+                                            <td className="px-3 py-3">
+                                                <div className="flex flex-col items-start gap-1">
+                                                    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass(tx.status)}`}>
+                                                        {tx.status}
+                                                    </span>
+                                                    {tx.refund_status && tx.refund_status !== "none" && (
+                                                        <span className="text-xs text-slate-600">
+                                                            {tx.refunded_amount
+                                                                ? `Refund terkonfirmasi ${formatIDR(tx.refunded_amount)}`
+                                                                : "Refund menunggu konfirmasi Midtrans"}
+                                                        </span>
+                                                    )}
+                                                    {tx.refund_reconciliation_status === "pending" && (
+                                                        <span className="text-xs font-medium text-amber-700">Sedang ditinjau operator</span>
+                                                    )}
+                                                </div>
                                             </td>
-                                            <td className="py-2.5 text-slate-500 text-xs">{tx.order_id}</td>
-                                            <td className="py-2.5">
+                                            <td className="px-3 py-3 text-xs text-slate-500">{tx.order_id}</td>
+                                            <td className="px-3 py-3">
                                                 <div className="flex items-center justify-end gap-2">
                                                     {tx.status.toLowerCase() === "pending" && tx.snap_token && (
                                                         <Button
@@ -554,11 +566,11 @@ export default function BillingPanel({ mode }: BillingPanelProps) {
                 )}
             </section>
 
-            <section className="rounded-2xl border border-theme-accent-border bg-theme-accent-soft p-4 flex items-start gap-3">
-                <CreditCard className="w-5 h-5 text-theme-accent-text mt-0.5" />
+            <section className="flex items-center gap-3 rounded-2xl border border-rose-100 bg-rose-50/50 p-3.5">
+                <Image src="/images/landing/mascot/key.webp" alt="" width={64} height={64} sizes="64px" className="h-11 w-11 shrink-0 object-contain" />
                 <div>
-                    <p className="text-sm font-semibold text-theme-accent-dark">Pembayaran diproses via Midtrans</p>
-                    <p className="text-xs text-theme-accent-dark mt-1">
+                    <p className="text-sm font-bold text-slate-800">Pembayaran diproses via Midtrans</p>
+                    <p className="mt-0.5 text-xs leading-relaxed text-slate-600">
                         Setelah pembayaran selesai, status transaksi akan diperbarui otomatis via webhook.
                     </p>
                 </div>

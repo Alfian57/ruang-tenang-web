@@ -79,7 +79,7 @@ export default function ChatPage() {
   } = useChatPage();
 
   return (
-    <div className="grid h-[calc(100svh-4rem)] min-w-0 grid-cols-1 overflow-hidden bg-white sm:h-[calc(100vh-4rem)] sm:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)]">
+    <div className="grid h-[calc(100svh-4rem)] min-w-0 grid-cols-1 overflow-hidden bg-white lg:grid-cols-[minmax(0,1fr)_minmax(17rem,19rem)]">
       {/* Main Chat Area */}
       <div className="min-h-0 min-w-0 flex flex-col overflow-hidden relative">
         <ChatMessagesArea
@@ -94,19 +94,16 @@ export default function ChatPage() {
           onSendAudio={handleSendAudio}
           onToggleMessageLike={handleToggleMessageLike}
           onToggleMessagePin={handleTogglePin}
-          onCreateSession={handleStartNewChat}
           onOpenMobileSidebar={() => setMobileSidebarOpen(true)}
           onExport={handleExport}
           summary={currentSummary}
           isGeneratingSummary={isGeneratingSummary}
           onGenerateSummary={handleGenerateSummary}
           suggestedPrompts={suggestedPrompts}
-          creativeModes={journeyCompanion?.creativeModes}
           journeyCompanion={journeyCompanion}
           reflectionNudge={reflectionNudge}
           billingStatus={billingStatus}
           onSuggestedPromptClick={handleSuggestedPrompt}
-          onCreativeModeClick={handleSuggestedPrompt}
           onJourneyPromptClick={handleSuggestedPrompt}
           onResumeJourneySession={handleResumeJourneySession}
           onRunReflectionNudge={handleRunReflectionNudge}

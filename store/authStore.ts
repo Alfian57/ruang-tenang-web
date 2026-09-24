@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { User } from "@/types";
 import { authService } from "@/services/api";
+import type { PhoneVerificationChallenge } from "@/services/api/auth";
 import Cookies from "js-cookie";
 import { STORAGE_KEYS } from "@/constants";
 import { env } from "@/config/env";
@@ -40,12 +41,14 @@ interface AuthState {
   isHydrated: boolean;
   
   // Actions
-  login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<PhoneVerificationChallenge | null>;
+  verifyPhone: (challenge: string, code: string) => Promise<void>;
   register: (
     name: string,
     email: string,
     password: string,
     passwordConfirmation: string,
+    whatsAppNumber: string,
     role?: RegisterRole
   ) => Promise<void>;
   logout: () => void;
@@ -67,6 +70,10 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         try {
           const response = await authService.login(email, password, rememberMe);
+          if (!("token" in response.data)) {
+            set({ isLoading: false });
+            return { verification_token: response.data.verification_token, phone_required: response.data.phone_required };
+          }
           const { token, user } = response.data;
           
           set({
@@ -75,6 +82,18 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             isLoading: false,
           });
+          return null;
+        } catch (error) {
+          set({ isLoading: false });
+          throw error;
+        }
+      },
+
+      verifyPhone: async (challenge: string, code: string) => {
+        set({ isLoading: true });
+        try {
+          const response = await authService.verifyPhone(challenge, code);
+          set({ user: response.data.user, token: response.data.token, isAuthenticated: true, isLoading: false });
         } catch (error) {
           set({ isLoading: false });
           throw error;
@@ -86,11 +105,12 @@ export const useAuthStore = create<AuthState>()(
         email: string,
         password: string,
         passwordConfirmation: string,
+        whatsAppNumber: string,
         role: RegisterRole = "user"
       ) => {
         set({ isLoading: true });
         try {
-          await authService.register(name, email, password, passwordConfirmation, role);
+          await authService.register(name, email, password, passwordConfirmation, whatsAppNumber, role);
           set({ isLoading: false });
         } catch (error) {
           set({ isLoading: false });

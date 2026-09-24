@@ -10,6 +10,8 @@ const userSchema: z.ZodType<User, z.ZodTypeDef, unknown> = z
     id: z.number(),
     name: z.string(),
     email: z.string().email(),
+    whatsapp_number: z.string().optional(),
+    whatsapp_verified: z.boolean().optional(),
     avatar: z.string().optional(),
     role: z.enum(["admin", "user", "mitra"]).catch("user"),
     exp: z.number().catch(0),
@@ -50,17 +52,39 @@ const loginResponseSchema = apiResponseSchema(
   })
 );
 
+const verificationResponseSchema = apiResponseSchema(
+  z.object({
+    verification_required: z.literal(true),
+    verification_token: z.string().min(1),
+    phone_required: z.boolean().catch(false),
+  })
+);
+
+export type PhoneVerificationChallenge = { verification_token: string; phone_required: boolean };
+
 const userResponseSchema = apiResponseSchema(userSchema);
 
 const nullableResponseSchema = apiResponseSchema(z.null().nullable());
 
 export const authService = {
-  async login(email: string, password: string, rememberMe?: boolean): Promise<ApiResponse<LoginResponse>> {
-    const response = await httpClient.post<ApiResponse<LoginResponse>>("/auth/login", {
+  async login(email: string, password: string, rememberMe?: boolean): Promise<ApiResponse<LoginResponse> | ApiResponse<PhoneVerificationChallenge & { verification_required: true }>> {
+    const response = await httpClient.post<ApiResponse<LoginResponse | PhoneVerificationChallenge>>("/auth/login", {
       email,
       password,
       remember_me: rememberMe,
     });
+    if (response.data && "verification_required" in response.data && response.data.verification_required) {
+      return verificationResponseSchema.parse(response);
+    }
+    return loginResponseSchema.parse(response);
+  },
+
+  async setVerificationPhone(challenge: string, whatsappNumber: string): Promise<void> {
+    await httpClient.post("/auth/verification/phone", { verification_token: challenge, whatsapp_number: whatsappNumber });
+  },
+
+  async verifyPhone(challenge: string, code: string): Promise<ApiResponse<LoginResponse>> {
+    const response = await httpClient.post<ApiResponse<LoginResponse>>("/auth/verification/verify", { verification_token: challenge, code });
     return loginResponseSchema.parse(response);
   },
 
@@ -69,6 +93,7 @@ export const authService = {
     email: string,
     password: string,
     passwordConfirmation: string,
+    whatsAppNumber: string,
     role: RegisterRole = "user"
   ): Promise<ApiResponse<User>> {
     const response = await httpClient.post<ApiResponse<User>>("/auth/register", {
@@ -76,6 +101,7 @@ export const authService = {
       email,
       password,
       password_confirmation: passwordConfirmation,
+      whatsapp_number: whatsAppNumber,
       role,
     });
     return userResponseSchema.parse(response);
@@ -104,7 +130,7 @@ export const authService = {
     return userResponseSchema.parse(response);
   },
 
-  async updateProfile(token: string, data: { name?: string; email?: string; bio?: string; avatar_url?: string }): Promise<ApiResponse<User>> {
+  async updateProfile(token: string, data: { name?: string; email?: string; whatsapp_number?: string; bio?: string; avatar_url?: string }): Promise<ApiResponse<User>> {
     const response = await httpClient.put<ApiResponse<User>>("/auth/profile", data, { token });
     return userResponseSchema.parse(response);
   },
