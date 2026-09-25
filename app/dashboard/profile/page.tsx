@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/authStore";
 import { authService } from "@/services/api";
+import { DashboardMascotHero } from "@/components/shared/dashboard/DashboardMascotHero";
 
 const profileSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter"),
@@ -94,12 +95,7 @@ export default function ProfilePage() {
 
   return (
     <div className="py-4 lg:py-6">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold mb-2">Profil</h1>
-        <p className="text-muted-foreground">
-          Kelola informasi profil dan keamanan akunmu
-        </p>
-      </div>
+      <DashboardMascotHero eyebrow="Ruang milikmu" title="Profil" description="Kelola informasi pribadi dan keamanan akunmu dengan tenang." image="/images/landing/mascot/secure.webp" imageAlt="RuNa menjaga keamanan profil" />
 
       {/* Profile Card */}
       <Card className="mb-6">

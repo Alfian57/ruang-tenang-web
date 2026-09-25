@@ -8,6 +8,7 @@ import {
     WifiOff,
 } from "lucide-react";
 import MindfulRunnerGame from "@/components/game/LazyMindfulRunnerGame";
+import { DashboardMascotHero } from "@/components/shared/dashboard/DashboardMascotHero";
 
 const SESSION_DETAILS = [
     { icon: Clock3, label: "Jeda 2–3 menit" },
@@ -46,16 +47,8 @@ export default function GamePage() {
             />
 
             <div className="mx-auto max-w-[92rem] space-y-5 lg:space-y-6">
-                <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                    <div className="max-w-2xl">
-                        <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl lg:text-[2.15rem]">
-                            Mindful Runner
-                        </h1>
-                        <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
-                            Sebuah perjalanan singkat untuk melewati beban pikiran, menemukan ritme, dan mengumpulkan momen tenang.
-                        </p>
-                    </div>
-
+                <DashboardMascotHero eyebrow="Jeda bermain" title="Mindful Runner" description="Lewati beban pikiran, temukan ritme, dan kumpulkan momen tenang bersama RuNa." image="/images/landing/mascot/celebrate.webp" imageAlt="RuNa merayakan perjalanan kecilmu" />
+                <div className="flex justify-end">
                     <div className="-mx-1 flex max-w-full flex-nowrap gap-2 overflow-x-auto px-1 pb-1 lg:mx-0 lg:flex-wrap lg:justify-end lg:overflow-visible lg:px-0 lg:pb-0">
                         {SESSION_DETAILS.map(({ icon: Icon, label }) => (
                             <div
@@ -67,7 +60,7 @@ export default function GamePage() {
                             </div>
                         ))}
                     </div>
-                </header>
+                </div>
 
                 <section
                     aria-label="Arena Mindful Runner"

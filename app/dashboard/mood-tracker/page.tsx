@@ -13,6 +13,7 @@ import { moodService } from "@/services/api";
 import { useAuthStore } from "@/store/authStore";
 import type { MoodType, UserMood } from "@/types";
 import { MOOD_ASSETS } from "../_components/mood-config";
+import { DashboardMascotHero } from "@/components/shared/dashboard/DashboardMascotHero";
 
 const MOOD_OPTIONS: Array<{ value: MoodType; label: string; icon: string; activeIcon: string; tone: string }> = [
   { value: "happy", label: "Senang", icon: MOOD_ASSETS.happy.inactive, activeIcon: MOOD_ASSETS.happy.active, tone: "bg-primary/10 text-primary border-primary/20" },
@@ -94,21 +95,7 @@ export default function MoodTrackerPage() {
 
   return (
     <div className="space-y-6 py-4 lg:py-6">
-      <section className="rounded-3xl border border-primary/20 bg-linear-to-br from-primary/10 via-white to-primary/10 p-5 lg:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-primary">Mood Tracker</p>
-            <h1 className="mt-1 text-2xl font-semibold text-slate-950">Pantau mood harianmu</h1>
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
-              Catatan mood membantu dashboard, jurnal, dan rekomendasi aktivitas memahami pola emosimu dari waktu ke waktu.
-            </p>
-          </div>
-          <Button variant="outline" className="gap-2 bg-white" onClick={() => void loadMoods()} disabled={isLoading}>
-            <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-            Muat Ulang
-          </Button>
-        </div>
-      </section>
+      <DashboardMascotHero eyebrow="Mood Tracker" title="Pantau mood harianmu" description="Catatan mood membantu kamu mengenali pola emosimu dari waktu ke waktu." image="/images/landing/mascot/mood.webp" imageAlt="RuNa menemani pencatatan mood" action={<Button variant="outline" className="gap-2 bg-white" onClick={() => void loadMoods()} disabled={isLoading}><RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} /> Muat Ulang</Button>} />
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <Card>
