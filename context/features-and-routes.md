@@ -26,6 +26,8 @@ app/dashboard/mitra/ mengelola organizations, subscription, insights, payments, 
 
 ## Route truth
 
+Untuk pemetaan surface member terhadap mobile, lihat `member-feature-parity.md`. Dokumen tersebut tidak menggantikan pemeriksaan route pada source code.
+
 Gunakan lib/routes.ts untuk constant dan dynamic builder. Gunakan folder app/ untuk memastikan route benar-benar tersedia; jangan menambahkan daftar route manual yang tidak ditautkan ke source. Saat route ditambah, periksa middleware, dashboard navigation, role visibility, loading/error state, dan context ini.
 
 Tab hub disimpan pada query `tab` agar dapat ditautkan dan mengikuti navigasi browser. Panel berat dimuat secara dinamis dan hanya panel aktif yang mengambil data. Daily Task FAB memakai store non-persisten dan menjadi antarmuka kanonis untuk misi harian.

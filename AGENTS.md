@@ -71,6 +71,13 @@ CLAUDE.md, GEMINI.md, dan .github/copilot-instructions.md adalah adapter tipis y
 - Gunakan context/README.md untuk memilih dokumen; jangan menyalin seluruh context ke file adapter agent.
 - Jangan melakukan perubahan database, deployment, migrasi, atau penghapusan data sebagai bagian dari pekerjaan dokumentasi tanpa instruksi eksplisit.
 
+## Data sensitif dan AI
+
+- Perlakukan journal, chat dan context AI, mood, profil, laporan moderasi, serta billing sebagai data pribadi. Batasi data yang ditampilkan, disimpan, atau dicatat ke kebutuhan fitur dan hak akses pengguna.
+- Backend API adalah otoritas untuk autentikasi, role, dan ownership. State persetujuan AI disimpan melalui API, sedangkan client menjaga gate/disclaimer chat sesuai alur produk; UI gate bukan kontrol akses server.
+- Prompt/model AI, kuota, moderasi, dan kebijakan krisis dimiliki API. Web memakai kontrak yang tersedia; jangan menanam prompt sistem, provider credential, atau akses model langsung ke client.
+- Pertahankan consent dan disclaimer AI, pilihan privasi journal, serta state error/fallback yang disediakan API.
+
 ## Code review rules
 
 - Flag request API langsung dari UI, bypass auth/role checks, secret NEXT_PUBLIC_* yang tidak aman, dan mutation offline yang melewati allowlist.
