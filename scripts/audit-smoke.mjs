@@ -99,7 +99,7 @@ assertContains("app/dashboard/journey/_components/SummaryPanel.tsx", "BadgeShowc
 assertContains("app/dashboard/chat/_hooks/useChatPage.ts", "chat-quota-limited", "Chat page must react to exhausted quota events");
 assertContains("app/dashboard/chat/_components/ChatMessagesArea.tsx", "isQuotaExhausted", "Chat input must lock when quota is exhausted");
 assertContains("app/dashboard/chat/_components/ChatMessagesArea.tsx", "Tulis Jurnal", "Chat quota exhausted state must offer a non-chat alternative");
-assertContains("app/dashboard/chat/_components/EmptyState.tsx", "Mulai check-in terpandu", "Chat empty state must prioritize guided check-in");
+assertContains("app/dashboard/chat/_components/EmptyState.tsx", "Mulai dengan satu langkah kecil", "Chat empty state must prioritize a guided first step");
 assertContains("components/shared/gamification/DailyTaskFAB.tsx", "showPremiumTeasers", "Daily task FAB must show premium locked tasks for free users");
 
 assertContains("app/(landing)/_components/LandingDataNotice.tsx", "Simulasi pengalaman publik", "Landing demo data must be clearly labeled");
@@ -136,10 +136,10 @@ assertNotContains("app/(landing)/_components/LandingStatic.tsx", "/images/dummy-
 assertNotContains("app/(landing)/_components/LandingArticles.tsx", "dummy-article", "Landing articles must not fall back to dummy article imagery");
 assertNotContains("app/(landing)/_components/LandingArticles.tsx", "/images/avatar/community-illustration.jpg", "Landing article fallback must not use watermarked avatar imagery");
 assertContains("middleware.ts", "frame-src", "CSP must allow explicit frame sources for payment popups");
-assertContains("middleware.ts", "https://app.sandbox.midtrans.com", "CSP must include sandbox Midtrans app origin");
-assertContains("middleware.ts", "https://app.midtrans.com", "CSP must include production Midtrans app origin");
-assertContains("middleware.ts", "https://api.sandbox.midtrans.com", "CSP must include sandbox Midtrans API origin");
-assertContains("middleware.ts", "https://api.midtrans.com", "CSP must include production Midtrans API origin");
+assertContains("middleware.ts", "https://app-sandbox.duitku.com", "CSP must include sandbox Duitku Pop origin");
+assertContains("middleware.ts", "https://app-prod.duitku.com", "CSP must include production Duitku Pop origin");
+assertContains("lib/duitku.ts", "checkout.process", "Web checkout must launch Duitku Pop with the provider reference");
+assertContains("lib/duitku.ts", "paymentUrl", "Web checkout must retain the payment URL fallback");
 
 assertAllowedAttrsAreLockedDown();
 assertContains("utils/sanitize.ts", "noopener noreferrer", "External sanitized links must be hardened");

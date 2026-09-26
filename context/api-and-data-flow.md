@@ -11,7 +11,7 @@ Service pada services/api/ memetakan endpoint domain. Auth memakai schema Zod un
 
 ## Auth dan redirect
 
-Token disimpan/diambil oleh auth store dan dipasang pada request terlindungi. Middleware menangani redirect serta validasi asal Midtrans, tetapi backend tetap menjadi otoritas auth dan role.
+Token disimpan/diambil oleh auth store dan dipasang pada request terlindungi. Middleware menangani redirect; backend tetap menjadi otoritas auth dan role.
 
 ## Upload dan timestamp
 
@@ -22,8 +22,8 @@ Upload URL dapat berupa relative path atau absolute URL; gunakan helper services
 
 ## Integrasi pembayaran
 
-Client key Midtrans boleh berada di NEXT_PUBLIC_MIDTRANS_CLIENT_KEY; server key tidak boleh masuk frontend. NEXT_PUBLIC_MIDTRANS_ENV menentukan sandbox/production. Billing juga menyediakan link pembayaran/invoice melalui API.
-Daftar transaksi admin memfilter kasus refund melalui `refund_reconciliation_status`; refund diajukan lewat layanan admin billing yang mengirim ke Midtrans, sedangkan rekonsiliasi menyertakan tindakan dan catatan operator. Riwayat member menampilkan refund terkonfirmasi/menunggu konfirmasi dan bila sedang ditinjau.
+Web memulai Duitku Pop dengan `provider_reference` dan memakai `payment_url` sebagai fallback. `NEXT_PUBLIC_DUITKU_ENV` menentukan script sandbox/production; API key tetap di backend. Callback server menjadi satu-satunya sumber status pembayaran.
+Billing admin mengelola katalog dan melihat transaksi. Riwayat member menyediakan invoice dan melanjutkan pembayaran pending melalui Duitku.
 
 Registrasi dan profil mengirim `whatsapp_number`. Login yang menerima `verification_required` menyimpan challenge di sessionStorage dan mengarahkan pengguna ke `/verify-phone`; JWT/cookie auth baru disimpan setelah OTP diverifikasi. Akun lama tanpa nomor dapat menambah nomor dari halaman OTP. Lupa kata sandi tetap mencari akun lewat email, lalu backend mengirim kode reset via WhatsApp terverifikasi.
 

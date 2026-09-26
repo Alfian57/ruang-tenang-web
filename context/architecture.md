@@ -12,7 +12,7 @@ Frontend ini menangani UI publik, autentikasi, member dashboard, admin/moderasi,
 - services/http/: base URL, Bearer token, timeout, retry 429, response/error normalization, pagination, dan offline queue.
 - store/: Zustand state lintas halaman, terutama auth, chat, dashboard, journal, block, dan music player.
 - types/: kontrak TypeScript yang dipakai oleh service dan UI.
-- lib/: route constants, safe redirect, Midtrans, offline IndexedDB, dan helper umum.
+- lib/: route constants, safe redirect, Duitku Pop, offline IndexedDB, dan helper umum.
 
 ## Routing dan role
 

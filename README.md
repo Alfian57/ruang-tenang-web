@@ -67,8 +67,7 @@ Salin .env.example ke .env.local.
 | NEXT_PUBLIC_API_BASE_URL | API lengkap termasuk /api/v1. |
 | NEXT_PUBLIC_APP_TIMEZONE | Zona waktu tampilan, default Asia/Jakarta. |
 | NEXT_PUBLIC_ALLOWED_IMAGE_HOSTS | Allowlist host gambar remote, dipisahkan koma. |
-| NEXT_PUBLIC_MIDTRANS_CLIENT_KEY | Client key Midtrans Snap; kosong memakai alur pembayaran manual. |
-| NEXT_PUBLIC_MIDTRANS_ENV | sandbox atau production. |
+| NEXT_PUBLIC_DUITKU_ENV | Environment Duitku Pop: sandbox atau production, harus sama dengan API. |
 
 Pada image Docker, API URL dapat diinjeksi saat container start melalui entrypoint.sh. Build CI memakai GitHub repository variables; secret deployment tidak disimpan di repository.
 

@@ -496,28 +496,18 @@ export default function BillingPanel({ mode }: BillingPanelProps) {
                                                     <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass(tx.status)}`}>
                                                         {tx.status}
                                                     </span>
-                                                    {tx.refund_status && tx.refund_status !== "none" && (
-                                                        <span className="text-xs text-slate-600">
-                                                            {tx.refunded_amount
-                                                                ? `Refund terkonfirmasi ${formatIDR(tx.refunded_amount)}`
-                                                                : "Refund menunggu konfirmasi Midtrans"}
-                                                        </span>
-                                                    )}
-                                                    {tx.refund_reconciliation_status === "pending" && (
-                                                        <span className="text-xs font-medium text-amber-700">Sedang ditinjau operator</span>
-                                                    )}
                                                 </div>
                                             </td>
                                             <td className="px-3 py-3 text-xs text-slate-500">{tx.order_id}</td>
                                             <td className="px-3 py-3">
                                                 <div className="flex items-center justify-end gap-2">
-                                                    {tx.status.toLowerCase() === "pending" && tx.snap_token && (
+                                                    {tx.status.toLowerCase() === "pending" && (tx.provider_reference || tx.payment_url) && (
                                                         <Button
                                                             size="sm"
                                                             variant="default"
                                                             className="h-7 text-xs"
                                                             disabled={processingKey === `${tx.item_type}-${tx.item_id}`}
-                                                            onClick={() => runCheckout({ item_type: tx.item_type as "subscription" | "topup", item_id: tx.item_id, snap_token: tx.snap_token }, "Lanjutkan")}
+                                                            onClick={() => runCheckout({ item_type: tx.item_type as "subscription" | "topup", item_id: tx.item_id, provider_reference: tx.provider_reference, payment_url: tx.payment_url }, "Lanjutkan")}
                                                         >
                                                             Bayar
                                                         </Button>
@@ -569,7 +559,7 @@ export default function BillingPanel({ mode }: BillingPanelProps) {
             <section className="flex items-center gap-3 rounded-2xl border border-rose-100 bg-rose-50/50 p-3.5">
                 <Image src="/images/landing/mascot/key.webp" alt="" width={64} height={64} sizes="64px" className="h-11 w-11 shrink-0 object-contain" />
                 <div>
-                    <p className="text-sm font-bold text-slate-800">Pembayaran diproses via Midtrans</p>
+                    <p className="text-sm font-bold text-slate-800">Pembayaran diproses via Duitku</p>
                     <p className="mt-0.5 text-xs leading-relaxed text-slate-600">
                         Setelah pembayaran selesai, status transaksi akan diperbarui otomatis via webhook.
                     </p>

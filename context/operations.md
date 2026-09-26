@@ -1,7 +1,7 @@
 # Operasi Web
 ## Environment
 
-config/env.ts memvalidasi NEXT_PUBLIC_API_BASE_URL, timezone, image hosts, dan Midtrans. Placeholder __NEXT_PUBLIC_API_BASE_URL__ dipertahankan saat build agar dapat diganti entrypoint.sh ketika container start.
+config/env.ts memvalidasi NEXT_PUBLIC_API_BASE_URL, timezone, image hosts, dan environment Duitku Pop. Placeholder __NEXT_PUBLIC_API_BASE_URL__ dipertahankan saat build agar dapat diganti entrypoint.sh ketika container start.
 
 NEXT_PUBLIC_API_BASE_URL harus menyertakan /api/v1 untuk request API. Host upload diturunkan dengan menghapus suffix tersebut. Pada deployed page, placeholder atau localhost yang tidak reachable akan diarahkan ke origin page /api/v1.
 

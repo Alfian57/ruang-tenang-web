@@ -4,8 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { adminBillingService } from "@/services/api";
 import type {
-  AdminRefundPayload,
-  AdminRefundReconciliationPayload,
   AdminPremiumPlanPayload,
   AdminTopupPackagePayload,
 } from "@/services/api/billing";
@@ -28,7 +26,6 @@ export function useAdminBilling() {
   const [txTotalPages, setTxTotalPages] = useState(1);
   const [txStatus, setTxStatus] = useState<string>("all");
   const [txItemType, setTxItemType] = useState<string>("all");
-  const [txRefundReconciliationStatus, setTxRefundReconciliationStatus] = useState<string>("all");
 
   // Plans & topups
   const [plans, setPlans] = useState<BillingPremiumPlan[]>([]);
@@ -46,7 +43,6 @@ export function useAdminBilling() {
         limit: 20,
         status: txStatus === "all" ? undefined : txStatus,
         item_type: txItemType === "all" ? undefined : txItemType,
-        refund_reconciliation_status: txRefundReconciliationStatus === "all" ? undefined : txRefundReconciliationStatus,
       });
       const data = (res as { data: { transactions: BillingTransaction[]; total_pages: number } }).data;
       setTransactions(data?.transactions || []);
@@ -56,7 +52,7 @@ export function useAdminBilling() {
     } finally {
       setIsLoading(false);
     }
-  }, [token, txPage, txStatus, txItemType, txRefundReconciliationStatus]);
+  }, [token, txPage, txStatus, txItemType]);
 
   const loadPlans = useCallback(async () => {
     if (!token) return;
@@ -126,48 +122,6 @@ export function useAdminBilling() {
     [token, loadTopups]
   );
 
-  const requestRefund = useCallback(
-    async (orderId: string, payload: AdminRefundPayload) => {
-      if (!token) return;
-      setIsSaving(true);
-      try {
-        await adminBillingService.requestRefund(token, orderId, payload);
-        await loadTransactions();
-      } finally {
-        setIsSaving(false);
-      }
-    },
-    [token, loadTransactions]
-  );
-
-  const reconcileRefund = useCallback(
-    async (orderId: string, payload: AdminRefundReconciliationPayload) => {
-      if (!token) return;
-      setIsSaving(true);
-      try {
-        await adminBillingService.reconcileRefund(token, orderId, payload);
-        await loadTransactions();
-      } finally {
-        setIsSaving(false);
-      }
-    },
-    [token, loadTransactions]
-  );
-
-  const syncRefundStatus = useCallback(
-    async (orderId: string) => {
-      if (!token) return;
-      setIsSaving(true);
-      try {
-        await adminBillingService.syncRefundStatus(token, orderId);
-        await loadTransactions();
-      } finally {
-        setIsSaving(false);
-      }
-    },
-    [token, loadTransactions]
-  );
-
   const exportCsv = useCallback(async () => {
     if (!token) return;
     try {
@@ -192,17 +146,12 @@ export function useAdminBilling() {
     setTxPage,
     setTxStatus,
     setTxItemType,
-    txRefundReconciliationStatus,
-    setTxRefundReconciliationStatus,
     plans,
     topups,
     isLoading,
     isSaving,
     savePlan,
     saveTopup,
-    requestRefund,
-    reconcileRefund,
-    syncRefundStatus,
     exportCsv,
   };
 }

@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { env } from "@/config/env";
-import { openMidtransCheckout } from "@/lib/midtrans";
+import { openDuitkuCheckout } from "@/lib/duitku";
 import { billingService } from "@/services/api";
 import { ApiError } from "@/services/http/types";
 import type { BillingCheckoutPayload } from "@/types";
@@ -32,29 +32,31 @@ export function useBillingCheckout({
     setProcessingKey(nextKey);
 
     try {
-      let snapTokenToUse = payload.snap_token;
-      let snapUrlToUse = undefined;
-      if (!snapTokenToUse) {
-         const checkout = await billingService.createCheckout(token, payload);
-         snapTokenToUse = checkout.data.snap_token;
-         snapUrlToUse = checkout.data.snap_url;
+      let providerReference = payload.provider_reference;
+      let paymentUrl = payload.payment_url;
+      if (!providerReference && !paymentUrl) {
+         const checkout = await billingService.createCheckout(token, {
+           item_type: payload.item_type,
+           item_id: payload.item_id,
+         });
+         providerReference = checkout.data.provider_reference;
+         paymentUrl = checkout.data.payment_url;
       }
-      const opened = await openMidtransCheckout({
-        snapToken: snapTokenToUse,
-        snapUrl: snapUrlToUse,
-        clientKey: env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY,
-        environment: env.NEXT_PUBLIC_MIDTRANS_ENV,
+      const opened = await openDuitkuCheckout({
+        providerReference,
+        paymentUrl,
+        environment: env.NEXT_PUBLIC_DUITKU_ENV,
         callbacks: {
-          onSuccess: refreshBillingState,
-          onPending: refreshBillingState,
-          onError: refreshBillingState,
-          onClose: refreshBillingState,
+          successEvent: refreshBillingState,
+          pendingEvent: refreshBillingState,
+          errorEvent: refreshBillingState,
+          closeEvent: refreshBillingState,
         },
       });
 
       if (!opened) {
         toast.error("Checkout belum bisa dibuka", {
-          description: "Lengkapi NEXT_PUBLIC_MIDTRANS_CLIENT_KEY atau gunakan link pembayaran manual.",
+          description: "Periksa koneksi lalu coba buka kembali pembayaran.",
         });
         return;
       }

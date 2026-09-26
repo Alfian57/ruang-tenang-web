@@ -14,16 +14,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Plus, Download, Pencil, CreditCard, Wallet, Receipt } from "lucide-react";
-import { toast } from "sonner";
 import { formatDate } from "@/utils";
 import { Pagination } from "@/components/ui/pagination";
 import { useAdminBilling } from "./_hooks/useAdminBilling";
 import type {
   AdminPremiumPlanPayload,
-  AdminRefundReconciliationAction,
   AdminTopupPackagePayload,
 } from "@/services/api/billing";
-import type { BillingPremiumPlan, BillingTopupPackage, BillingTransaction } from "@/types";
+import type { BillingPremiumPlan, BillingTopupPackage } from "@/types";
 
 function formatIDR(value: number) {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value || 0);
@@ -31,18 +29,10 @@ function formatIDR(value: number) {
 
 const TX_STATUS_VARIANT: Record<string, "success" | "warning" | "destructive" | "muted"> = {
   paid: "success",
-  settlement: "success",
-  refunded: "muted",
   pending: "warning",
   failed: "destructive",
   expired: "destructive",
-  cancelled: "muted",
-};
-
-const REFUND_STATUS_LABEL: Record<string, string> = {
-  pending_confirmation: "Menunggu konfirmasi Midtrans",
-  partially_refunded: "Refund sebagian",
-  refunded: "Refund penuh",
+  canceled: "muted",
 };
 
 export default function AdminBillingPage() {
@@ -55,20 +45,15 @@ export default function AdminBillingPage() {
     txTotalPages,
     txStatus,
     txItemType,
-    txRefundReconciliationStatus,
     setTxPage,
     setTxStatus,
     setTxItemType,
-    setTxRefundReconciliationStatus,
     plans,
     topups,
     isLoading,
     isSaving,
     savePlan,
     saveTopup,
-    requestRefund,
-    reconcileRefund,
-    syncRefundStatus,
     exportCsv,
   } = useAdminBilling();
 
@@ -94,16 +79,6 @@ export default function AdminBillingPage() {
     is_active: true,
   });
 
-  const [refundDialog, setRefundDialog] = useState<"request" | "reconcile" | null>(null);
-  const [selectedRefundTransaction, setSelectedRefundTransaction] = useState<BillingTransaction | null>(null);
-  const [refundAmount, setRefundAmount] = useState(0);
-  const [refundReason, setRefundReason] = useState("");
-  const [reconciliationAction, setReconciliationAction] = useState<AdminRefundReconciliationAction | "">("deduct_remaining_coins");
-  const [premiumDaysToRevoke, setPremiumDaysToRevoke] = useState(0);
-  const [providerRejectionConfirmed, setProviderRejectionConfirmed] = useState(false);
-  const [manualReviewConfirmed, setManualReviewConfirmed] = useState(false);
-  const [reconciliationNote, setReconciliationNote] = useState("");
-  const [refundActionError, setRefundActionError] = useState("");
 
   if (user?.role !== "admin") {
     return <div className="py-8 text-center">Akses ditolak</div>;
@@ -163,75 +138,6 @@ export default function AdminBillingPage() {
     }
   };
 
-  const openRefundDialog = (transaction: BillingTransaction) => {
-    setSelectedRefundTransaction(transaction);
-    setRefundAmount(Math.max(0, transaction.amount - (transaction.refund_requested_amount ?? 0)));
-    setRefundReason("");
-    setRefundActionError("");
-    setRefundDialog("request");
-  };
-
-  const openReconciliationDialog = (transaction: BillingTransaction) => {
-    setSelectedRefundTransaction(transaction);
-    if ((transaction.provider_refund_amount_reported ?? 0) > (transaction.refunded_amount ?? 0)) {
-      setReconciliationAction("");
-    } else if (transaction.item_type === "topup") {
-      setReconciliationAction(
-        (transaction.refunded_amount ?? 0) > 0
-          ? "deduct_remaining_coins"
-          : (transaction.refund_requested_amount ?? 0) > 0
-            ? "mark_refund_rejected"
-            : "complete_manual_review"
-      );
-    } else {
-      setReconciliationAction(
-        (transaction.refunded_amount ?? 0) > 0
-          ? (transaction.refunded_amount ?? 0) >= transaction.amount
-            ? "revoke_refunded_subscription"
-            : "revoke_premium_days"
-          : (transaction.refund_requested_amount ?? 0) > 0
-            ? "mark_refund_rejected"
-            : "complete_manual_review"
-      );
-    }
-    setPremiumDaysToRevoke(0);
-    setProviderRejectionConfirmed(false);
-    setManualReviewConfirmed(false);
-    setReconciliationNote("");
-    setRefundActionError("");
-    setRefundDialog("reconcile");
-  };
-
-  const handleRequestRefund = async () => {
-    if (!selectedRefundTransaction) return;
-    try {
-      await requestRefund(selectedRefundTransaction.order_id, { amount: refundAmount, reason: refundReason.trim() });
-      setRefundDialog(null);
-    } catch (error) {
-      setRefundActionError(error instanceof Error
-        ? error.message
-        : "Permintaan refund gagal. Periksa saldo koin dan status transaksi.");
-    }
-  };
-
-  const handleRefundReconciliation = async () => {
-    if (!selectedRefundTransaction || !reconciliationAction) return;
-    try {
-      await reconcileRefund(selectedRefundTransaction.order_id, {
-        action: reconciliationAction,
-        premium_days_to_revoke: reconciliationAction === "revoke_premium_days" ? premiumDaysToRevoke : undefined,
-        provider_rejection_confirmed: reconciliationAction === "mark_refund_rejected" ? providerRejectionConfirmed : undefined,
-        manual_review_confirmed: reconciliationAction === "complete_manual_review" ? manualReviewConfirmed : undefined,
-        note: reconciliationNote.trim(),
-      });
-      setRefundDialog(null);
-    } catch (error) {
-      setRefundActionError(error instanceof Error
-        ? error.message
-        : "Rekonsiliasi gagal. Periksa kembali saldo dan status transaksi.");
-    }
-  };
-
   return (
     <div className="py-4 lg:py-6">
       <div className="mb-6">
@@ -266,17 +172,7 @@ export default function AdminBillingPage() {
                 <option value="paid">Paid</option>
                 <option value="failed">Failed</option>
                 <option value="expired">Expired</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-              <select
-                className="admin-select"
-                value={txRefundReconciliationStatus}
-                onChange={(e) => { setTxRefundReconciliationStatus(e.target.value); setTxPage(1); }}
-                aria-label="Filter status rekonsiliasi refund"
-              >
-                <option value="all">Semua Rekonsiliasi</option>
-                <option value="pending">Butuh Rekonsiliasi</option>
-                <option value="resolved">Rekonsiliasi Selesai</option>
+                <option value="canceled">Dibatalkan</option>
               </select>
               <select
                 className="admin-select"
@@ -322,60 +218,6 @@ export default function AdminBillingPage() {
                         <td className="p-3">
                           <div className="flex min-w-48 flex-col items-start gap-1.5">
                             <Badge variant={TX_STATUS_VARIANT[tx.status] || "muted"}>{tx.status}</Badge>
-                            {tx.refund_status && tx.refund_status !== "none" && (
-                              <>
-                                <Badge variant={tx.refund_status === "refunded" ? "muted" : "warning"}>
-                                  {REFUND_STATUS_LABEL[tx.refund_status] || tx.refund_status}
-                                </Badge>
-                                {(tx.refunded_amount ?? 0) > 0 && (
-                                  <span className="text-xs text-muted-foreground">
-                                    Dikonfirmasi: {formatIDR(tx.refunded_amount ?? 0)}
-                                  </span>
-                                )}
-                                {(tx.provider_refund_amount_reported ?? 0) > (tx.refunded_amount ?? 0) && (
-                                  <span className="text-xs text-amber-700">
-                                    Dilaporkan Midtrans: {formatIDR(tx.provider_refund_amount_reported ?? 0)}
-                                  </span>
-                                )}
-                              </>
-                            )}
-                            {tx.refund_reconciliation_status === "pending" && (
-                              <>
-                                <Badge variant="warning">Perlu rekonsiliasi</Badge>
-                                {tx.refund_reconciliation_reason && (
-                                  <span className="max-w-56 text-xs text-muted-foreground">
-                                    {tx.refund_reconciliation_reason.replace(/_/g, " ")}
-                                  </span>
-                                )}
-                                <Button variant="outline" size="sm" onClick={() => openReconciliationDialog(tx)}>
-                                  Tinjau refund
-                                </Button>
-                              </>
-                            )}
-                            {(tx.refund_status === "pending_confirmation" ||
-                              tx.refund_reconciliation_status === "pending" ||
-                              (tx.refund_requested_amount ?? 0) > (tx.refunded_amount ?? 0)) && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={isSaving}
-                                onClick={() => {
-                                  void syncRefundStatus(tx.order_id).catch((error: unknown) => {
-                                    toast.error(error instanceof Error ? error.message : "Gagal menyinkronkan status Midtrans");
-                                  });
-                                }}
-                              >
-                                Sinkronkan Midtrans
-                              </Button>
-                            )}
-                            {tx.status === "paid" &&
-                              tx.refund_reconciliation_status !== "pending" &&
-                              (tx.refund_requested_amount ?? 0) <= (tx.refunded_amount ?? 0) &&
-                              tx.amount - (tx.refund_requested_amount ?? 0) > 0 && (
-                                <Button variant="outline" size="sm" onClick={() => openRefundDialog(tx)}>
-                                  Refund
-                                </Button>
-                              )}
                           </div>
                         </td>
                         <td className="p-3 text-muted-foreground">{formatDate(tx.created_at)}</td>
@@ -519,173 +361,6 @@ export default function AdminBillingPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={refundDialog !== null} onOpenChange={(open) => !open && setRefundDialog(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {refundDialog === "request" ? "Ajukan Refund Midtrans" : "Rekonsiliasi Refund"}
-            </DialogTitle>
-          </DialogHeader>
-          {selectedRefundTransaction && (
-            <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">
-                Order {selectedRefundTransaction.order_id} · {selectedRefundTransaction.item_name}
-              </p>
-              {refundDialog === "request" ? (
-                <>
-                  <Input
-                    label="Jumlah refund (IDR)"
-                    type="number"
-                    min={1}
-                    step={1}
-                    max={selectedRefundTransaction.amount - (selectedRefundTransaction.refund_requested_amount ?? 0)}
-                    value={refundAmount}
-                    onChange={(e) => setRefundAmount(Number(e.target.value))}
-                    required
-                  />
-                  <Input
-                    label="Alasan refund"
-                    value={refundReason}
-                    onChange={(e) => setRefundReason(e.target.value)}
-                    maxLength={255}
-                    required
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Untuk top-up, refund hanya dapat diajukan jika saldo koin saat ini mencukupi. Pengurangan koin baru dilakukan setelah Midtrans mengonfirmasi refund.
-                  </p>
-                  {selectedRefundTransaction.item_type === "subscription" && (
-                    <p className="text-xs text-muted-foreground">
-                      Refund penuh mencabut langganan setelah dikonfirmasi Midtrans. Refund sebagian perlu keputusan operator untuk mengurangi hari premium atau mempertahankan akses.
-                    </p>
-                  )}
-                </>
-              ) : (
-                <>
-                  <label className="block space-y-1 text-sm">
-                    <span>Tindakan</span>
-                    <select
-                      className="admin-select w-full"
-                      value={reconciliationAction}
-                      onChange={(e) => setReconciliationAction(e.target.value as AdminRefundReconciliationAction | "")}
-                    >
-                      {(selectedRefundTransaction.provider_refund_amount_reported ?? 0) > (selectedRefundTransaction.refunded_amount ?? 0) ? (
-                        <option value="" disabled>Rincian refund Midtrans belum tercatat</option>
-                      ) : (
-                        <>
-                          {selectedRefundTransaction.item_type === "topup" && (selectedRefundTransaction.refunded_amount ?? 0) > 0 && (
-                            <>
-                              <option value="deduct_remaining_coins">Tarik sisa koin dari saldo</option>
-                              <option value="accept_consumed_coins">Catat koin terpakai sebagai kerugian</option>
-                            </>
-                          )}
-                          {selectedRefundTransaction.item_type === "subscription" && (selectedRefundTransaction.refunded_amount ?? 0) > 0 && (
-                            <>
-                              {(selectedRefundTransaction.refunded_amount ?? 0) >= selectedRefundTransaction.amount ? (
-                                <option value="revoke_refunded_subscription">Cabut langganan yang direfund penuh</option>
-                              ) : (
-                                <option value="revoke_premium_days">Kurangi durasi premium</option>
-                              )}
-                              <option value="retain_entitlement">Pertahankan akses sebagai goodwill</option>
-                            </>
-                          )}
-                          {(selectedRefundTransaction.refund_requested_amount ?? 0) <= (selectedRefundTransaction.refunded_amount ?? 0) &&
-                            (selectedRefundTransaction.refunded_amount ?? 0) === 0 && (
-                            <option value="complete_manual_review">Selesaikan setelah pemeriksaan manual</option>
-                          )}
-                          {(selectedRefundTransaction.refund_requested_amount ?? 0) > (selectedRefundTransaction.refunded_amount ?? 0) ||
-                            selectedRefundTransaction.refund_status === "pending_confirmation" ? (
-                            <option value="mark_refund_rejected">Tandai ditolak setelah konfirmasi Midtrans</option>
-                          ) : null}
-                        </>
-                      )}
-                    </select>
-                  </label>
-                  {reconciliationAction === "revoke_premium_days" && (
-                    <Input
-                      label="Hari premium yang dikurangi"
-                      type="number"
-                      min={1}
-                      max={3650}
-                      step={1}
-                      value={premiumDaysToRevoke || ""}
-                      onChange={(e) => setPremiumDaysToRevoke(Number(e.target.value))}
-                      required
-                    />
-                  )}
-                  {reconciliationAction === "mark_refund_rejected" && (
-                    <label className="flex items-start gap-2 text-sm">
-                      <input
-                        type="checkbox"
-                        checked={providerRejectionConfirmed}
-                        onChange={(event) => setProviderRejectionConfirmed(event.target.checked)}
-                        className="mt-0.5"
-                      />
-                      <span>Saya sudah memeriksa dashboard Midtrans dan memastikan refund ini ditolak atau tidak diproses.</span>
-                    </label>
-                  )}
-                  {reconciliationAction === "complete_manual_review" && (
-                    <label className="flex items-start gap-2 text-sm">
-                      <input
-                        type="checkbox"
-                        checked={manualReviewConfirmed}
-                        onChange={(event) => setManualReviewConfirmed(event.target.checked)}
-                        className="mt-0.5"
-                      />
-                      <span>Saya sudah memeriksa Midtrans dan memastikan tidak ada nilai refund yang belum tercatat atau benefit yang masih perlu disesuaikan.</span>
-                    </label>
-                  )}
-                  <Input
-                    label="Catatan operator"
-                    value={reconciliationNote}
-                    onChange={(e) => setReconciliationNote(e.target.value)}
-                    minLength={3}
-                    maxLength={1000}
-                    required
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {selectedRefundTransaction.item_type === "subscription" && reconciliationAction === "revoke_premium_days"
-                      ? "Durasi transaksi ini akan dikurangi dan langganan berikutnya dijadwalkan ulang agar akses tetap berurutan."
-                      : selectedRefundTransaction.item_type === "subscription" && reconciliationAction === "revoke_refunded_subscription"
-                        ? "Seluruh sisa durasi langganan dari transaksi refund penuh akan dicabut. Langganan berikutnya dijadwalkan ulang agar akses tetap berurutan."
-                      : selectedRefundTransaction.item_type === "subscription" && reconciliationAction === "retain_entitlement"
-                        ? "Akses premium dipertahankan sebagai keputusan goodwill. Tindakan ini dan alasannya akan tercatat untuk audit."
-                      : "Tindakan ini dicatat bersama identitas operator dan catatan untuk audit."}
-                  </p>
-                  {(selectedRefundTransaction.provider_refund_amount_reported ?? 0) > (selectedRefundTransaction.refunded_amount ?? 0) && (
-                    <p className="text-sm text-amber-700">
-                      Midtrans melaporkan nilai refund yang belum cocok dengan rincian refund tersimpan. Sinkronkan status dan periksa rincian di dashboard Midtrans sebelum menutup kasus.
-                    </p>
-                  )}
-                </>
-              )}
-              {refundActionError && <p role="alert" className="text-sm text-destructive">{refundActionError}</p>}
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setRefundDialog(null)}>Batal</Button>
-            {refundDialog === "request" ? (
-              <Button
-                onClick={handleRequestRefund}
-                disabled={isSaving || !Number.isInteger(refundAmount) || refundAmount <= 0 || !refundReason.trim() || !selectedRefundTransaction}
-              >
-                {isSaving ? "Mengirim..." : "Ajukan refund"}
-              </Button>
-            ) : (
-              <Button
-                onClick={handleRefundReconciliation}
-                disabled={isSaving || reconciliationNote.trim().length < 3 || !selectedRefundTransaction || !reconciliationAction ||
-                  (reconciliationAction === "revoke_premium_days" && premiumDaysToRevoke <= 0) ||
-                  (reconciliationAction === "mark_refund_rejected" && !providerRejectionConfirmed) ||
-                  (reconciliationAction === "complete_manual_review" && !manualReviewConfirmed) ||
-                  ((selectedRefundTransaction?.refund_requested_amount ?? 0) > (selectedRefundTransaction?.refunded_amount ?? 0) &&
-                    reconciliationAction !== "mark_refund_rejected")}
-              >
-                {isSaving ? "Menyimpan..." : "Simpan rekonsiliasi"}
-              </Button>
-            )}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

@@ -60,7 +60,6 @@ export const adminBillingService = {
       limit?: number;
       status?: string;
       item_type?: string;
-      refund_reconciliation_status?: string;
       user_id?: number;
     }
   ) {
@@ -68,30 +67,6 @@ export const adminBillingService = {
       token,
       params,
     });
-  },
-
-  requestRefund(token: string, orderId: string, data: AdminRefundPayload) {
-    return httpClient.post<ApiResponse<AdminRefundResponse>>(
-      `/admin/billing/transactions/${encodeURIComponent(orderId)}/refunds`,
-      data,
-      { token }
-    );
-  },
-
-  syncRefundStatus(token: string, orderId: string) {
-    return httpClient.post<ApiResponse<null>>(
-      `/admin/billing/transactions/${encodeURIComponent(orderId)}/refund-status/sync`,
-      {},
-      { token }
-    );
-  },
-
-  reconcileRefund(token: string, orderId: string, data: AdminRefundReconciliationPayload) {
-    return httpClient.post<ApiResponse<AdminRefundReconciliationResponse>>(
-      `/admin/billing/transactions/${encodeURIComponent(orderId)}/refund-reconciliation`,
-      data,
-      { token }
-    );
   },
 
   async exportTransactionsCSV(
@@ -156,45 +131,6 @@ export interface AdminTopupPackagePayload {
   bonus_coins?: number;
   price: number;
   is_active?: boolean;
-}
-
-export interface AdminRefundPayload {
-  amount: number;
-  reason: string;
-}
-
-export type AdminRefundReconciliationAction =
-  | "deduct_remaining_coins"
-  | "accept_consumed_coins"
-  | "revoke_premium_days"
-  | "revoke_refunded_subscription"
-  | "retain_entitlement"
-  | "mark_refund_rejected"
-  | "complete_manual_review";
-
-export interface AdminRefundReconciliationPayload {
-  action: AdminRefundReconciliationAction;
-  premium_days_to_revoke?: number;
-  provider_rejection_confirmed?: boolean;
-  manual_review_confirmed?: boolean;
-  note: string;
-}
-
-export interface AdminRefundResponse {
-  order_id: string;
-  refund_key: string;
-  amount: number;
-  status: string;
-  message: string;
-}
-
-export interface AdminRefundReconciliationResponse {
-  order_id: string;
-  refund_reconciliation_status: string;
-  refund_reconciliation_reason: string;
-  coins_reversed: number;
-  coins_written_off: number;
-  premium_days_reduced: number;
 }
 
 /// Helper: ambil CSV dengan Authorization lalu picu unduhan di browser.

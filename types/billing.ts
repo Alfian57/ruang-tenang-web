@@ -74,7 +74,8 @@ export interface BillingStatus {
 export interface BillingCheckoutPayload {
   item_type: CheckoutItemType;
   item_id: number;
-  snap_token?: string;
+  provider_reference?: string;
+  payment_url?: string;
 }
 
 export interface BillingCheckoutResponse {
@@ -86,8 +87,8 @@ export interface BillingCheckoutResponse {
   amount: number;
   currency: string;
   status: string;
-  snap_token: string;
-  snap_url: string;
+  provider_reference: string;
+  payment_url: string;
   expires_at?: string;
 }
 
@@ -105,14 +106,9 @@ export interface BillingTransaction {
   provider_transaction_id?: string;
   provider_payment_type?: string;
   failure_reason?: string;
-  snap_token?: string;
+  provider_reference?: string;
+  payment_url?: string;
   paid_at?: string;
-  refunded_amount?: number;
-  refund_requested_amount?: number;
-  provider_refund_amount_reported?: number;
-  refund_status?: "none" | "pending_confirmation" | "partially_refunded" | "refunded" | string;
-  refund_reconciliation_status?: "not_required" | "pending" | "resolved" | string;
-  refund_reconciliation_reason?: string;
   created_at: string;
   updated_at: string;
 }

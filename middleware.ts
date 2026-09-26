@@ -76,23 +76,20 @@ export function middleware(request: NextRequest) {
         // Keep same-origin fallback when API env URL is invalid.
     }
 
-    const midtransAppOrigin = env.NEXT_PUBLIC_MIDTRANS_ENV === "production"
-        ? "https://app.midtrans.com"
-        : "https://app.sandbox.midtrans.com";
-    const midtransApiOrigin = env.NEXT_PUBLIC_MIDTRANS_ENV === "production"
-        ? "https://api.midtrans.com"
-        : "https://api.sandbox.midtrans.com";
+    const duitkuAppOrigin = env.NEXT_PUBLIC_DUITKU_ENV === "production"
+        ? "https://app-prod.duitku.com"
+        : "https://app-sandbox.duitku.com";
 
     const csp = [
         "default-src 'self'",
-        `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com ${midtransAppOrigin}`,
-        `script-src-elem 'self' 'unsafe-inline' https://static.cloudflareinsights.com ${midtransAppOrigin}`,
+        `script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com ${duitkuAppOrigin}`,
+        `script-src-elem 'self' 'unsafe-inline' https://static.cloudflareinsights.com ${duitkuAppOrigin}`,
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "font-src 'self' https://fonts.gstatic.com",
         `img-src 'self' data: blob: https: http: ${apiOrigin}`,
-        `connect-src 'self' ${apiOrigin} ${midtransAppOrigin} ${midtransApiOrigin} https:`,
+        `connect-src 'self' ${apiOrigin} ${duitkuAppOrigin} https:`,
         `media-src 'self' https: http: ${apiOrigin}`,
-        `frame-src 'self' ${midtransAppOrigin}`,
+        `frame-src 'self' ${duitkuAppOrigin}`,
         "frame-ancestors 'none'",
         "worker-src 'self'",
     ].join("; ");
