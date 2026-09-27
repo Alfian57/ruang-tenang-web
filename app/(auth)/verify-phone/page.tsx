@@ -61,8 +61,8 @@ export default function VerifyPhonePage() {
   }
 
   return (
-    <main className="auth-page flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg space-y-5">
+    <main className="auth-page flex items-center justify-center p-6">
+      <div className="auth-standalone-panel w-full max-w-md rounded-2xl bg-white p-8 shadow-lg space-y-5">
         <h1 className="text-2xl font-bold">Verifikasi WhatsApp</h1>
         <p className="text-sm text-gray-600">Masukkan kode 6 digit yang dikirim ke nomor WhatsApp akunmu. Kode berlaku 10 menit.</p>
         {error && <p role="alert" className="text-sm text-red-600">{error}</p>}

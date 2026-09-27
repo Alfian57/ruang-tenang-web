@@ -150,7 +150,7 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="auth-page flex min-h-screen">
+    <div className="auth-page flex">
       {/* Left Side */}
       <div className="auth-form-panel w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="auth-form-content w-full max-w-md">
