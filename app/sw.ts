@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
 import { defaultCache } from "@serwist/next/worker";
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
-import { Serwist, NetworkFirst, StaleWhileRevalidate, CacheFirst, ExpirationPlugin, RangeRequestsPlugin } from "serwist";
+import { Serwist, NetworkFirst, NetworkOnly, StaleWhileRevalidate, CacheFirst, ExpirationPlugin, RangeRequestsPlugin } from "serwist";
 
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
@@ -133,6 +133,16 @@ const serwist = new Serwist({
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: [
+    // Mutations (POST/PUT/PATCH/DELETE) must NEVER go through a caching
+    // strategy. The Cache API cannot store non-GET responses, so a
+    // NetworkFirst/StaleWhileRevalidate route (including serwist's default
+    // catch-all `!sameOrigin` rule) rejects for POST requests and the browser
+    // surfaces it as a CORS / net::ERR_FAILED failure — e.g. login/POST to the
+    // cross-origin API. Force these straight to the network.
+    {
+      matcher: ({ request }: { request: Request }) => request.method !== "GET",
+      handler: new NetworkOnly(),
+    },
     audioCacheStrategy,
     ...apiCacheStrategies,
     ...defaultCache,

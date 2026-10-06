@@ -87,6 +87,19 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async headers() {
+    return [
+      {
+        // Service worker harus selalu direvalidasi agar update SW terbaru
+        // cepat terpasang dan tidak tertahan cache browser.
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
+    ];
+  },
   productionBrowserSourceMaps: true,
 };
 

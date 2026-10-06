@@ -8,6 +8,10 @@ const DEFAULT_TIMEOUT = 30_000; // 30 seconds
 const RATE_LIMIT_TOAST_COOLDOWN_MS = 5000;
 const MAX_RETRIES = 2;
 const RETRY_DELAY_MS = 1500;
+// Transient gateway errors from the hosting layer (Passenger/LiteSpeed) that are
+// worth retrying. These arrive as a 502/503/504 HTML page WITHOUT CORS headers,
+// so the browser surfaces them as a CORS / network failure.
+const RETRYABLE_STATUS = new Set([502, 503, 504]);
 let lastRateLimitToastAt = 0;
 
 const VALIDATION_FIELD_LABELS: Record<string, string> = {
@@ -274,6 +278,13 @@ class HttpClient {
       const data = await parseResponseBody(response);
 
       if (!response.ok) {
+        // Retry transient gateway errors (hosting 502/503/504) with backoff.
+        if (RETRYABLE_STATUS.has(response.status) && attempt < MAX_RETRIES) {
+          const delay = RETRY_DELAY_MS * Math.pow(2, attempt);
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          return this.requestWithRetry<T>(endpoint, options, attempt + 1);
+        }
+
         const errorData = getErrorEnvelope(data);
         const apiError = new ApiError({
           message: normalizeApiErrorMessage(String(errorData.message || errorData.error || "An error occurred")),
@@ -323,7 +334,17 @@ class HttpClient {
 
       // Handle network errors — queue mutations for offline replay
       if (error instanceof TypeError) {
+        const isOnline = typeof navigator === "undefined" || navigator.onLine;
         const method = (fetchOptions.method || "GET").toUpperCase();
+
+        // A gateway 503 that ships without CORS headers surfaces as a TypeError
+        // even though the network is up. Retry a few times before falling back
+        // to the offline path / error.
+        if (isOnline && attempt < MAX_RETRIES) {
+          const delay = RETRY_DELAY_MS * Math.pow(2, attempt);
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          return this.requestWithRetry<T>(endpoint, options, attempt + 1);
+        }
 
         // For mutating requests, queue them for later sync
         if (token && isOfflineQueueableMutation(endpoint, method)) {

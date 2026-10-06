@@ -3,6 +3,7 @@
 import * as React from "react";
 import { usePathname } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
+import { ServiceWorkerUpdater } from "@/components/pwa/ServiceWorkerUpdater";
 
 interface ProvidersProps {
     children: React.ReactNode;
@@ -40,6 +41,7 @@ export function Providers({ children }: ProvidersProps) {
 
     return (
         <>
+            <ServiceWorkerUpdater />
             {children}
             <Toaster />
         </>
