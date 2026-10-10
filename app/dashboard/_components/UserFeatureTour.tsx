@@ -278,6 +278,7 @@ export function UserFeatureTour() {
 
   const activeStep = activeIndex === null ? null : TOUR_STEPS[activeIndex];
   const isLastStep = activeIndex === TOUR_STEPS.length - 1;
+  const isChatPage = pathname === ROUTES.CHAT || pathname.startsWith(`${ROUTES.CHAT}/`);
 
   const markTourComplete = useCallback(async () => {
     if (!token) return;
@@ -365,10 +366,10 @@ export function UserFeatureTour() {
   }, []);
 
   useEffect(() => {
-    if (tourEligibility !== "eligible" || hasAutoStarted || activeIndex !== null || moodCheckinStatus !== "ready" || isWellnessOnboardingOpen) return;
+    if (tourEligibility !== "eligible" || hasAutoStarted || activeIndex !== null || moodCheckinStatus !== "ready" || isWellnessOnboardingOpen || isChatPage) return;
     const timeoutId = window.setTimeout(startTour, 350);
     return () => window.clearTimeout(timeoutId);
-  }, [tourEligibility, hasAutoStarted, activeIndex, moodCheckinStatus, isWellnessOnboardingOpen, startTour]);
+  }, [tourEligibility, hasAutoStarted, activeIndex, moodCheckinStatus, isWellnessOnboardingOpen, isChatPage, startTour]);
 
   useEffect(() => {
     if (tourEligibility === "eligible" && window.innerWidth >= 760) {
@@ -571,7 +572,7 @@ export function UserFeatureTour() {
 
   return (
     <>
-      {activeIndex === null && (
+      {activeIndex === null && !isChatPage && (
         <Button
           type="button"
           onClick={startTour}

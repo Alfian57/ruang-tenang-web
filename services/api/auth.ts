@@ -130,8 +130,13 @@ export const authService = {
     return userResponseSchema.parse(response);
   },
 
-  async updateProfile(token: string, data: { name?: string; email?: string; whatsapp_number?: string; bio?: string; avatar_url?: string }): Promise<ApiResponse<User>> {
-    const response = await httpClient.put<ApiResponse<User>>("/auth/profile", data, { token });
+  async updateProfile(token: string, data: { name?: string; email?: string; whatsapp_number?: string; bio?: string; avatar?: string; avatar_url?: string }): Promise<ApiResponse<User>> {
+    const avatar = data.avatar || data.avatar_url;
+    const payload = {
+      ...data,
+      ...(avatar ? { avatar, avatar_url: avatar } : {}),
+    };
+    const response = await httpClient.put<ApiResponse<User>>("/auth/profile", payload, { token });
     return userResponseSchema.parse(response);
   },
 

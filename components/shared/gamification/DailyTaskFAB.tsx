@@ -396,6 +396,7 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
             height={170}
             sizes="144px"
             className="pointer-events-none absolute -top-8 right-0 z-10 h-36 w-auto object-contain drop-shadow-lg sm:-top-9 sm:h-40"
+            style={{ width: "auto" }}
           />
         </div>
 
@@ -427,7 +428,7 @@ export function DailyTaskFAB({ className, isSidebarOpen = false, xpBoost }: Dail
             {isOpen ? (
               <X className="w-6 h-6 text-white" />
             ) : (
-              <Image src="/images/dashboard/mascot/daily-missions.webp" alt="" width={48} height={60} className="h-12 w-auto object-contain" />
+              <Image src="/images/dashboard/mascot/daily-missions.webp" alt="" width={48} height={60} className="h-12 w-auto object-contain" style={{ width: "auto" }} />
             )}
           </div>
 

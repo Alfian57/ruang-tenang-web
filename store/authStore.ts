@@ -53,6 +53,7 @@ interface AuthState {
   ) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
+  setUser: (user: User | null) => void;
   setLoading: (loading: boolean) => void;
   setHydrated: (hydrated: boolean) => void;
 }
@@ -139,6 +140,10 @@ export const useAuthStore = create<AuthState>()(
           // Token expired or invalid - silently logout
           get().logout();
         }
+      },
+
+      setUser: (user: User | null) => {
+        set({ user });
       },
 
       setLoading: (loading: boolean) => {

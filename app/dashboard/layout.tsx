@@ -304,6 +304,7 @@ function DashboardContent({
     ? user.profile_theme
     : null;
   const dashboardFrameVariant = getDashboardFrameVariant(pathname, user.role);
+  const isChatPage = isPathAtOrBelow(pathname, ROUTES.CHAT);
 
   return (
     <div className={cn(
@@ -442,8 +443,8 @@ function DashboardContent({
         {isUser && <MoodCheckinProvider />}
         {isUser && <UserFeatureTour />}
 
-        {/* Daily Task FAB (for non-admin users) */}
-        {isUser && <DailyTaskFAB isSidebarOpen={sidebarOpen} xpBoost={xpBoostStatus} />}
+        {/* Daily Task FAB (for non-admin users, hidden on chat page to avoid covering input) */}
+        {isUser && !isChatPage && <DailyTaskFAB isSidebarOpen={sidebarOpen} xpBoost={xpBoostStatus} />}
 
         {/* Global Music Player */}
         <GlobalMusicPlayer sidebarCollapsed={sidebarCollapsed} />

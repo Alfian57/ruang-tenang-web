@@ -64,7 +64,7 @@ export default function GamePage() {
 
                 <section
                     aria-label="Arena Mindful Runner"
-                    className="relative overflow-hidden rounded-[2rem] border p-2 shadow-[0_30px_90px_-55px_rgba(15,23,42,0.65)] sm:p-3 lg:p-4"
+                    className="relative overflow-hidden rounded-[2rem] border p-1.5 shadow-[0_30px_90px_-55px_rgba(15,23,42,0.65)] xs:p-2 sm:p-3 lg:p-4"
                     style={{
                         borderColor: "var(--theme-accent-border, #fed7aa)",
                         background: "linear-gradient(145deg, color-mix(in srgb, var(--theme-accent-soft, #fff7ed) 72%, white), rgba(255,255,255,0.96) 48%, color-mix(in srgb, var(--theme-accent-light, #ffedd5) 34%, white))",
@@ -79,7 +79,7 @@ export default function GamePage() {
                         style={{ borderColor: "var(--theme-accent-border, #fed7aa)" }}
                     />
 
-                    <div className="relative rounded-[1.65rem] bg-white/[0.72] p-1.5 backdrop-blur-sm sm:p-2">
+                    <div className="relative rounded-[1.65rem] bg-white/[0.72] p-1 xs:p-1.5 backdrop-blur-sm sm:p-2">
                         <MindfulRunnerGame />
                     </div>
                 </section>

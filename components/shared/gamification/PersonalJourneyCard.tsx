@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import type { PersonalJourney } from "@/types";
 import { cn } from "@/utils";
 import { useAuthStore } from "@/store/authStore";
+import { getUploadUrl } from "@/services/http/upload-url";
 import { GamificationIcon } from "./GamificationIcon";
 
 interface PersonalJourneyCardProps {
@@ -68,7 +69,7 @@ export function PersonalJourneyCard({
                                 style={{ background: `linear-gradient(135deg, ${journey.tier_color || "#ef4444"}, var(--theme-fab-to))` }}
                             >
                                 {user?.avatar ? (
-                                    <Image src={user.avatar} alt={`Avatar ${user.name}`} width={80} height={80} className="h-full w-full object-cover" />
+                                    <Image src={user.avatar.startsWith("http") ? user.avatar : getUploadUrl(user.avatar)} alt={`Avatar ${user.name}`} width={80} height={80} className="h-full w-full object-cover" />
                                 ) : (
                                     user?.name?.charAt(0).toUpperCase() || journey.current_level
                                 )}

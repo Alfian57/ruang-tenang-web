@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -35,12 +35,20 @@ interface EditProfileModalProps {
 }
 
 export function EditProfileModal({ isOpen, onClose }: EditProfileModalProps) {
-  const { user, refreshUser, token } = useAuth();
+  const { user, refreshUser, token, setUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(user?.avatar || null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      setPreviewImage(user?.avatar || null);
+      setSelectedFile(null);
+      setError("");
+    }
+  }, [isOpen, user?.avatar]);
 
   const {
     register,
@@ -91,11 +99,16 @@ export function EditProfileModal({ isOpen, onClose }: EditProfileModalProps) {
       }
 
       // Update profile
-      await authService.updateProfile(token, {
+      const updateRes = await authService.updateProfile(token, {
         name: data.name,
         email: data.email,
-        avatar_url: avatarUrl || undefined
+        avatar: avatarUrl || undefined,
+        avatar_url: avatarUrl || undefined,
       });
+
+      if (updateRes?.data) {
+        setUser(updateRes.data);
+      }
       
       // Refresh user data
       await refreshUser();

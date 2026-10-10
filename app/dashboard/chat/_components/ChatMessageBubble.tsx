@@ -136,32 +136,32 @@ export function ChatMessageBubble({
 
           {/* Action buttons for AI messages */}
           {!isUser && (
-            <div className="flex items-center gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+            <div className="flex items-center gap-0.5 sm:gap-1">
               {/* Pin button */}
               <button
                 className={cn(
-                  "p-1 hover:bg-gray-100 rounded transition",
-                  message.is_pinned ? "text-amber-500" : "text-gray-400 hover:text-gray-600"
+                  "p-1 hover:bg-rose-50 rounded-lg transition-colors",
+                  message.is_pinned ? "text-amber-500 hover:text-amber-600" : "text-gray-400 hover:text-gray-600"
                 )}
                 onClick={() => onTogglePin?.(message.id)}
                 title={message.is_pinned ? "Hapus Sematkan" : "Sematkan"}
                 aria-label={message.is_pinned ? "Hapus sematan" : "Sematkan pesan"}
               >
-                <Pin className={cn("w-3 h-3", message.is_pinned && "fill-current")} />
+                <Pin className={cn("w-3.5 h-3.5", message.is_pinned && "fill-current")} />
               </button>
 
               {/* Copy button (only for text messages) */}
               {!isAudio && (
                 <button
-                  className="p-1 hover:bg-gray-100 rounded transition text-gray-400 hover:text-gray-600"
+                  className="p-1 hover:bg-rose-50 rounded-lg transition-colors text-gray-400 hover:text-gray-600"
                   title="Salin"
                   aria-label="Salin pesan"
                   onClick={() => handleCopy(message.content, message.id)}
                 >
                   {copiedId === message.id ? (
-                    <Check className="w-3 h-3 text-primary/80" />
+                    <Check className="w-3.5 h-3.5 text-primary" />
                   ) : (
-                    <Copy className="w-3 h-3" />
+                    <Copy className="w-3.5 h-3.5" />
                   )}
                 </button>
               )}
@@ -169,27 +169,27 @@ export function ChatMessageBubble({
               {/* Like button */}
               <button
                 className={cn(
-                  "p-1 hover:bg-gray-100 rounded transition text-gray-400 hover:text-gray-600",
-                  message.is_liked && "text-primary"
+                  "p-1 hover:bg-rose-50 rounded-lg transition-colors text-gray-400 hover:text-gray-600",
+                  message.is_liked && "text-primary hover:text-primary"
                 )}
                 onClick={() => onToggleLike(message.id, true)}
                 title="Suka"
                 aria-label="Suka pesan"
               >
-                <ThumbsUp className={cn("w-3 h-3", message.is_liked && "fill-current")} />
+                <ThumbsUp className={cn("w-3.5 h-3.5", message.is_liked && "fill-current")} />
               </button>
 
               {/* Dislike button */}
               <button
                 className={cn(
-                  "p-1 hover:bg-gray-100 rounded transition text-gray-400 hover:text-gray-600",
-                  message.is_disliked && "text-primary"
+                  "p-1 hover:bg-rose-50 rounded-lg transition-colors text-gray-400 hover:text-gray-600",
+                  message.is_disliked && "text-primary hover:text-primary"
                 )}
                 onClick={() => onToggleLike(message.id, false)}
                 title="Tidak suka"
                 aria-label="Tidak suka pesan"
               >
-                <ThumbsDown className={cn("w-3 h-3", message.is_disliked && "fill-current")} />
+                <ThumbsDown className={cn("w-3.5 h-3.5", message.is_disliked && "fill-current")} />
               </button>
             </div>
           )}

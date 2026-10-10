@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Heart, Play, RotateCcw, ShieldCheck, Trophy, Zap } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
+import { cn } from "@/utils";
 import {
     CANVAS_H,
     CANVAS_W,
@@ -640,10 +641,13 @@ export default function MindfulRunnerGame() {
     return (
         <div ref={containerRef} className="space-y-3">
             <div
-                className="relative overflow-hidden rounded-[1.4rem] border bg-white shadow-[0_24px_70px_-42px_rgba(15,23,42,0.5)]"
+                className={cn(
+                    "relative overflow-hidden rounded-[1.4rem] border bg-white shadow-[0_24px_70px_-42px_rgba(15,23,42,0.5)]",
+                    !isPlaying ? "min-h-[290px] xs:min-h-[310px] sm:min-h-[350px] lg:min-h-0" : "aspect-[5/2]"
+                )}
                 style={{ borderColor: "var(--theme-accent-border, #fed7aa)" }}
             >
-                <div className="overflow-hidden">
+                <div className={cn("overflow-hidden", !isPlaying ? "min-h-[290px] xs:min-h-[310px] sm:min-h-[350px] lg:min-h-0 h-full" : "w-full")}>
                     <canvas
                         ref={canvasRef}
                         width={CANVAS_W}
@@ -651,7 +655,12 @@ export default function MindfulRunnerGame() {
                         role="img"
                         aria-describedby="mindful-runner-instructions"
                         aria-label={isPlaying ? `Mindful Runner sedang dimainkan. Skor ${hud.score}.` : "Arena Mindful Runner"}
-                        className="block h-64 w-auto min-w-full max-w-none cursor-pointer select-none sm:h-80 lg:h-auto lg:w-full"
+                        className={cn(
+                            "block cursor-pointer select-none",
+                            isPlaying
+                                ? "w-full h-auto aspect-[5/2]"
+                                : "w-full min-h-[290px] xs:min-h-[310px] sm:min-h-[350px] lg:min-h-0 h-full object-cover object-bottom lg:aspect-[5/2] lg:h-auto"
+                        )}
                         style={{ touchAction: "none" }}
                         onPointerDown={(event) => {
                             if (event.button !== 0) return;
@@ -694,8 +703,8 @@ export default function MindfulRunnerGame() {
                 ) : null}
 
                 {gameStatus !== "playing" ? (
-                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-slate-950/5 p-3 backdrop-blur-[1px] sm:p-4">
-                        <div className="pointer-events-auto max-h-[calc(100%-1rem)] w-full max-w-[20rem] overflow-y-auto overscroll-contain rounded-[1.35rem] border border-white/90 bg-white/90 p-3 text-center shadow-[0_24px_70px_-30px_rgba(15,23,42,0.45)] backdrop-blur-xl sm:max-w-sm sm:p-5">
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-slate-950/10 p-3 sm:p-5 backdrop-blur-[2px]">
+                        <div className="pointer-events-auto max-h-[calc(100%-0.75rem)] w-full max-w-[21rem] overflow-y-auto overscroll-contain rounded-[1.35rem] border border-white/90 bg-white/95 p-4 text-center shadow-[0_24px_70px_-30px_rgba(15,23,42,0.45)] backdrop-blur-xl sm:max-w-sm sm:p-5">
                             <div
                                 className="mx-auto hidden h-11 w-11 items-center justify-center rounded-2xl sm:flex"
                                 style={{ backgroundColor: "var(--theme-accent-light, #ffedd5)" }}
@@ -706,20 +715,20 @@ export default function MindfulRunnerGame() {
                                     <Heart className="h-4 w-4 text-rose-500 sm:h-5 sm:w-5" />
                                 )}
                             </div>
-                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400 sm:mt-3 sm:text-[10px]">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 sm:mt-3 sm:text-xs">
                                 {gameStatus === "idle" ? "Mindful break" : "Jeda sejenak"}
                             </p>
-                            <h2 className="mt-1 text-lg font-black tracking-tight text-slate-900 sm:text-2xl">
+                            <h2 className="mt-1 text-base font-black tracking-tight text-slate-900 sm:text-2xl">
                                 {gameStatus === "idle" ? "Mulai perjalanan tenang" : "Perjalanan selesai"}
                             </h2>
-                            <p className="mx-auto mt-1 max-w-[17rem] text-[11px] leading-4 text-slate-600 sm:mt-1.5 sm:text-sm sm:leading-5">
+                            <p className="mx-auto mt-1 max-w-[17rem] text-xs leading-relaxed text-slate-600 sm:mt-1.5 sm:text-sm">
                                 {gameStatus === "idle"
                                     ? "Lewati beban pikiran dan kumpulkan momen yang membuat langkahmu terasa lebih ringan."
                                     : overMessage}
                             </p>
 
                             {gameStatus === "over" ? (
-                                <div className="mx-auto mt-2 flex max-w-52 items-center justify-center divide-x divide-slate-200 rounded-xl bg-slate-50 px-2 py-2 sm:mt-3 sm:max-w-56 sm:py-2.5">
+                                <div className="mx-auto mt-2.5 flex max-w-52 items-center justify-center divide-x divide-slate-200 rounded-xl bg-slate-50/90 px-2 py-1.5 sm:mt-3 sm:max-w-56 sm:py-2.5">
                                     <div className="flex-1 px-2">
                                         <p className="text-[10px] uppercase tracking-wide text-slate-400">Skor</p>
                                         <p className="font-black tabular-nums text-slate-800">{hud.score}</p>
@@ -734,7 +743,7 @@ export default function MindfulRunnerGame() {
                             <button
                                 type="button"
                                 onClick={startGame}
-                                className="mt-3 inline-flex h-9 items-center justify-center gap-2 rounded-xl px-4 text-xs font-bold text-white shadow-lg transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:mt-4 sm:h-11 sm:px-5 sm:text-sm"
+                                className="mt-3.5 inline-flex h-10 items-center justify-center gap-2 rounded-xl px-5 text-xs font-bold text-white shadow-lg transition-transform hover:-translate-y-0.5 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:mt-4 sm:h-11 sm:px-6 sm:text-sm"
                                 style={{
                                     backgroundColor: "var(--theme-accent, #f97316)",
                                     boxShadow: "0 12px 28px -14px var(--theme-accent, #f97316)",
@@ -759,11 +768,11 @@ export default function MindfulRunnerGame() {
                 <p>
                     <span className="font-semibold text-slate-700">Tahan</span> untuk melompat lebih tinggi, tekan lagi untuk lompatan ganda.
                 </p>
-                <div className="flex items-center gap-1.5" aria-label="Kontrol game">
-                    <kbd className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 font-sans font-semibold text-slate-600 shadow-sm">SPASI</kbd>
+                <div className="flex flex-wrap items-center gap-1.5" aria-label="Kontrol game">
+                    <span className="font-medium text-slate-600">Tap layar</span>
                     <span>atau</span>
-                    <kbd className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 font-sans font-semibold text-slate-600 shadow-sm">↑</kbd>
-                    <span className="hidden min-[420px]:inline">atau tap</span>
+                    <kbd className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 font-sans font-semibold text-slate-600 shadow-sm">SPASI</kbd>
+                    <kbd className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 font-sans font-semibold text-slate-600 shadow-sm">↑</kbd>
                 </div>
             </div>
         </div>
